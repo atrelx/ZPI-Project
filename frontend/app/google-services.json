@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "14118795045",
+    "project_id": "ordersapp-d4a31",
+    "storage_bucket": "ordersapp-d4a31.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14118795045:android:b59ac0f3d1892004a4cccc",
+        "android_client_info": {
+          "package_name": "com.example.bussiness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN1I7FiFHN7S6ay4YAWwuNuMew1QcSNNU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
