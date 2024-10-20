@@ -52,6 +52,7 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-extended:1.7.1")
     implementation ("io.coil-kt:coil-compose:2.3.0")
     implementation("androidx.compose.material3:material3:1.3.0")
+    implementation(libs.androidx.ui.text.google.fonts)
 
     testImplementation ("org.mockito:mockito-core:5.3.1")
     testImplementation ("org.mockito.kotlin:mockito-kotlin:5.3.1")

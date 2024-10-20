@@ -1,4 +1,4 @@
-package com.example.bussiness.screens.drawer_screens.products
+package com.example.bussiness.ui.screens.bottom_screens.products
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.bussiness.ui.theme.BussinessTheme
+import com.example.bussiness.ui.theme.AmozApplicationTheme
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -31,7 +31,7 @@ fun ProductScreen(
     paddingValues: PaddingValues,
     productsViewModel: ProductsViewModel = viewModel()
 ) {
-    BussinessTheme {
+    AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

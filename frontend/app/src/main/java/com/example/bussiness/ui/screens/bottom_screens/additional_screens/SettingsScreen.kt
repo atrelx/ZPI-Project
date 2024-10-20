@@ -1,4 +1,4 @@
-package com.example.bussiness.screens.bottom_screens
+package com.example.bussiness.ui.screens.bottom_screens.additional_screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.bussiness.ui.theme.BussinessTheme
+import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 @Composable
-fun ExpansesScreen(navController: NavController, paddingValues: PaddingValues) {
-    BussinessTheme {
+fun SettingsScreen(navController: NavController, paddingValues: PaddingValues) {
+    AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -39,7 +39,7 @@ fun ExpansesScreen(navController: NavController, paddingValues: PaddingValues) {
                 ) {
                 }
                 Text(
-                    "Expanses Screen",
+                    "Settings Screen",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
