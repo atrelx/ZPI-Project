@@ -1,4 +1,4 @@
-package com.example.bussiness.screens.bottom_screens.selling
+package com.example.bussiness.ui.screens.bottom_screens.selling
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,14 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.bussiness.ui.theme.BussinessTheme
+import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 @Composable
 fun SellingScreen(
     navController: NavController,
     paddingValues: PaddingValues,
     salesViewModel: SellingViewModel = viewModel() ) {
-    BussinessTheme {
+    AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

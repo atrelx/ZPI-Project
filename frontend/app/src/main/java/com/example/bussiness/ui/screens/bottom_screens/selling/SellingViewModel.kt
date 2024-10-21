@@ -1,10 +1,9 @@
-package com.example.bussiness.screens.bottom_screens.selling
+package com.example.bussiness.ui.screens.bottom_screens.selling
 
 import androidx.lifecycle.ViewModel
 import com.example.bussiness.firebase.FirebaseRepository
 import com.example.bussiness.firebase.Product
 import com.example.bussiness.firebase.SoldProduct
-import com.example.bussiness.screens.drawer_screens.products.ProductsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

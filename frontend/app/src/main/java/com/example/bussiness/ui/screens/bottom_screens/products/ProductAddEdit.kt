@@ -1,4 +1,4 @@
-package com.example.bussiness.screens.drawer_screens.products
+package com.example.bussiness.ui.screens.bottom_screens.products
 
 import android.R
 import android.annotation.SuppressLint
@@ -41,7 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue

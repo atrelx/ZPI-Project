@@ -1,4 +1,4 @@
-package com.example.bussiness.screens.drawer_screens.products
+package com.example.bussiness.ui.screens.bottom_screens.products
 
 import com.example.bussiness.firebase.Product
 

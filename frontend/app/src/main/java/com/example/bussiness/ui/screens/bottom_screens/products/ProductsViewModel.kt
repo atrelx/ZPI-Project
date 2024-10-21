@@ -1,7 +1,6 @@
-package com.example.bussiness.screens.drawer_screens.products
+package com.example.bussiness.ui.screens.bottom_screens.products
 
 import android.net.Uri
-import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.ViewModel
 import com.example.bussiness.firebase.FirebaseRepository
 import com.example.bussiness.firebase.Product

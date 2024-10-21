@@ -1,4 +1,4 @@
-package com.example.bussiness.screens
+package com.example.bussiness.ui.screens
 
 sealed class Screens(val route : String) {
     data object Home : Screens("home_route")

@@ -1,4 +1,4 @@
-package com.example.bussiness.screens.drawer_screens.products
+package com.example.bussiness.ui.screens.bottom_screens.products
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,6 @@ import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField

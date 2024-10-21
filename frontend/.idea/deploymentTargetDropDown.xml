@@ -2,6 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="DefaultPreview">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="RFCRA0Q8VHW" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-10-19T11:56:33.093829600Z" />
+        </State>
+      </entry>
       <entry key="HomeScreenTest">
         <State />
       </entry>
@@ -15,9 +31,6 @@
         <State />
       </entry>
       <entry key="testListItemClickOpensDialog()">
-        <State />
-      </entry>
-      <entry key="testUpdateSaleInFirebase()">
         <State />
       </entry>
     </value>

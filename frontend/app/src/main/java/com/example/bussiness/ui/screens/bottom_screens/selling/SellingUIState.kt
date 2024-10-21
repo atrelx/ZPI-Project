@@ -1,4 +1,4 @@
-package com.example.bussiness.screens.bottom_screens.selling
+package com.example.bussiness.ui.screens.bottom_screens.selling
 
 import com.example.bussiness.firebase.Product
 import com.example.bussiness.firebase.SoldProduct
