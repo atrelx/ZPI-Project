@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,27 +17,21 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.bussiness.ui.screens.Screens
-import com.example.bussiness.ui.screens.bottom_screens.ExpansesScreen
-import com.example.bussiness.ui.screens.bottom_screens.HomeScreen
-import com.example.bussiness.ui.screens.bottom_screens.StatisticsScreen
+import com.example.bussiness.ui.screens.bottom_screens.CompanyScreen
+import com.example.bussiness.ui.screens.bottom_screens.home.HomeScreen
 import com.example.bussiness.ui.screens.bottom_screens.products.ProductScreen
-import com.example.bussiness.ui.screens.bottom_screens.selling.SellingScreen
+import com.example.bussiness.ui.screens.bottom_screens.orders.OrdersScreen
 import com.example.bussiness.ui.screens.bottom_screens.additional_screens.AboutScreen
 import com.example.bussiness.ui.screens.bottom_screens.additional_screens.FAQScreen
 import com.example.bussiness.ui.screens.bottom_screens.additional_screens.SettingsScreen
 import com.example.bussiness.ui.screens.bottom_screens.additional_screens.SupportScreen
 import com.example.bussiness.ui.screens.bottom_screens.more_button.MoreBottomSheet
-import com.example.bussiness.ui.screens.bottom_screens.products.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,13 +40,26 @@ fun BottomApplicationNavigation(
     ) {
         val appUiState by appViewModel.appUiState.collectAsState()
         val navigationController = rememberNavController()
+
         fun popBackHandler() {
             appViewModel.updateCurrentNavItem()
             navigationController.navigateUp()
         }
+
+        fun navigateToScreen(navigationItem: NavigationItem) {
+            appViewModel.updateCurrentNavItem(navigationItem)
+            navigationItem.screen?.let {
+                navigationController.navigate(it) {
+                    popUpTo(Screens.Home.route) {
+                        inclusive = false
+                        saveState = true
+                    }
+                }
+            }
+        }
+
         Scaffold(
             topBar = {
-
                     val scrollBehavior =
                         TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                     CenterAlignedTopAppBar(
@@ -93,13 +99,7 @@ fun BottomApplicationNavigation(
                                 selected = appUiState.currentNavigationItem == item,
                                 onClick = {
                                     item.screen?.let {
-                                        appViewModel.updateCurrentNavItem(item)
-                                        navigationController.navigate(it) {
-                                            popUpTo(Screens.Home.route) {
-                                                inclusive = false
-                                                saveState = true
-                                            }
-                                        }
+                                        navigateToScreen(item)
                                     } ?: run {
                                         appViewModel.updateMoreBottomSheetVisibility(true)
                                     }
@@ -122,10 +122,10 @@ fun BottomApplicationNavigation(
         ) { padding ->
             NavHost(navController = navigationController, startDestination = Screens.Home.route) {
                 composable(Screens.Home.route) { HomeScreen(navController = navigationController, padding) }
-                composable(Screens.Selling.route) { SellingScreen(navController = navigationController, padding) }
-                composable(Screens.Expanses.route) { ExpansesScreen(navController = navigationController, padding) }
-                composable(Screens.Statistics.route) { StatisticsScreen(navController = navigationController, padding) }
                 composable(Screens.Products.route) { ProductScreen(navController = navigationController, padding) }
+                composable(Screens.Orders.route) { OrdersScreen(navController = navigationController, padding) }
+                composable(Screens.Company.route) { CompanyScreen(navController = navigationController, padding) }
+
                 composable(Screens.Settings.route) { SettingsScreen(navController = navigationController, padding) }
                 composable(Screens.FAQ.route) { FAQScreen(navController = navigationController, padding) }
                 composable(Screens.About.route) { AboutScreen(navController = navigationController, padding) }
@@ -135,14 +135,8 @@ fun BottomApplicationNavigation(
                 MoreBottomSheet(
                     hideMoreBottomSheet = { appViewModel.updateMoreBottomSheetVisibility(false) },
                     onClick = { navItem ->
-                        appViewModel.updateCurrentNavItem(navItem)
                         appViewModel.updateMoreBottomSheetVisibility(false)
-                        navigationController.navigate(navItem.screen!!) {
-                            popUpTo(Screens.Home.route) {
-                                inclusive = false
-                                saveState = true
-                            }
-                        }
+                        navigateToScreen(navItem)
                     }
                 )
             }

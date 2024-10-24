@@ -20,7 +20,7 @@ import androidx.navigation.NavController
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 @Composable
-fun ExpansesScreen(navController: NavController, paddingValues: PaddingValues) {
+fun CompanyScreen(navController: NavController, paddingValues: PaddingValues) {
     AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -39,7 +39,7 @@ fun ExpansesScreen(navController: NavController, paddingValues: PaddingValues) {
                 ) {
                 }
                 Text(
-                    "Expanses Screen",
+                    "Company Screen",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )

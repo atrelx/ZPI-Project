@@ -1,4 +1,4 @@
-package com.example.bussiness.ui.screens.bottom_screens.selling
+package com.example.bussiness.ui.screens.bottom_screens.orders
 
 import android.R
 import android.annotation.SuppressLint
@@ -76,7 +76,7 @@ import java.util.Locale
 
 @SuppressLint("MutableCollectionMutableState", "UnrememberedMutableState")
 @Composable
-fun SalesAddEditVIew(
+fun OrderAddEditVIew(
     saleProduct: SoldProduct,
     closeAddEditDialog: () -> Unit,
     onComplete: (SoldProduct) -> Unit,

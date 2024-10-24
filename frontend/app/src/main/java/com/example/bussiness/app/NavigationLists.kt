@@ -41,13 +41,13 @@ val bottomNavigationBarItems = listOf(
     ),
     NavigationItem(
         title = "Selling",
-        screen = Screens.Selling.route,
+        screen = Screens.Orders.route,
         selectedIcon = Icons.Filled.ShoppingCart,
         unselectedIcon = Icons.Outlined.ShoppingCart,
     ),
     NavigationItem(
         title = "Company",
-        screen = Screens.Expanses.route,
+        screen = Screens.Company.route,
         selectedIcon = Icons.Filled.Cases,
         unselectedIcon = Icons.Outlined.Cases,
     ),

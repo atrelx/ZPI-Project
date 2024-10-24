@@ -1,4 +1,4 @@
-package com.example.bussiness.ui.screens.bottom_screens.selling
+package com.example.bussiness.ui.screens.bottom_screens.orders
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,19 +25,19 @@ import androidx.navigation.NavController
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 @Composable
-fun SellingScreen(
+fun OrdersScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    salesViewModel: SellingViewModel = viewModel() ) {
+    salesViewModel: OrdersViewModel = viewModel() ) {
     AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val salesUiState by salesViewModel.sellingUiState.collectAsState()
+            val salesUiState by salesViewModel.orderUiState.collectAsState()
 
             if (salesUiState.showAddEditSaleDialog)
-                SalesAddEditVIew(
+                OrderAddEditVIew(
                     saleProduct = salesUiState.currentAddEditSaleProduct,
                     productList = salesUiState.productsList,
                     onComplete = { salesViewModel.updateSoldProduct(it) },
@@ -47,7 +47,7 @@ fun SellingScreen(
                 )
 
             if (!salesUiState.salesListIsLoading) {
-                SalesLazyColumn(
+                OrdersLazyColumn(
                     paddingValues = paddingValues,
                     salesList = salesUiState.salesList,
                     onSoldProductClick = { saleProduct ->

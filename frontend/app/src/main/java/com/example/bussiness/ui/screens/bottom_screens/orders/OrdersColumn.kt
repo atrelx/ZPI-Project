@@ -1,4 +1,4 @@
-package com.example.bussiness.ui.screens.bottom_screens.selling
+package com.example.bussiness.ui.screens.bottom_screens.orders
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -59,7 +59,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SalesLazyColumn(
+fun OrdersLazyColumn(
     paddingValues: PaddingValues,
     salesList: List<SoldProduct>,
     filterBottomSheetShowed: Boolean,

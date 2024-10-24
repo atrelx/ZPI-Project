@@ -1,4 +1,4 @@
-package com.example.bussiness.ui.screens.bottom_screens.selling
+package com.example.bussiness.ui.screens.bottom_screens.orders
 
 import androidx.lifecycle.ViewModel
 import com.example.bussiness.firebase.FirebaseRepository
@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class SellingViewModel : ViewModel() {
-    private val _sellingUiState = MutableStateFlow(SellingUIState())
-    val sellingUiState: StateFlow<SellingUIState> = _sellingUiState.asStateFlow()
+class OrdersViewModel : ViewModel() {
+    private val _orderUiState = MutableStateFlow(OrderUIState())
+    val orderUiState: StateFlow<OrderUIState> = _orderUiState.asStateFlow()
 
     init {
         FirebaseRepository.getSales { salesList ->
@@ -23,13 +23,13 @@ class SellingViewModel : ViewModel() {
     }
 
     fun updateSalesList(salesList: List<SoldProduct>) {
-        _sellingUiState.update { currState ->
+        _orderUiState.update { currState ->
             currState.copy(salesList = salesList, salesListIsLoading = false)
         }
     }
 
     fun updateProductsList(productsList: List<Product>) {
-        _sellingUiState.update { currState ->
+        _orderUiState.update { currState ->
             currState.copy(productsList = productsList)
         }
     }
@@ -45,19 +45,19 @@ class SellingViewModel : ViewModel() {
     }
 
     fun updateDialogShow(dialogShow: Boolean) {
-        _sellingUiState.update { currState ->
+        _orderUiState.update { currState ->
             currState.copy(showAddEditSaleDialog = dialogShow)
         }
     }
 
     fun showFilterBottomSheet(dialogShow: Boolean) {
-        _sellingUiState.update { currState ->
+        _orderUiState.update { currState ->
             currState.copy(showFilterBottomSheet = dialogShow)
         }
     }
 
     fun updateCurrentSaleProduct(currentSoldProductInEdit: SoldProduct) {
-        _sellingUiState.update { currState ->
+        _orderUiState.update { currState ->
             currState.copy(currentAddEditSaleProduct = currentSoldProductInEdit)
         }
     }
