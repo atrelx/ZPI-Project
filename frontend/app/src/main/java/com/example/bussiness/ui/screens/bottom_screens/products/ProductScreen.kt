@@ -1,5 +1,7 @@
 package com.example.bussiness.ui.screens.bottom_screens.products
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,8 +26,11 @@ import androidx.navigation.NavController
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.bussiness.app.NavigationItem
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ProductScreen(
     navController: NavController,
@@ -49,33 +55,33 @@ fun ProductScreen(
                     }
                 )
 
+            ProductsLazyColumn(
+                paddingValues = paddingValues,
+                productList = productsUiState.productsList,
+                onProductClick = { product ->
+                    productsViewModel.updateAddEditViewState(true, product)
+                },
+                onProductLongClick = { product ->
+                    productsViewModel.deleteProductFromList(product.id)
+                })
+
             Box(
                 modifier = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(10.dp)),
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 contentAlignment = Alignment.BottomEnd
             ) {
-
-                ProductsLazyColumn(
-                    paddingValues = paddingValues,
-                    productList = productsUiState.productsList,
-                    onProductClick = { product ->
-                        productsViewModel.updateAddEditViewState(true, product)
-                    },
-                    onProductLongClick = { product ->
-                        productsViewModel.deleteProductFromList(product.id)
-                    }
-                )
-
                 ExtendedFloatingActionButton(
                     onClick = {
                         productsViewModel.updateAddEditViewState(true)
                     },
-                    modifier = Modifier.padding(16.dp),
-                    icon = { Icon(Icons.Filled.Add, "Extended floating action button.") },
-                    text = { Text(text = "New Product") }
+                    modifier = Modifier
+                        .padding(16.dp), // Padding for spacing from screen edges
+                    icon = { Icon(Icons.Filled.Menu, null) },
+                    text = { Text(text = "Menu") }
                 )
             }
+
         }
     }
 }

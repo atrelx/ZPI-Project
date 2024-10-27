@@ -1,5 +1,33 @@
 <resources>
-    <string name="app_name">Bussiness</string>
+    <string name="app_name">AMOZ</string>
     <string name="currency">PLN</string>
+
+    // --------------------- Screens names ---------------------
+    <string name="home_screen">Home</string>
+    <string name="products_screen">Products</string>
+    <string name="orders_screen">Orders</string>
+    <string name="company_screen">Company</string>
+    <string name="more_screen">More</string>
+
+    <string name="settings_screen">Settings</string>
+    <string name="faq_screen">FAQ</string>
+    <string name="about_screen">About App</string>
+    <string name="support_contact_screen">Support and Contact</string>
+
+    <string name="profile_screen">Profile</string>
+
+    <string name="company_address_screen">Address</string>
+    <string name="company_workers_screen">Workers</string>
+    <string name="company_customers_screen">Customers</string>
+
+    // --------------------- Company screen ---------------------
+    <string name="company_name">Company name</string>
+    <string name="company_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Suspendisse varius facilisis metus, ac placerat erat. Mauris viverra gravida sapien non tempus.
+        Sed malesuada erat lectus, sit amet aliquet tortor pretium eu.</string>
+
+    <string name="company_address_example">ul. Paprotna 9, 50–123, Wroclaw</string>
+    <string name="company_workers_description">People that work with you</string>
+    <string name="company_customers_description">Your customer base</string>
 
 </resources>

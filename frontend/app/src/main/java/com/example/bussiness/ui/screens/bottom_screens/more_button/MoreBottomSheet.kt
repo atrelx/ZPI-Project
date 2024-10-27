@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.example.bussiness.app.NavigationItem
 import com.example.bussiness.app.moreBottomSheetItems
@@ -31,7 +32,7 @@ fun MoreBottomSheet(
             moreBottomSheetItems.forEach { item ->
                 BottomSheetNavigationRaw(
                     icon = item.selectedIcon,
-                    text = item.title,
+                    text = stringResource(item.title),
                     onClick = { onClick(item) }
                 )
             }

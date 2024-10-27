@@ -1,5 +1,7 @@
 package com.example.bussiness.ui.screens.bottom_screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,12 +24,16 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.bussiness.app.NavigationItem
+import com.example.bussiness.app.bottomNavigationBarItems
 import com.example.bussiness.ui.screens.Screens
 import com.example.bussiness.ui.screens.bottom_screens.orders.OrdersViewModel
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -46,7 +52,10 @@ fun HomeScreen(
             Column {
                 CardsLazyRow(cardsList = homeCardItemsList)
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
-                MoreOrdersTextButton(navController)
+                MoreOrdersTextButton(
+                    navigateToScreen = {
+                        navController.navigate(bottomNavigationBarItems[2].screen!!)
+                    } )
                 LastOrdersLazyList(salesList = salesUiState.salesList, maxListItemsVisible = 10 )
             }
         }
@@ -54,7 +63,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun MoreOrdersTextButton(navController: NavController) {
+fun MoreOrdersTextButton(navigateToScreen: () -> Unit) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -64,12 +73,7 @@ fun MoreOrdersTextButton(navController: NavController) {
         Text("Last orders: ")
         Text("More",
             modifier = Modifier.clickable {
-                navController.navigate(Screens.Orders.route) {
-                    popUpTo(Screens.Home.route) {
-                        inclusive = false
-                        saveState = true
-                    }
-                }
+                navigateToScreen()
             },
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,

@@ -1,5 +1,7 @@
-package com.example.bussiness.ui.screens.bottom_screens
+package com.example.bussiness.ui.screens.bottom_screens.company
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,11 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun StatisticsScreen(navController: NavController, paddingValues: PaddingValues) {
+fun CompanyAddressScreen(
+    navController: NavHostController,
+    paddingValues: PaddingValues,
+) {
     AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -39,7 +45,7 @@ fun StatisticsScreen(navController: NavController, paddingValues: PaddingValues)
                 ) {
                 }
                 Text(
-                    "Statistics Screen",
+                    "Company Address Screen",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
