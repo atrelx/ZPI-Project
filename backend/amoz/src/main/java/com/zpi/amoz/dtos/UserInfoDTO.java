@@ -1,6 +1,6 @@
-package com.zpi.amoz.dto;
+package com.zpi.amoz.dtos;
 
-public record UserInfo(
+public record UserInfoDTO(
         String sub,
         String name,
         String given_name,

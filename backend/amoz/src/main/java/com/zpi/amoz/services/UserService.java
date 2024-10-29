@@ -1,6 +1,6 @@
 package com.zpi.amoz.services;
 
-import com.zpi.amoz.model.User;
+import com.zpi.amoz.models.User;
 import com.zpi.amoz.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

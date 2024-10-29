@@ -1,5 +1,5 @@
 package com.zpi.amoz.config;
-import com.zpi.amoz.dto.UserInfo;
+import com.zpi.amoz.dtos.UserInfoDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
@@ -16,19 +16,19 @@ public class GoogleOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
-        UserInfo userInfo = userInfoClient.get()
+        UserInfoDTO userInfoDTO = userInfoClient.get()
                 .uri( uriBuilder -> uriBuilder
                         .path("/oauth2/v3/userinfo")
                         .queryParam("access_token", token)
                         .build())
                 .retrieve()
-                .bodyToMono(UserInfo.class)
+                .bodyToMono(UserInfoDTO.class)
                 .block();
 
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("sub", userInfo.sub());
-        attributes.put("name", userInfo.name());
-        attributes.put("email", userInfo.email());
-        return new OAuth2IntrospectionAuthenticatedPrincipal(userInfo.name(), attributes, null);
+        attributes.put("sub", userInfoDTO.sub());
+        attributes.put("name", userInfoDTO.name());
+        attributes.put("email", userInfoDTO.email());
+        return new OAuth2IntrospectionAuthenticatedPrincipal(userInfoDTO.name(), attributes, null);
     }
 }

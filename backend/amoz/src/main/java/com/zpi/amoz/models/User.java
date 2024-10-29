@@ -1,12 +1,9 @@
-package com.zpi.amoz.model;
+package com.zpi.amoz.models;
 
 
 
 import jakarta.persistence.*;
 import jakarta.persistence.Column;
-
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "User")
