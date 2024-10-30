@@ -30,7 +30,6 @@ import androidx.navigation.NavHostController
 import com.example.bussiness.app.NavigationItem
 
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ProductScreen(
     navController: NavController,

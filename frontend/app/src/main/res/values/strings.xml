@@ -26,8 +26,23 @@
         Suspendisse varius facilisis metus, ac placerat erat. Mauris viverra gravida sapien non tempus.
         Sed malesuada erat lectus, sit amet aliquet tortor pretium eu.</string>
 
-    <string name="company_address_example">ul. Paprotna 9, 50–123, Wroclaw</string>
+    <string name="company_number_name">NIP</string>
+    <string name="company_number_additional">REGON</string>
+
+    <string name="company_address_example">ul. Paprotna, 9, Wroclaw, 50–123</string>
     <string name="company_workers_description">People that work with you</string>
     <string name="company_customers_description">Your customer base</string>
+    <string name="company_number_description">0123456789</string>
+    <string name="company_number_additional_description">0123456789101</string>
+
+    // --------------------- Address ---------------------
+    <string name="street">Street</string>
+    <string name="house_number">House name/number</string>
+    <string name="city">Town/city</string>
+    <string name="postal_code">Postal code</string>
+
+    // --------------------- Other ---------------------
+    <string name="done">Done</string>
+
 
 </resources>

@@ -3,6 +3,8 @@ import android.app.Activity
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
@@ -391,7 +393,6 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun AmozApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -399,7 +400,6 @@ fun AmozApplicationTheme(
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
-
   val colorScheme = when {
       dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
           val context = LocalContext.current
@@ -417,8 +417,6 @@ fun AmozApplicationTheme(
           window.statusBarColor = colorScheme.background.toArgb()
           window.navigationBarColor = android.graphics.Color.TRANSPARENT
           window.isNavigationBarContrastEnforced = false
-
-          WindowCompat.setDecorFitsSystemWindows(window, false)
 
           WindowCompat.getInsetsController(window, view).apply {
               isAppearanceLightStatusBars = !darkTheme

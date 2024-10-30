@@ -1,4 +1,4 @@
-package com.example.bussiness.ui.screens.bottom_screens.profile
+package com.example.bussiness.ui.screens.profile
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -22,7 +22,6 @@ import androidx.navigation.NavController
 import com.example.bussiness.app.NavigationItem
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ProfileScreen(
     navigateToScreen: (NavigationItem) -> Unit,
