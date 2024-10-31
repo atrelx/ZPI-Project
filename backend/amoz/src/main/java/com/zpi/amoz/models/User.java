@@ -1,26 +1,23 @@
 package com.zpi.amoz.models;
 
-
-
 import jakarta.persistence.*;
 import jakarta.persistence.Column;
+
+import java.util.List;
 
 @Entity
 @Table(name = "User")
 public class User {
-
     @Id
     @Column(name = "UserId", columnDefinition = "CHAR(21)")
     private String userId;
 
-    @Column(name = "Name", nullable = false, length = 30)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SystemRole systemRole = SystemRole.USER;
 
-    @Column(name = "Surname", nullable = false, length = 30)
-    private String surname;
-
-    @Column(name = "Email", nullable = false, unique = true, length = 30)
-    private String email;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Employee employee;
 
     public String getUserId() {
         return userId;
@@ -30,27 +27,23 @@ public class User {
         this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public SystemRole getSystemRole() {
+        return systemRole;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSystemRole(SystemRole systemRole) {
+        this.systemRole = systemRole;
     }
 
-    public String getSurname() {
-        return surname;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public enum SystemRole {
+        USER, ADMIN
     }
 }

@@ -4,7 +4,7 @@ CREATE TABLE Company
     CompanyNumber         VARCHAR(50)  NOT NULL UNIQUE,
     CountryOfRegistration VARCHAR(100) NOT NULL,
     Name                  VARCHAR(100) NOT NULL,
-    AddressID             CHAR(36)     NOT NULL,
+    AddressID             CHAR(36)     NOT NULL UNIQUE,
     Regon                 VARCHAR(14) UNIQUE
 );
 
@@ -70,7 +70,7 @@ CREATE TABLE Customer
 CREATE TABLE Employee
 (
     EmployeeID      CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    UserID          CHAR(36) NOT NULL,
+    UserID          CHAR(21) NOT NULL,
     ContactPersonID CHAR(36) NOT NULL,
     PersonID        CHAR(36) NOT NULL,
     RoleInCompany   ENUM ('OWNER', 'REGULAR'),
@@ -86,7 +86,7 @@ CREATE TABLE Stock
 
 CREATE TABLE `User`
 (
-    UserID     CHAR(36)                              NOT NULL PRIMARY KEY,
+    UserID     CHAR(21)                              NOT NULL PRIMARY KEY,
     SystemRole ENUM ('USER', 'ADMIN') DEFAULT 'USER' NOT NULL
 );
 
@@ -111,7 +111,6 @@ CREATE TABLE ProductOrderItem
 CREATE TABLE Invoice
 (
     InvoiceID       CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductOrderID  CHAR(36) NOT NULL,
     InvoiceNumber   INT      NOT NULL UNIQUE AUTO_INCREMENT,
     AmountOnInvoice DOUBLE   NOT NULL
 );
@@ -141,6 +140,7 @@ CREATE TABLE ProductOrder
     Status         ENUM ('NEW', 'ORDERED', 'SHIPPED', 'DELIVERED', 'CANCELLED') DEFAULT 'NEW' NOT NULL,
     CustomerID     CHAR(36),
     AddressID      CHAR(36),
+    InvoiceID	   CHAR(36),
     TrackingNumber VARCHAR(10),
     TimeOfSending  TIME(3),
     TimeOfCreation DATETIME                                                     DEFAULT CURRENT_TIMESTAMP
@@ -218,8 +218,8 @@ ALTER TABLE Employee
 ALTER TABLE Employee
     ADD CONSTRAINT FK_Employee_UserID FOREIGN KEY (UserID) REFERENCES `User` (UserID);
 
-ALTER TABLE Invoice
-    ADD CONSTRAINT FK_Invoice_ProductOrderID FOREIGN KEY (ProductOrderID) REFERENCES ProductOrder (ProductOrderID);
+ALTER TABLE ProductOrder
+    ADD CONSTRAINT FK_ProductOrder_InvoiceID FOREIGN KEY (InvoiceID) REFERENCES Invoice (InvoiceID);
 
 ALTER TABLE Product
     ADD CONSTRAINT FK_Product_CategoryID FOREIGN KEY (CategoryID) REFERENCES Category (CategoryID);
@@ -261,5 +261,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
