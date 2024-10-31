@@ -32,4 +32,10 @@ class CompanyScreenViewModel: ViewModel() {
             currState.copy(companyNumber = nip, companyRegon = regon)
         }
     }
+
+    fun updateAddWorkerBottomShitVisibility(isVisible: Boolean) {
+        _companyUiState.update { currState ->
+            currState.copy(addWorkerBottomSheetExpanded = isVisible)
+        }
+    }
 }

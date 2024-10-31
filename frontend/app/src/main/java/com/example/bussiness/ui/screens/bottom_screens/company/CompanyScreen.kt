@@ -2,6 +2,7 @@ package com.example.bussiness.ui.screens.bottom_screens.company
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material3.Icon
@@ -106,37 +109,45 @@ fun CompanyScreen(
                     )
                     // ------------------- Company address, workers, customers -------------------
                     Spacer(modifier = Modifier.height(5.dp))
-                    companyInfoScreenItems.forEach { companyInfoItem ->
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .weight(weight = 1f, fill = false),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        companyInfoScreenItems.forEach { companyInfoItem ->
+                            CompanyInfoItem(
+                                leadingIcon = companyInfoItem.selectedIcon,
+                                title = stringResource(companyInfoItem.title),
+                                itemDescription = itemsDescriptions[companyInfoScreenItems.indexOf(
+                                    companyInfoItem
+                                )],
+                                trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                                onClick = {
+                                    companyInfoItem.screen?.let { navController.navigate(it) }
+                                }
+                            )
+                        }
+                        // ------------------- Company Nip, Regon -------------------
                         CompanyInfoItem(
-                            leadingIcon = companyInfoItem.selectedIcon,
-                            title = stringResource(companyInfoItem.title),
-                            itemDescription = itemsDescriptions[companyInfoScreenItems.indexOf(companyInfoItem)],
-                            trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                            onClick = {
-                                companyInfoItem.screen?.let { navController.navigate(it) }
+                            leadingIcon = null,
+                            title = stringResource(R.string.company_number_name),
+                            itemDescription = companyUiState.companyNumber,
+                            trailingIcon = null,
+                            onClick = { clipboardManager.setText(
+                                AnnotatedString(companyUiState.companyNumber))
+                            }
+                        )
+                        CompanyInfoItem(
+                            leadingIcon = null,
+                            title = stringResource(R.string.company_number_additional),
+                            itemDescription = companyUiState.companyRegon,
+                            trailingIcon = null,
+                            onClick = { clipboardManager.setText(
+                                AnnotatedString(companyUiState.companyRegon))
                             }
                         )
                     }
-                    // ------------------- Company Nip, Regon -------------------
-
-                    CompanyInfoItem(
-                        leadingIcon = null,
-                        title = stringResource(R.string.company_number_name),
-                        itemDescription = companyUiState.companyNumber,
-                        trailingIcon = null,
-                        onClick = { clipboardManager.setText(
-                            AnnotatedString(companyUiState.companyNumber))
-                        }
-                    )
-                    CompanyInfoItem(
-                        leadingIcon = null,
-                        title = stringResource(R.string.company_number_additional),
-                        itemDescription = companyUiState.companyRegon,
-                        trailingIcon = null,
-                        onClick = { clipboardManager.setText(
-                            AnnotatedString(companyUiState.companyRegon))
-                        }
-                    )
                 }
             }
         }

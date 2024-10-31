@@ -35,6 +35,14 @@
     <string name="company_number_description">0123456789</string>
     <string name="company_number_additional_description">0123456789101</string>
 
+    <string name="company_add_worker_button">Add worker</string>
+    <string name="company_add_worker_email_textfield">Worker\'s email</string>
+    <string name="company_add_worker_email_send_inv">Send invintation</string>
+    <string name="company_add_worker_invite_title">Invite new worker</string>
+    <string name="company_add_worker_invite_successful">Invitation successfully sent</string>
+
+
+
     // --------------------- Address ---------------------
     <string name="street">Street</string>
     <string name="house_number">House name/number</string>

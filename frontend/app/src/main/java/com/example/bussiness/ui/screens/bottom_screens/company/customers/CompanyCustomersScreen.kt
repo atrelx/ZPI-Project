@@ -1,4 +1,4 @@
-package com.example.bussiness.ui.screens.bottom_screens.company
+package com.example.bussiness.ui.screens.bottom_screens.company.customers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 @Composable
-fun CompanyWorkersScreen(
+fun CompanyCustomersScreen(
     navController: NavHostController,
     paddingValues: PaddingValues,
 ) {
@@ -44,7 +44,7 @@ fun CompanyWorkersScreen(
                 ) {
                 }
                 Text(
-                    "Company Workers Screen",
+                    "Company Customers Screen",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
