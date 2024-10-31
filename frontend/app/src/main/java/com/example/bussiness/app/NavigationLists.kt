@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Sell
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Work
+import androidx.compose.material.icons.outlined.WorkOutline
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.bussiness.R
 import com.example.bussiness.ui.screens.Screens
@@ -57,8 +58,8 @@ val bottomNavigationBarItems = listOf(
     NavigationItem(
         title = R.string.company_screen,
         screen = Screens.Company.route,
-        selectedIcon = Icons.Outlined.Work,
-        unselectedIcon = Icons.Filled.Work,
+        selectedIcon = Icons.Filled.Work,
+        unselectedIcon = Icons.Outlined.WorkOutline,
     ),
     NavigationItem(
         title = R.string.more_screen,

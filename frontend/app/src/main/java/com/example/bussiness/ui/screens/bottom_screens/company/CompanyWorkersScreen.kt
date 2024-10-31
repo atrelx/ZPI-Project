@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun CompanyWorkersScreen(
     navController: NavHostController,

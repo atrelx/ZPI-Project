@@ -1,10 +1,6 @@
 package com.example.bussiness.ui.screens.bottom_screens.company
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,54 +15,78 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
-import androidx.compose.material.icons.outlined.ArrowForward
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.example.bussiness.R
-import com.example.bussiness.app.NavigationItem
 import com.example.bussiness.app.companyInfoScreenItems
 import com.example.bussiness.ui.theme.AmozApplicationTheme
-import java.text.SimpleDateFormat
-import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun CompanyScreen(
     navController: NavController,
-    paddingValues: PaddingValues) {
+    paddingValues: PaddingValues,
+    companyViewModel: CompanyScreenViewModel) {
     AmozApplicationTheme {
+        val companyUiState by companyViewModel.companyUiState.collectAsState()
+
+        val clipboardManager = LocalClipboardManager.current
+
+        val workersDescription = stringResource(R.string.company_workers_description)
+        val customersDescription = stringResource(R.string.company_customers_description)
+
+        companyViewModel.updateCompanyAddress(
+            stringResource(R.string.company_address_example))
+
+        companyViewModel.updateCompanyNameDescription(
+            stringResource(id = R.string.company_name),
+            stringResource(id = R.string.company_description))
+
+        companyViewModel.updateCompanyNipRegon(
+            stringResource(R.string.company_number_description),
+            stringResource(R.string.company_number_additional_description))
+
+        val itemsDescriptions = remember {
+            listOf(
+                companyUiState.companyAddress,
+                workersDescription,
+                customersDescription,
+            )
+        }
+
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
+                // --------------------- Company banner, logo ---------------------
                 CompanyBannerAndLogo(
-                    banner = R.drawable.pizzeria_banner,
-                    logo = R.drawable.pizzeria
+                    banner = companyUiState.companyBanner,
+                    logo = companyUiState.companyLogo
                 )
                 Column(
                     modifier = Modifier
@@ -77,31 +97,46 @@ fun CompanyScreen(
 
                     // --------------------- Company name, description ---------------------
                     Text(
-                        text = stringResource(id = R.string.company_name),
+                        text = companyUiState.companyName,
                         style = MaterialTheme.typography.headlineMedium
                     )
                     Text(
-                        text = stringResource(id = R.string.company_description),
+                        text = companyUiState.companyDescription,
                         style = MaterialTheme.typography.bodyMedium
                     )
                     // ------------------- Company address, workers, customers -------------------
-                    
-                    val itemsDescriptions = listOf(
-                        stringResource(R.string.company_address_example),
-                        stringResource(R.string.company_address_example),
-                        stringResource(R.string.company_address_example),
-                    )
                     Spacer(modifier = Modifier.height(5.dp))
-                    companyInfoScreenItems.forEach() { companyInfoItem ->
-                        CompanyInfoItems(
-                            icon = companyInfoItem.selectedIcon,
+                    companyInfoScreenItems.forEach { companyInfoItem ->
+                        CompanyInfoItem(
+                            leadingIcon = companyInfoItem.selectedIcon,
                             title = stringResource(companyInfoItem.title),
                             itemDescription = itemsDescriptions[companyInfoScreenItems.indexOf(companyInfoItem)],
-                            navigateToScreen = {
+                            trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                            onClick = {
                                 companyInfoItem.screen?.let { navController.navigate(it) }
                             }
                         )
                     }
+                    // ------------------- Company Nip, Regon -------------------
+
+                    CompanyInfoItem(
+                        leadingIcon = null,
+                        title = stringResource(R.string.company_number_name),
+                        itemDescription = companyUiState.companyNumber,
+                        trailingIcon = null,
+                        onClick = { clipboardManager.setText(
+                            AnnotatedString(companyUiState.companyNumber))
+                        }
+                    )
+                    CompanyInfoItem(
+                        leadingIcon = null,
+                        title = stringResource(R.string.company_number_additional),
+                        itemDescription = companyUiState.companyRegon,
+                        trailingIcon = null,
+                        onClick = { clipboardManager.setText(
+                            AnnotatedString(companyUiState.companyRegon))
+                        }
+                    )
                 }
             }
         }
@@ -138,21 +173,28 @@ fun CompanyBannerAndLogo(banner: Int, logo: Int) {
 }
 
 @Composable
-fun CompanyInfoItems(
-    icon: ImageVector,
+fun CompanyInfoItem(
+    leadingIcon: ImageVector?,
     title: String,
     itemDescription: String,
-    navigateToScreen: () -> Unit
+    trailingIcon: ImageVector?,
+    onClick: (() -> Unit)?
 ) {
     ListItem(
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
-            .clickable { navigateToScreen() },
+            .clickable {
+                if (onClick != null) {
+                    onClick()
+                }
+            },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
         leadingContent = {
-            Icon(imageVector = icon, contentDescription = null)
+            if (leadingIcon != null) {
+                Icon(imageVector = leadingIcon, contentDescription = null)
+            }
         },
         headlineContent = {
             Text(text = title)
@@ -161,7 +203,12 @@ fun CompanyInfoItems(
             Text(text = itemDescription)
         },
         trailingContent = {
-            Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null)
+            if (trailingIcon != null) {
+                Icon(
+                    imageVector = trailingIcon,
+                    contentDescription = null
+                )
+            }
         },
     )
 }

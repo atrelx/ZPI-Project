@@ -33,8 +33,6 @@ import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 
 
-@RequiresApi(Build.VERSION_CODES.Q)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
