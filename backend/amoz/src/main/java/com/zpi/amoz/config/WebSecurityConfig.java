@@ -12,11 +12,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 //import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 //import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,7 +26,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-//    private final WebClient userInfoClient;
+    private final WebClient userInfoClient;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources",
@@ -66,22 +68,22 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public WebMvcConfigurer corsConfig() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedMethods("GET", "POST", "OPTIONS", "PATCH", "DELETE")
-                        .allowedOrigins("http://localhost:3000");
-            }
-        };
-    }
-
 //    @Bean
-//    public OpaqueTokenIntrospector introspector() {
-//        return new GoogleOpaqueTokenIntrospector(userInfoClient);
+//    public WebMvcConfigurer corsConfig() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**")
+//                        .allowedMethods("GET", "POST", "OPTIONS", "PATCH", "DELETE")
+//                        .allowedOrigins("http://localhost:3000");
+//            }
+//        };
 //    }
+
+    @Bean
+    public OpaqueTokenIntrospector introspector() {
+        return new GoogleOpaqueTokenIntrospector(userInfoClient);
+    }
 
     @Bean
     public SessionRegistry sessionRegistry() {

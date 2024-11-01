@@ -1,31 +1,35 @@
 package com.zpi.amoz.controllers;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.zpi.amoz.models.User;
-import com.zpi.amoz.requests.VerifyTokenRequest;
-import com.zpi.amoz.responses.MessageResponse;
-import com.zpi.amoz.services.UserService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.zpi.amoz.responses.AuthTokenResponse;
+import com.zpi.amoz.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.*;
+import java.net.URISyntaxException;
 
 @RestController
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     @Value("${spring.security.oauth2.resource-server.opaque-token.client-id}")
     private String clientId;
+
+    @Value("${spring.security.oauth2.resource-server.opaque-token.client-secret}")
+    private String clientSecret;
 
     @Autowired
     private OpaqueTokenIntrospector introspector;
@@ -33,47 +37,66 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/auth/verify-token")
-    public ResponseEntity<MessageResponse> verifyToken(@RequestBody VerifyTokenRequest request) {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                .setAudience(Collections.singletonList(clientId))
-                .build();
-
-        GoogleIdToken idToken;
+    @GetMapping("/token")
+    public ResponseEntity<AuthTokenResponse> getTokens(@RequestParam("code") String code, HttpServletRequest request) throws URISyntaxException {
+        GoogleTokenResponse tokenResponse;
+        String userId;
         try {
-            idToken = verifier.verify(request.tokenId());
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
+            tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                    new NetHttpTransport(), new GsonFactory(),
+                    clientId,
+                    clientSecret,
+                    code,
+                    ""
+            ).execute();
 
-                String userId = payload.getSubject();
-//                String email = payload.getEmail();
-//                String fullName = (String) payload.get("name");
-//
-//                Optional<User> user = userService.findById(userId);
-//
-//                if (user.isPresent()) {
-//                    return ResponseEntity.ok(new MessageResponse("Logged in successfully!" + user.get().get()));
-//                } else {
-//                    String[] nameParts = fullName.split(" ");
-//                    String firstName = nameParts[0];
-//                    String lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
-//
-//                    User newUser = new User();
-//                    newUser.setUserId(userId);
-//                    newUser.setName(firstName);
-//                    newUser.setSurname(lastName);
-//                    newUser.setEmail(email);
-//
-//                    userService.saveUser(newUser);
-//
-//                    return ResponseEntity.ok(new MessageResponse("New user created " + newUser.getName()));
-//                }
-                return ResponseEntity.ok(new MessageResponse("User logged in " + userId));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Invalid ID token"));
-            }
-        } catch (GeneralSecurityException | IOException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Error during token validation: " + e.getMessage()));
+//            OAuth2AuthenticatedPrincipal principal = introspector.introspect(tokenResponse.getAccessToken());
+//            userId = principal.getAttribute("sub");
+
+
+//            if (user.isPresent()) {
+//                return ResponseEntity.ok(token);
+//            }
+//            else {
+//                String fullName = principal.getAttribute("name");
+//                String[] words = fullName.split("\\s+");
+//                String firstName = words[0];
+//                String lastName = words[words.length - 1];
+//                String email = principal.getAttribute("email");
+//            }
+
+
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        AuthTokenResponse response = new AuthTokenResponse(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthTokenResponse> refreshAccessToken(@RequestParam String refreshToken) {
+        try {
+            GoogleTokenResponse tokenResponse = new GoogleRefreshTokenRequest(
+                    new NetHttpTransport(),
+                    new GsonFactory(),
+                    refreshToken,
+                    clientId,
+                    clientSecret
+            ).execute();
+
+            AuthTokenResponse response = new AuthTokenResponse(
+                    tokenResponse.getAccessToken(),
+                    refreshToken
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+
 }

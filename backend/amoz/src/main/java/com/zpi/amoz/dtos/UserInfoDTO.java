@@ -9,4 +9,5 @@ public record UserInfoDTO(
         String email,
         boolean email_verified,
         String locale
-) { }
+) {
+}

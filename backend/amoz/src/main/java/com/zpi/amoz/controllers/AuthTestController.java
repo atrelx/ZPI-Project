@@ -7,17 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
-@RequestMapping("/test")
-public class TestController {
-
+@RequestMapping("/auth-test")
+public class AuthTestController {
     @GetMapping("/me")
-    public ResponseEntity<Void> fetchMyPersonalData() {
-        return ResponseEntity.status(214).build();
+    public ResponseEntity<UserPrincipal> fetchMyPersonalData(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+
+        return ResponseEntity.ok(userPrincipal);
     }
 }
