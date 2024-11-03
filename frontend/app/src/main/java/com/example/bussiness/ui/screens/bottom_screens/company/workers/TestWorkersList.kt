@@ -1,16 +1,8 @@
 package com.example.bussiness.ui.screens.bottom_screens.company.workers
 
 import com.example.bussiness.R
+import com.example.bussiness.data.Person
 import java.time.LocalDate
-
-data class Person(
-    val firstName: String = "",
-    val lastName: String = "",
-    val personPhoto: Int? = null,
-    val email: String = "",
-    val phoneNumber: String? = null,
-    val workSince: LocalDate = LocalDate.now(),
-)
 
 val testWorkers = listOf(
     Person(

@@ -1,5 +1,7 @@
 package com.example.bussiness.ui.screens.bottom_screens.company.workers
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -44,9 +46,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.bussiness.data.Person
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -60,18 +64,38 @@ fun WorkersLazyColumn(workers: List<Person>, callSnackBar: (String, ImageVector?
         items(workers) { worker ->
             SwipeableItemWithActions(
                 actions = {
+                    val context = LocalContext.current
+
+                    // -------------------- Delete worker from database --------------------
                     IconButton(
+                        /*TODO*/
                         onClick = { callSnackBar("Deleted", null) }) {
                         Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
                     }
+
+                    // -------------------- Worker's email --------------------
                     IconButton(
-                        onClick = { callSnackBar("Wrote", null) }) {
-                        Icon(imageVector = Icons.Outlined.Mail, contentDescription = null)
+                        onClick = {
+                            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:${worker.email}")
+                            }
+                            context.startActivity(emailIntent)
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Mail, contentDescription = "Email")
                     }
-                    worker.phoneNumber?.let {
+
+                    // -------------------- Worker's phone --------------------
+                    worker.phoneNumber?.let { phoneNumber ->
                         IconButton(
-                            onClick = { callSnackBar("Called", null) }) {
-                            Icon(imageVector = Icons.Outlined.Phone, contentDescription = null)
+                            onClick = {
+                                val callIntent = Intent(Intent.ACTION_DIAL).apply {
+                                    data = Uri.parse("tel:$phoneNumber")
+                                }
+                                context.startActivity(callIntent)
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Phone, contentDescription = "Call")
                         }
                     }
                 }

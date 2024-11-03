@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">AMOZ</string>
     <string name="currency">PLN</string>
+    <string name="email_pattern">[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}</string>
+    <string name="phone_pattern">^[+0-9]{9,15}$</string>
 
     // --------------------- Screens names ---------------------
     <string name="home_screen">Home</string>
@@ -20,8 +22,16 @@
     <string name="company_workers_screen">Workers</string>
     <string name="company_customers_screen">Customers</string>
 
+    // --------------------- Profile ---------------------
+    <string name="profile_first_name">First name</string>
+    <string name="profile_last_name">Last name</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_phone_number">Phone number</string>
+
     // --------------------- Company screen ---------------------
     <string name="company_name">Company name</string>
+    <string name="company_address">Company address</string>
+    <string name="company_number">Company number</string>
     <string name="company_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         Suspendisse varius facilisis metus, ac placerat erat. Mauris viverra gravida sapien non tempus.
         Sed malesuada erat lectus, sit amet aliquet tortor pretium eu.</string>
@@ -41,6 +51,10 @@
     <string name="company_add_worker_invite_title">Invite new worker</string>
     <string name="company_add_worker_invite_successful">Invitation successfully sent</string>
 
+    <string name="company_customers_b2b">B2B Customers</string>
+    <string name="company_customers_b2c">B2C Customers</string>
+    <string name="company_customers_add_customer">Add new customer!</string>
+    <string name="company_add_customer_successful">Customer successfully added</string>
 
 
     // --------------------- Address ---------------------

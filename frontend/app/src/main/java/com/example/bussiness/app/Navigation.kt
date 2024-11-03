@@ -203,7 +203,10 @@ fun BottomApplicationNavigation(appViewModel: AppViewModel = viewModel()) {
             ) }
             composable(Screens.Customers.route) { CompanyCustomersScreen(
                 navController = navigationController,
-                padding) }
+                companyViewModel = companyViewModel,
+                paddingValues = padding,
+                callSnackBar = { text, icon -> callSnackBar(text, icon) },
+            ) }
 
             composable(Screens.Profile.route) { ProfileScreen(navigateToScreen = { navigateToScreen(it) }, padding) }
         }
