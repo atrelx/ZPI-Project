@@ -1,5 +1,6 @@
 package com.example.bussiness.data
 
+import androidx.compose.ui.graphics.vector.ImageVector
 import java.time.LocalDate
 
 data class Person(
@@ -18,4 +19,11 @@ data class B2BCustomer(
     val companyIdentifier: String = "",
     val phoneNumber: String? = null,
     val registeredSince: LocalDate = LocalDate.now(),
+)
+
+data class NavItem(
+    val title: Int,
+    val screenRoute: String? = null,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
 )

@@ -2,7 +2,6 @@ package com.example.bussiness.ui.screens.bottom_screens.company
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,22 +33,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.bussiness.R
-import com.example.bussiness.app.companyInfoScreenItems
+import com.example.bussiness.app.companyInfoScreenItemsMap
+import com.example.bussiness.data.NavItem
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 @Composable
 fun CompanyScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    companyViewModel: CompanyScreenViewModel) {
+    companyViewModel: CompanyScreenViewModel,
+    companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList()
+) {
     AmozApplicationTheme {
         val companyUiState by companyViewModel.companyUiState.collectAsState()
 
@@ -119,12 +119,11 @@ fun CompanyScreen(
                             CompanyInfoItem(
                                 leadingIcon = companyInfoItem.selectedIcon,
                                 title = stringResource(companyInfoItem.title),
-                                itemDescription = itemsDescriptions[companyInfoScreenItems.indexOf(
-                                    companyInfoItem
-                                )],
+                                itemDescription =
+                                itemsDescriptions[companyInfoScreenItems.indexOf(companyInfoItem)],
                                 trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
                                 onClick = {
-                                    companyInfoItem.screen?.let { navController.navigate(it) }
+                                    companyInfoItem.screenRoute?.let { navController.navigate(it) }
                                 }
                             )
                         }

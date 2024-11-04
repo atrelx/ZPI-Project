@@ -1,7 +1,5 @@
 package com.example.bussiness.ui.screens.profile
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.bussiness.app.NavigationItem
+import androidx.navigation.NavHostController
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
 @Composable
 fun ProfileScreen(
-    navigateToScreen: (NavigationItem) -> Unit,
+    navController: NavHostController,
     paddingValues: PaddingValues)
     {
         AmozApplicationTheme {

@@ -13,34 +13,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
-import com.example.bussiness.app.NavigationItem
-import com.example.bussiness.app.moreBottomSheetItems
+import com.example.bussiness.data.NavItem
+import com.example.bussiness.app.moreBottomSheetItemsMap
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreBottomSheet(
     hideMoreBottomSheet: () -> Unit,
-    onClick: (NavigationItem) -> Unit
+    navigateToScreen: (NavItem) -> Unit,
+    moreBottomSheetNavItems: List<NavItem> = moreBottomSheetItemsMap.values.toList()
 ) {
     ModalBottomSheet(
         onDismissRequest = { hideMoreBottomSheet() }
     )
     {
         Column {
-            moreBottomSheetItems.forEach { item ->
-                BottomSheetNavigationRaw(
+            moreBottomSheetNavItems.forEach { item ->
+                MoreBottomSheetNavigationRaw(
                     icon = item.selectedIcon,
                     text = stringResource(item.title),
-                    onClick = { onClick(item) }
+                    onClick = {
+                        hideMoreBottomSheet()
+                        navigateToScreen(item)
+                    }
                 )
             }
         }
     }
 }
 @Composable
-fun BottomSheetNavigationRaw(
+fun MoreBottomSheetNavigationRaw(
     icon: ImageVector,
     text: String,
     onClick: () -> Unit
