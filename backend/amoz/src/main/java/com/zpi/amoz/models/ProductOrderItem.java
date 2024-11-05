@@ -1,12 +1,18 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 public class ProductOrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID productOrderItemId;
 
     @ManyToOne
@@ -17,8 +23,8 @@ public class ProductOrderItem {
     @JoinColumn(name = "productOrderId", nullable = false)
     private ProductOrder productOrder;
 
-    @Column(nullable = false)
-    private double unitPrice;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal unitPrice;
 
     @Column(nullable = false)
     private int amount;
@@ -50,11 +56,11 @@ public class ProductOrderItem {
         this.productOrder = productOrder;
     }
 
-    public double getUnitPrice() {
+    public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(double unitPrice) {
+    public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
 

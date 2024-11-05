@@ -31,8 +31,13 @@ public class StockService {
         return stockRepository.save(stock);
     }
 
-    public void deleteById(UUID id) {
-        stockRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (stockRepository.existsById(id)) {
+            stockRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

@@ -1,32 +1,37 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
+
 
 @Entity
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID addressId;
 
-    @Column(length = 255)
+    @Column(nullable = false, length = 255)
     private String city;
 
-    @Column(length = 255)
+    @Column(nullable = false, length = 255)
     private String street;
 
-    @Column(length = 10)
+    @Column(nullable = false, length = 10)
     private String streetNumber;
 
-    @Column(length = 10)
+    @Column(nullable = false, length = 10)
     private String apartmentNumber;
 
-    @Column(length = 10)
+    @Column(nullable = false, length = 10)
     private String postalCode;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String additionalInformation;
 
     @OneToMany(mappedBy = "defaultDeliveryAddress")
@@ -88,3 +93,4 @@ public class Address {
         this.additionalInformation = additionalInformation;
     }
 }
+

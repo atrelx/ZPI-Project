@@ -31,8 +31,13 @@ public class WeightService {
         return weightRepository.save(weight);
     }
 
-    public void deleteById(UUID id) {
-        weightRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (weightRepository.existsById(id)) {
+            weightRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

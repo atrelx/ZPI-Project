@@ -1,5 +1,6 @@
 package com.zpi.amoz.models;
 
+import com.zpi.amoz.enums.SystemRole;
 import jakarta.persistence.*;
 import jakarta.persistence.Column;
 
@@ -16,7 +17,7 @@ public class User {
     @Column(nullable = false)
     private SystemRole systemRole = SystemRole.USER;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Employee employee;
 
     public String getUserId() {
@@ -41,9 +42,5 @@ public class User {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
-    }
-
-    public enum SystemRole {
-        USER, ADMIN
     }
 }

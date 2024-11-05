@@ -31,7 +31,12 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    public void deleteById(UUID id) {
-        customerRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -31,8 +31,13 @@ public class VariantAttributeService {
         return variantAttributeRepository.save(variantAttribute);
     }
 
-    public void deleteById(UUID id) {
-        variantAttributeRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (variantAttributeRepository.existsById(id)) {
+            variantAttributeRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

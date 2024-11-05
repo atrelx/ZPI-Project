@@ -1,6 +1,10 @@
 package com.zpi.amoz.models;
 
+import com.zpi.amoz.enums.RoleInCompany;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.UUID;
 import java.time.LocalDate;
 
@@ -8,14 +12,16 @@ import java.time.LocalDate;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID employeeId;
 
     @OneToOne
-    @JoinColumn(name = "userID", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @OneToOne
-    @JoinColumn(name = "contactPersonID", nullable = false)
+    @JoinColumn(name = "contactPersonId", nullable = false)
     private ContactPerson contactPerson;
 
     @ManyToOne
@@ -28,7 +34,7 @@ public class Employee {
     private LocalDate employmentDate;
 
     @OneToOne
-    @JoinColumn(name = "personID", nullable = false, unique = true)
+    @JoinColumn(name = "personId", nullable = false, unique = true)
     private Person person;
 
     public UUID getEmployeeId() {
@@ -85,9 +91,5 @@ public class Employee {
 
     public void setPerson(Person person) {
         this.person = person;
-    }
-
-    public enum RoleInCompany {
-        OWNER, REGULAR
     }
 }

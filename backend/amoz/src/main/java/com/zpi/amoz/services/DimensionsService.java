@@ -31,7 +31,12 @@ public class DimensionsService {
         return dimensionsRepository.save(dimensions);
     }
 
-    public void deleteById(UUID id) {
-        dimensionsRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (dimensionsRepository.existsById(id)) {
+            dimensionsRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

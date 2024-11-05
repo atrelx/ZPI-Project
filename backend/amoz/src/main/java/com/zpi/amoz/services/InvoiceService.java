@@ -31,8 +31,13 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
 
-    public void deleteById(UUID id) {
-        invoiceRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (invoiceRepository.existsById(id)) {
+            invoiceRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

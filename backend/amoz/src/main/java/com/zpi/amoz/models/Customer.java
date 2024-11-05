@@ -1,6 +1,8 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,10 +11,12 @@ import java.util.UUID;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID customerId;
 
     @OneToOne
-    @JoinColumn(name = "contactPersonID", nullable = false)
+    @JoinColumn(name = "contactPersonId", nullable = false)
     private ContactPerson contactPerson;
 
     @Column(nullable = false, length = 255)

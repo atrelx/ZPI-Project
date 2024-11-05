@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -31,7 +32,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteById(String id) {
-        userRepository.deleteById(id);
+    public boolean deleteById(String id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -31,8 +31,13 @@ public class ProductOrderService {
         return productOrderRepository.save(productOrder);
     }
 
-    public void deleteById(UUID id) {
-        productOrderRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (productOrderRepository.existsById(id)) {
+            productOrderRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

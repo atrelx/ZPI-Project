@@ -31,7 +31,12 @@ public class PersonService {
         return personRepository.save(person);
     }
 
-    public void deleteById(UUID id) {
-        personRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (personRepository.existsById(id)) {
+            personRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

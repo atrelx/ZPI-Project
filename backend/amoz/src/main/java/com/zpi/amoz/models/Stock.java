@@ -1,6 +1,8 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,10 +11,15 @@ import java.util.UUID;
 public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID stockId;
 
     @Column(nullable = false)
-    private int amountAvailable;
+    private Integer amountAvailable;
+
+    @Column(nullable = false)
+    private Integer alarmingAmount;
 
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductVariant> productVariants;
@@ -25,12 +32,36 @@ public class Stock {
         this.stockId = stockId;
     }
 
-    public int getAmountAvailable() {
+    public Integer getAmountAvailable() {
         return amountAvailable;
     }
 
-    public void setAmountAvailable(int amountAvailable) {
+    public void setAmountAvailable(Integer amountAvailable) {
         this.amountAvailable = amountAvailable;
+    }
+
+    public void increaseStock(int amount) {
+        if (amount > 0) {
+            this.amountAvailable += amount;
+        }
+    }
+
+    public void decreaseStock(int amount) {
+        if (amount > 0 && this.amountAvailable >= amount) {
+            this.amountAvailable -= amount;
+        }
+    }
+
+    public Integer getAlarmingAmount() {
+        return alarmingAmount;
+    }
+
+    public void setAlarmingAmount(Integer alarmingAmount) {
+        this.alarmingAmount = alarmingAmount;
+    }
+
+    public boolean isAlarmTriggered() {
+        return amountAvailable <= alarmingAmount;
     }
 
     public List<ProductVariant> getProductVariants() {
@@ -41,4 +72,3 @@ public class Stock {
         this.productVariants = productVariants;
     }
 }
-

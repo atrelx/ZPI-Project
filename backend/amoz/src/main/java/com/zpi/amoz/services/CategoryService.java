@@ -31,7 +31,12 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public void deleteById(UUID id) {
-        categoryRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (categoryRepository.existsById(id)) {
+            categoryRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

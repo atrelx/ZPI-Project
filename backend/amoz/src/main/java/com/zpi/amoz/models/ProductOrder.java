@@ -1,6 +1,10 @@
 package com.zpi.amoz.models;
 
+import com.zpi.amoz.enums.Status;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,6 +14,8 @@ import java.util.UUID;
 public class ProductOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID productOrderId;
 
     @Enumerated(EnumType.STRING)
@@ -31,7 +37,7 @@ public class ProductOrder {
     @Column(length = 10)
     private String trackingNumber;
 
-    private LocalTime timeOfSending;
+    private LocalDateTime timeOfSending;
 
     @Column(nullable = false)
     private LocalDateTime timeOfCreation = LocalDateTime.now();
@@ -79,11 +85,11 @@ public class ProductOrder {
         this.trackingNumber = trackingNumber;
     }
 
-    public LocalTime getTimeOfSending() {
+    public LocalDateTime getTimeOfSending() {
         return timeOfSending;
     }
 
-    public void setTimeOfSending(LocalTime timeOfSending) {
+    public void setTimeOfSending(LocalDateTime timeOfSending) {
         this.timeOfSending = timeOfSending;
     }
 
@@ -109,10 +115,6 @@ public class ProductOrder {
 
     public void setOrderItems(List<ProductOrderItem> orderItems) {
         this.orderItems = orderItems;
-    }
-
-    public enum Status {
-        NEW, ORDERED, SHIPPED, DELIVERED, CANCELLED
     }
 }
 

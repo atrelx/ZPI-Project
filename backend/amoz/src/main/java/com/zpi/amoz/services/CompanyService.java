@@ -1,7 +1,11 @@
 package com.zpi.amoz.services;
 
+import com.zpi.amoz.dtos.CompanyDTO;
+import com.zpi.amoz.models.Address;
 import com.zpi.amoz.models.Company;
+import com.zpi.amoz.repository.AddressRepository;
 import com.zpi.amoz.repository.CompanyRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +16,9 @@ import java.util.UUID;
 @Service
 public class CompanyService {
 
-    private final CompanyRepository companyRepository;
+    @Autowired private CompanyRepository companyRepository;
 
-    @Autowired
-    public CompanyService(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
-    }
+    @Autowired private AddressRepository addressRepository;
 
     public List<Company> findAll() {
         return companyRepository.findAll();
@@ -31,8 +32,31 @@ public class CompanyService {
         return companyRepository.save(company);
     }
 
-    public void deleteById(UUID id) {
-        companyRepository.deleteById(id);
+    public Optional<Company> update(UUID id, CompanyDTO companyDetails) {
+        return companyRepository.findById(id).map(company -> {
+            company.setCompanyNumber(companyDetails.companyNumber());
+            company.setCountryOfRegistration(companyDetails.countryOfRegistration());
+            company.setName(companyDetails.name());
+
+            if (companyDetails.addressId() != null) {
+                UUID addressUuid = UUID.fromString(companyDetails.addressId());
+                Address address = addressRepository.findById(addressUuid)
+                        .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+                company.setAddress(address);
+            }
+
+            companyDetails.regon().ifPresent(company::setRegon);
+            return companyRepository.save(company);
+        });
+    }
+
+    public boolean deleteById(UUID id) {
+        if (companyRepository.existsById(id)) {
+            companyRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

@@ -1,20 +1,25 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.UUID;
 
 @Entity
 public class CustomerB2C {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID customerB2CID;
 
     @OneToOne
-    @JoinColumn(name = "customerID", nullable = false, unique = true)
+    @JoinColumn(name = "customerId", nullable = false, unique = true)
     private Customer customer;
 
     @OneToOne
-    @JoinColumn(name = "personID", nullable = false, unique = true)
+    @JoinColumn(name = "personId", nullable = false, unique = true)
     private Person person;
 
     public UUID getCustomerB2CID() {

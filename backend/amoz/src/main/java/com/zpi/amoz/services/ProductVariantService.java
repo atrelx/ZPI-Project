@@ -31,8 +31,13 @@ public class ProductVariantService {
         return productVariantRepository.save(productVariant);
     }
 
-    public void deleteById(UUID id) {
-        productVariantRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (productVariantRepository.existsById(id)) {
+            productVariantRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

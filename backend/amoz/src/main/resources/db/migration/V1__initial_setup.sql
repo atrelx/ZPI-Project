@@ -10,21 +10,21 @@ CREATE TABLE Company
 
 CREATE TABLE ProductVariant
 (
-    ProductVariantID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductID        CHAR(36) NOT NULL,
-    Code             INT      NOT NULL UNIQUE,
-    StockID          CHAR(36) NOT NULL,
+    ProductVariantID CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    ProductID        CHAR(36)       NOT NULL,
+    Code             INT            NOT NULL UNIQUE,
+    StockID          CHAR(36)       NOT NULL,
     DimensionsID     CHAR(36),
     WeightID         CHAR(36),
-    ImpactOnPrice    DOUBLE,
+    ImpactOnPrice    DECIMAL(10, 2) NOT NULL DEFAULT 0.0,
     VariantName      VARCHAR(100)
 );
 
 CREATE TABLE Weight
 (
-    WeightID   CHAR(36) NOT NULL      DEFAULT (UUID()) PRIMARY KEY,
-    UnitWeight ENUM ('MG', 'G', 'KG') DEFAULT 'KG' NOT NULL,
-    Amount     INT      NOT NULL
+    WeightID   CHAR(36)                    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    UnitWeight ENUM ('MG', 'G', 'KG')               DEFAULT 'KG' NOT NULL,
+    Amount     DOUBLE CHECK (Amount > 0.0) NOT NULL
 );
 
 CREATE TABLE Attribute
@@ -70,9 +70,9 @@ CREATE TABLE Customer
 CREATE TABLE Employee
 (
     EmployeeID      CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    UserID          CHAR(21) NOT NULL,
-    ContactPersonID CHAR(36) NOT NULL,
-    PersonID        CHAR(36) NOT NULL,
+    UserID          CHAR(21) NOT NULL UNIQUE,
+    ContactPersonID CHAR(36) NOT NULL UNIQUE,
+    PersonID        CHAR(36) NOT NULL UNIQUE,
     RoleInCompany   ENUM ('OWNER', 'REGULAR'),
     CompanyID       CHAR(36),
     EmploymentDate  DATE
@@ -81,7 +81,8 @@ CREATE TABLE Employee
 CREATE TABLE Stock
 (
     StockID         CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    AmountAvailable INT      NOT NULL
+    AmountAvailable INT      NOT NULL DEFAULT 0 CHECK (AmountAvailable >= 0),
+    AlarmingAmount  INT
 );
 
 CREATE TABLE `User`
@@ -99,10 +100,10 @@ CREATE TABLE CustomerB2C
 
 CREATE TABLE ProductOrderItem
 (
-    ProductOrderItemID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductVariantID   CHAR(36) NOT NULL,
-    ProductOrderID     CHAR(36) NOT NULL,
-    UnitPrice          DOUBLE   NOT NULL,
+    ProductOrderItemID CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    ProductVariantID   CHAR(36)       NOT NULL,
+    ProductOrderID     CHAR(36)       NOT NULL,
+    UnitPrice          DECIMAL(10, 2) NOT NULL,
     Amount             INT CHECK (Amount > 0),
     ProductName        VARCHAR(100),
     UNIQUE (ProductVariantID, ProductOrderID)
@@ -110,9 +111,10 @@ CREATE TABLE ProductOrderItem
 
 CREATE TABLE Invoice
 (
-    InvoiceID       CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    InvoiceNumber   INT      NOT NULL UNIQUE AUTO_INCREMENT,
-    AmountOnInvoice DOUBLE   NOT NULL
+    InvoiceID       CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    InvoiceNumber   INT            NOT NULL UNIQUE AUTO_INCREMENT,
+    AmountOnInvoice DECIMAL(10, 2) NOT NULL,
+    IssueDate       DATE
 );
 
 CREATE TABLE ContactPerson
@@ -124,14 +126,15 @@ CREATE TABLE ContactPerson
 
 CREATE TABLE Product
 (
-    ProductID            CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CategoryID           CHAR(36)     NOT NULL,
-    CompanyID            CHAR(36)     NOT NULL,
-    MainProductVariantID CHAR(36)     NOT NULL,
-    Name                 VARCHAR(100) NOT NULL,
-    Price                DOUBLE       NOT NULL,
+    ProductID            CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    CategoryID           CHAR(36)       NOT NULL,
+    CompanyID            CHAR(36)       NOT NULL,
+    MainProductVariantID CHAR(36)       NOT NULL,
+    Name                 VARCHAR(100)   NOT NULL,
+    Price                DECIMAL(10, 2) NOT NULL,
     Description          VARCHAR(1000),
-    Brand                VARCHAR(50)
+    Brand                VARCHAR(50),
+    IsActive             BOOLEAN        NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE ProductOrder
@@ -140,9 +143,9 @@ CREATE TABLE ProductOrder
     Status         ENUM ('NEW', 'ORDERED', 'SHIPPED', 'DELIVERED', 'CANCELLED') DEFAULT 'NEW' NOT NULL,
     CustomerID     CHAR(36),
     AddressID      CHAR(36),
-    InvoiceID	   CHAR(36),
+    InvoiceID      CHAR(36),
     TrackingNumber VARCHAR(10),
-    TimeOfSending  TIME(3),
+    TimeOfSending  DATETIME,
     TimeOfCreation DATETIME                                                     DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -175,12 +178,12 @@ CREATE TABLE VariantAttribute
 CREATE TABLE Address
 (
     AddressID             CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    City                  VARCHAR(255),
-    Street                VARCHAR(255),
-    StreetNumber          VARCHAR(10),
-    ApartmentNumber       VARCHAR(10),
-    PostalCode            VARCHAR(10),
-    AdditionalInformation VARCHAR(255) NOT NULL
+    City                  VARCHAR(255) NOT NULL,
+    Street                VARCHAR(255) NOT NULL,
+    StreetNumber          VARCHAR(10)  NOT NULL,
+    ApartmentNumber       VARCHAR(10)  NOT NULL,
+    PostalCode            VARCHAR(10)  NOT NULL,
+    AdditionalInformation VARCHAR(255)
 );
 
 ALTER TABLE Category

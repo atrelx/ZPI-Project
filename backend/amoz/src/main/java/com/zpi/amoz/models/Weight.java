@@ -1,6 +1,10 @@
 package com.zpi.amoz.models;
 
+import com.zpi.amoz.enums.UnitWeight;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,14 +13,17 @@ import java.util.UUID;
 public class Weight {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID weightId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UnitWeight unitWeight = UnitWeight.KG;
 
+    @Min(0)
     @Column(nullable = false)
-    private Integer amount;
+    private Double amount;
 
     @OneToMany(mappedBy = "weight", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductVariant> productVariants;
@@ -37,11 +44,11 @@ public class Weight {
         this.unitWeight = unitWeight;
     }
 
-    public Integer getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
@@ -51,9 +58,5 @@ public class Weight {
 
     public void setProductVariants(List<ProductVariant> productVariants) {
         this.productVariants = productVariants;
-    }
-
-    public enum UnitWeight {
-        MG, G, KG
     }
 }

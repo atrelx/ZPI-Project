@@ -1,7 +1,10 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,30 +12,31 @@ import java.util.UUID;
 public class ProductVariant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID productVariantId;
 
-    @Column(nullable = false)
-    private UUID productId;
+    @ManyToOne
+    @JoinColumn(name = "productId", nullable = false)
+    private Product product;
 
     @Column(nullable = false, unique = true)
     private Integer code;
 
     @ManyToOne
-    @JoinColumn(name = "stockID", nullable = false)
+    @JoinColumn(name = "stockId", nullable = false)
     private Stock stock;
 
     @ManyToOne
-    @JoinColumn(name = "dimensionsID")
+    @JoinColumn(name = "dimensionsId")
     private Dimensions dimensions;
 
     @ManyToOne
-    @JoinColumn(name = "weightID")
+    @JoinColumn(name = "weightId")
     private Weight weight;
 
-    @ManyToOne
-    @JoinColumn(name = "productID", nullable = false)
-    private Product product;
-    private Double impactOnPrice;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal impactOnPrice;
 
     @Column(length = 100)
     private String variantName;
@@ -46,14 +50,6 @@ public class ProductVariant {
 
     public void setProductVariantId(UUID productVariantId) {
         this.productVariantId = productVariantId;
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
     }
 
     public Integer getCode() {
@@ -88,11 +84,11 @@ public class ProductVariant {
         this.weight = weight;
     }
 
-    public Double getImpactOnPrice() {
+    public BigDecimal getImpactOnPrice() {
         return impactOnPrice;
     }
 
-    public void setImpactOnPrice(Double impactOnPrice) {
+    public void setImpactOnPrice(BigDecimal impactOnPrice) {
         this.impactOnPrice = impactOnPrice;
     }
 

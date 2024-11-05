@@ -31,8 +31,13 @@ public class AttributeService {
         return attributeRepository.save(attribute);
     }
 
-    public void deleteById(UUID id) {
-        attributeRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (attributeRepository.existsById(id)) {
+            attributeRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

@@ -1,22 +1,28 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID invoiceId;
 
     @Column(nullable = false, unique = true)
     private int invoiceNumber;
 
-    @Column(nullable = false)
-    private double amountOnInvoice;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal amountOnInvoice;
 
     @OneToOne
-    @JoinColumn(name = "ProductOrderID", nullable = false)
+    @JoinColumn(name = "ProductOrderId", nullable = false)
     private ProductOrder productOrder;
 
     public UUID getInvoiceId() {
@@ -35,11 +41,11 @@ public class Invoice {
         this.invoiceNumber = invoiceNumber;
     }
 
-    public double getAmountOnInvoice() {
+    public BigDecimal getAmountOnInvoice() {
         return amountOnInvoice;
     }
 
-    public void setAmountOnInvoice(double amountOnInvoice) {
+    public void setAmountOnInvoice(BigDecimal amountOnInvoice) {
         this.amountOnInvoice = amountOnInvoice;
     }
 

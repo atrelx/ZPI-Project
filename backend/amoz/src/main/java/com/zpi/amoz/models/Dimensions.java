@@ -1,6 +1,9 @@
 package com.zpi.amoz.models;
 
+import com.zpi.amoz.enums.UnitDimensions;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +12,8 @@ import java.util.UUID;
 public class Dimensions {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID dimensionsId;
 
     @Enumerated(EnumType.STRING)
@@ -68,9 +73,5 @@ public class Dimensions {
 
     public void setProductVariants(List<ProductVariant> productVariants) {
         this.productVariants = productVariants;
-    }
-
-    public enum UnitDimensions {
-        MM, CM, M, DM
     }
 }

@@ -31,7 +31,12 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public void deleteById(UUID id) {
-        employeeRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (employeeRepository.existsById(id)) {
+            employeeRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

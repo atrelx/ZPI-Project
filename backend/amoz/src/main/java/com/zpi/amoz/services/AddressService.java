@@ -31,8 +31,13 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public void deleteById(UUID id) {
-        addressRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (addressRepository.existsById(id)) {
+            addressRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

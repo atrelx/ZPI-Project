@@ -31,7 +31,12 @@ public class ProductAttributeService {
         return productAttributeRepository.save(productAttribute);
     }
 
-    public void deleteById(UUID id) {
-        productAttributeRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (productAttributeRepository.existsById(id)) {
+            productAttributeRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -38,7 +38,7 @@ public class AuthController {
     private UserService userService;
 
     @GetMapping("/token")
-    public ResponseEntity<AuthTokenResponse> getTokens(@RequestParam("code") String code, HttpServletRequest request) throws URISyntaxException {
+    public ResponseEntity<AuthTokenResponse> getTokens(@RequestParam String authCode) {
         GoogleTokenResponse tokenResponse;
         String userId;
         try {
@@ -46,24 +46,9 @@ public class AuthController {
                     new NetHttpTransport(), new GsonFactory(),
                     clientId,
                     clientSecret,
-                    code,
+                    authCode,
                     ""
             ).execute();
-
-//            OAuth2AuthenticatedPrincipal principal = introspector.introspect(tokenResponse.getAccessToken());
-//            userId = principal.getAttribute("sub");
-
-
-//            if (user.isPresent()) {
-//                return ResponseEntity.ok(token);
-//            }
-//            else {
-//                String fullName = principal.getAttribute("name");
-//                String[] words = fullName.split("\\s+");
-//                String firstName = words[0];
-//                String lastName = words[words.length - 1];
-//                String email = principal.getAttribute("email");
-//            }
 
 
         } catch (IOException e) {
@@ -75,7 +60,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/refreshToken")
     public ResponseEntity<AuthTokenResponse> refreshAccessToken(@RequestParam String refreshToken) {
         try {
             GoogleTokenResponse tokenResponse = new GoogleRefreshTokenRequest(

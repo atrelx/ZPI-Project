@@ -32,8 +32,13 @@ public class CustomerB2CService {
         return customerB2CRepository.save(customerB2C);
     }
 
-    public void deleteById(UUID id) {
-        customerB2CRepository.deleteById(id);
+    public boolean deleteById(UUID id) {
+        if (customerB2CRepository.existsById(id)) {
+            customerB2CRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
