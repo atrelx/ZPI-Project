@@ -107,17 +107,10 @@ val moreBottomSheetItemsMap = mapOf(
 
 // ------------------- Company Screen Info Items -------------------
 val companyInfoScreenItemsMap = mapOf(
-    NavItemType.CompanyAddress to
-        NavItem(
-            title = R.string.company_address_screen,
-            screenRoute = Screens.CompanyAddress.route,
-            selectedIcon = Icons.Outlined.LocationOn,
-            unselectedIcon = Icons.Filled.AccountCircle,
-        ),
     NavItemType.CompanyWorkers to
         NavItem(
             title = R.string.company_workers_screen,
-            screenRoute = Screens.Workers.route,
+            screenRoute = Screens.Employees.route,
             selectedIcon = Icons.Outlined.Cases,
             unselectedIcon = Icons.Outlined.Cases,
         ),
@@ -128,6 +121,13 @@ val companyInfoScreenItemsMap = mapOf(
             selectedIcon = Icons.Outlined.People,
             unselectedIcon = Icons.Outlined.People,
         ),
+    NavItemType.CompanyAddress to
+            NavItem(
+                title = R.string.company_address_screen,
+                screenRoute = null,
+                selectedIcon = Icons.Outlined.LocationOn,
+                unselectedIcon = Icons.Filled.AccountCircle,
+            ),
 )
 
 // ------------------- Other screens -------------------

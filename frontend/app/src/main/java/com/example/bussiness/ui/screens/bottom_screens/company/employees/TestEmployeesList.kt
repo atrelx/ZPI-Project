@@ -1,10 +1,9 @@
-package com.example.bussiness.ui.screens.bottom_screens.company.workers
+package com.example.bussiness.ui.screens.bottom_screens.company.employees
 
 import com.example.bussiness.R
 import com.example.bussiness.data.Person
-import java.time.LocalDate
 
-val testWorkers = listOf(
+val testEmployees = listOf(
     Person(
         firstName = "Andrii",
         lastName = "Drobitko",

@@ -14,9 +14,8 @@ import com.example.bussiness.ui.screens.bottom_screens.additional_screens.Settin
 import com.example.bussiness.ui.screens.bottom_screens.additional_screens.SupportScreen
 import com.example.bussiness.ui.screens.bottom_screens.company.CompanyScreen
 import com.example.bussiness.ui.screens.bottom_screens.company.CompanyScreenViewModel
-import com.example.bussiness.ui.screens.bottom_screens.company.address.CompanyAddressScreen
 import com.example.bussiness.ui.screens.bottom_screens.company.customers.CompanyCustomersScreen
-import com.example.bussiness.ui.screens.bottom_screens.company.workers.CompanyWorkersScreen
+import com.example.bussiness.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
 import com.example.bussiness.ui.screens.bottom_screens.home.HomeScreen
 import com.example.bussiness.ui.screens.bottom_screens.orders.OrdersScreen
 import com.example.bussiness.ui.screens.bottom_screens.products.ProductScreen
@@ -78,15 +77,9 @@ fun AppNavigationHost(
             ) }
 
         // -------------------- Company info screens --------------------
-        composable(Screens.CompanyAddress.route) {
-            CompanyAddressScreen(
-                navController = navController,
-                companyViewModel = companyViewModel,
-                paddingValues = paddingValues,
-                callSnackBar = { text, icon -> callSnackBar(text, icon)  },
-            ) }
-        composable(Screens.Workers.route) {
-            CompanyWorkersScreen(
+
+        composable(Screens.Employees.route) {
+            CompanyEmployeesScreen(
                 navController = navController,
                 companyViewModel = companyViewModel,
                 paddingValues = paddingValues,

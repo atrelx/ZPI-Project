@@ -70,7 +70,7 @@ fun B2CCustomerScreen(
             ) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        companyViewModel.updateAddCustomerBottomShitVisibility(true)
+                        companyViewModel.expandAddCustomerBottomSheet(true)
                     },
                     modifier = Modifier
                         .padding(16.dp), // Padding for spacing from screen edges
@@ -82,7 +82,7 @@ fun B2CCustomerScreen(
         if (companyUiState.addCustomerBottomSheetExpanded) {
             AddB2CCustomerBottomSheet(
                 onDismissRequest = {
-                    companyViewModel.updateAddCustomerBottomShitVisibility(false)
+                    companyViewModel.expandAddCustomerBottomSheet(false)
                 },
                 callSnackBar = callSnackBar,
                 addB2CCustomer = { fN, lN, email, phone ->

@@ -1,4 +1,4 @@
-package com.example.bussiness.ui.screens.bottom_screens.company.workers
+package com.example.bussiness.ui.screens.bottom_screens.company.employees
 
 import android.content.Intent
 import android.net.Uri
@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
-fun WorkersLazyColumn(workers: List<Person>, callSnackBar: (String, ImageVector?) -> Unit) {
+fun EmployeesLazyColumn(workers: List<Person>, callSnackBar: (String, ImageVector?) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth(),

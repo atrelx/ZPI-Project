@@ -16,8 +16,7 @@ sealed class Screens(val route : String) {
     // --------------------- Other Bar Screens ---------------------
     data object Profile : Screens("profile_route")
     // --------------------- Company Info Screens ---------------------
-    data object CompanyAddress : Screens("address_route")
-    data object Workers : Screens("workers_route")
+    data object Employees : Screens("employees_route")
     data object Customers : Screens("customers_route")
 
 }

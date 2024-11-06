@@ -19,7 +19,7 @@
     <string name="profile_screen">Profile</string>
 
     <string name="company_address_screen">Address</string>
-    <string name="company_workers_screen">Workers</string>
+    <string name="company_workers_screen">Employees</string>
     <string name="company_customers_screen">Customers</string>
 
     // --------------------- Profile ---------------------
@@ -30,6 +30,7 @@
 
     // --------------------- Company screen ---------------------
     <string name="company_name">Company name</string>
+    <string name="company_screen_description">This is your company. Manage your employees, add customers and change all company data if you need.</string>
     <string name="company_address">Company address</string>
     <string name="company_number">Company number</string>
     <string name="company_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -39,7 +40,7 @@
     <string name="company_number_name">NIP</string>
     <string name="company_number_additional">REGON</string>
 
-    <string name="company_address_example">ul. Paprotna, 9, Wroclaw, 50–123</string>
+    <string name="company_address_example">ul. Example, 9, New-York, 50–123</string>
     <string name="company_workers_description">People that work with you</string>
     <string name="company_customers_description">Your customer base</string>
     <string name="company_number_description">0123456789</string>
@@ -58,10 +59,14 @@
 
 
     // --------------------- Address ---------------------
+    <string name="address_change_title">Change the address</string>
+    <string name="address_change_title_company">Change the company address</string>
     <string name="street">Street</string>
     <string name="house_number">House name/number</string>
+    <string name="apartment_number">Apartment number (optional)</string>
     <string name="city">Town/city</string>
     <string name="postal_code">Postal code</string>
+    <string name="additional_info">Additional information (optional)</string>
 
     // --------------------- Other ---------------------
     <string name="done">Done</string>

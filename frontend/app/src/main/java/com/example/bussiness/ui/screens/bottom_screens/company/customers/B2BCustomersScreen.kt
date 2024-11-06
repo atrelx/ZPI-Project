@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.bussiness.data.B2BCustomer
-import com.example.bussiness.data.Person
 import com.example.bussiness.ui.screens.bottom_screens.company.CompanyScreenViewModel
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
@@ -71,7 +70,7 @@ fun B2BCustomerScreen(
             ) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        companyViewModel.updateAddCustomerBottomShitVisibility(true)
+                        companyViewModel.expandAddCustomerBottomSheet(true)
                     },
                     modifier = Modifier
                         .padding(16.dp), // Padding for spacing from screen edges
@@ -83,7 +82,7 @@ fun B2BCustomerScreen(
         if (companyUiState.addCustomerBottomSheetExpanded) {
             AddB2BCustomerBottomSheet(
                 onDismissRequest = {
-                    companyViewModel.updateAddCustomerBottomShitVisibility(false)
+                    companyViewModel.expandAddCustomerBottomSheet(false)
                 },
                 callSnackBar = callSnackBar,
                 addB2BCustomer = { name, email, address, number ->

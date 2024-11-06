@@ -1,6 +1,5 @@
 package com.example.bussiness.ui.screens.bottom_screens.company
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import com.example.bussiness.data.B2BCustomer
 import com.example.bussiness.data.Person
@@ -16,15 +15,28 @@ class CompanyScreenViewModel: ViewModel() {
     private val _companyUiState = MutableStateFlow(CompanyScreenUiState())
     val companyUiState: StateFlow<CompanyScreenUiState> = _companyUiState.asStateFlow()
 
-    fun updateCompanyAddress(companyAddress: String) {
+    fun updateCompanyAddress(
+        street: String, houseNumber: String, apartmentNumber: String,
+        city: String, postalCode: String, additionalInfo: String
+    ) {
         _companyUiState.update { currState ->
-            currState.copy(companyAddress = companyAddress)
+            currState.copy(
+                companyAddressStreet = street,
+                companyAddressHouseNumber = houseNumber,
+                companyAddressApartmentNumber = apartmentNumber,
+                companyAddressCity = city,
+                companyAddressPostalCode = postalCode,
+                companyAddressAdditionalInfo = additionalInfo,
+                companyFullAddress = buildFullAddressString(
+                    street, houseNumber, apartmentNumber, city, postalCode
+                )
+            )
         }
     }
 
-    fun updateCompanyNameDescription(name: String, description: String) {
+    fun updateCompanyName(name: String) {
         _companyUiState.update { currState ->
-            currState.copy(companyName = name, companyDescription = description)
+            currState.copy(companyName = name)
         }
     }
 
@@ -34,13 +46,25 @@ class CompanyScreenViewModel: ViewModel() {
         }
     }
 
-    fun updateAddWorkerBottomShitVisibility(isVisible: Boolean) {
+    fun expandChangeCompanyNameBottomSheet(expand: Boolean) {
         _companyUiState.update { currState ->
-            currState.copy(addWorkerBottomSheetExpanded = isVisible)
+            currState.copy(changeCompanyNameBottomSheetExpanded = expand)
         }
     }
 
-    fun updateAddCustomerBottomShitVisibility(isVisible: Boolean) {
+    fun expandChangeCompanyAddressBottomSheet(expand: Boolean) {
+        _companyUiState.update { currState ->
+            currState.copy(changeCompanyAddressBottomSheetExpanded = expand)
+        }
+    }
+
+    fun expandAddWorkerBottomSheet(expand: Boolean) {
+        _companyUiState.update { currState ->
+            currState.copy(addWorkerBottomSheetExpanded = expand)
+        }
+    }
+
+    fun expandAddCustomerBottomSheet(isVisible: Boolean) {
         _companyUiState.update { currState ->
             currState.copy(addCustomerBottomSheetExpanded = isVisible)
         }
@@ -73,4 +97,16 @@ class CompanyScreenViewModel: ViewModel() {
             )
         )
     }
+
+    private fun buildFullAddressString(
+        street: String, houseNumber: String, apartmentNumber: String,
+        city: String, postalCode: String
+    ): String {
+        return buildString {
+            append("$street, $houseNumber")
+            if (apartmentNumber.isNotBlank()) append(", $apartmentNumber")
+            append(", $city, $postalCode")
+        }
+    }
+
 }
