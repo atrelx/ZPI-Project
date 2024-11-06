@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"ProductVariantID", "ProductOrderID"})
+})
 public class ProductOrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

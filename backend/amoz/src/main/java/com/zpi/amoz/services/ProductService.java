@@ -1,7 +1,9 @@
 package com.zpi.amoz.services;
 
 import com.zpi.amoz.models.Product;
+import com.zpi.amoz.models.ProductVariant;
 import com.zpi.amoz.repository.ProductRepository;
+import com.zpi.amoz.repository.ProductVariantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
+
+    @Autowired private ProductVariantRepository productVariantRepository;
 
     @Autowired
     public ProductService(ProductRepository productRepository) {
@@ -31,9 +35,16 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public boolean deleteById(UUID id) {
-        if (productRepository.existsById(id)) {
-            productRepository.deleteById(id);
+    public boolean deactivateProduct(UUID productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+
+            for (ProductVariant variant : product.getVariants()) {
+                productVariantRepository.deactivateProductVariant(variant.getProductVariantId());
+            }
+
+            productRepository.deactivateProduct(productId);
             return true;
         } else {
             return false;

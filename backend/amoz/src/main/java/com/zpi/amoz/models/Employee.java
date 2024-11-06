@@ -1,8 +1,12 @@
 package com.zpi.amoz.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.zpi.amoz.enums.RoleInCompany;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
@@ -18,14 +22,18 @@ public class Employee {
 
     @OneToOne
     @JoinColumn(name = "userId", nullable = false)
+    @JsonBackReference
     private User user;
 
     @OneToOne
     @JoinColumn(name = "contactPersonId", nullable = false)
+    @JsonBackReference
     private ContactPerson contactPerson;
 
+
     @ManyToOne
-    @JoinColumn(name = "companyID")
+    @JoinColumn(name = "companyId")
+    @JsonBackReference
     private Company company;
 
     @Enumerated(EnumType.STRING)
@@ -35,6 +43,7 @@ public class Employee {
 
     @OneToOne
     @JoinColumn(name = "personId", nullable = false, unique = true)
+    @JsonBackReference
     private Person person;
 
     public UUID getEmployeeId() {

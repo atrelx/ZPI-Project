@@ -7,6 +7,9 @@ import org.hibernate.type.SqlTypes;
 import java.util.UUID;
 
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"ProductVariantID", "AttributeID"})
+})
 public class VariantAttribute {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

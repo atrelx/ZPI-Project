@@ -27,6 +27,8 @@ public class ContactPersonService {
         return contactPersonRepository.findById(id);
     }
 
+    public Optional<ContactPerson> findByEmailAddress(String emailAddress) { return contactPersonRepository.findByEmailAddress(emailAddress); }
+
     public ContactPerson save(ContactPerson contactPerson) {
         return contactPersonRepository.save(contactPerson);
     }

@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/", "/auth/**", "/public/**", "/test/**").permitAll()
+                        .requestMatchers("/", "/api/auth/**", "/public/**").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -67,19 +67,6 @@ public class WebSecurityConfig {
         ;
         return http.build();
     }
-
-//    @Bean
-//    public WebMvcConfigurer corsConfig() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                registry.addMapping("/**")
-//                        .allowedMethods("GET", "POST", "OPTIONS", "PATCH", "DELETE")
-//                        .allowedOrigins("http://localhost:3000");
-//            }
-//        };
-//    }
-
     @Bean
     public OpaqueTokenIntrospector introspector() {
         return new GoogleOpaqueTokenIntrospector(userInfoClient);

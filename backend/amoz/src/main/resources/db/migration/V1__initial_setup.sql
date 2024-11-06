@@ -5,6 +5,7 @@ CREATE TABLE Company
     CountryOfRegistration VARCHAR(100) NOT NULL,
     Name                  VARCHAR(100) NOT NULL,
     AddressID             CHAR(36)     NOT NULL UNIQUE,
+    IsActive              BOOLEAN      NOT NULL DEFAULT TRUE,
     Regon                 VARCHAR(14) UNIQUE
 );
 
@@ -14,9 +15,10 @@ CREATE TABLE ProductVariant
     ProductID        CHAR(36)       NOT NULL,
     Code             INT            NOT NULL UNIQUE,
     StockID          CHAR(36)       NOT NULL,
+    ImpactOnPrice    DECIMAL(10, 2) NOT NULL DEFAULT 0.0,
+    IsActive         BOOLEAN        NOT NULL DEFAULT TRUE,
     DimensionsID     CHAR(36),
     WeightID         CHAR(36),
-    ImpactOnPrice    DECIMAL(10, 2) NOT NULL DEFAULT 0.0,
     VariantName      VARCHAR(100)
 );
 
@@ -129,12 +131,12 @@ CREATE TABLE Product
     ProductID            CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
     CategoryID           CHAR(36)       NOT NULL,
     CompanyID            CHAR(36)       NOT NULL,
-    MainProductVariantID CHAR(36)       NOT NULL,
     Name                 VARCHAR(100)   NOT NULL,
     Price                DECIMAL(10, 2) NOT NULL,
+    IsActive             BOOLEAN        NOT NULL DEFAULT TRUE,
+    MainProductVariantID CHAR(36),
     Description          VARCHAR(1000),
-    Brand                VARCHAR(50),
-    IsActive             BOOLEAN        NOT NULL DEFAULT TRUE
+    Brand                VARCHAR(50)
 );
 
 CREATE TABLE ProductOrder
@@ -186,6 +188,15 @@ CREATE TABLE Address
     AdditionalInformation VARCHAR(255)
 );
 
+CREATE TABLE Invitation
+(
+    InvitationID  CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    CompanyID     CHAR(36)     NOT NULL,
+    EmployeeEmail VARCHAR(100) NOT NULL,
+    Token         CHAR(36)     NOT NULL UNIQUE,
+    UNIQUE (CompanyID, EmployeeEmail)
+);
+
 ALTER TABLE Category
     ADD CONSTRAINT FK_Category_ParentCategoryID FOREIGN KEY (ParentCategoryID) REFERENCES Category (CategoryID);
 
@@ -220,6 +231,9 @@ ALTER TABLE Employee
     ADD CONSTRAINT FK_Employee_PersonID FOREIGN KEY (PersonID) REFERENCES Person (PersonID);
 ALTER TABLE Employee
     ADD CONSTRAINT FK_Employee_UserID FOREIGN KEY (UserID) REFERENCES `User` (UserID);
+
+ALTER TABLE Invitation
+    ADD CONSTRAINT FK_Invitation_CompanyID FOREIGN KEY (CompanyID) REFERENCES Company (CompanyID);
 
 ALTER TABLE ProductOrder
     ADD CONSTRAINT FK_ProductOrder_InvoiceID FOREIGN KEY (InvoiceID) REFERENCES Invoice (InvoiceID);

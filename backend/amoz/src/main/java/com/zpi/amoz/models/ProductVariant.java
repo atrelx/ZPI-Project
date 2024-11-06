@@ -44,6 +44,9 @@ public class ProductVariant {
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VariantAttribute> variantAttributes;
 
+    @Column(nullable = false)
+    private boolean isActive = true;
+
     public UUID getProductVariantId() {
         return productVariantId;
     }
@@ -114,5 +117,13 @@ public class ProductVariant {
 
     public void setVariantAttributes(List<VariantAttribute> variantAttributes) {
         this.variantAttributes = variantAttributes;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

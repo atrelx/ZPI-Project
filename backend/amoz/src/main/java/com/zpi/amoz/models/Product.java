@@ -1,5 +1,7 @@
 package com.zpi.amoz.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -22,10 +24,11 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "companyId", nullable = false)
+    @JsonManagedReference
     private Company company;
 
     @ManyToOne
-    @JoinColumn(name = "mainProductVariantId", nullable = false)
+    @JoinColumn(name = "mainProductVariantId")
     private ProductVariant mainProductVariant;
 
     @Column(nullable = false, length = 100)
@@ -39,6 +42,9 @@ public class Product {
 
     @Column(length = 50)
     private String brand;
+
+    @Column(nullable = false)
+    private boolean isActive = true;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductVariant> variants;
@@ -124,5 +130,13 @@ public class Product {
 
     public void setProductAttributes(List<ProductAttribute> productAttributes) {
         this.productAttributes = productAttributes;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

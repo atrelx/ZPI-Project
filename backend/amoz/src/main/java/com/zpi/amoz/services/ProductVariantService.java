@@ -31,9 +31,10 @@ public class ProductVariantService {
         return productVariantRepository.save(productVariant);
     }
 
-    public boolean deleteById(UUID id) {
-        if (productVariantRepository.existsById(id)) {
-            productVariantRepository.deleteById(id);
+    public boolean deactivateProductVariant(UUID productVariantId) {
+        Optional<ProductVariant> variantOptional = productVariantRepository.findById(productVariantId);
+        if (variantOptional.isPresent()) {
+            productVariantRepository.deactivateProductVariant(productVariantId);
             return true;
         } else {
             return false;

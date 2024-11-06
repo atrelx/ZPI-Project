@@ -19,58 +19,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private EmployeeService employeeService;
-
-    @Autowired
-    private PersonService personService;
-
-    @Autowired
-    private ContactPersonService contactPersonService;
-
     @PostMapping("/register")
-    public ResponseEntity<MessageResponse> register(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal, @Valid @RequestBody UserRegisterRequest request) {
+    public ResponseEntity<String> register(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal, @Valid @RequestBody UserRegisterRequest request) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         String sub = userPrincipal.getSub();
 
-        if (userService.findById(sub).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("User already exists"));
+        try {
+            userService.registerUser(sub, request);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
-
-        User user = new User();
-        user.setUserId(sub);
-        user.setSystemRole(SystemRole.USER);
-
-        Person person = new Person();
-        person.setName(request.name());
-        person.setSurname(request.surname());
-        person.setDateOfBirth(request.dateOfBirth());
-        person.setSex(request.sex());
-
-        ContactPerson contactPerson = new ContactPerson();
-        contactPerson.setContactNumber(request.contactNumber());
-        contactPerson.setEmailAddress(request.emailAddress().orElse(null));
-
-        Employee employee = new Employee();
-        employee.setUser(user);
-        employee.setContactPerson(contactPerson);
-        employee.setPerson(person);
-
-        userService.save(user);
-        personService.save(person);
-        contactPersonService.save(contactPerson);
-        employeeService.save(employee);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -78,7 +48,7 @@ public class UserController {
     @GetMapping("/isRegistered")
     public ResponseEntity<UserIsRegisteredResponse> isUserRegistered(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
-        boolean isRegistered = userService.findById(userPrincipal.getSub()).isPresent();
+        boolean isRegistered = userService.isUserRegistered(userPrincipal.getSub());
         UserIsRegisteredResponse response = new UserIsRegisteredResponse(isRegistered);
         return ResponseEntity.ok(response);
     }

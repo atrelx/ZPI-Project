@@ -1,13 +1,16 @@
 package com.zpi.amoz.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.zpi.amoz.enums.SystemRole;
 import jakarta.persistence.*;
 import jakarta.persistence.Column;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "User")
+@RequiredArgsConstructor
 public class User {
     @Id
     @Column(name = "UserId", columnDefinition = "CHAR(21)")
@@ -18,6 +21,7 @@ public class User {
     private SystemRole systemRole = SystemRole.USER;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Employee employee;
 
     public String getUserId() {

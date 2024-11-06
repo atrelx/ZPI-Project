@@ -1,6 +1,7 @@
 package com.zpi.amoz.models;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -34,10 +35,16 @@ public class Company {
     private String regon;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Employee> employees;
 
+
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Product> products;
+
+    @Column(nullable = false)
+    private boolean isActive = true;
 
     public UUID getCompanyId() {
         return companyId;
@@ -101,6 +108,14 @@ public class Company {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
 
