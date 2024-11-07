@@ -21,13 +21,13 @@
       <entry key="HomeScreenTest">
         <State />
       </entry>
+      <entry key="PreviewEmployeeProfileBottomSheet">
+        <State />
+      </entry>
       <entry key="SalesAddEditViewTest">
         <State />
       </entry>
       <entry key="app">
-        <State />
-      </entry>
-      <entry key="testDeleteSaleFromFirebase()">
         <State />
       </entry>
       <entry key="testListItemClickOpensDialog()">

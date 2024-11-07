@@ -25,8 +25,12 @@
     // --------------------- Profile ---------------------
     <string name="profile_first_name">First name</string>
     <string name="profile_last_name">Last name</string>
+    <string name="profile_full_name">Full name</string>
     <string name="profile_email">Email</string>
-    <string name="profile_phone_number">Phone number</string>
+    <string name="profile_phone_number">Phone number (optional)</string>
+    <string name="profile_sex">Sex</string>
+    <string name="profile_birth_date">Birth Date</string>
+    <string name="profile_employment_date">Employment Date</string>
 
     // --------------------- Company screen ---------------------
     <string name="company_name">Company name</string>
@@ -41,16 +45,18 @@
     <string name="company_number_additional">REGON</string>
 
     <string name="company_address_example">ul. Example, 9, New-York, 50–123</string>
-    <string name="company_workers_description">People that work with you</string>
+    <string name="company_employees_description">People that work with you</string>
     <string name="company_customers_description">Your customer base</string>
     <string name="company_number_description">0123456789</string>
     <string name="company_number_additional_description">0123456789101</string>
 
-    <string name="company_add_worker_button">Add worker</string>
-    <string name="company_add_worker_email_textfield">Worker\'s email</string>
-    <string name="company_add_worker_email_send_inv">Send invintation</string>
-    <string name="company_add_worker_invite_title">Invite new worker</string>
+    <string name="company_employee_role">Role in company</string>
+    <string name="company_add_worker_button">Add employee</string>
+    <string name="company_add_worker_email_textfield">Employee\'s email</string>
+    <string name="company_add_worker_email_send_inv">Send invitation</string>
+    <string name="company_add_worker_invite_title">Invite new employee</string>
     <string name="company_add_worker_invite_successful">Invitation successfully sent</string>
+    <string name="company_change_employment_date_successful">Employment date changed</string>
 
     <string name="company_customers_b2b">B2B Customers</string>
     <string name="company_customers_b2c">B2C Customers</string>

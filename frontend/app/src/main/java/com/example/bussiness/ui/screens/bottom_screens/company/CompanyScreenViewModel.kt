@@ -5,6 +5,7 @@ import com.example.bussiness.data.B2BCustomer
 import com.example.bussiness.data.Person
 import com.example.bussiness.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.bussiness.ui.screens.bottom_screens.company.customers.testB2СCustomers
+import com.example.bussiness.ui.screens.bottom_screens.company.employees.testEmployees
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,9 +41,27 @@ class CompanyScreenViewModel: ViewModel() {
         }
     }
 
+    fun updateEmploymentDate(employeeId: Int, newDate: LocalDate) {
+        /*TODO: Change employmentDate of employee*/
+        testEmployees[employeeId] = testEmployees[employeeId].copy(
+            employmentDate = newDate
+        )
+    }
+
     fun updateCompanyNipRegon(nip: String, regon: String) {
         _companyUiState.update { currState ->
             currState.copy(companyNumber = nip, companyRegon = regon)
+        }
+    }
+
+    fun expandCustomerProfileDataBottomSheet(expand: Boolean) {
+        _companyUiState.update { currState ->
+            currState.copy(customerProfileDataBottomSheetExpanded = expand)
+        }
+    }
+    fun expandEmployeeProfileBottomSheet(expand: Boolean) {
+        _companyUiState.update { currState ->
+            currState.copy(employeeProfileBottomSheetExpanded = expand)
         }
     }
 
@@ -58,15 +77,21 @@ class CompanyScreenViewModel: ViewModel() {
         }
     }
 
-    fun expandAddWorkerBottomSheet(expand: Boolean) {
+    fun expandAddEmployeeBottomSheet(expand: Boolean) {
         _companyUiState.update { currState ->
-            currState.copy(addWorkerBottomSheetExpanded = expand)
+            currState.copy(addEmployeeBottomSheetExpanded = expand)
         }
     }
 
-    fun expandAddCustomerBottomSheet(isVisible: Boolean) {
+    fun expandAddB2BCustomerBottomSheet(isVisible: Boolean) {
         _companyUiState.update { currState ->
-            currState.copy(addCustomerBottomSheetExpanded = isVisible)
+            currState.copy(addB2BCustomerBottomSheetExpanded = isVisible)
+        }
+    }
+
+    fun expandAddB2CCustomerBottomSheet(isVisible: Boolean) {
+        _companyUiState.update { currState ->
+            currState.copy(addB2CCustomerBottomSheetExpanded = isVisible)
         }
     }
 
@@ -79,7 +104,7 @@ class CompanyScreenViewModel: ViewModel() {
                 lastName = customerLastName,
                 email = customerEmail,
                 phoneNumber = customerPhoneNumber,
-                registeredSince = LocalDate.of(2020, 1, 15)
+                dateOfBirth = LocalDate.of(2020, 1, 15)
             )
         )
     }
@@ -92,8 +117,7 @@ class CompanyScreenViewModel: ViewModel() {
                 companyName = companyName,
                 email = companyEmail,
                 companyAddress = companyAddress,
-                companyIdentifier = companyIdentifier,
-                registeredSince = LocalDate.of(2018, 9, 12)
+                companyIdentifier = companyIdentifier
             )
         )
     }

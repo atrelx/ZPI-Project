@@ -59,7 +59,7 @@ fun CompanyScreen(
         val companyUiState by companyViewModel.companyUiState.collectAsState()
         val clipboardManager = LocalClipboardManager.current
 
-        val workersDescription = stringResource(R.string.company_workers_description)
+        val workersDescription = stringResource(R.string.company_employees_description)
         val customersDescription = stringResource(R.string.company_customers_description)
 
         val itemsDescriptions by remember {

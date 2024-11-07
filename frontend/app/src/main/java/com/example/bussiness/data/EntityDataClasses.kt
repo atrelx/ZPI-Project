@@ -4,12 +4,26 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import java.time.LocalDate
 
 data class Person(
+    val personId: Int? = null,
     val firstName: String = "",
     val lastName: String = "",
+    val sex: String = "",
     val email: String = "",
     val phoneNumber: String? = null,
     val personPhoto: Int? = null,
-    val registeredSince: LocalDate = LocalDate.now(),
+    val dateOfBirth: LocalDate = LocalDate.now(),
+)
+
+data class Employee(
+    val employeeId: Int? = null,
+    val firstName: String = "",
+    val lastName: String = "",
+    val sex: String = "",
+    val email: String = "",
+    val phoneNumber: String? = null,
+    val personPhoto: Int? = null,
+    val dateOfBirth: LocalDate = LocalDate.now(),
+    val employmentDate: LocalDate = LocalDate.now(),
 )
 
 data class B2BCustomer(
@@ -18,7 +32,6 @@ data class B2BCustomer(
     val companyAddress: String = "",
     val companyIdentifier: String = "",
     val phoneNumber: String? = null,
-    val registeredSince: LocalDate = LocalDate.now(),
 )
 
 data class NavItem(

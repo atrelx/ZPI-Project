@@ -1,5 +1,6 @@
 package com.example.bussiness.ui.screens.bottom_screens.company.customers
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +42,7 @@ fun B2BCustomerScreen(
     AmozApplicationTheme {
         val companyUiState by companyViewModel.companyUiState.collectAsState()
 
+        var currentB2bCustomer by remember { mutableStateOf<B2BCustomer?>(null) }
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -53,7 +58,11 @@ fun B2BCustomerScreen(
                 items(b2bCustomersList.reversed()) { company ->
                     ListItem(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp)),
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable {
+                                currentB2bCustomer = company
+                                companyViewModel.expandCustomerProfileDataBottomSheet(true)
+                            },
                         headlineContent = { Text(company.companyName) },
                         supportingContent = { Text(text = company.companyAddress) },
                         colors = ListItemDefaults.colors(
@@ -70,19 +79,19 @@ fun B2BCustomerScreen(
             ) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        companyViewModel.expandAddCustomerBottomSheet(true)
+                        companyViewModel.expandAddB2BCustomerBottomSheet(true)
                     },
                     modifier = Modifier
-                        .padding(16.dp), // Padding for spacing from screen edges
+                        .padding(16.dp),
                     icon = { Icon(Icons.Filled.Add, null) },
                     text = { Text(text = "Add customer") }
                 )
             }
         }
-        if (companyUiState.addCustomerBottomSheetExpanded) {
+        if (companyUiState.addB2BCustomerBottomSheetExpanded) {
             AddB2BCustomerBottomSheet(
                 onDismissRequest = {
-                    companyViewModel.expandAddCustomerBottomSheet(false)
+                    companyViewModel.expandAddB2BCustomerBottomSheet(false)
                 },
                 callSnackBar = callSnackBar,
                 addB2BCustomer = { name, email, address, number ->
@@ -91,5 +100,15 @@ fun B2BCustomerScreen(
 
             )
         }
+        if (companyUiState.customerProfileDataBottomSheetExpanded && currentB2bCustomer != null) {
+            B2BCustomerProfileDataBottomSheet(
+                onDismissRequest = {
+                    currentB2bCustomer = null
+                    companyViewModel.expandCustomerProfileDataBottomSheet(false)
+                },
+                b2BCustomer = currentB2bCustomer!!
+            )
+        }
     }
 }
+
