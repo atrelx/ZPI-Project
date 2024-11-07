@@ -1,10 +1,10 @@
 package com.zpi.amoz.controllers;
 
 
-import com.zpi.amoz.dtos.CompanyDTO;
 import com.zpi.amoz.enums.ImageDirectory;
 import com.zpi.amoz.models.Address;
 import com.zpi.amoz.models.Company;
+import com.zpi.amoz.requests.CompanyCreateRequest;
 import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
 import com.zpi.amoz.services.CompanyService;
@@ -42,7 +42,7 @@ public class CompanyController {
 
     @PostMapping
     public ResponseEntity<Company> createCompany(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
-                                                 @Valid @RequestBody CompanyDTO companyDetails) {
+                                                 @Valid @RequestBody CompanyCreateRequest companyDetails) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         Company company = companyService.createCompany(userPrincipal.getSub(), companyDetails);
         return new ResponseEntity<>(company, HttpStatus.CREATED);
@@ -57,17 +57,20 @@ public class CompanyController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Company> updateCompany(@PathVariable UUID id,
-                                                 @Valid @RequestBody CompanyDTO companyDetails) {
+                                                 @Valid @RequestBody CompanyCreateRequest companyDetails) {
         return companyService.update(id, companyDetails)
                 .map(updatedCompany -> new ResponseEntity<>(updatedCompany, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> deactivateCompany(@PathVariable UUID id) {
-        boolean isDeactivated = companyService.deactivateCompanyById(id);
-        return isDeactivated ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<MessageResponse> deactivateCompany(@PathVariable UUID id) {
+        try {
+            companyService.deactivateCompanyById(id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        }
     }
 
     @PutMapping("/companyPicture/{id}")
@@ -120,26 +123,6 @@ public class CompanyController {
             System.err.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
-        }
-    }
-
-
-
-    @PostMapping("/acceptInvitation")
-    public ResponseEntity<Void> acceptInvitationToCompany(@RequestParam String token) {
-        UUID confirmationToken = UUID.fromString(token);
-        companyService.acceptInvitationToCompany(confirmationToken);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/{companyId}/invite")
-    public ResponseEntity<String> inviteEmployeeToCompany(@PathVariable UUID companyId,
-                                                          @RequestParam String employeeEmail) {
-        try {
-            companyService.inviteEmployeeToCompany(companyId, employeeEmail).get();
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

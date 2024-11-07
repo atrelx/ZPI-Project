@@ -1,9 +1,9 @@
 package com.zpi.amoz.services;
 
-import com.zpi.amoz.dtos.CompanyDTO;
 import com.zpi.amoz.enums.RoleInCompany;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.*;
+import com.zpi.amoz.requests.CompanyCreateRequest;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class CompanyService {
-
-    @Autowired
-    private EmailService emailService;
-
     @Autowired
     private CompanyRepository companyRepository;
 
@@ -28,13 +24,6 @@ public class CompanyService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private ContactPersonRepository contactPersonRepository;
-
-    @Autowired
-    private InvitationRepository invitationRepository;
-
 
     public List<Company> findAll() {
         return companyRepository.findAll();
@@ -49,7 +38,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public Company createCompany(String userId, CompanyDTO companyDetails) {
+    public Company createCompany(String userId, CompanyCreateRequest companyDetails) {
         Company company = new Company();
         company.setCompanyNumber(companyDetails.companyNumber());
         company.setCountryOfRegistration(companyDetails.countryOfRegistration());
@@ -83,7 +72,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public Optional<Company> update(UUID id, CompanyDTO companyDetails) {
+    public Optional<Company> update(UUID id, CompanyCreateRequest companyDetails) {
         return companyRepository.findById(id).map(company -> {
             company.setCompanyNumber(companyDetails.companyNumber());
             company.setCountryOfRegistration(companyDetails.countryOfRegistration());
@@ -105,85 +94,17 @@ public class CompanyService {
     }
 
     @Transactional
-    public boolean deactivateCompanyById(UUID id) {
-        Optional<Company> companyOptional = companyRepository.findById(id);
-        if (companyOptional.isPresent()) {
-            Company company = companyOptional.get();
+    public void deactivateCompanyById(UUID id) throws EntityNotFoundException {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find company"));
 
-            for (Employee employee : company.getEmployees()) {
-                employee.setCompany(null);
-                employee.setRoleInCompany(null);
-                employeeRepository.save(employee);
-            }
-
-            companyRepository.deactivateCompany(id);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Transactional
-    public CompletableFuture<Void> inviteEmployeeToCompany(UUID companyId, String employeeEmailAddress) {
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new EntityNotFoundException("Company not found"));
-
-        ContactPerson contactPerson = contactPersonRepository.findByEmailAddress(employeeEmailAddress)
-                .orElseThrow(() -> new EntityNotFoundException("Contact person not found"));
-
-        Employee employee = Optional.ofNullable(contactPerson.getEmployee())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
-
-        if (employee.getCompany() != null) {
-            throw new RuntimeException("Employee already has company");
+        for (Employee employee : company.getEmployees()) {
+            employee.setCompany(null);
+            employee.setRoleInCompany(null);
+            employeeRepository.save(employee);
         }
 
-        Invitation invitation = new Invitation();
-
-        invitation.setCompany(company);
-        invitation.setEmployeeEmail(employeeEmailAddress);
-        invitationRepository.save(invitation);
-
-        UUID confirmationToken = invitation.getToken();
-
-        String subject = "Zostałeś zaproszony do firmy " + company.getName() + " w aplikacji AMOZ.";
-        String htmlContent = "<html><body>" +
-                "<h2>Witaj " + employee.getPerson().getName() + "!</h2>" +
-                "<p>Zostałeś zaproszony do firmy <b>" + company.getName() + "</b> w aplikacji AMOZ.</p>" +
-                "<p>Proszę kliknij poniższy link, aby przyjąć zaproszenie:</p>" +
-                "<a href='amoz://acceptInvitation?token=" + confirmationToken.toString() + "'>Przyjmij zaproszenie</a>" +
-                "</body></html>";
-
-        CompletableFuture<Boolean> emailResult = emailService.sendEmail(Collections.singletonList(employeeEmailAddress), subject, htmlContent);
-
-        boolean emailSentSuccessfully = emailResult.join();
-
-        if (!emailSentSuccessfully) {
-            throw new RuntimeException("Email sending failed.");
-        }
-        return CompletableFuture.completedFuture(null);
-    }
-
-    @Transactional
-    public void acceptInvitationToCompany(UUID confirmationToken) {
-        Invitation invitation = invitationRepository.findByToken(confirmationToken)
-                .orElseThrow(() -> new EntityNotFoundException("Invalid confirmation token"));
-
-        ContactPerson contactPerson = contactPersonRepository.findByEmailAddress(invitation.getEmployeeEmail())
-                .orElseThrow(() -> new EntityNotFoundException("Contact person not found"));
-
-        Employee employee = Optional.ofNullable(contactPerson.getEmployee())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
-
-        if (employee.getCompany() != null) {
-            throw new RuntimeException("Employee already has company");
-        }
-
-        employee.setCompany(invitation.getCompany());
-        employee.setRoleInCompany(RoleInCompany.REGULAR);
-        employee.setEmploymentDate(LocalDate.now());
-        employeeRepository.save(employee);
-        invitationRepository.deleteById(invitation.getInvitationId());
+        companyRepository.deactivateCompany(id);
     }
 }
 

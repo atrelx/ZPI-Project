@@ -5,6 +5,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -21,8 +22,9 @@ public class Invoice {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amountOnInvoice;
 
-    @OneToOne
-    @JoinColumn(name = "ProductOrderId", nullable = false)
+    private LocalDate issueDate;
+
+    @OneToOne(mappedBy = "invoice", cascade = CascadeType.ALL)
     private ProductOrder productOrder;
 
     public UUID getInvoiceId() {
@@ -55,5 +57,12 @@ public class Invoice {
 
     public void setProductOrder(ProductOrder productOrder) {
         this.productOrder = productOrder;
+    }
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
+
+    public void setIssueDate(LocalDate issueDate) {
+        this.issueDate = issueDate;
     }
 }

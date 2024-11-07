@@ -106,7 +106,7 @@ CREATE TABLE ProductOrderItem
     ProductVariantID   CHAR(36)       NOT NULL,
     ProductOrderID     CHAR(36)       NOT NULL,
     UnitPrice          DECIMAL(10, 2) NOT NULL,
-    Amount             INT CHECK (Amount > 0),
+    Amount             INT			  NOT NULL CHECK (Amount > 0) ,
     ProductName        VARCHAR(100),
     UNIQUE (ProductVariantID, ProductOrderID)
 );

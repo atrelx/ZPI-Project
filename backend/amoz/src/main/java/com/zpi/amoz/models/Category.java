@@ -47,7 +47,7 @@ public class Category {
         this.name = name;
     }
 
-    public int getCategoryLevel() {
+    public short getCategoryLevel() {
         return categoryLevel;
     }
 
