@@ -1,10 +1,7 @@
 package com.zpi.amoz.services;
 
 import com.zpi.amoz.enums.SystemRole;
-import com.zpi.amoz.models.ContactPerson;
-import com.zpi.amoz.models.Employee;
-import com.zpi.amoz.models.Person;
-import com.zpi.amoz.models.User;
+import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.UserRepository;
 import com.zpi.amoz.requests.UserRegisterRequest;
 import com.zpi.amoz.responses.MessageResponse;
@@ -50,7 +47,7 @@ public class UserService {
     }
 
     @Transactional
-    public void registerUser(String sub, UserRegisterRequest request) {
+    public Optional<User> registerUser(String sub, UserRegisterRequest request) {
         if (findById(sub).isPresent()) {
             throw new RuntimeException("User already exists");
         }
@@ -79,6 +76,28 @@ public class UserService {
         personRepository.save(person);
         contactPersonRepository.save(contactPerson);
         employeeRepository.save(employee);
+
+        return Optional.of(user);
+    }
+
+    @Transactional
+    public Optional<User> updateUser(String sub, UserRegisterRequest request) {
+        User user = findById(sub)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Person person = user.getEmployee().getPerson();
+        person.setName(request.name());
+        person.setSurname(request.surname());
+        person.setDateOfBirth(request.dateOfBirth());
+        person.setSex(request.sex());
+        personRepository.save(person);
+
+        ContactPerson contactPerson = user.getEmployee().getContactPerson();
+        contactPerson.setContactNumber(request.contactNumber());
+        contactPerson.setEmailAddress(request.emailAddress().orElse(null));
+        contactPersonRepository.save(contactPerson);
+
+        return Optional.of(user);
     }
 
     public boolean isUserRegistered(String userId) {

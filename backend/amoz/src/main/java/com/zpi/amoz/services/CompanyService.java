@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.relation.Role;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -75,11 +76,13 @@ public class CompanyService {
 
         employee.setCompany(savedCompany);
         employee.setRoleInCompany(RoleInCompany.OWNER);
+        employee.setEmploymentDate(LocalDate.now());
         employeeRepository.save(employee);
 
         return savedCompany;
     }
 
+    @Transactional
     public Optional<Company> update(UUID id, CompanyDTO companyDetails) {
         return companyRepository.findById(id).map(company -> {
             company.setCompanyNumber(companyDetails.companyNumber());
@@ -101,6 +104,7 @@ public class CompanyService {
         });
     }
 
+    @Transactional
     public boolean deactivateCompanyById(UUID id) {
         Optional<Company> companyOptional = companyRepository.findById(id);
         if (companyOptional.isPresent()) {
@@ -120,7 +124,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompletableFuture<Boolean> inviteEmployeeToCompany(UUID companyId, String employeeEmailAddress) {
+    public CompletableFuture<Void> inviteEmployeeToCompany(UUID companyId, String employeeEmailAddress) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new EntityNotFoundException("Company not found"));
 
@@ -156,9 +160,8 @@ public class CompanyService {
 
         if (!emailSentSuccessfully) {
             throw new RuntimeException("Email sending failed.");
-        } else {
-            return CompletableFuture.completedFuture(true);
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Transactional
@@ -178,8 +181,8 @@ public class CompanyService {
 
         employee.setCompany(invitation.getCompany());
         employee.setRoleInCompany(RoleInCompany.REGULAR);
+        employee.setEmploymentDate(LocalDate.now());
         employeeRepository.save(employee);
-        
         invitationRepository.deleteById(invitation.getInvitationId());
     }
 }
