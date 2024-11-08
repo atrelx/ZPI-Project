@@ -1,7 +1,6 @@
 package com.example.bussiness.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -150,8 +149,12 @@ fun AddressBottomSheet(
 
     val isStreetStateValid by remember { derivedStateOf { streetState.isNotBlank() } }
     val isHouseNumberStateValid by remember { derivedStateOf { houseNumberState.isNotBlank() } }
-    val isCityStateValid by remember { derivedStateOf { cityState.isNotBlank() && cityState.length > 3 } }
-    val isPostalCodeStateValid by remember { derivedStateOf { postalCodeState.isNotBlank() } }
+    val isCityStateValid by remember { derivedStateOf { cityState.isNotBlank() } }
+    val isPostalCodeStateValid by remember {
+        derivedStateOf {
+            postalCodeState.isNotBlank() && postalCodeState.length > 2
+        }
+    }
 
     val isAddressFormValid by remember {
         derivedStateOf {
@@ -189,7 +192,7 @@ fun AddressBottomSheet(
                 label = { Text(text = stringResource(id = R.string.street)) },
                 value = streetState,
                 onValueChange = {
-                    if (streetState.length < regularValueLength) {
+                    if (it.length <= regularValueLength) {
                         streetState = it
                     }
                 },
@@ -216,7 +219,7 @@ fun AddressBottomSheet(
                 label = { Text(text = stringResource(id = R.string.house_number)) },
                 value = houseNumberState,
                 onValueChange = {
-                    if (houseNumberState.length < regularValueLength) {
+                    if (it.length <= shortValueLength) {
                         houseNumberState = it
                     }
                 },
@@ -243,7 +246,7 @@ fun AddressBottomSheet(
                 label = { Text(text = stringResource(id = R.string.apartment_number)) },
                 value = apartmentNumberState,
                 onValueChange = {
-                    if (apartmentNumberState.length < shortValueLength) {
+                    if (it.length <= shortValueLength) {
                         apartmentNumberState = it
                     }
                 },
@@ -269,7 +272,7 @@ fun AddressBottomSheet(
                 label = { Text(text = stringResource(id = R.string.city)) },
                 value = cityState,
                 onValueChange = {
-                    if (cityState.length < regularValueLength) {
+                    if (it.length <= regularValueLength) {
                         cityState = it
                     }
                 },
@@ -296,7 +299,7 @@ fun AddressBottomSheet(
                 label = { Text(text = stringResource(id = R.string.postal_code)) },
                 value = postalCodeState,
                 onValueChange = {
-                    if (postalCodeState.length < postalCodeValueLength && it.isDigitsOnly()) {
+                    if (it.length <= postalCodeValueLength && it.isDigitsOnly()) {
                         postalCodeState = it
                     }
                 },
@@ -351,7 +354,7 @@ fun AddressBottomSheet(
                     )
                     onDismissRequest()
                 },
-                isEnabled = !isAddressFormValid,
+                isEnabled = isAddressFormValid,
                 text = stringResource(id = R.string.done),
                 leadingIcon = Icons.Outlined.Done
             )
@@ -488,3 +491,24 @@ fun PersonProfileColumn(
     }
 }
 
+@Composable
+fun BottomSheetNavigationRaw(
+    leadingIcon: ImageVector,
+    text: String,
+    onClick: () -> Unit
+) {
+    ListItem(
+        modifier = Modifier
+            .clickable(onClick = onClick),
+        leadingContent = {
+            Icon(
+                imageVector = leadingIcon,
+                contentDescription = null,
+            )
+        },
+        headlineContent = { Text(text = text) },
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        )
+    )
+}

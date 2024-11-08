@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,30 +30,18 @@ fun ProductScreen(
     paddingValues: PaddingValues,
     productsViewModel: ProductsViewModel = viewModel()
 ) {
+    val productsUiState by productsViewModel.productUiState.collectAsState()
+
     AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val productsUiState by productsViewModel.productUiState.collectAsState()
-
-            if (productsUiState.showProductAddEditView)
-                ProductAddEditDetailsVIew(
-                    product = productsUiState.currentAddEditProduct,
-                    onComplete = { productsViewModel.updateProduct(product = it) },
-                    onImageUpload = { uri, onComplete ->
-                        productsViewModel.uploadProductImage(uri, onComplete) },
-                    showAddEditDialog = {
-                        productsViewModel.updateAddEditViewState(false)
-                    }
-                )
 
             ProductsLazyColumn(
                 paddingValues = paddingValues,
                 productList = productsUiState.productsList,
-                onProductClick = { product ->
-                    productsViewModel.updateAddEditViewState(true, product)
-                },
+                onProductClick = { },
                 onProductLongClick = { product ->
                     productsViewModel.deleteProductFromList(product.id)
                 })
@@ -67,19 +57,20 @@ fun ProductScreen(
                         productsViewModel.updateAddEditViewState(true)
                     },
                     modifier = Modifier
-                        .padding(16.dp), // Padding for spacing from screen edges
+                        .padding(16.dp),
                     icon = { Icon(Icons.Filled.Menu, null) },
                     text = { Text(text = "Menu") }
                 )
             }
 
         }
+        if (productsUiState.menuBottomSheetExpanded) {
+            MenuBottomSheet(
+                onDismissRequest = { productsViewModel.expandMenuBottomSheet(false) }
+            )
+        }
     }
 }
-
-
-
-
 
 enum class FeatureType {
     TEXT_FIELD, LIST

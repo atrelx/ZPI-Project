@@ -43,12 +43,12 @@ class ProductsViewModel : ViewModel() {
         productEditDialogShow: Boolean,
         currentProductInEdit: Product = Product() ) {
         updateCurrentProduct(currentProductInEdit)
-        updateDialogShow(productEditDialogShow)
+        expandMenuBottomSheet(productEditDialogShow)
     }
 
-    fun updateDialogShow(dialogIsShowed: Boolean) {
+    fun expandMenuBottomSheet(dialogIsShowed: Boolean) {
      _productUiState.update { currState ->
-         currState.copy(showProductAddEditView = dialogIsShowed)
+         currState.copy(menuBottomSheetExpanded = dialogIsShowed)
         }
     }
 

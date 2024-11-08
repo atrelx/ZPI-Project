@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.ModeEdit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -67,7 +68,6 @@ fun CompanyScreen(
                 mutableStateListOf(
                     workersDescription,
                     customersDescription,
-                    companyUiState.companyFullAddress,
                 )
             }
         }
@@ -98,19 +98,26 @@ fun CompanyScreen(
                 ) {
                     companyInfoScreenItems.zip(itemsDescriptions).forEach { (companyInfoItem, description) ->
                         CompanyInfoItem(
-                            leadingIcon = companyInfoItem.selectedIcon,
+                            leadingIcon = companyInfoItem.icon,
                             title = stringResource(companyInfoItem.title),
                             itemDescription = description,
                             trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
                             onClick = {
-                                companyInfoItem.screenRoute?.let {
-                                    navController.navigate(it)
-                                } ?: run {
-                                    companyViewModel.expandChangeCompanyAddressBottomSheet(true)
-                                }
+                                navController.navigate(companyInfoItem.screenRoute)
                             }
                         )
                     }
+
+                    // ------------------- Company address -------------------
+                    CompanyInfoItem(
+                        leadingIcon = Icons.Outlined.LocationOn,
+                        title = stringResource(R.string.company_address_screen),
+                        itemDescription = companyUiState.companyFullAddress,
+                        trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                        onClick = {
+                            companyViewModel.expandChangeCompanyAddressBottomSheet(true)
+                        }
+                    )
 
                     // ------------------- Company Nip, Regon -------------------
                     CompanyInfoItem(

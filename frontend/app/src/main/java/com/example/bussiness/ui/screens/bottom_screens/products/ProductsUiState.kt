@@ -4,6 +4,6 @@ import com.example.bussiness.firebase.Product
 
 data class ProductsUiState(
     val productsList: List<Product> = emptyList(),
-    val showProductAddEditView: Boolean = false,
+    val menuBottomSheetExpanded: Boolean = false,
     val currentAddEditProduct: Product = Product(),
 )

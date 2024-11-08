@@ -2,23 +2,32 @@ package com.example.bussiness.app
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.ViewInAr
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.Cases
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.PermDeviceInformation
 import androidx.compose.material.icons.outlined.Sell
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.ViewInAr
 import androidx.compose.material.icons.outlined.WorkOutline
 import com.example.bussiness.R
 import com.example.bussiness.data.NavItem
@@ -32,7 +41,7 @@ val bottomNavigationBarNavItemsMap = mapOf(
             NavItem(
                 title = R.string.home_screen,
                 screenRoute = Screens.Home.route,
-                selectedIcon = Icons.Filled.Home,
+                icon = Icons.Filled.Home,
                 unselectedIcon = Icons.Outlined.Home,
             ),
 
@@ -40,7 +49,7 @@ val bottomNavigationBarNavItemsMap = mapOf(
             NavItem(
                 title = R.string.products_screen,
                 screenRoute = Screens.Products.route,
-                selectedIcon = Icons.Filled.Sell,
+                icon = Icons.Filled.Sell,
                 unselectedIcon = Icons.Outlined.Sell,
             ),
 
@@ -48,7 +57,7 @@ val bottomNavigationBarNavItemsMap = mapOf(
             NavItem(
                 title = R.string.orders_screen,
                 screenRoute = Screens.Orders.route,
-                selectedIcon = Icons.Filled.ShoppingCart,
+                icon = Icons.Filled.ShoppingCart,
                 unselectedIcon = Icons.Outlined.ShoppingCart,
             ),
 
@@ -56,54 +65,82 @@ val bottomNavigationBarNavItemsMap = mapOf(
             NavItem(
                 title = R.string.company_screen,
                 screenRoute = Screens.Company.route,
-                selectedIcon = Icons.Filled.Work,
+                icon = Icons.Filled.Work,
                 unselectedIcon = Icons.Outlined.WorkOutline,
-            ),
-
-    NavItemType.More to
-            NavItem(
-                title = R.string.more_screen,
-                selectedIcon = Icons.Filled.MoreHoriz,
-                unselectedIcon = Icons.Outlined.MoreHoriz,
             )
 )
 
+// ------------------- Products Screen Bottom Sheet Menu -------------------
+val productScreenBottomSheetMenu = mapOf(
+    NavItemType.AddSimpleProduct to
+            NavItem(
+                title = R.string.products_add_simple_product_screen,
+                screenRoute = Screens.AddEditProduct.route,
+                icon = Icons.Filled.ViewInAr,
+                navItemType = NavItemType.AddSimpleProduct,
+            ),
+    NavItemType.AddProductVariant to
+            NavItem(
+                title = R.string.products_add_product_variant_screen,
+                screenRoute = Screens.AddEditProduct.route,
+                icon = Icons.Filled.Layers,
+                navItemType = NavItemType.AddProductVariant,
+            ),
+    NavItemType.AddProductTemplate to
+            NavItem(
+                title = R.string.products_add_product_template_screen,
+                screenRoute = Screens.AddEditProduct.route,
+                icon = Icons.Filled.Description,
+                navItemType = NavItemType.AddProductTemplate,
+            ),
+    NavItemType.Categories to
+            NavItem(
+                title = R.string.products_categories_screen,
+                screenRoute = Screens.Categories.route,
+                icon = Icons.Filled.Category,
+            ),
+    NavItemType.Attributes to
+            NavItem(
+                title = R.string.products_attributes_screen,
+                screenRoute = Screens.Attributes.route,
+                icon = Icons.Filled.CheckBox,
+            ),
+    NavItemType.StockDelivery to
+            NavItem(
+                title = R.string.products_stock_delivery_screen,
+                screenRoute = Screens.StockDelivery.route,
+                icon = Icons.Filled.LocalShipping,
+            )
+)
 
 // --------------------- 'More' Button Bar Items ---------------------
 
 val moreBottomSheetItemsMap = mapOf(
-    NavItemType.Settings to
-            NavItem(
-                title = R.string.settings_screen,
-                screenRoute = Screens.Settings.route,
-                selectedIcon = Icons.Filled.Settings,
-                unselectedIcon = Icons.Outlined.Settings,
-            ),
+    NavItemType.Settings to NavItem(
+        title = R.string.settings_screen,
+        screenRoute = Screens.Settings.route,
+        icon = Icons.Filled.Settings
+    ),
 
-    NavItemType.FAQ to
-            NavItem(
-                title = R.string.faq_screen,
-                screenRoute = Screens.FAQ.route,
-                selectedIcon = Icons.Filled.Info,
-                unselectedIcon = Icons.Filled.Info,
-            ),
+    NavItemType.FAQ to NavItem(
+        title = R.string.faq_screen,
+        screenRoute = Screens.FAQ.route,
+        icon = Icons.Filled.Info
+    ),
 
-    NavItemType.AboutApp to
-            NavItem(
-                title = R.string.about_screen,
-                screenRoute = Screens.About.route,
-                selectedIcon = Icons.Outlined.PermDeviceInformation,
-                unselectedIcon = Icons.Outlined.PermDeviceInformation,
-            ),
+    NavItemType.AboutApp to NavItem(
+        title = R.string.about_screen,
+        screenRoute = Screens.About.route,
+        icon = Icons.Outlined.PermDeviceInformation
+    ),
 
-    NavItemType.Support to
-            NavItem(
-                title = R.string.support_contact_screen,
-                screenRoute = Screens.Support.route,
-                selectedIcon = Icons.Filled.Mail,
-                unselectedIcon = Icons.Filled.Mail,
-            ),
+    NavItemType.Support to NavItem(
+        title = R.string.support_contact_screen,
+        screenRoute = Screens.Support.route,
+        icon = Icons.Filled.Mail
     )
+)
+
 
 // ------------------- Company Screen Info Items -------------------
 val companyInfoScreenItemsMap = mapOf(
@@ -111,23 +148,16 @@ val companyInfoScreenItemsMap = mapOf(
         NavItem(
             title = R.string.company_workers_screen,
             screenRoute = Screens.Employees.route,
-            selectedIcon = Icons.Outlined.Cases,
+            icon = Icons.Outlined.Cases,
             unselectedIcon = Icons.Outlined.Cases,
         ),
     NavItemType.CompanyCustomers to
         NavItem(
             title = R.string.company_customers_screen,
             screenRoute = Screens.Customers.route,
-            selectedIcon = Icons.Outlined.People,
+            icon = Icons.Outlined.People,
             unselectedIcon = Icons.Outlined.People,
-        ),
-    NavItemType.CompanyAddress to
-            NavItem(
-                title = R.string.company_address_screen,
-                screenRoute = null,
-                selectedIcon = Icons.Outlined.LocationOn,
-                unselectedIcon = Icons.Filled.AccountCircle,
-            ),
+        )
 )
 
 // ------------------- Other screens -------------------
@@ -137,23 +167,25 @@ val otherNavigationItemsMap = mapOf(
         NavItem(
             title = R.string.profile_screen,
             screenRoute = Screens.Profile.route,
-            selectedIcon = Icons.Filled.AccountCircle,
+            icon = Icons.Filled.AccountCircle,
             unselectedIcon = Icons.Filled.AccountCircle,
         )
 )
 
 val allApplicationScreensMap =
     bottomNavigationBarNavItemsMap +
+    productScreenBottomSheetMenu +
     moreBottomSheetItemsMap +
     companyInfoScreenItemsMap +
     otherNavigationItemsMap
 
 
 
-
 enum class NavItemType {
+    // Each item within special list writes on new line
     Home, Products, Orders, Company, More,
-    Settings, FAQ, AboutApp, Support,
+    AddSimpleProduct, AddProductVariant, AddProductTemplate, Categories, Attributes, StockDelivery,
     CompanyAddress, CompanyWorkers, CompanyCustomers,
+    Settings, FAQ, AboutApp, Support,
     Profile,
 }

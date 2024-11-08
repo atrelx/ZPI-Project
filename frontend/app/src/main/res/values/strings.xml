@@ -33,6 +33,15 @@
     <string name="profile_employment_date">Employment Date</string>
 
     // --------------------- Company screen ---------------------
+    <string name="products_add_simple_product_screen">Add simple product</string>
+    <string name="products_add_product_variant_screen">Add product variant</string>
+    <string name="products_add_product_template_screen">Add product template</string>
+    <string name="products_categories_screen">Categories</string>
+    <string name="products_attributes_screen">Attributes</string>
+    <string name="products_stock_delivery_screen">Stock delivery</string>
+
+
+    // --------------------- Company screen ---------------------
     <string name="company_name">Company name</string>
     <string name="company_screen_description">This is your company. Manage your employees, add customers and change all company data if you need.</string>
     <string name="company_address">Company address</string>

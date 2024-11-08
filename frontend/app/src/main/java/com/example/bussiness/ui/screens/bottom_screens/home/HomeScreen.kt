@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.bussiness.app.NavItemType
 import com.example.bussiness.app.bottomNavigationBarNavItemsMap
+import com.example.bussiness.data.NavItem
 import com.example.bussiness.ui.screens.bottom_screens.orders.OrdersViewModel
 import com.example.bussiness.ui.theme.AmozApplicationTheme
 
@@ -31,6 +32,7 @@ import com.example.bussiness.ui.theme.AmozApplicationTheme
 @Composable
 fun HomeScreen(
     navController: NavController,
+    navigateToScreen: (NavItem) -> Unit,
     paddingValues: PaddingValues,
     salesViewModel: OrdersViewModel = viewModel() ) {
     AmozApplicationTheme {
@@ -47,9 +49,8 @@ fun HomeScreen(
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
                 MoreOrdersTextButton(
                     navigateToScreen = {
-                        navController.navigate(
-                            bottomNavigationBarNavItemsMap[NavItemType.Home]!!.screenRoute!!
-                        )
+                        val ordersNavItem = bottomNavigationBarNavItemsMap[NavItemType.Orders]
+                        navigateToScreen(ordersNavItem!!)
                     } )
                 LastOrdersLazyList(salesList = salesUiState.salesList, maxListItemsVisible = 10 )
             }

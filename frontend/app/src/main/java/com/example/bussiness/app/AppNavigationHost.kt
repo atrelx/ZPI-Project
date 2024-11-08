@@ -7,6 +7,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.bussiness.data.NavItem
+import com.example.bussiness.firebase.Product
 import com.example.bussiness.ui.screens.Screens
 import com.example.bussiness.ui.screens.bottom_screens.additional_screens.AboutScreen
 import com.example.bussiness.ui.screens.bottom_screens.additional_screens.FAQScreen
@@ -18,6 +20,7 @@ import com.example.bussiness.ui.screens.bottom_screens.company.customers.Company
 import com.example.bussiness.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
 import com.example.bussiness.ui.screens.bottom_screens.home.HomeScreen
 import com.example.bussiness.ui.screens.bottom_screens.orders.OrdersScreen
+import com.example.bussiness.ui.screens.bottom_screens.products.ProductAddEditScreen
 import com.example.bussiness.ui.screens.bottom_screens.products.ProductScreen
 import com.example.bussiness.ui.screens.profile.ProfileScreen
 
@@ -25,6 +28,7 @@ import com.example.bussiness.ui.screens.profile.ProfileScreen
 fun AppNavigationHost(
     navController: NavHostController,
     paddingValues: PaddingValues,
+    navigateToScreen: (NavItem) -> Unit,
     callSnackBar: (String, ImageVector?) -> Unit
 ) {
     val companyViewModel: CompanyScreenViewModel = viewModel()
@@ -34,6 +38,7 @@ fun AppNavigationHost(
         // -------------------- Bottom navigation screens --------------------
         composable(Screens.Home.route) {
             HomeScreen(
+                navigateToScreen = { navigateToScreen(it) },
                 navController = navController,
                 paddingValues = paddingValues
             ) }
@@ -52,6 +57,15 @@ fun AppNavigationHost(
                 navController = navController,
                 companyViewModel = companyViewModel,
                 paddingValues = paddingValues
+            ) }
+
+        // -------------------- Bottom navigation screens --------------------
+        composable(Screens.AddEditProduct.route) {
+            ProductAddEditScreen(
+                navController = navController,
+                product = Product(),
+                onComplete = {},
+//                onImageUpload = {}
             ) }
 
         // -------------------- 'More' bottom sheet screens --------------------

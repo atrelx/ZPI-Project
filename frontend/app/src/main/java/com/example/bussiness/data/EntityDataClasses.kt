@@ -1,6 +1,7 @@
 package com.example.bussiness.data
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.bussiness.app.NavItemType
 import java.time.LocalDate
 
 data class Person(
@@ -34,9 +35,11 @@ data class B2BCustomer(
     val phoneNumber: String? = null,
 )
 
+// --------------------- Navigation Items ---------------------
 data class NavItem(
     val title: Int,
-    val screenRoute: String? = null,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
+    val screenRoute: String,
+    val icon: ImageVector,
+    val navItemType: NavItemType? = null,
+    val unselectedIcon: ImageVector? = null,
 )

@@ -2,6 +2,7 @@ package com.example.bussiness.app
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,9 +26,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.bussiness.R
 import com.example.bussiness.data.NavItem
 import com.example.bussiness.ui.CustomSnackBar
-import com.example.bussiness.ui.screens.Screens
 import com.example.bussiness.ui.screens.bottom_screens.more_button.MoreBottomSheet
 import kotlinx.coroutines.launch
 
@@ -51,7 +52,7 @@ fun AppMainScaffold(
         if (currentNavigationItem != navigationItem) {
             navigationItem.screenRoute?.let {
                 navigationController.navigate(it) {
-                    popUpTo(Screens.Home.route) {
+                    popUpTo(navigationController.graph.startDestinationId) {
                         saveState = true
                     }
                     launchSingleTop = true
@@ -104,7 +105,7 @@ fun AppMainScaffold(
                                 )
                             }) {
                             Icon(
-                                imageVector = otherNavigationItemsMap[NavItemType.Profile]!!.selectedIcon,
+                                imageVector = otherNavigationItemsMap[NavItemType.Profile]!!.icon,
                                 contentDescription = null)
                         }
                     }
@@ -118,26 +119,35 @@ fun AppMainScaffold(
                     bottomNavigationItems.forEach { item ->
                         NavigationBarItem(
                             selected = appUiState.currentNavigationItem == item,
-                            onClick = {
-                                item.screenRoute?.let {
-                                    navigateToScreen(item)
-                                } ?: run {
-                                    appViewModel.updateMoreBottomSheetVisibility(true)
-                                }
-                            },
+                            onClick = { navigateToScreen(item) },
                             label = { Text(text = stringResource(item.title)) },
                             alwaysShowLabel = true,
                             icon = {
                                 Icon(
                                     imageVector =
                                         if (appUiState.currentNavigationItem == item) {
-                                            item.selectedIcon
-                                        } else item.unselectedIcon,
+                                            item.icon
+                                        } else item.unselectedIcon ?: item.icon,
                                     contentDescription = stringResource(item.title),
                                 )
                             }
                         )
                     }
+
+                    // -------------------- 'More' bottom Sheet --------------------
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = { appViewModel.updateMoreBottomSheetVisibility(true) },
+                        label = { Text(text = stringResource(R.string.more_screen)) },
+                        alwaysShowLabel = true,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.MoreHoriz,
+                                contentDescription = null,
+                            )
+                        }
+                    )
+
                 }
             }
         },
@@ -155,7 +165,8 @@ fun AppMainScaffold(
         AppNavigationHost(
             navController = navigationController,
             paddingValues = paddingValues,
-            callSnackBar = { text, icon -> callSnackBar(text = text, leadingIcon = icon) }
+            callSnackBar = { text, icon -> callSnackBar(text = text, leadingIcon = icon) },
+            navigateToScreen = { navigateToScreen(it) }
         )
 
         // -------------------- 'More' Bottom Sheet --------------------
