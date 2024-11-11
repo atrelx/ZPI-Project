@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.bussiness"
+    namespace = "com.example.amoz"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.bussiness"
+        applicationId = "com.example.amoz"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -61,6 +61,14 @@ dependencies {
 
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences-rxjava2:1.1.1")
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.1.1")
+
+    implementation("androidx.datastore:datastore:1.1.1")
+    implementation("androidx.datastore:datastore-rxjava2:1.1.1")
+    implementation("androidx.datastore:datastore-rxjava3:1.1.1")
     //  Default dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Bussiness"
+rootProject.name = "Amoz App"
 include(":app")

@@ -32,14 +32,35 @@
     <string name="profile_birth_date">Birth Date</string>
     <string name="profile_employment_date">Employment Date</string>
 
-    // --------------------- Company screen ---------------------
-    <string name="products_add_simple_product_screen">Add simple product</string>
-    <string name="products_add_product_variant_screen">Add product variant</string>
-    <string name="products_add_product_template_screen">Add product template</string>
+    // --------------------- Products screen ---------------------
+    <string name="products_add_simple_product">Add simple product</string>
+    <string name="products_add_product_variant">Add product variant</string>
+    <string name="products_add_product_template">Add product template</string>
     <string name="products_categories_screen">Categories</string>
     <string name="products_attributes_screen">Attributes</string>
     <string name="products_stock_delivery_screen">Stock delivery</string>
 
+    <string name="product_name">Product name</string>
+    <string name="product_description">Product description</string>
+    <string name="product_price">Price</string>
+    <string name="product_vendor">Product vendor</string>
+
+    <string name="product_unit">Product unit</string>
+    <string name="product_amount_in_stock">Amount in stock</string>
+    <string name="product_stock">Stock</string>
+
+    <string name="product_category">Product category</string>
+    <string name="product_category_choose">Choose product category</string>
+
+    <string name="product_template">Product template</string>
+    <string name="product_template_choose">Choose product template</string>
+
+    <string name="product_attributes">Product attributes</string>
+    <string name="product_attributes_choose_name">Attribute value</string>
+    <string name="product_attributes_choose_value">Enter your value</string>
+    <string name="product_attributes_add_attributes">Add new attribute</string>
+
+    <string name="product_template_delete">Delete product template</string>
 
     // --------------------- Company screen ---------------------
     <string name="company_name">Company name</string>
@@ -85,6 +106,7 @@
 
     // --------------------- Other ---------------------
     <string name="done">Done</string>
+    <string name="close">Close</string>
 
 
 </resources>
