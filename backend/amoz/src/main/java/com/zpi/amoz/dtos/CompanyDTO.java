@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public record CompanyDTO(UUID companyId,
                          String companyNumber,
-                         String countryOfRegistration,
                          String name,
+                         String countryOfRegistration,
                          AddressDTO address,
                          Optional<String> regon) {
-    static CompanyDTO toCompanyDTO(Company company) {
+    public static CompanyDTO toCompanyDTO(Company company) {
         return new CompanyDTO(
                 company.getCompanyId(),
                 company.getCompanyNumber(),

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class AuthService {
+public class AuthenticationService {
 
     @Value("${spring.security.oauth2.resource-server.opaque-token.client-id}")
     private String clientId;

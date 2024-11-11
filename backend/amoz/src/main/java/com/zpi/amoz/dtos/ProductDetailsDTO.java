@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public record ProductDTO(
+public record ProductDetailsDTO(
         UUID productId,
         String name,
         BigDecimal price,
@@ -15,11 +15,10 @@ public record ProductDTO(
         Optional<ProductVariantDTO> mainProductVariant,
         List<ProductAttributeDTO> productAttributes,
         Optional<String> description,
-        Optional<String> brand,
-        boolean isActive
+        Optional<String> brand
 ) {
-    public static ProductDTO toProductDTO(Product product) {
-        return new ProductDTO(
+    public static ProductDetailsDTO toProductDetailsDTO(Product product) {
+        return new ProductDetailsDTO(
                 product.getProductId(),
                 product.getName(),
                 product.getPrice(),
@@ -28,8 +27,7 @@ public record ProductDTO(
                 product.getProductAttributes() != null ? product.getProductAttributes().stream()
                         .map(ProductAttributeDTO::toProductAttributeDTO).toList() : List.of(),
                 Optional.ofNullable(product.getDescription()),
-                Optional.ofNullable(product.getBrand()),
-                product.isActive()
+                Optional.ofNullable(product.getBrand())
         );
     }
 }

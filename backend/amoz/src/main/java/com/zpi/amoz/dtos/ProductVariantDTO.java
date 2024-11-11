@@ -17,7 +17,6 @@ public record ProductVariantDTO(UUID productVariantId,
                                 WeightDTO weight,
                                 BigDecimal impactOnPrice,
                                 String variantName,
-                                boolean isActive,
                                 List<VariantAttributeDTO> variantAttributes) {
 
     public static ProductVariantDTO toProductVariantDTO(ProductVariant productVariant) {
@@ -29,7 +28,6 @@ public record ProductVariantDTO(UUID productVariantId,
                 productVariant.getWeight() != null ? WeightDTO.toWeightDTO(productVariant.getWeight()) : null,
                 productVariant.getImpactOnPrice(),
                 productVariant.getVariantName(),
-                productVariant.isActive(),
                 productVariant.getVariantAttributes() != null ? productVariant.getVariantAttributes().stream()
                         .map(VariantAttributeDTO::toVariantAttributeDTO).toList() : List.of()
         );

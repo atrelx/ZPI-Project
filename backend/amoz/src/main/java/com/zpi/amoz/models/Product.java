@@ -47,7 +47,7 @@ public class Product {
     private boolean isActive = true;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductVariant> variants;
+    private List<ProductVariant> productVariants;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductAttribute> productAttributes;
@@ -116,12 +116,12 @@ public class Product {
         this.brand = brand;
     }
 
-    public List<ProductVariant> getVariants() {
-        return variants;
+    public List<ProductVariant> getProductVariants() {
+        return productVariants;
     }
 
-    public void setVariants(List<ProductVariant> variants) {
-        this.variants = variants;
+    public void setProductVariants(List<ProductVariant> productVariants) {
+        this.productVariants = productVariants;
     }
 
     public List<ProductAttribute> getProductAttributes() {
@@ -131,6 +131,7 @@ public class Product {
     public void setProductAttributes(List<ProductAttribute> productAttributes) {
         this.productAttributes = productAttributes;
     }
+
 
     public boolean isActive() {
         return isActive;

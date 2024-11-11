@@ -33,6 +33,10 @@ public class CompanyService {
         return companyRepository.findById(id);
     }
 
+    public Optional<Company> getCompanyByUserId(String userId) {
+        return companyRepository.getCompanyByUserId(userId);
+    }
+
     public Company save(Company company) {
         return companyRepository.save(company);
     }

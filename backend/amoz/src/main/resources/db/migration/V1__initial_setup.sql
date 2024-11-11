@@ -262,19 +262,3 @@ ALTER TABLE VariantAttribute
     ADD CONSTRAINT FK_VariantAttribute_AttributeID FOREIGN KEY (AttributeID) REFERENCES Attribute (AttributeID);
 ALTER TABLE VariantAttribute
     ADD CONSTRAINT FK_VariantAttribute_ProductVariantID FOREIGN KEY (ProductVariantID) REFERENCES ProductVariant (ProductVariantID);
-
-DELIMITER //
-
-CREATE TRIGGER TRG_BEFORE_INSERT_CATEGORY
-    BEFORE INSERT
-    ON Category
-    FOR EACH ROW
-BEGIN
-    IF NEW.ParentCategoryID IS NOT NULL THEN
-        SET NEW.CategoryLevel = (SELECT CategoryLevel FROM Category WHERE CategoryID = NEW.ParentCategoryID) + 1;
-    ELSE
-        SET NEW.CategoryLevel = 1;
-    END IF;
-END //
-
-DELIMITER ;

@@ -1,11 +1,14 @@
 package com.zpi.amoz.repository;
 
+import com.zpi.amoz.models.Employee;
 import com.zpi.amoz.models.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
@@ -13,5 +16,10 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Transactional
     @Query("UPDATE Product p SET p.isActive = false WHERE p.productId = :productId")
     int deactivateProduct(UUID productId);
+
+    @Query(value = "SELECT * FROM Product WHERE Product.isActive = true AND Product.CompanyId = :companyId", nativeQuery = true)
+    List<Product> findAllByCompanyId(String companyId);
+
+    Optional<Product> findByCategory_CategoryId(UUID categoryId);
 }
 

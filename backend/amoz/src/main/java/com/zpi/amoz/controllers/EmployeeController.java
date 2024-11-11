@@ -11,6 +11,7 @@ import com.zpi.amoz.security.UserPrincipal;
 import com.zpi.amoz.services.CompanyService;
 import com.zpi.amoz.services.EmployeeService;
 import com.zpi.amoz.services.UserService;
+import jakarta.mail.Message;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @Autowired
-    private UserService userService;
+    private CompanyService companyService;
 
     @PostMapping("/acceptInvitation")
     public ResponseEntity<Void> acceptInvitationToCompany(@RequestParam String token) {
@@ -45,35 +46,44 @@ public class EmployeeController {
     public ResponseEntity<MessageResponse> inviteEmployeeToCompany(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
                                                                    @RequestParam String employeeEmail) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
-        User user = userService.findById(userPrincipal.getSub())
-                .orElseThrow(() -> new EntityNotFoundException("You are not registered"));
-
-        Company company = Optional.ofNullable(user.getEmployee().getCompany())
-                .orElseThrow(() -> new EntityNotFoundException("You are not in any company"));
-
+        UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
+                .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
+                .getCompanyId();
         try {
-            employeeService.inviteEmployeeToCompany(company.getCompanyId(), employeeEmail).get();
+            employeeService.inviteEmployeeToCompany(companyId, employeeEmail).get();
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
         }
     }
 
-    @PatchMapping("/{companyId}/kick/{employeeId}")
-    public ResponseEntity<MessageResponse> kickEmployeeFromCompany(@PathVariable UUID companyId,
-                                                                   @PathVariable UUID employeeId) {
+    @PatchMapping("/kick/{employeeId}")
+    public ResponseEntity<MessageResponse> kickEmployeeFromCompany(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @PathVariable UUID employeeId) {
         try {
+            UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+            UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
+                    .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
+                    .getCompanyId();
             employeeService.kickFromCompanyById(companyId, employeeId);
             return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse(e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MessageResponse(e.getMessage()));
         }
     }
 
-    @GetMapping("/{companyId}")
-    public ResponseEntity<List<EmployeeDTO>> getEmployeesByCompanyId(@PathVariable UUID companyId) {
+    @GetMapping
+    public ResponseEntity<List<EmployeeDTO>> getEmployeesByCompanyId(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
         try {
+            UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+            UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
+                    .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
+                    .getCompanyId();
             List<EmployeeDTO> employees = employeeService.getEmployeesByCompanyId(companyId);
             return ResponseEntity.ok(employees);
         } catch (EntityNotFoundException e) {

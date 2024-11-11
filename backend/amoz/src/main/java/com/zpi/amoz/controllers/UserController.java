@@ -9,6 +9,7 @@ import com.zpi.amoz.models.Person;
 import com.zpi.amoz.models.User;
 import com.zpi.amoz.requests.UserRegisterRequest;
 import com.zpi.amoz.responses.MessageResponse;
+import com.zpi.amoz.responses.PathResponse;
 import com.zpi.amoz.responses.UserIsRegisteredResponse;
 import com.zpi.amoz.security.UserPrincipal;
 import com.zpi.amoz.services.*;
@@ -75,7 +76,7 @@ public class UserController {
     }
 
     @PutMapping("/profilePicture")
-    public ResponseEntity<MessageResponse> uploadProfilePicture(
+    public ResponseEntity<?> uploadProfilePicture(
             @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
             @RequestParam("file") MultipartFile file) {
 
@@ -103,7 +104,7 @@ public class UserController {
             String uploadedFilePath = fileService.saveFile(bufferedImage, ImageDirectory.USER_IMAGES.getDirectoryName(), sub);
 
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new MessageResponse(uploadedFilePath));
+                    .body(new PathResponse(uploadedFilePath));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MessageResponse("Failed to upload file."));
