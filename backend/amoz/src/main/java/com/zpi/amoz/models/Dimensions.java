@@ -2,6 +2,7 @@ package com.zpi.amoz.models;
 
 import com.zpi.amoz.enums.UnitDimensions;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -20,8 +21,16 @@ public class Dimensions {
     @Column(nullable = false)
     private UnitDimensions unitDimensions = UnitDimensions.M;
 
+    @Min(0)
+    @Column(nullable = false)
     private Double height;
+
+    @Min(0)
+    @Column(nullable = false)
     private Double length;
+
+    @Min(0)
+    @Column(nullable = false)
     private Double width;
 
     @OneToMany(mappedBy = "dimensions", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

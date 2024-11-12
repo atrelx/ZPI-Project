@@ -1,13 +1,11 @@
 package com.zpi.amoz.requests;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.zpi.amoz.handlers.NullToEmptyListDeserializer;
 import jakarta.validation.constraints.*;
 
 public record ProductCreateRequest(
@@ -27,10 +25,10 @@ public record ProductCreateRequest(
         Optional<@Size(max = 1000, message = "Description cannot exceed 1000 characters") String> description,
 
         Optional<@Size(max = 50, message = "Brand cannot exceed 50 characters") String> brand,
-        @JsonDeserialize(using = NullToEmptyListDeserializer.class)
+
         List<UUID> productVariantIds,
-        @JsonDeserialize(using = NullToEmptyListDeserializer.class)
-        List<UUID> productAttributesIds
+
+        List<AttributeCreateRequest> productAttributes
 
 
 ) {
@@ -41,7 +39,7 @@ public record ProductCreateRequest(
             Optional<String> description,
             Optional<String> brand,
             List<UUID> productVariantIds,
-            List<UUID> productAttributesIds
+            List<AttributeCreateRequest> productAttributes
     ) {
         this.name = name;
         this.price = price;
@@ -49,7 +47,7 @@ public record ProductCreateRequest(
         this.description = description;
         this.brand = brand;
         this.productVariantIds = productVariantIds != null ? productVariantIds : List.of();
-        this.productAttributesIds = productAttributesIds != null ? productAttributesIds : List.of();
+        this.productAttributes = productAttributes != null ? productAttributes : List.of();
     }
 }
 

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "Invitation", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"CompanyID", "EmployeeEmail"})
+        @UniqueConstraint(columnNames = {"CompanyID", "EmployeeID"})
 })
 @RequiredArgsConstructor
 public class Invitation {
@@ -24,8 +24,9 @@ public class Invitation {
     @JoinColumn(name = "CompanyID", nullable = false)
     private Company company;
 
-    @Column(name = "EmployeeEmail", nullable = false, length = 100)
-    private String employeeEmail;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EmployeeID", nullable = false)
+    private Employee employee;
 
     @Column(name = "Token", nullable = false, columnDefinition = "CHAR(36)", unique = true)
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -39,12 +40,12 @@ public class Invitation {
         this.invitationId = invitationId;
     }
 
-    public String getEmployeeEmail() {
-        return employeeEmail;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setEmployeeEmail(String employeeEmail) {
-        this.employeeEmail = employeeEmail;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public UUID getToken() {

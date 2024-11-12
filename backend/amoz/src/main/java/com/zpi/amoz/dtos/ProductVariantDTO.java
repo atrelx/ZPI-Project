@@ -15,7 +15,7 @@ public record ProductVariantDTO(UUID productVariantId,
                                 StockDTO stock,
                                 DimensionsDTO dimensions,
                                 WeightDTO weight,
-                                BigDecimal impactOnPrice,
+                                BigDecimal variantPrice,
                                 String variantName,
                                 List<VariantAttributeDTO> variantAttributes) {
 
@@ -26,7 +26,7 @@ public record ProductVariantDTO(UUID productVariantId,
                 productVariant.getStock() != null ? StockDTO.toStockDTO(productVariant.getStock()) : null,
                 productVariant.getDimensions() != null ? DimensionsDTO.toDimensionsDTO(productVariant.getDimensions()) : null,
                 productVariant.getWeight() != null ? WeightDTO.toWeightDTO(productVariant.getWeight()) : null,
-                productVariant.getImpactOnPrice(),
+                productVariant.getVariantPrice(),
                 productVariant.getVariantName(),
                 productVariant.getVariantAttributes() != null ? productVariant.getVariantAttributes().stream()
                         .map(VariantAttributeDTO::toVariantAttributeDTO).toList() : List.of()

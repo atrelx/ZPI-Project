@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"ProductVariantID", "AttributeID"})
+        @UniqueConstraint(columnNames = {"ProductVariantID", "AttributeName"})
 })
 public class VariantAttribute {
     @Id
@@ -22,7 +22,7 @@ public class VariantAttribute {
     private ProductVariant productVariant;
 
     @ManyToOne
-    @JoinColumn(name = "attributeId", nullable = false)
+    @JoinColumn(name = "attributeName", nullable = false)
     private Attribute attribute;
 
     @Column(length = 255)

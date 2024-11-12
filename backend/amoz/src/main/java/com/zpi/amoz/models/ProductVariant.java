@@ -36,7 +36,7 @@ public class ProductVariant {
     private Weight weight;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal impactOnPrice;
+    private BigDecimal variantPrice;
 
     @Column(length = 100)
     private String variantName;
@@ -87,12 +87,12 @@ public class ProductVariant {
         this.weight = weight;
     }
 
-    public BigDecimal getImpactOnPrice() {
-        return impactOnPrice;
+    public BigDecimal getVariantPrice() {
+        return variantPrice;
     }
 
-    public void setImpactOnPrice(BigDecimal impactOnPrice) {
-        this.impactOnPrice = impactOnPrice;
+    public void setVariantPrice(BigDecimal variantPrice) {
+        this.variantPrice = variantPrice;
     }
 
     public String getVariantName() {

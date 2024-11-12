@@ -75,7 +75,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/profilePicture")
+    @PutMapping("/picture")
     public ResponseEntity<?> uploadProfilePicture(
             @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
             @RequestParam("file") MultipartFile file) {
@@ -111,7 +111,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/profilePicture")
+    @GetMapping("/picture")
     public ResponseEntity<byte[]> getProfilePicture(
             @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
 

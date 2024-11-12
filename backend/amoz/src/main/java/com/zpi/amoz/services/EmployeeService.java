@@ -38,9 +38,6 @@ public class EmployeeService {
     private CompanyRepository companyRepository;
 
     @Autowired
-    private ContactPersonRepository contactPersonRepository;
-
-    @Autowired
     private EmailService emailService;
 
     public List<Employee> findAll() {
@@ -71,13 +68,10 @@ public class EmployeeService {
     @Transactional
     public CompletableFuture<Void> inviteEmployeeToCompany(UUID companyId, String employeeEmailAddress) {
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new EntityNotFoundException("Company not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Company for given id found: " + companyId));
 
-        ContactPerson contactPerson = contactPersonRepository.findByEmailAddress(employeeEmailAddress)
-                .orElseThrow(() -> new EntityNotFoundException("Contact person not found"));
-
-        Employee employee = Optional.ofNullable(contactPerson.getEmployee())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+        Employee employee = employeeRepository.findByContactPerson_EmailAddress(employeeEmailAddress)
+                .orElseThrow(() -> new EntityNotFoundException("Employee for given email address not found: " + employeeEmailAddress));
 
         if (employee.getCompany() != null) {
             throw new RuntimeException("Employee already has company");
@@ -86,7 +80,7 @@ public class EmployeeService {
         Invitation invitation = new Invitation();
 
         invitation.setCompany(company);
-        invitation.setEmployeeEmail(employeeEmailAddress);
+        invitation.setEmployee(employee);
         invitationRepository.save(invitation);
 
         UUID confirmationToken = invitation.getToken();
@@ -114,11 +108,7 @@ public class EmployeeService {
         Invitation invitation = invitationRepository.findByToken(confirmationToken)
                 .orElseThrow(() -> new EntityNotFoundException("Invalid confirmation token"));
 
-        ContactPerson contactPerson = contactPersonRepository.findByEmailAddress(invitation.getEmployeeEmail())
-                .orElseThrow(() -> new EntityNotFoundException("Contact person not found"));
-
-        Employee employee = Optional.ofNullable(contactPerson.getEmployee())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+        Employee employee = invitation.getEmployee();
 
         if (employee.getCompany() != null) {
             throw new RuntimeException("Employee already has company");

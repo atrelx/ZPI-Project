@@ -16,24 +16,24 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private ProductVariantRepository productVariantRepository;
 
     @Autowired
-    private ProductAttributeRepository productAttributeRepository;
-
+    private AttributeService attributeService;
     @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private CompanyRepository companyRepository;
+    private ProductAttributeRepository productAttributeRepository;
 
     @Autowired
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    private CompanyRepository companyRepository;
+
 
     public List<Product> findAll() {
         return productRepository.findAll().stream().filter(Product::isActive).collect(Collectors.toList());
@@ -71,11 +71,11 @@ public class ProductService {
 
     @Transactional
     public Product createProduct(UUID companyId, ProductCreateRequest productDetails) {
-        Product product = new Product();
-        product.setName(productDetails.name());
-        product.setPrice(productDetails.price());
-        product.setDescription(productDetails.description().orElse(null));
-        product.setBrand(productDetails.brand().orElse(null));
+        Product initialProduct = new Product();
+        initialProduct.setName(productDetails.name());
+        initialProduct.setPrice(productDetails.price());
+        initialProduct.setDescription(productDetails.description().orElse(null));
+        initialProduct.setBrand(productDetails.brand().orElse(null));
 
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find company for given id"));
@@ -84,11 +84,17 @@ public class ProductService {
         if (categoryRepository.hasChild(category.getCategoryId())) {
             throw new IllegalArgumentException("Given category is not at the bottom level");
         }
-        List<ProductAttribute> productAttributes = productAttributeRepository.findAllById(productDetails.productAttributesIds());
+        initialProduct.setCategory(category);
+        initialProduct.setCompany(company);
+
+        Product product = productRepository.save(initialProduct);
+
+        List<ProductAttribute> productAttributes = productDetails.productAttributes().stream()
+                .map(attribute -> attributeService.createProductAttribute(attribute, product.getProductId()))
+                .collect(Collectors.toList());
+
         List<ProductVariant> productVariants = productVariantRepository.findAllById(productDetails.productVariantIds());
 
-        product.setCompany(company);
-        product.setCategory(category);
         product.setProductAttributes(productAttributes);
         product.setProductVariants(productVariants);
 
@@ -110,7 +116,12 @@ public class ProductService {
         if (categoryRepository.hasChild(category.getCategoryId())) {
             throw new IllegalArgumentException("Given category is not at the bottom level");
         }
-        List<ProductAttribute> productAttributes = productAttributeRepository.findAllById(productDetails.productAttributesIds());
+
+        productAttributeRepository.deleteAllByProductId(productId);
+
+        List<ProductAttribute> productAttributes = productDetails.productAttributes().stream()
+                .map(attribute -> attributeService.createProductAttribute(attribute, product.getProductId()))
+                .collect(Collectors.toList());
         List<ProductVariant> productVariants = productVariantRepository.findAllById(productDetails.productVariantIds());
 
         product.setCategory(category);

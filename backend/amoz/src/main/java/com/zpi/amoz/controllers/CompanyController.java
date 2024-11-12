@@ -100,7 +100,7 @@ public class CompanyController {
         }
     }
 
-    @PutMapping("/companyPicture")
+    @PutMapping("/picture")
     public ResponseEntity<?> uploadCompanyProfilePicture(
             @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
             @RequestParam("file") MultipartFile file) {
@@ -141,7 +141,7 @@ public class CompanyController {
         }
     }
 
-    @GetMapping("/companyPicture")
+    @GetMapping("/picture")
     public ResponseEntity<byte[]> getCompanyProfilePicture(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
         try {
             UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);

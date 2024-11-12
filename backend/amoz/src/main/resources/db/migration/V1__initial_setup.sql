@@ -15,7 +15,7 @@ CREATE TABLE ProductVariant
     ProductID        CHAR(36)       NOT NULL,
     Code             INT            NOT NULL UNIQUE,
     StockID          CHAR(36)       NOT NULL,
-    ImpactOnPrice    DECIMAL(10, 2) NOT NULL DEFAULT 0.0,
+    VariantPrice     DECIMAL(10, 2) NOT NULL,
     IsActive         BOOLEAN        NOT NULL DEFAULT TRUE,
     DimensionsID     CHAR(36),
     WeightID         CHAR(36),
@@ -31,17 +31,16 @@ CREATE TABLE Weight
 
 CREATE TABLE Attribute
 (
-    AttributeID   CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    AttributeName VARCHAR(50) NOT NULL
+    AttributeName VARCHAR(50) NOT NULL UNIQUE PRIMARY KEY
 );
 
 CREATE TABLE Dimensions
 (
     DimensionsID   CHAR(36) NOT NULL            DEFAULT (UUID()) PRIMARY KEY,
     UnitDimensions ENUM ('MM', 'CM', 'M', 'DM') DEFAULT 'M' NOT NULL,
-    Height         DOUBLE,
-    Length         DOUBLE,
-    Width          DOUBLE
+    Height         DOUBLE CHECK (Height > 0.0) NOT NULL,
+    Length         DOUBLE CHECK (Length > 0.0) NOT NULL,
+    Width          DOUBLE CHECK (Width > 0.0) NOT NULL
 );
 
 CREATE TABLE Person
@@ -163,18 +162,18 @@ CREATE TABLE ProductAttribute
 (
     ProductAttributeID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
     ProductID          CHAR(36) NOT NULL,
-    AttributeID        CHAR(36) NOT NULL,
+    AttributeName      VARCHAR(50) NOT NULL,
     Value              VARCHAR(255),
-    UNIQUE (ProductID, AttributeID)
+    UNIQUE (ProductID, AttributeName)
 );
 
 CREATE TABLE VariantAttribute
 (
     VariantAttributeID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
     ProductVariantID   CHAR(36) NOT NULL,
-    AttributeID        CHAR(36) NOT NULL,
+    AttributeName      VARCHAR(50) NOT NULL,
     Value              VARCHAR(255),
-    UNIQUE (ProductVariantID, AttributeID)
+    UNIQUE (ProductVariantID, AttributeName)
 );
 
 CREATE TABLE Address
@@ -192,9 +191,9 @@ CREATE TABLE Invitation
 (
     InvitationID  CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
     CompanyID     CHAR(36)     NOT NULL,
-    EmployeeEmail VARCHAR(100) NOT NULL,
+    EmployeeID    CHAR(36)     NOT NULL,
     Token         CHAR(36)     NOT NULL UNIQUE,
-    UNIQUE (CompanyID, EmployeeEmail)
+    UNIQUE (CompanyID, EmployeeID)
 );
 
 ALTER TABLE Category
@@ -234,6 +233,8 @@ ALTER TABLE Employee
 
 ALTER TABLE Invitation
     ADD CONSTRAINT FK_Invitation_CompanyID FOREIGN KEY (CompanyID) REFERENCES Company (CompanyID);
+ALTER TABLE Invitation
+    ADD CONSTRAINT FK_Invitation_EmployeeID FOREIGN KEY (EmployeeID) REFERENCES Employee (EmployeeID);
 
 ALTER TABLE ProductOrder
     ADD CONSTRAINT FK_ProductOrder_InvoiceID FOREIGN KEY (InvoiceID) REFERENCES Invoice (InvoiceID);
@@ -246,7 +247,7 @@ ALTER TABLE Product
     ADD CONSTRAINT FK_Product_MainProductVariantID FOREIGN KEY (MainProductVariantID) REFERENCES ProductVariant (ProductVariantID);
 
 ALTER TABLE ProductAttribute
-    ADD CONSTRAINT FK_ProductAttribute_AttributeID FOREIGN KEY (AttributeID) REFERENCES Attribute (AttributeID);
+    ADD CONSTRAINT FK_ProductAttribute_AttributeName FOREIGN KEY (AttributeName) REFERENCES Attribute (AttributeName);
 ALTER TABLE ProductAttribute
     ADD CONSTRAINT FK_ProductAttribute_ProductID FOREIGN KEY (ProductID) REFERENCES Product (ProductID);
 
@@ -259,6 +260,7 @@ ALTER TABLE ProductOrderItem
     ADD CONSTRAINT FK_ProductOrderItem_ProductVariantID FOREIGN KEY (ProductVariantID) REFERENCES ProductVariant (ProductVariantID);
 
 ALTER TABLE VariantAttribute
-    ADD CONSTRAINT FK_VariantAttribute_AttributeID FOREIGN KEY (AttributeID) REFERENCES Attribute (AttributeID);
+    ADD CONSTRAINT FK_VariantAttribute_AttributeName FOREIGN KEY (AttributeName) REFERENCES Attribute (AttributeName);
 ALTER TABLE VariantAttribute
     ADD CONSTRAINT FK_VariantAttribute_ProductVariantID FOREIGN KEY (ProductVariantID) REFERENCES ProductVariant (ProductVariantID);
+    

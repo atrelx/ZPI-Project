@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"ProductID", "AttributeID"})
+        @UniqueConstraint(columnNames = {"ProductID", "AttributeName"})
 })
 public class ProductAttribute {
     @Id
@@ -22,7 +23,7 @@ public class ProductAttribute {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "attributeId", nullable = false)
+    @JoinColumn(name = "attributeName", nullable = false)
     private Attribute attribute;
 
     @Column(length = 255)

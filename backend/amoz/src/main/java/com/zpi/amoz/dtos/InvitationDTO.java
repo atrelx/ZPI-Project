@@ -7,14 +7,14 @@ import java.util.UUID;
 public record InvitationDTO(
         UUID invitationId,
         UUID companyId,
-        String employeeEmail,
+        UUID employeeId,
         UUID token
 ) {
     public static InvitationDTO toInvitationDTO(Invitation invitation) {
         return new InvitationDTO(
                 invitation.getInvitationId(),
-                invitation.getCompany() != null ? invitation.getCompany().getCompanyId() : null,
-                invitation.getEmployeeEmail(),
+                invitation.getCompany().getCompanyId(),
+                invitation.getEmployee().getEmployeeId(),
                 invitation.getToken()
         );
     }

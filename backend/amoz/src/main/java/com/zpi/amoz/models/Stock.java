@@ -18,7 +18,7 @@ public class Stock {
     @Column(nullable = false)
     private Integer amountAvailable;
 
-    @Column(nullable = false)
+    @Column
     private Integer alarmingAmount;
 
     @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -61,7 +61,10 @@ public class Stock {
     }
 
     public boolean isAlarmTriggered() {
-        return amountAvailable <= alarmingAmount;
+        if (alarmingAmount != null) {
+            return amountAvailable <= alarmingAmount;
+        }
+        return false;
     }
 
     public List<ProductVariant> getProductVariants() {

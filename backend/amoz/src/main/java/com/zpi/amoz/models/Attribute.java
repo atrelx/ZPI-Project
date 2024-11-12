@@ -1,5 +1,6 @@
 package com.zpi.amoz.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -10,12 +11,7 @@ import java.util.UUID;
 @Entity
 public class Attribute {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID attributeId;
-
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String attributeName;
 
     @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -23,14 +19,6 @@ public class Attribute {
 
     @OneToMany(mappedBy = "attribute", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VariantAttribute> variantAttributes;
-
-    public UUID getAttributeId() {
-        return attributeId;
-    }
-
-    public void setAttributeId(UUID attributeId) {
-        this.attributeId = attributeId;
-    }
 
     public String getAttributeName() {
         return attributeName;

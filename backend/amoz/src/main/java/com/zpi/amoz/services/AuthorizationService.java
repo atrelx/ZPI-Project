@@ -1,11 +1,9 @@
 package com.zpi.amoz.services;
 
-import com.zpi.amoz.models.Category;
-import com.zpi.amoz.models.Company;
-import com.zpi.amoz.models.Product;
-import com.zpi.amoz.models.User;
+import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.CategoryRepository;
 import com.zpi.amoz.repository.ProductRepository;
+import com.zpi.amoz.repository.ProductVariantRepository;
 import com.zpi.amoz.repository.UserRepository;
 import com.zpi.amoz.security.UserPrincipal;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,6 +30,9 @@ public class AuthorizationService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
 
     public boolean hasPermissionToUpdateProduct(UserPrincipal userPrincipal, UUID productId) {
         UUID userCompanyId = companyService.getCompanyByUserId(userPrincipal.getSub())
@@ -42,6 +43,17 @@ public class AuthorizationService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
         return product.getCompany().getCompanyId().equals(userCompanyId);
+    }
+
+    public boolean hasPermissionToUpdateProductVariant(UserPrincipal userPrincipal, UUID productVariantId) {
+        UUID userCompanyId = companyService.getCompanyByUserId(userPrincipal.getSub())
+                .orElseThrow(() -> new EntityNotFoundException("User is not in any company"))
+                .getCompanyId();
+
+        ProductVariant productVariant = productVariantRepository.findById(productVariantId)
+                .orElseThrow(() -> new EntityNotFoundException("Product variant not found"));
+
+        return productVariant.getProduct().getCompany().getCompanyId().equals(userCompanyId);
     }
 
     public boolean hasPermissionToUpdateCategory(UserPrincipal userPrincipal, UUID categoryId) {
