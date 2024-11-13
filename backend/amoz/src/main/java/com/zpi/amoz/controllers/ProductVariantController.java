@@ -1,6 +1,6 @@
 package com.zpi.amoz.controllers;
 
-import com.zpi.amoz.dtos.ProductVariantDTO;
+import com.zpi.amoz.dtos.ProductVariantDetailsDTO;
 import com.zpi.amoz.enums.ImageDirectory;
 import com.zpi.amoz.models.ProductVariant;
 import com.zpi.amoz.requests.ProductVariantCreateRequest;
@@ -49,8 +49,8 @@ public class ProductVariantController {
     public ResponseEntity<?> createProductVariant(@Valid @RequestBody ProductVariantCreateRequest request) {
         try {
             ProductVariant productVariant = productVariantService.createProductVariant(request);
-            ProductVariantDTO productVariantDTO = ProductVariantDTO.toProductVariantDTO(productVariant);
-            return ResponseEntity.status(HttpStatus.CREATED).body(productVariantDTO);
+            ProductVariantDetailsDTO productVariantDetailsDTO = ProductVariantDetailsDTO.toProductVariantDetailsDTO(productVariant);
+            return ResponseEntity.status(HttpStatus.CREATED).body(productVariantDetailsDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e.getMessage()));
         } catch (RuntimeException e) {
@@ -63,8 +63,8 @@ public class ProductVariantController {
                                                   @Valid @RequestBody ProductVariantCreateRequest request) {
         try {
             ProductVariant productVariant = productVariantService.updateProductVariant(productVariantId, request);
-            ProductVariantDTO productVariantDTO = ProductVariantDTO.toProductVariantDTO(productVariant);
-            return ResponseEntity.status(HttpStatus.OK).body(productVariantDTO);
+            ProductVariantDetailsDTO productVariantDetailsDTO = ProductVariantDetailsDTO.toProductVariantDetailsDTO(productVariant);
+            return ResponseEntity.status(HttpStatus.OK).body(productVariantDetailsDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e.getMessage()));
         } catch (RuntimeException e) {
@@ -93,8 +93,8 @@ public class ProductVariantController {
     public ResponseEntity<?> getAllProductVariantsByProductId(@PathVariable UUID productId) {
         try {
             List<ProductVariant> productVariantList = productVariantService.findAllByProductId(productId);
-            List<ProductVariantDTO> productVariantDTOs = productVariantList.stream().map(ProductVariantDTO::toProductVariantDTO).collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.OK).body(productVariantDTOs);
+            List<ProductVariantDetailsDTO> productVariantDetailsDTOS = productVariantList.stream().map(ProductVariantDetailsDTO::toProductVariantDetailsDTO).collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.OK).body(productVariantDetailsDTOS);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e));
         } catch (RuntimeException e) {
@@ -107,8 +107,8 @@ public class ProductVariantController {
         try {
             ProductVariant productVariant = productVariantService.findById(productVariantId)
                     .orElseThrow(() -> new EntityNotFoundException("Could not find product variant for given id: " + productVariantId));
-            ProductVariantDTO productVariantDTO = ProductVariantDTO.toProductVariantDTO(productVariant);
-            return ResponseEntity.status(HttpStatus.OK).body(productVariantDTO);
+            ProductVariantDetailsDTO productVariantDetailsDTO = ProductVariantDetailsDTO.toProductVariantDetailsDTO(productVariant);
+            return ResponseEntity.status(HttpStatus.OK).body(productVariantDetailsDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e));
         } catch (RuntimeException e) {

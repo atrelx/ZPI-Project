@@ -9,7 +9,7 @@ import java.util.Optional;
 public record CompanyCreateRequest(@NotBlank @Size(max = 50) String companyNumber,
                                    @NotBlank @Size(max = 100) String countryOfRegistration,
                                    @NotBlank @Size(max = 100) String name,
-                                   @NotNull CompanyCreateRequestAddress address,
+                                   @NotNull AddressCreateRequest address,
                                    Optional<@Size(max = 14) String> regon) {
 }
 

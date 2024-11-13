@@ -6,21 +6,17 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
+public record ProductVariantDetailsDTO(UUID productVariantId,
+                                       Integer code,
+                                       StockDTO stock,
+                                       DimensionsDTO dimensions,
+                                       WeightDTO weight,
+                                       BigDecimal variantPrice,
+                                       String variantName,
+                                       List<VariantAttributeDTO> variantAttributes) {
 
-public record ProductVariantDTO(UUID productVariantId,
-                                Integer code,
-                                StockDTO stock,
-                                DimensionsDTO dimensions,
-                                WeightDTO weight,
-                                BigDecimal variantPrice,
-                                String variantName,
-                                List<VariantAttributeDTO> variantAttributes) {
-
-    public static ProductVariantDTO toProductVariantDTO(ProductVariant productVariant) {
-        return new ProductVariantDTO(
+    public static ProductVariantDetailsDTO toProductVariantDetailsDTO(ProductVariant productVariant) {
+        return new ProductVariantDetailsDTO(
                 productVariant.getProductVariantId(),
                 productVariant.getCode(),
                 productVariant.getStock() != null ? StockDTO.toStockDTO(productVariant.getStock()) : null,

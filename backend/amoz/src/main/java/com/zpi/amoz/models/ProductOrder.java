@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -115,6 +116,12 @@ public class ProductOrder {
 
     public void setOrderItems(List<ProductOrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public BigDecimal getTotalDue() {
+        return getOrderItems().stream()
+                .map(ProductOrderItem::getItemPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
 

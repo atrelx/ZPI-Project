@@ -1,9 +1,17 @@
 package com.zpi.amoz.services;
 
+import com.zpi.amoz.models.ProductOrder;
 import com.zpi.amoz.models.ProductOrderItem;
+import com.zpi.amoz.models.ProductVariant;
+import com.zpi.amoz.models.Stock;
 import com.zpi.amoz.repository.ProductOrderItemRepository;
+import com.zpi.amoz.repository.ProductVariantRepository;
+import com.zpi.amoz.requests.ProductOrderItemCreateRequest;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,12 +20,15 @@ import java.util.UUID;
 @Service
 public class ProductOrderItemService {
 
-    private final ProductOrderItemRepository productOrderItemRepository;
 
     @Autowired
-    public ProductOrderItemService(ProductOrderItemRepository productOrderItemRepository) {
-        this.productOrderItemRepository = productOrderItemRepository;
-    }
+    private ProductOrderItemRepository productOrderItemRepository;
+
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
+    private ProductVariantService productVariantService;
 
     public List<ProductOrderItem> findAll() {
         return productOrderItemRepository.findAll();
@@ -38,6 +49,42 @@ public class ProductOrderItemService {
         } else {
             return false;
         }
+    }
+
+    @Transactional
+    public ProductOrderItem createProductOrderItem(ProductOrder productOrder, ProductOrderItemCreateRequest request) {
+        ProductOrderItem productOrderItem = new ProductOrderItem();
+        productOrderItem.setProductOrder(productOrder);
+
+        ProductVariant productVariant = productVariantRepository.findByProductVariantIdWithLock(request.productVariantId())
+                .orElseThrow(() -> new EntityNotFoundException("Could not find product variant for given id: " + request.productVariantId()));
+
+        productOrderItem.setProductVariant(productVariant);
+
+        productOrderItem.setProductName(productVariantService.getFullProductName(productVariant));
+        productOrderItem.setUnitPrice(productVariant.getVariantPrice());
+
+        Stock stock = productVariant.getStock();
+        if (stock.getAmountAvailable() < request.amount()) {
+            throw new IllegalArgumentException("Requested amount is bigger than amount available in stock");
+        }
+        stock.decreaseStock(request.amount());
+        productOrderItem.setAmount(request.amount());
+
+        return productOrderItemRepository.save(productOrderItem);
+    }
+
+    @Transactional
+    public void removeProductOrderItem(ProductOrderItem productOrderItem) {
+        ProductVariant productVariant = productVariantRepository.findByProductVariantIdWithLock(productOrderItem.getProductVariant().getProductVariantId())
+                .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID"));
+
+        Stock stock = productVariant.getStock();
+
+        int amountToReturn = productOrderItem.getAmount();
+        stock.increaseStock(amountToReturn);
+
+        productOrderItemRepository.delete(productOrderItem);
     }
 }
 

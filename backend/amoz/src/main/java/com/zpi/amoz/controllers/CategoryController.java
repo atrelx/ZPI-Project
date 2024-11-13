@@ -38,10 +38,13 @@ public class CategoryController {
     @Autowired private CompanyService companyService;
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreateRequest categoryCreateRequest) {
+    public ResponseEntity<?> createCategory(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @Valid @RequestBody CategoryCreateRequest categoryCreateRequest) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
-            Category createdCategory = categoryService.createCategory(categoryCreateRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(CategoryDTO.toCategoryDTO(createdCategory));
+            Category category = categoryService.createCategory(userPrincipal.getSub(), categoryCreateRequest);
+            CategoryDTO categoryDTO = CategoryDTO.toCategoryDTO(category);
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoryDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

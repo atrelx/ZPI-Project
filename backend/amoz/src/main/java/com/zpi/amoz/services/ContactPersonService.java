@@ -2,6 +2,8 @@ package com.zpi.amoz.services;
 
 import com.zpi.amoz.models.ContactPerson;
 import com.zpi.amoz.repository.ContactPersonRepository;
+import com.zpi.amoz.requests.ContactPersonCreateRequest;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +42,22 @@ public class ContactPersonService {
         } else {
             return false;
         }
+    }
+
+    public ContactPerson createContactPerson(ContactPersonCreateRequest request) {
+        ContactPerson contactPerson = new ContactPerson();
+        contactPerson.setContactNumber(request.contactNumber());
+        contactPerson.setEmailAddress(request.emailAddress().orElse(null));
+
+        return contactPersonRepository.save(contactPerson);
+    }
+
+    public ContactPerson updateContactPerson(UUID contactPersonId, ContactPersonCreateRequest request) {
+        ContactPerson contactPerson = contactPersonRepository.findById(contactPersonId)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find contact person for given id: " + contactPersonId));
+        contactPerson.setContactNumber(request.contactNumber());
+        contactPerson.setEmailAddress(request.emailAddress().orElse(null));
+        return contactPersonRepository.save(contactPerson);
     }
 }
 

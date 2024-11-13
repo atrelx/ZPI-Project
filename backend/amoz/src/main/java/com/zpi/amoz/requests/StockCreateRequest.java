@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.Optional;
 
-public record ProductVariantCreateRequestStock(
+public record StockCreateRequest(
         @NotNull(message = "Amount available is required")
         @Min(value = 0, message = "Amount available must be greater than or equal to 0")
         Integer amountAvailable,

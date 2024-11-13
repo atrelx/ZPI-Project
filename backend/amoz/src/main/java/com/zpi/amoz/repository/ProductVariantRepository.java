@@ -1,13 +1,16 @@
 package com.zpi.amoz.repository;
 
 import com.zpi.amoz.models.ProductVariant;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, UUID> {
@@ -18,5 +21,9 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
 
     @Query("SELECT pv FROM ProductVariant pv WHERE pv.product.productId = :productId")
     List<ProductVariant> findAllByProductId(@Param("productId") UUID productId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM ProductVariant p WHERE p.productVariantId = :productVariantId")
+    Optional<ProductVariant> findByProductVariantIdWithLock(@Param("productVariantId") UUID productVariantId);
 }
 

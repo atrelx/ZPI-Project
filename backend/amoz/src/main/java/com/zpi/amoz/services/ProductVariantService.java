@@ -160,4 +160,10 @@ public class ProductVariantService {
 
         productVariantRepository.deactivateProductVariant(productVariantId);
     }
+
+    public String getFullProductName(ProductVariant productVariant) {
+        return  productVariant.getProduct().getName()
+                + (productVariant.getVariantName() != null ? ", " + productVariant.getVariantName() : "");
+    }
+
 }

@@ -4,7 +4,7 @@ import com.zpi.amoz.enums.UnitWeight;
 
 import jakarta.validation.constraints.*;
 
-public record ProductVariantCreateRequestWeight(
+public record WeightCreateRequest(
         @NotNull(message = "Unit weight is required")
         @Positive(message = "Unit weight must be greater than 0")
         UnitWeight unitWeight,

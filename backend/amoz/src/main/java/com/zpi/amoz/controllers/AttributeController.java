@@ -45,4 +45,32 @@ public class AttributeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
         }
     }
+
+    @GetMapping("/product")
+    public ResponseEntity<?> getProductAttributes(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
+        try {
+            UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+            Company company = companyService.getCompanyByUserId(userPrincipal.getSub())
+                    .orElseThrow(() -> new EntityNotFoundException("You are not in any company"));
+            List<AttributeDTO> attributeDTOs = attributeService.getAllProductAttributes(company.getCompanyId())
+                    .stream().map(AttributeDTO::toAttributeDTO).toList();
+            return ResponseEntity.status(HttpStatus.OK).body(attributeDTOs);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/variant")
+    public ResponseEntity<?> getVariantAttributes(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
+        try {
+            UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+            Company company = companyService.getCompanyByUserId(userPrincipal.getSub())
+                    .orElseThrow(() -> new EntityNotFoundException("You are not in any company"));
+            List<AttributeDTO> attributeDTOs = attributeService.getAllVariantAttributes(company.getCompanyId())
+                    .stream().map(AttributeDTO::toAttributeDTO).toList();
+            return ResponseEntity.status(HttpStatus.OK).body(attributeDTOs);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        }
+    }
 }

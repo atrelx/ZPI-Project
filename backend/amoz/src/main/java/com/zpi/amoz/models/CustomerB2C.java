@@ -1,5 +1,7 @@
 package com.zpi.amoz.models;
 
+import com.zpi.amoz.ids.CustomerB2CId;
+import com.zpi.amoz.ids.CustomerId;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -7,35 +9,29 @@ import org.hibernate.type.SqlTypes;
 import java.util.UUID;
 
 @Entity
+@Table(name = "CustomerB2C")
 public class CustomerB2C {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID customerB2CID;
+    @EmbeddedId
+    private CustomerId customerId;
 
-    @OneToOne
-    @JoinColumn(name = "customerId", nullable = false, unique = true)
-    private Customer customer;
-
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personId", nullable = false, unique = true)
     private Person person;
 
-    public UUID getCustomerB2CID() {
-        return customerB2CID;
+    public CustomerId getId() {
+        return customerId;
     }
 
-    public void setCustomerB2CID(UUID customerB2CID) {
-        this.customerB2CID = customerB2CID;
+    public void setId(CustomerId customerId) {
+        this.customerId = customerId;
     }
 
     public Customer getCustomer() {
-        return customer;
+        return customerId.getCustomer();
     }
 
     public void setCustomer(Customer customer) {
-        this.customer = customer;
+        this.customerId.setCustomer(customer);
     }
 
     public Person getPerson() {
@@ -46,3 +42,4 @@ public class CustomerB2C {
         this.person = person;
     }
 }
+

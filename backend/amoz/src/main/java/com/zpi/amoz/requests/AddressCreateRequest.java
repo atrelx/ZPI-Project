@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Optional;
 
-public record CompanyCreateRequestAddress(
+public record AddressCreateRequest(
         @NotBlank @Size(max = 50) String city,
         @NotBlank @Size(max = 50) String street,
         @NotBlank @Size(max = 10) String streetNumber,

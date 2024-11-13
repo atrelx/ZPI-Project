@@ -2,15 +2,11 @@ package com.zpi.amoz.services;
 
 import com.zpi.amoz.dtos.EmployeeDTO;
 import com.zpi.amoz.enums.RoleInCompany;
-import com.zpi.amoz.models.Company;
-import com.zpi.amoz.models.ContactPerson;
-import com.zpi.amoz.models.Employee;
-import com.zpi.amoz.models.Invitation;
+import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.CompanyRepository;
 import com.zpi.amoz.repository.ContactPersonRepository;
 import com.zpi.amoz.repository.EmployeeRepository;
 import com.zpi.amoz.repository.InvitationRepository;
-import com.zpi.amoz.responses.EmployeeDetailsResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AuthorizationServiceException;
@@ -130,5 +126,15 @@ public class EmployeeService {
         return employees.stream()
                 .map(EmployeeDTO::toEmployeeDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Employee createEmployee(User user, ContactPerson contactPerson, Person person) {
+        Employee employee = new Employee();
+        employee.setUser(user);
+        employee.setContactPerson(contactPerson);
+        employee.setPerson(person);
+
+        return employeeRepository.save(employee);
     }
 }

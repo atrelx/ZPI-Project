@@ -5,7 +5,6 @@ import com.zpi.amoz.dtos.EmployeeDTO;
 import com.zpi.amoz.models.Company;
 import com.zpi.amoz.models.Employee;
 import com.zpi.amoz.models.User;
-import com.zpi.amoz.responses.EmployeeDetailsResponse;
 import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
 import com.zpi.amoz.services.CompanyService;

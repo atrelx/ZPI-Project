@@ -51,8 +51,7 @@ public class UserController {
         String sub = userPrincipal.getSub();
 
         try {
-            User user = userService.registerUser(sub, request)
-                    .orElseThrow(() -> new EntityNotFoundException("Could not found user"));
+            User user = userService.registerUser(sub, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -65,8 +64,7 @@ public class UserController {
         String sub = userPrincipal.getSub();
 
         try {
-            User user = userService.updateUser(sub, request)
-                    .orElseThrow(() -> new EntityNotFoundException("Could not found user"));
+            User user = userService.updateUser(sub, request);
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

@@ -32,7 +32,7 @@ public class ProductOrderItem {
     @Column(nullable = false)
     private int amount;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String productName;
 
     public UUID getProductOrderItemId() {
@@ -81,5 +81,9 @@ public class ProductOrderItem {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public BigDecimal getItemPrice() {
+        return BigDecimal.valueOf(amount).multiply(unitPrice);
     }
 }

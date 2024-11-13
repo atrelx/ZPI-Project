@@ -2,6 +2,8 @@ package com.zpi.amoz.services;
 
 import com.zpi.amoz.models.Person;
 import com.zpi.amoz.repository.PersonRepository;
+import com.zpi.amoz.requests.PersonCreateRequest;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,5 +40,26 @@ public class PersonService {
         } else {
             return false;
         }
+    }
+
+    public Person createPerson(PersonCreateRequest request) {
+        Person person = new Person();
+        person.setName(request.name());
+        person.setSurname(request.surname());
+        person.setDateOfBirth(request.dateOfBirth());
+        person.setSex(request.sex());
+
+        return personRepository.save(person);
+    }
+
+    public Person updatePerson(UUID personId, PersonCreateRequest request) {
+        Person person = personRepository.findById(personId)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find person for given id: " + personId));
+        person.setName(request.name());
+        person.setSurname(request.surname());
+        person.setDateOfBirth(request.dateOfBirth());
+        person.setSex(request.sex());
+
+        return personRepository.save(person);
     }
 }

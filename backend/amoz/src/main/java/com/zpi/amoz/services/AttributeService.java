@@ -1,5 +1,6 @@
 package com.zpi.amoz.services;
 
+import com.sun.source.doctree.AttributeTree;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.*;
 import com.zpi.amoz.requests.AttributeCreateRequest;
@@ -54,8 +55,16 @@ public class AttributeService {
         }
     }
 
+    public List<Attribute> getAllProductAttributes(UUID companyId) {
+        return attributeRepository.fetchAllProductAttributesByCompanyId(companyId);
+    }
+
+    public List<Attribute> getAllVariantAttributes(UUID companyId) {
+        return attributeRepository.fetchAllVariantAttributesByCompanyId(companyId);
+    }
+
     public List<Attribute> getAllAttributes(UUID companyId) {
-        return attributeRepository.fetchAllAttributesByCompanyId(companyId);
+        return attributeRepository.fetchAllAttributesByCompanyId(companyId.toString());
     }
 
     @Transactional

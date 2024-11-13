@@ -24,11 +24,13 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Autowired
-    private EmployeeService employeeRepository;
+    private EmployeeService employeeService;
+
     @Autowired
-    private PersonService personRepository;
+    private PersonService personService;
+
     @Autowired
-    private ContactPersonService contactPersonRepository;
+    private ContactPersonService contactPersonService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -47,57 +49,38 @@ public class UserService {
     }
 
     @Transactional
-    public Optional<User> registerUser(String sub, UserRegisterRequest request) {
+    public User registerUser(String sub, UserRegisterRequest request) {
         if (findById(sub).isPresent()) {
             throw new RuntimeException("User already exists");
         }
 
-        User user = new User();
-        user.setUserId(sub);
-        user.setSystemRole(SystemRole.USER);
+        User user = this.createUser(sub, SystemRole.USER);
+        Person person = personService.createPerson(request.person());
+        ContactPerson contactPerson = contactPersonService.createContactPerson(request.contactPerson());
+        Employee employee = employeeService.createEmployee(user, contactPerson, person);
 
-        User savedUser = userRepository.save(user);
-
-        Person person = new Person();
-        person.setName(request.name());
-        person.setSurname(request.surname());
-        person.setDateOfBirth(request.dateOfBirth());
-        person.setSex(request.sex());
-
-        ContactPerson contactPerson = new ContactPerson();
-        contactPerson.setContactNumber(request.contactNumber());
-        contactPerson.setEmailAddress(request.emailAddress().orElse(null));
-
-        Employee employee = new Employee();
-        employee.setUser(savedUser);
-        employee.setContactPerson(contactPerson);
-        employee.setPerson(person);
-
-        personRepository.save(person);
-        contactPersonRepository.save(contactPerson);
-        employeeRepository.save(employee);
-
-        return Optional.of(user);
+        return user;
     }
 
     @Transactional
-    public Optional<User> updateUser(String sub, UserRegisterRequest request) {
+    public User updateUser(String sub, UserRegisterRequest request) {
         User user = findById(sub)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Person person = user.getEmployee().getPerson();
-        person.setName(request.name());
-        person.setSurname(request.surname());
-        person.setDateOfBirth(request.dateOfBirth());
-        person.setSex(request.sex());
-        personRepository.save(person);
+        UUID personId = user.getEmployee().getPerson().getPersonId();
+        personService.updatePerson(personId, request.person());
 
-        ContactPerson contactPerson = user.getEmployee().getContactPerson();
-        contactPerson.setContactNumber(request.contactNumber());
-        contactPerson.setEmailAddress(request.emailAddress().orElse(null));
-        contactPersonRepository.save(contactPerson);
+        UUID contactPersonId = user.getEmployee().getContactPerson().getContactPersonId();
+        contactPersonService.updateContactPerson(contactPersonId, request.contactPerson());
 
-        return Optional.of(user);
+        return user;
+    }
+
+    public User createUser(String sub, SystemRole systemRole) {
+        User user = new User();
+        user.setUserId(sub);
+        user.setSystemRole(systemRole);
+        return userRepository.save(user);
     }
 
     public boolean isUserRegistered(String userId) {

@@ -12,7 +12,7 @@ public record ProductDetailsDTO(
         String name,
         BigDecimal price,
         CategoryDTO category,
-        Optional<ProductVariantDTO> mainProductVariant,
+        Optional<ProductVariantDetailsDTO> mainProductVariant,
         List<ProductAttributeDTO> productAttributes,
         Optional<String> description,
         Optional<String> brand
@@ -23,7 +23,7 @@ public record ProductDetailsDTO(
                 product.getName(),
                 product.getPrice(),
                 CategoryDTO.toCategoryDTO(product.getCategory()),
-                Optional.ofNullable(product.getMainProductVariant() != null ? ProductVariantDTO.toProductVariantDTO(product.getMainProductVariant()) : null),
+                Optional.ofNullable(product.getMainProductVariant() != null ? ProductVariantDetailsDTO.toProductVariantDetailsDTO(product.getMainProductVariant()) : null),
                 product.getProductAttributes() != null ? product.getProductAttributes().stream()
                         .map(ProductAttributeDTO::toProductAttributeDTO).toList() : List.of(),
                 Optional.ofNullable(product.getDescription()),

@@ -7,11 +7,6 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.*;
 
-import javax.swing.text.html.Option;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 public record ProductVariantCreateRequest(
         @NotNull(message = "Product ID is required")
         UUID productID,
@@ -21,11 +16,11 @@ public record ProductVariantCreateRequest(
         int productVariantCode,
 
         @NotNull(message = "Stock information is required")
-        ProductVariantCreateRequestStock stock,
+        StockCreateRequest stock,
 
-        Optional<ProductVariantCreateRequestWeight> weight,
+        Optional<WeightCreateRequest> weight,
 
-        Optional<ProductVariantCreateRequestDimensions> dimensions,
+        Optional<DimensionsCreateRequest> dimensions,
 
         @NotNull(message = "Variant attributes cannot be null")
         List<AttributeCreateRequest> variantAttributes,

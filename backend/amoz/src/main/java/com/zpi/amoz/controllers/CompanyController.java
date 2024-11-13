@@ -3,7 +3,6 @@ package com.zpi.amoz.controllers;
 
 import com.zpi.amoz.dtos.CompanyDTO;
 import com.zpi.amoz.enums.ImageDirectory;
-import com.zpi.amoz.models.Address;
 import com.zpi.amoz.models.Company;
 import com.zpi.amoz.requests.CompanyCreateRequest;
 import com.zpi.amoz.responses.MessageResponse;
@@ -15,7 +14,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -76,7 +73,7 @@ public class CompanyController {
             UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
                     .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
                     .getCompanyId();
-            Company updatedCompany = companyService.update(companyId, companyDetails)
+            Company updatedCompany = companyService.updateCompany(companyId, companyDetails)
                     .orElseThrow(() -> new RuntimeException("Could not update company"));
             return ResponseEntity.status(HttpStatus.OK).body(CompanyDTO.toCompanyDTO(updatedCompany));
         } catch (EntityNotFoundException e) {

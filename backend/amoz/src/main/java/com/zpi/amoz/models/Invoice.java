@@ -22,7 +22,8 @@ public class Invoice {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amountOnInvoice;
 
-    private LocalDate issueDate;
+    @Column(nullable = false)
+    private LocalDate issueDate = LocalDate.now();
 
     @OneToOne(mappedBy = "invoice", cascade = CascadeType.ALL)
     private ProductOrder productOrder;

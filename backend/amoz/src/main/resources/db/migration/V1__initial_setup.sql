@@ -36,11 +36,11 @@ CREATE TABLE Attribute
 
 CREATE TABLE Dimensions
 (
-    DimensionsID   CHAR(36) NOT NULL            DEFAULT (UUID()) PRIMARY KEY,
-    UnitDimensions ENUM ('MM', 'CM', 'M', 'DM') DEFAULT 'M' NOT NULL,
+    DimensionsID   CHAR(36)                    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    UnitDimensions ENUM ('MM', 'CM', 'M', 'DM')         DEFAULT 'M' NOT NULL,
     Height         DOUBLE CHECK (Height > 0.0) NOT NULL,
     Length         DOUBLE CHECK (Length > 0.0) NOT NULL,
-    Width          DOUBLE CHECK (Width > 0.0) NOT NULL
+    Width          DOUBLE CHECK (Width > 0.0)  NOT NULL
 );
 
 CREATE TABLE Person
@@ -55,6 +55,7 @@ CREATE TABLE Person
 CREATE TABLE Category
 (
     CategoryID       CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    CompanyID        CHAR(36)    NOT NULL,
     Name             VARCHAR(30) NOT NULL,
     CategoryLevel    SMALLINT             DEFAULT 1 NOT NULL,
     ParentCategoryID CHAR(36)
@@ -62,9 +63,9 @@ CREATE TABLE Category
 
 CREATE TABLE Customer
 (
-    CustomerID               CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ContactPersonID          CHAR(36)     NOT NULL,
-    NameOnInvoice            VARCHAR(255) NOT NULL,
+    CustomerID               CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    ContactPersonID          CHAR(36) NOT NULL,
+    CompanyID                CHAR(36) NOT NULL,
     DefaultDeliveryAddressID CHAR(36)
 );
 
@@ -94,9 +95,8 @@ CREATE TABLE `User`
 
 CREATE TABLE CustomerB2C
 (
-    CustomerB2CID CHAR(36)        NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CustomerID    CHAR(36) UNIQUE NOT NULL,
-    PersonID      CHAR(36)        NOT NULL UNIQUE
+    CustomerID CHAR(36) PRIMARY KEY,
+    PersonID   CHAR(36) NOT NULL UNIQUE
 );
 
 CREATE TABLE ProductOrderItem
@@ -105,8 +105,8 @@ CREATE TABLE ProductOrderItem
     ProductVariantID   CHAR(36)       NOT NULL,
     ProductOrderID     CHAR(36)       NOT NULL,
     UnitPrice          DECIMAL(10, 2) NOT NULL,
-    Amount             INT			  NOT NULL CHECK (Amount > 0) ,
-    ProductName        VARCHAR(100),
+    Amount             INT            NOT NULL CHECK (Amount > 0),
+    ProductName        VARCHAR(100)   NOT NULL,
     UNIQUE (ProductVariantID, ProductOrderID)
 );
 
@@ -115,7 +115,7 @@ CREATE TABLE Invoice
     InvoiceID       CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
     InvoiceNumber   INT            NOT NULL UNIQUE AUTO_INCREMENT,
     AmountOnInvoice DECIMAL(10, 2) NOT NULL,
-    IssueDate       DATE
+    IssueDate       DATE           NOT NULL
 );
 
 CREATE TABLE ContactPerson
@@ -147,21 +147,21 @@ CREATE TABLE ProductOrder
     InvoiceID      CHAR(36),
     TrackingNumber VARCHAR(10),
     TimeOfSending  DATETIME,
-    TimeOfCreation DATETIME                                                     DEFAULT CURRENT_TIMESTAMP
+    TimeOfCreation DATETIME NOT NULL                                            DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE CustomerB2B
 (
-    CustomerB2BID    CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CustomerID       CHAR(36)     NOT NULL UNIQUE,
-    AddressOnInvoice VARCHAR(255) NOT NULL,
-    CompanyNumber    VARCHAR(30)  NOT NULL UNIQUE
+    CustomerID    CHAR(36) PRIMARY KEY,
+    AddressID     CHAR(36)     NOT NULL,
+    CompanyNumber VARCHAR(30)  NOT NULL UNIQUE,
+    NameOnInvoice VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE ProductAttribute
 (
-    ProductAttributeID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductID          CHAR(36) NOT NULL,
+    ProductAttributeID CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    ProductID          CHAR(36)    NOT NULL,
     AttributeName      VARCHAR(50) NOT NULL,
     Value              VARCHAR(255),
     UNIQUE (ProductID, AttributeName)
@@ -169,8 +169,8 @@ CREATE TABLE ProductAttribute
 
 CREATE TABLE VariantAttribute
 (
-    VariantAttributeID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductVariantID   CHAR(36) NOT NULL,
+    VariantAttributeID CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    ProductVariantID   CHAR(36)    NOT NULL,
     AttributeName      VARCHAR(50) NOT NULL,
     Value              VARCHAR(255),
     UNIQUE (ProductVariantID, AttributeName)
@@ -189,15 +189,17 @@ CREATE TABLE Address
 
 CREATE TABLE Invitation
 (
-    InvitationID  CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CompanyID     CHAR(36)     NOT NULL,
-    EmployeeID    CHAR(36)     NOT NULL,
-    Token         CHAR(36)     NOT NULL UNIQUE,
+    InvitationID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    CompanyID    CHAR(36) NOT NULL,
+    EmployeeID   CHAR(36) NOT NULL,
+    Token        CHAR(36) NOT NULL UNIQUE,
     UNIQUE (CompanyID, EmployeeID)
 );
 
 ALTER TABLE Category
     ADD CONSTRAINT FK_Category_ParentCategoryID FOREIGN KEY (ParentCategoryID) REFERENCES Category (CategoryID);
+ALTER TABLE Category
+    ADD CONSTRAINT FK_Category_CompanyID FOREIGN KEY (CompanyID) REFERENCES Company (CompanyID);
 
 ALTER TABLE Company
     ADD CONSTRAINT FK_Company_AddressID FOREIGN KEY (AddressID) REFERENCES Address (AddressID);
@@ -205,10 +207,14 @@ ALTER TABLE Company
 ALTER TABLE Customer
     ADD CONSTRAINT FK_Customer_ContactPersonID FOREIGN KEY (ContactPersonID) REFERENCES ContactPerson (ContactPersonID);
 ALTER TABLE Customer
+    ADD CONSTRAINT FK_Customer_CompanyID FOREIGN KEY (CompanyID) REFERENCES Company (CompanyID);
+ALTER TABLE Customer
     ADD CONSTRAINT FK_Customer_DefaultDeliveryAddressID FOREIGN KEY (DefaultDeliveryAddressID) REFERENCES Address (AddressID);
 
 ALTER TABLE CustomerB2B
     ADD CONSTRAINT FK_CustomerB2B_CustomerID FOREIGN KEY (CustomerID) REFERENCES Customer (CustomerID);
+ALTER TABLE CustomerB2B
+    ADD CONSTRAINT FK_CustomerB2B_AddressID FOREIGN KEY (AddressID) REFERENCES Address (AddressID);
 
 ALTER TABLE CustomerB2C
     ADD CONSTRAINT FK_CustomerB2C_CustomerID FOREIGN KEY (CustomerID) REFERENCES Customer (CustomerID);

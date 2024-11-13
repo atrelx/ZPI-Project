@@ -3,6 +3,7 @@ package com.zpi.amoz.services;
 import com.zpi.amoz.dtos.CategoryDTO;
 import com.zpi.amoz.dtos.CategoryTreeDTO;
 import com.zpi.amoz.models.Category;
+import com.zpi.amoz.models.Company;
 import com.zpi.amoz.repository.CategoryRepository;
 import com.zpi.amoz.requests.CategoryCreateRequest;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,12 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryService {
 
-    private final CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
+    private CompanyService companyService;
 
     public List<Category> findAll() {
         return categoryRepository.findAll();
@@ -58,9 +58,13 @@ public class CategoryService {
 
 
     @Transactional
-    public Category createCategory(CategoryCreateRequest categoryCreateRequest) {
+    public Category createCategory(String sub, CategoryCreateRequest categoryCreateRequest) {
+        Company company = companyService.getCompanyByUserId(sub)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find company for given sub: " + sub));
+
         Category category = new Category();
         category.setName(categoryCreateRequest.name());
+        category.setCompany(company);
 
         categoryCreateRequest.parentCategoryId()
                 .map(parentId -> categoryRepository.findById(parentId)

@@ -4,7 +4,7 @@ import com.zpi.amoz.enums.UnitDimensions;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record ProductVariantCreateRequestDimensions(
+public record DimensionsCreateRequest(
         @NotNull(message = "Unit weight is required")
         @Positive(message = "Unit weight must be greater than 0")
         UnitDimensions unitDimensions,

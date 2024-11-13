@@ -15,6 +15,10 @@ public class Category {
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID categoryId;
 
+    @ManyToOne
+    @JoinColumn(name = "companyId", nullable = false)
+    private Company company;
+
     @Column(nullable = false, length = 30)
     private String name;
 
@@ -37,6 +41,14 @@ public class Category {
 
     public void setCategoryId(UUID categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public String getName() {
@@ -79,3 +91,4 @@ public class Category {
         this.products = products;
     }
 }
+

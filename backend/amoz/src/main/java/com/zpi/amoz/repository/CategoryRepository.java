@@ -9,15 +9,29 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CategoryRepository extends JpaRepository<Category, UUID> {
-    @Query(value = "WITH RECURSIVE CategoryHierarchy AS ("
-            + "SELECT A2.* FROM Product A1 "
-            + "INNER JOIN Category A2 ON A1.CategoryID = A2.CategoryID "
-            + "WHERE A1.CompanyID = :companyId "
-            + "UNION ALL "
-            + "SELECT A2.* FROM Category A2 "
-            + "INNER JOIN CategoryHierarchy A3 ON A2.CategoryID = A3.ParentCategoryID"
-            + ") "
-            + "SELECT * FROM CategoryHierarchy", nativeQuery = true)
+//    @Query(value = "WITH RECURSIVE CategoryHierarchy AS ("
+//            + "SELECT A2.* FROM Product A1 "
+//            + "INNER JOIN Category A2 ON A1.CategoryID = A2.CategoryID "
+//            + "WHERE A1.CompanyID = :companyId "
+//            + "UNION ALL "
+//            + "SELECT A2.* FROM Category A2 "
+//            + "INNER JOIN CategoryHierarchy A3 ON A2.CategoryID = A3.ParentCategoryID"
+//            + ") "
+//            + "SELECT * FROM CategoryHierarchy", nativeQuery = true)
+//    List<Category> getCategoriesWithParentHierarchy(@Param("companyId") String companyId);
+
+//    @Query(value = "WITH RECURSIVE CategoryHierarchy AS ("
+//            + "SELECT A2.* "
+//            + "FROM Category A2 "
+//            + "WHERE A2.CompanyID = :companyId "
+//            + "UNION ALL "
+//            + "SELECT A2.* FROM Category A2 "
+//            + "INNER JOIN CategoryHierarchy A1 ON A2.CategoryID = A1.ParentCategoryID"
+//            + ") "
+//            + "SELECT * FROM CategoryHierarchy", nativeQuery = true)
+//    List<Category> getCategoriesWithParentHierarchy(@Param("companyId") String companyId);
+
+    @Query(value = "SELECT A2.* FROM Category A2 WHERE A2.CompanyID = :companyId", nativeQuery = true)
     List<Category> getCategoriesWithParentHierarchy(@Param("companyId") String companyId);
 
     @Query(value = "SELECT CASE WHEN COUNT(A1) > 0 THEN true ELSE false END FROM Category A1 WHERE A1.parentCategory.categoryId = :categoryId")

@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.relation.Role;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class CompanyService {
@@ -20,7 +18,7 @@ public class CompanyService {
     private CompanyRepository companyRepository;
 
     @Autowired
-    private AddressRepository addressRepository;
+    private AddressService addressService;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -42,25 +40,16 @@ public class CompanyService {
     }
 
     @Transactional
-    public Company createCompany(String userId, CompanyCreateRequest companyDetails) {
+    public Company createCompany(String userId, CompanyCreateRequest request) {
         Company company = new Company();
-        company.setCompanyNumber(companyDetails.companyNumber());
-        company.setCountryOfRegistration(companyDetails.countryOfRegistration());
-        company.setName(companyDetails.name());
+        company.setCompanyNumber(request.companyNumber());
+        company.setCountryOfRegistration(request.countryOfRegistration());
+        company.setName(request.name());
 
-        companyDetails.regon().ifPresent(company::setRegon);
+        request.regon().ifPresent(company::setRegon);
 
-        Address companyAddress = new Address();
-        companyAddress.setCity(companyDetails.address().city());
-        companyAddress.setStreet(companyDetails.address().street());
-        companyAddress.setStreetNumber(companyDetails.address().streetNumber());
-        companyAddress.setApartmentNumber(companyDetails.address().apartmentNumber());
-        companyAddress.setPostalCode(companyDetails.address().postalCode());
-
-        companyDetails.address().additionalInformation().ifPresent(companyAddress::setAdditionalInformation);
-
-        Address savedAddress = addressRepository.save(companyAddress);
-        company.setAddress(savedAddress);
+        Address companyAddress = addressService.createAddress(request.address());
+        company.setAddress(companyAddress);
 
         Company savedCompany = companyRepository.save(company);
 
@@ -76,23 +65,15 @@ public class CompanyService {
     }
 
     @Transactional
-    public Optional<Company> update(UUID id, CompanyCreateRequest companyDetails) {
+    public Optional<Company> updateCompany(UUID id, CompanyCreateRequest request) {
         return companyRepository.findById(id).map(company -> {
-            company.setCompanyNumber(companyDetails.companyNumber());
-            company.setCountryOfRegistration(companyDetails.countryOfRegistration());
-            company.setName(companyDetails.name());
-            companyDetails.regon().ifPresentOrElse(company::setRegon, () -> company.setRegon(null));
+            company.setCompanyNumber(request.companyNumber());
+            company.setCountryOfRegistration(request.countryOfRegistration());
+            company.setName(request.name());
+            request.regon().ifPresentOrElse(company::setRegon, () -> company.setRegon(null));
 
-            Address companyAddress = company.getAddress();
-            companyAddress.setCity(companyDetails.address().city());
-            companyAddress.setStreet(companyDetails.address().street());
-            companyAddress.setStreetNumber(companyDetails.address().streetNumber());
-            companyAddress.setApartmentNumber(companyDetails.address().apartmentNumber());
-            companyAddress.setPostalCode(companyDetails.address().postalCode());
-            companyDetails.address().additionalInformation()
-                    .ifPresentOrElse(companyAddress::setAdditionalInformation, () -> companyAddress.setAdditionalInformation(null));
+            addressService.updateAddress(company.getAddress().getAddressId(), request.address());
 
-            addressRepository.save(companyAddress);
             return companyRepository.save(company);
         });
     }

@@ -19,18 +19,13 @@ public class Customer {
     @JoinColumn(name = "contactPersonId", nullable = false)
     private ContactPerson contactPerson;
 
-    @Column(nullable = false, length = 255)
-    private String nameOnInvoice;
+    @OneToOne
+    @JoinColumn(name = "companyId", nullable = false)
+    private Company company;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "defaultDeliveryAddressId")
     private Address defaultDeliveryAddress;
-
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private CustomerB2B customerB2B;
-
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private CustomerB2C customerB2C;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductOrder> orders;
@@ -51,36 +46,12 @@ public class Customer {
         this.contactPerson = contactPerson;
     }
 
-    public String getNameOnInvoice() {
-        return nameOnInvoice;
-    }
-
-    public void setNameOnInvoice(String nameOnInvoice) {
-        this.nameOnInvoice = nameOnInvoice;
-    }
-
     public Address getDefaultDeliveryAddress() {
         return defaultDeliveryAddress;
     }
 
     public void setDefaultDeliveryAddress(Address defaultDeliveryAddress) {
         this.defaultDeliveryAddress = defaultDeliveryAddress;
-    }
-
-    public CustomerB2B getCustomerB2B() {
-        return customerB2B;
-    }
-
-    public void setCustomerB2B(CustomerB2B customerB2B) {
-        this.customerB2B = customerB2B;
-    }
-
-    public CustomerB2C getCustomerB2C() {
-        return customerB2C;
-    }
-
-    public void setCustomerB2C(CustomerB2C customerB2C) {
-        this.customerB2C = customerB2C;
     }
 
     public List<ProductOrder> getOrders() {
@@ -90,5 +61,14 @@ public class Customer {
     public void setOrders(List<ProductOrder> orders) {
         this.orders = orders;
     }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
 }
+
 

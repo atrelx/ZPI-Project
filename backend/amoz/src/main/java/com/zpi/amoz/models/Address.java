@@ -34,8 +34,8 @@ public class Address {
     @Column(length = 255)
     private String additionalInformation;
 
-    @OneToMany(mappedBy = "defaultDeliveryAddress")
-    private List<Customer> customers;
+    @OneToOne(mappedBy = "defaultDeliveryAddress")
+    private Customer customer;
 
     public UUID getAddressId() {
         return addressId;

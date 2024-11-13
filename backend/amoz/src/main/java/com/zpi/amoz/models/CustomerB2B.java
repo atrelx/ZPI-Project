@@ -1,5 +1,6 @@
 package com.zpi.amoz.models;
 
+import com.zpi.amoz.ids.CustomerId;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -7,45 +8,43 @@ import org.hibernate.type.SqlTypes;
 import java.util.UUID;
 
 @Entity
+@Table(name = "CustomerB2B")
 public class CustomerB2B {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID customerB2BId;
+    @EmbeddedId
+    private CustomerId customerId;
 
-    @OneToOne
-    @JoinColumn(name = "customerId", nullable = false, unique = true)
-    private Customer customer;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "addressId", nullable = false)
+    private Address address;
 
     @Column(nullable = false, length = 255)
-    private String addressOnInvoice;
+    private String nameOnInvoice;
 
     @Column(nullable = false, unique = true, length = 30)
     private String companyNumber;
 
-    public UUID getCustomerB2BId() {
-        return customerB2BId;
+    public CustomerId getId() {
+        return customerId;
     }
 
-    public void setCustomerB2BId(UUID customerB2BId) {
-        this.customerB2BId = customerB2BId;
+    public void setId(CustomerId customerId) {
+        this.customerId = customerId;
     }
 
     public Customer getCustomer() {
-        return customer;
+        return customerId.getCustomer();
     }
 
     public void setCustomer(Customer customer) {
-        this.customer = customer;
+        this.customerId.setCustomer(customer);
     }
 
-    public String getAddressOnInvoice() {
-        return addressOnInvoice;
+    public String getNameOnInvoice() {
+        return nameOnInvoice;
     }
 
-    public void setAddressOnInvoice(String addressOnInvoice) {
-        this.addressOnInvoice = addressOnInvoice;
+    public void setNameOnInvoice(String nameOnInvoice) {
+        this.nameOnInvoice = nameOnInvoice;
     }
 
     public String getCompanyNumber() {
@@ -54,6 +53,14 @@ public class CustomerB2B {
 
     public void setCompanyNumber(String companyNumber) {
         this.companyNumber = companyNumber;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }
 
