@@ -44,6 +44,8 @@ public class EmployeeService {
         return employeeRepository.findById(id);
     }
 
+    public Optional<Employee> findEmployeeByUserId(String userId) { return employeeRepository.findByUser_UserId(userId); }
+
     public Employee save(Employee employee) {
         return employeeRepository.save(employee);
     }
@@ -117,15 +119,11 @@ public class EmployeeService {
         invitationRepository.deleteById(invitation.getInvitationId());
     }
 
-    public List<EmployeeDTO> getEmployeesByCompanyId(UUID companyId) {
+    public List<Employee> getEmployeesByCompanyId(UUID companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new EntityNotFoundException("Company not found with ID: " + companyId));
 
-        List<Employee> employees = employeeRepository.findAllByCompany(company);
-
-        return employees.stream()
-                .map(EmployeeDTO::toEmployeeDTO)
-                .collect(Collectors.toList());
+         return employeeRepository.findAllByCompany(company);
     }
 
     @Transactional

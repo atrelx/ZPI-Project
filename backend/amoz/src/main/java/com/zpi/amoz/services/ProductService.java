@@ -132,6 +132,19 @@ public class ProductService {
     }
 
     @Transactional
+    public Product setMainVariant(UUID productId, UUID mainVariantId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+
+        ProductVariant mainProductVariant = productVariantRepository.findById(mainVariantId)
+                .orElseThrow(() -> new EntityNotFoundException("Main variant not found"));
+
+        product.setMainProductVariant(mainProductVariant);
+
+        return productRepository.save(product);
+    }
+
+    @Transactional
     public void deactivateProductById(UUID productId) throws EntityNotFoundException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find product for given id: " + productId));

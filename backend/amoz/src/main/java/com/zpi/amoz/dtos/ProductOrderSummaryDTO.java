@@ -3,19 +3,39 @@ package com.zpi.amoz.dtos;
 
 import com.zpi.amoz.enums.Status;
 import com.zpi.amoz.models.ProductOrder;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-public record ProductOrderSummaryDTO(UUID productOrderId,
-                                     Status status,
-                                     ProductOrderItemSummaryDTO sampleProductOrderItem,
-                                     BigDecimal totalDue,
-                                     Optional<String> trackingNumber,
-                                     Optional<LocalDateTime> timeOfSending,
-                                     Optional<LocalDateTime> timeOfCreation) {
+@Schema(description = "DTO reprezentujące podsumowanie zamówienia, zawierające ogólne informacje o zamówieniu oraz przykładowe pozycje zamówienia.")
+public record ProductOrderSummaryDTO(
+
+        @Schema(description = "Identyfikator zamówienia", example = "2a93d8f9-8467-4d43-b8fc-16b650d9a684")
+        UUID productOrderId,
+
+        @Schema(description = "Status zamówienia", example = "ORDERED")
+        Status status,
+
+        @Schema(description = "Przykładowa pozycja zamówienia",
+                example = "{\"productOrderItemId\": \"f8d1a46b-50bc-46b4-bba7-1fd3cfad4a23\", \"unitPrice\": 99.99, \"amount\": 2, \"productName\": \"Koszulka Męska\"}")
+        ProductOrderItemSummaryDTO sampleProductOrderItem,
+
+        @Schema(description = "Łączna kwota do zapłaty za zamówienie", example = "199.98")
+        BigDecimal totalDue,
+
+        @Schema(description = "Numer śledzenia przesyłki, jeśli dostępny", nullable = true, example = "\"ABC123456789\"")
+        Optional<String> trackingNumber,
+
+        @Schema(description = "Data wysłania zamówienia, jeśli dostępna", nullable = true, example = "2024-11-14T15:30:00")
+        Optional<LocalDateTime> timeOfSending,
+
+        @Schema(description = "Data utworzenia zamówienia", example = "2024-11-01T10:00:00")
+        LocalDateTime timeOfCreation
+
+) {
 
     public static ProductOrderSummaryDTO toProductOrderSummaryDTO(ProductOrder productOrder) {
         return new ProductOrderSummaryDTO(
@@ -25,8 +45,9 @@ public record ProductOrderSummaryDTO(UUID productOrderId,
                 productOrder.getTotalDue(),
                 Optional.ofNullable(productOrder.getTrackingNumber()),
                 Optional.ofNullable(productOrder.getTimeOfSending()),
-                Optional.ofNullable(productOrder.getTimeOfCreation())
+                productOrder.getTimeOfCreation()
         );
     }
 }
+
 

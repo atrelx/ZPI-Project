@@ -17,6 +17,10 @@ import com.zpi.amoz.services.AuthorizationService;
 import com.zpi.amoz.services.CompanyService;
 import com.zpi.amoz.services.CustomerService;
 import com.zpi.amoz.services.ProductOrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
 public class CustomerController {
+
     @Autowired
     private CustomerService customerService;
 
@@ -44,9 +49,21 @@ public class CustomerController {
     @Autowired
     private CompanyService companyService;
 
+    @Operation(summary = "Utwórz klienta B2B", description = "Tworzy nowego klienta B2B na podstawie danych przekazanych w żądaniu.")
+    @ApiResponse(responseCode = "201", description = "Klient B2B został pomyślnie utworzony",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2BDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono zasobu",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @PostMapping("/b2b")
-    public ResponseEntity<?> createCustomerB2B(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
-            @Valid @RequestBody CustomerB2BCreateRequest request) {
+    public ResponseEntity<?> createCustomerB2B(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @Valid @RequestBody CustomerB2BCreateRequest request
+    ) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
             CustomerB2B customerB2B = customerService.createCustomerB2B(userPrincipal.getSub(), request);
@@ -59,9 +76,21 @@ public class CustomerController {
         }
     }
 
+    @Operation(summary = "Utwórz klienta B2C", description = "Tworzy nowego klienta B2C na podstawie danych przekazanych w żądaniu.")
+    @ApiResponse(responseCode = "201", description = "Klient B2C został pomyślnie utworzony",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2CDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono zasobu",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @PostMapping("/b2c")
-    public ResponseEntity<?> createCustomerB2C(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
-                                               @Valid @RequestBody CustomerB2CCreateRequest request) {
+    public ResponseEntity<?> createCustomerB2C(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @Valid @RequestBody CustomerB2CCreateRequest request
+    ) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
             CustomerB2C customerB2C = customerService.createCustomerB2C(userPrincipal.getSub(), request);
@@ -74,12 +103,30 @@ public class CustomerController {
         }
     }
 
+    @Operation(summary = "Aktualizuj klienta B2B", description = "Aktualizuje dane klienta B2B na podstawie przekazanych danych.")
+    @ApiResponse(responseCode = "200", description = "Klient B2B został pomyślnie zaktualizowany",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2BDTO.class))
+    )
+    @ApiResponse(responseCode = "401", description = "Brak uprawnień do edytowania klienta",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono klienta",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @PutMapping("/b2b/{customerId}")
-    public ResponseEntity<?> updateCustomerB2B(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
-                                               @Valid @RequestBody CustomerB2BCreateRequest request,
-                                               @PathVariable UUID customerId) {
+    public ResponseEntity<?> updateCustomerB2B(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @Valid @RequestBody CustomerB2BCreateRequest request,
+            @PathVariable UUID customerId
+    ) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
+            if (!authorizationService.hasPermissionToAccessCustomer(userPrincipal, customerId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given customer is not in your company"));
+            }
             CustomerB2B customerB2B = customerService.updateCustomerB2B(customerId, request);
             CustomerB2BDTO customerB2BDTO = CustomerB2BDTO.toCustomerB2BDTO(customerB2B);
             return ResponseEntity.status(HttpStatus.OK).body(customerB2BDTO);
@@ -90,12 +137,30 @@ public class CustomerController {
         }
     }
 
+    @Operation(summary = "Aktualizuj klienta B2C", description = "Aktualizuje dane klienta B2C na podstawie przekazanych danych.")
+    @ApiResponse(responseCode = "200", description = "Klient B2C został pomyślnie zaktualizowany",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2CDTO.class))
+    )
+    @ApiResponse(responseCode = "401", description = "Brak uprawnień do edytowania klienta",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono klienta",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @PutMapping("/b2c/{customerId}")
-    public ResponseEntity<?> updateCustomerB2C(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
-                                               @Valid @RequestBody CustomerB2CCreateRequest request,
-                                               @PathVariable UUID customerId) {
+    public ResponseEntity<?> updateCustomerB2C(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @Valid @RequestBody CustomerB2CCreateRequest request,
+            @PathVariable UUID customerId
+    ) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
+            if (!authorizationService.hasPermissionToAccessCustomer(userPrincipal, customerId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given customer is not in your company"));
+            }
             CustomerB2C customerB2C = customerService.updateCustomerB2C(customerId, request);
             CustomerB2CDTO customerB2CDTO = CustomerB2CDTO.toCustomerB2CDTO(customerB2C);
             return ResponseEntity.status(HttpStatus.OK).body(customerB2CDTO);
@@ -106,8 +171,20 @@ public class CustomerController {
         }
     }
 
+    @Operation(summary = "Pobierz wszystkich klientów B2B", description = "Zwraca listę wszystkich klientów B2B przypisanych do firmy.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano klientów B2B",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2BDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono klientów",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @GetMapping("/b2b")
-    public ResponseEntity<?> getAllCustomersB2B(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
+    public ResponseEntity<?> getAllCustomersB2B(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal
+    ) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
             List<CustomerB2B> customerB2BList = customerService.findAllCustomersB2BBySub(userPrincipal.getSub());
@@ -120,8 +197,20 @@ public class CustomerController {
         }
     }
 
+    @Operation(summary = "Pobierz wszystkich klientów B2C", description = "Zwraca listę wszystkich klientów B2C przypisanych do firmy.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano klientów B2C",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2CDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono klientów",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @GetMapping("/b2c")
-    public ResponseEntity<?> getAllCustomersB2C(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
+    public ResponseEntity<?> getAllCustomersB2C(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal
+    ) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
             List<CustomerB2C> customerB2CList = customerService.findAllCustomersB2CBySub(userPrincipal.getSub());

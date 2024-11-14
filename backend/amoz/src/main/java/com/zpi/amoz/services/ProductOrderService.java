@@ -106,7 +106,7 @@ public class ProductOrderService {
             existingProductOrder.setCustomer(customer);
         }
 
-        existingProductOrder.getOrderItems().forEach(productOrderItemService::removeProductOrderItem);
+        productOrderItemService.removeAllProductOrderItems(existingProductOrder.getOrderItems());
 
         List<ProductOrderItem> updatedOrderItems = request.productOrderItems().stream()
                 .map(item -> productOrderItemService.createProductOrderItem(existingProductOrder, item))

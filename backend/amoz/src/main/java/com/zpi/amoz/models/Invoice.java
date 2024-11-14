@@ -25,7 +25,7 @@ public class Invoice {
     @Column(nullable = false)
     private LocalDate issueDate = LocalDate.now();
 
-    @OneToOne(mappedBy = "invoice", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "invoice", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private ProductOrder productOrder;
 
     public UUID getInvoiceId() {

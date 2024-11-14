@@ -30,6 +30,31 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductOrder> orders;
 
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customerId", insertable = false, updatable = false)
+    private CustomerB2B customerB2B;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customerId", insertable = false, updatable = false)
+    private CustomerB2C customerB2C;
+
+    public CustomerB2B getCustomerB2B() {
+        return customerB2B;
+    }
+
+    public void setCustomerB2B(CustomerB2B customerB2B) {
+        this.customerB2B = customerB2B;
+    }
+
+    public CustomerB2C getCustomerB2C() {
+        return customerB2C;
+    }
+
+    public void setCustomerB2C(CustomerB2C customerB2C) {
+        this.customerB2C = customerB2C;
+    }
+
     public UUID getCustomerId() {
         return customerId;
     }

@@ -1,6 +1,5 @@
 package com.zpi.amoz.models;
 
-import com.zpi.amoz.ids.CustomerB2CId;
 import com.zpi.amoz.ids.CustomerId;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -13,6 +12,10 @@ import java.util.UUID;
 public class CustomerB2C {
     @EmbeddedId
     private CustomerId customerId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customerId", insertable = false, updatable = false)
+    private Customer customer;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personId", nullable = false, unique = true)
@@ -27,10 +30,11 @@ public class CustomerB2C {
     }
 
     public Customer getCustomer() {
-        return customerId.getCustomer();
+        return customer;
     }
 
     public void setCustomer(Customer customer) {
+        this.customer = customer;
         this.customerId.setCustomer(customer);
     }
 

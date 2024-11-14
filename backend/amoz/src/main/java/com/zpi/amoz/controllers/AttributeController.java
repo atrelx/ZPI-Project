@@ -9,6 +9,10 @@ import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
 import com.zpi.amoz.services.AttributeService;
 import com.zpi.amoz.services.CompanyService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +36,13 @@ public class AttributeController {
     @Autowired
     private CompanyService companyService;
 
+    @Operation(summary = "Pobierz wszystkie atrybuty", description = "Pobiera wszystkie atrybuty dostępne dla firmy użytkownika.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano wszystkie atrybuty",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AttributeDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Firma użytkownika nie została znaleziona",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @GetMapping
     public ResponseEntity<?> getAllAttributes(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
         try {
@@ -46,6 +57,13 @@ public class AttributeController {
         }
     }
 
+    @Operation(summary = "Pobierz atrybuty produktów", description = "Pobiera wszystkie atrybuty związane z produktami dla firmy użytkownika.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano atrybuty produktów",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AttributeDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Firma użytkownika nie została znaleziona",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @GetMapping("/product")
     public ResponseEntity<?> getProductAttributes(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
         try {
@@ -60,6 +78,13 @@ public class AttributeController {
         }
     }
 
+    @Operation(summary = "Pobierz atrybuty wariantów", description = "Pobiera wszystkie atrybuty związane z wariantami dla firmy użytkownika.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano atrybuty wariantów",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AttributeDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Firma użytkownika nie została znaleziona",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @GetMapping("/variant")
     public ResponseEntity<?> getVariantAttributes(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
         try {
@@ -74,3 +99,5 @@ public class AttributeController {
         }
     }
 }
+
+

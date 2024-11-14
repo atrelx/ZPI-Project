@@ -13,6 +13,10 @@ public class CustomerB2B {
     @EmbeddedId
     private CustomerId customerId;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customerId", insertable = false, updatable = false)
+    private Customer customer;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "addressId", nullable = false)
     private Address address;
@@ -32,10 +36,11 @@ public class CustomerB2B {
     }
 
     public Customer getCustomer() {
-        return customerId.getCustomer();
+        return customer;
     }
 
     public void setCustomer(Customer customer) {
+        this.customer = customer;
         this.customerId.setCustomer(customer);
     }
 

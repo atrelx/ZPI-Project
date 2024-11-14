@@ -3,8 +3,6 @@ package com.zpi.amoz.controllers;
 import com.zpi.amoz.dtos.CategoryDTO;
 import com.zpi.amoz.dtos.CategoryTreeDTO;
 import com.zpi.amoz.models.Category;
-import com.zpi.amoz.models.Company;
-import com.zpi.amoz.models.Product;
 import com.zpi.amoz.requests.CategoryCreateRequest;
 import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
@@ -31,16 +29,32 @@ import java.util.UUID;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    @Autowired private CategoryService categoryService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private AuthorizationService authorizationService;
+    @Autowired
+    private CompanyService companyService;
 
-    @Autowired private AuthorizationService authorizationService;
-
-    @Autowired private CompanyService companyService;
-
+    @Operation(summary = "Utwórz kategorię", description = "Tworzy nową kategorię z opcjonalną kategorią nadrzędną.")
+    @ApiResponse(responseCode = "201", description = "Kategoria pomyślnie utworzona",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryDTO.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Wewnętrzny błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "401", description = "Brak uprawnień do utworzenia kategorii",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @PostMapping
     public ResponseEntity<?> createCategory(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
-            @Valid @RequestBody CategoryCreateRequest categoryCreateRequest) {
+                                            @Valid @RequestBody CategoryCreateRequest categoryCreateRequest) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        if (categoryCreateRequest.parentCategoryId().isPresent()) {
+            if (!authorizationService.hasPermissionToManageCategory(userPrincipal, categoryCreateRequest.parentCategoryId().get())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Parent category is not in your company"));
+            }
+        }
         try {
             Category category = categoryService.createCategory(userPrincipal.getSub(), categoryCreateRequest);
             CategoryDTO categoryDTO = CategoryDTO.toCategoryDTO(category);
@@ -50,14 +64,14 @@ public class CategoryController {
         }
     }
 
-    @Operation(summary = "Update Category", description = "Update an existing category by its ID")
-    @ApiResponse(responseCode = "200", description = "Category successfully updated",
+    @Operation(summary = "Zaktualizuj kategorię", description = "Aktualizuje istniejącą kategorię na podstawie jej ID.")
+    @ApiResponse(responseCode = "200", description = "Kategoria pomyślnie zaktualizowana",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryDTO.class))
     )
-    @ApiResponse(responseCode = "500", description = "Internal server error",
+    @ApiResponse(responseCode = "500", description = "Wewnętrzny błąd serwera",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
     )
-    @ApiResponse(responseCode = "401", description = "Unauthorized to update category",
+    @ApiResponse(responseCode = "401", description = "Brak uprawnień do aktualizacji kategorii",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
     )
     @PutMapping("/{categoryId}")
@@ -67,23 +81,37 @@ public class CategoryController {
             @Valid @RequestBody CategoryCreateRequest categoryCreateRequest) {
         try {
             UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
-            if (!authorizationService.hasPermissionToUpdateCategory(userPrincipal, categoryId)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Product is not in your company"));
+            if (!authorizationService.hasPermissionToManageCategory(userPrincipal, categoryId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Category is not in your company"));
             }
-            Category updatedCategory = categoryService.updateCategory(categoryId, categoryCreateRequest);
-            return ResponseEntity.status(HttpStatus.OK).body(CategoryDTO.toCategoryDTO(updatedCategory));
+            if (categoryCreateRequest.parentCategoryId().isPresent()) {
+                if (!authorizationService.hasPermissionToManageCategory(userPrincipal, categoryCreateRequest.parentCategoryId().get())) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Parent category is not in your company"));
+                }
+            }
+            Category category = categoryService.updateCategory(categoryId, categoryCreateRequest);
+            CategoryDTO categoryDTO = CategoryDTO.toCategoryDTO(category);
+            return ResponseEntity.status(HttpStatus.OK).body(categoryDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
         }
     }
 
+    @Operation(summary = "Usuń kategorię", description = "Usuwa istniejącą kategorię na podstawie jej ID.")
+    @ApiResponse(responseCode = "204", description = "Kategoria pomyślnie usunięta")
+    @ApiResponse(responseCode = "404", description = "Kategoria nie została znaleziona",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "401", description = "Brak uprawnień do usunięcia kategorii",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<?> deleteCategory(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
-            @PathVariable UUID categoryId) {
+                                            @PathVariable UUID categoryId) {
         try {
             UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
-            if (!authorizationService.hasPermissionToUpdateCategory(userPrincipal, categoryId)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Product is not in your company"));
+            if (!authorizationService.hasPermissionToManageCategory(userPrincipal, categoryId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Category is not in your company"));
             }
             categoryService.deleteCategory(categoryId);
             return ResponseEntity.noContent().build();
@@ -92,6 +120,13 @@ public class CategoryController {
         }
     }
 
+    @Operation(summary = "Pobierz wszystkie kategorie firmy", description = "Pobiera wszystkie kategorie dla firmy użytkownika.")
+    @ApiResponse(responseCode = "200", description = "Kategorie pomyślnie pobrane",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryTreeDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono firmy dla podanego ID użytkownika",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
     @GetMapping
     public ResponseEntity<?> getAllCompanyCategories(@AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal) {
         UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);

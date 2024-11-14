@@ -1,16 +1,25 @@
 package com.zpi.amoz.services;
 
+import com.zpi.amoz.enums.ImageDirectory;
 import com.zpi.amoz.enums.RoleInCompany;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.*;
 import com.zpi.amoz.requests.CompanyCreateRequest;
+import com.zpi.amoz.responses.MessageResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.List;
 
 @Service
 public class CompanyService {
@@ -19,6 +28,9 @@ public class CompanyService {
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -41,6 +53,10 @@ public class CompanyService {
 
     @Transactional
     public Company createCompany(String userId, CompanyCreateRequest request) {
+        if (getCompanyByUserId(userId).isPresent()) {
+            throw new RuntimeException("You already have company");
+        }
+
         Company company = new Company();
         company.setCompanyNumber(request.companyNumber());
         company.setCountryOfRegistration(request.countryOfRegistration());
@@ -65,17 +81,19 @@ public class CompanyService {
     }
 
     @Transactional
-    public Optional<Company> updateCompany(UUID id, CompanyCreateRequest request) {
-        return companyRepository.findById(id).map(company -> {
-            company.setCompanyNumber(request.companyNumber());
-            company.setCountryOfRegistration(request.countryOfRegistration());
-            company.setName(request.name());
-            request.regon().ifPresentOrElse(company::setRegon, () -> company.setRegon(null));
+    public Company updateCompany(String userId, CompanyCreateRequest request) {
+        Company company = getCompanyByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("You are not in any company"));
 
-            addressService.updateAddress(company.getAddress().getAddressId(), request.address());
+        company.setCompanyNumber(request.companyNumber());
+        company.setCountryOfRegistration(request.countryOfRegistration());
+        company.setName(request.name());
+        request.regon().ifPresentOrElse(company::setRegon, () -> company.setRegon(null));
 
-            return companyRepository.save(company);
-        });
+        addressService.updateAddress(company.getAddress().getAddressId(), request.address());
+
+        return companyRepository.save(company);
+
     }
 
     @Transactional

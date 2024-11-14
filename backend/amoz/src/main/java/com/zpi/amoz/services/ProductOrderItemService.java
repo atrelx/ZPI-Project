@@ -74,17 +74,30 @@ public class ProductOrderItemService {
         return productOrderItemRepository.save(productOrderItem);
     }
 
+//    @Transactional
+//    public void removeProductOrderItem(ProductOrderItem productOrderItem) {
+//        ProductVariant productVariant = productVariantRepository.findByProductVariantIdWithLock(productOrderItem.getProductVariant().getProductVariantId())
+//                .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID"));
+//
+//        Stock stock = productVariant.getStock();
+//
+//        int amountToReturn = productOrderItem.getAmount();
+//        stock.increaseStock(amountToReturn);
+//
+//        productOrderItemRepository.delete(productOrderItem);
+//        productOrderItemRepository.flush();
+//    }
+
     @Transactional
-    public void removeProductOrderItem(ProductOrderItem productOrderItem) {
-        ProductVariant productVariant = productVariantRepository.findByProductVariantIdWithLock(productOrderItem.getProductVariant().getProductVariantId())
-                .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID"));
+    public void removeAllProductOrderItems(List<ProductOrderItem> productOrderItems) {
+        productOrderItems.forEach(item -> {
+            ProductVariant productVariant = productVariantRepository.findByProductVariantIdWithLock(item.getProductVariant().getProductVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID: " + item.getProductVariant().getProductVariantId()));
+            Stock stock = productVariant.getStock();
+            stock.increaseStock(item.getAmount());
+        });
 
-        Stock stock = productVariant.getStock();
-
-        int amountToReturn = productOrderItem.getAmount();
-        stock.increaseStock(amountToReturn);
-
-        productOrderItemRepository.delete(productOrderItem);
+        productOrderItemRepository.deleteAllInBatch(productOrderItems);
     }
 }
 
