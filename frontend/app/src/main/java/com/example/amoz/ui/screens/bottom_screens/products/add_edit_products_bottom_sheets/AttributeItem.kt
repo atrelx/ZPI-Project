@@ -2,6 +2,7 @@ package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bo
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +21,11 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.DismissBackground
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -46,7 +51,8 @@ fun AttributeItem(
     attributeValue: String,
     onDelete: (Int) -> Unit,
     onNameChange: (String) -> Unit,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    positionalThreshold: Float = .45f
 ) {
     val defaultAttributeNameText = stringResource(R.string.product_attributes_choose_name)
     val defaultAttributeValueText = stringResource(R.string.product_attributes_choose_value)
@@ -61,70 +67,104 @@ fun AttributeItem(
     val listItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     )
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .border(
-                width = 1.dp,
-                brush = SolidColor(MaterialTheme.colorScheme.outlineVariant),
-                shape = RoundedCornerShape(10.dp)
-            )
-        ,
+
+    var currentFraction by remember { mutableStateOf(0f) }
+    val swipeState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { newValue ->
+            when (newValue) {
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    if (currentFraction >= positionalThreshold && currentFraction < 1.0f) {
+                        onDelete(indexInList)
+                        return@rememberSwipeToDismissBoxState false
+                    }
+                    return@rememberSwipeToDismissBoxState false
+                }
+                SwipeToDismissBoxValue.EndToStart -> {
+                    if (currentFraction >= positionalThreshold && currentFraction < 1.0f) {
+                        onDelete(indexInList)
+                        return@rememberSwipeToDismissBoxState false
+                    }
+                    return@rememberSwipeToDismissBoxState false
+                }
+                else -> false
+            }
+        },
+        positionalThreshold = { it * positionalThreshold }
+    )
+
+    SwipeToDismissBox(
+        state = swipeState,
+        enableDismissFromEndToStart = false,
+        backgroundContent = {
+            currentFraction = swipeState.progress
+            DismissBackground(swipeState)
+        }
     ) {
-        // -------------------- Product attribute name --------------------
-        ListItem(
+
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .combinedClickable(
-                    onClick = { /*TODO*/ },
-                    onLongClick = { onDelete(indexInList) }
+                .clip(RoundedCornerShape(10.dp))
+                .border(
+                    width = 1.dp,
+                    brush = SolidColor(MaterialTheme.colorScheme.outline),
+                    shape = RoundedCornerShape(10.dp)
                 ),
-            leadingContent = {
-                Icon(
-                    imageVector = Icons.Outlined.CheckBoxOutlineBlank,
-                    contentDescription = null
-                )
-            },
-            headlineContent = { Text(attributeNameState) },
-            trailingContent = {
-                Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null
-                )
-            },
-            colors = listItemColors
-        )
-        HorizontalDivider()
-
-        // -------------------- Product attribute value --------------------
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth(),
-            placeholder = { Text(defaultAttributeValueText) },
-            value = attributeValue,
-            onValueChange = { onValueChange(it) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.CheckBox,
-                    contentDescription = null
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = null
-                )
-            },
-            maxLines = 1,
-            singleLine = true,
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent
+        ) {
+            // -------------------- Product attribute name --------------------
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = { /*TODO*/ },
+                    ),
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Outlined.CheckBoxOutlineBlank,
+                        contentDescription = null
+                    )
+                },
+                headlineContent = { Text(attributeNameState) },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = null
+                    )
+                },
+                colors = listItemColors
             )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
-        )
+            // -------------------- Product attribute value --------------------
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                placeholder = { Text(defaultAttributeValueText) },
+                value = attributeValue,
+                onValueChange = { onValueChange(it) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.CheckBox,
+                        contentDescription = null
+                    )
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = null
+                    )
+                },
+                maxLines = 1,
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                )
+
+            )
+        }
     }
 }

@@ -4,6 +4,7 @@
     <string name="email_pattern">[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}</string>
     <string name="phone_pattern">^[+0-9]{9,15}$</string>
 
+
     // --------------------- Screens names ---------------------
     <string name="home_screen">Home</string>
     <string name="products_screen">Products</string>
@@ -36,6 +37,7 @@
     <string name="products_add_simple_product">Add simple product</string>
     <string name="products_add_product_variant">Add product variant</string>
     <string name="products_add_product_template">Add product template</string>
+    <string name="products_delete_product_template_confirm">Do you really want to delete:\n%1$s?</string>
     <string name="products_categories_screen">Categories</string>
     <string name="products_attributes_screen">Attributes</string>
     <string name="products_stock_delivery_screen">Stock delivery</string>
@@ -44,6 +46,7 @@
     <string name="product_description">Product description</string>
     <string name="product_price">Price</string>
     <string name="product_vendor">Product vendor</string>
+    <string name="product_barcode">Product barcode</string>
 
     <string name="product_unit">Product unit</string>
     <string name="product_amount_in_stock">Amount in stock</string>
@@ -107,6 +110,22 @@
     // --------------------- Other ---------------------
     <string name="done">Done</string>
     <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="action_undone">This action cannot be undone</string>
+
+
+    // --------------------- Filters ---------------------
+    <string name="apply_filters">Apply filters</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="price_from">Price from</string>
+    <string name="price_to">Price to</string>
+    <string name="sorting_type">Sorting type</string>
+    <string name="sorting_type_none">No sorting</string>
+    <string name="sorting_type_ascending_name">Ascending by name (A-z)</string>
+    <string name="sorting_type_descending_name">Descending by name (Z-a)</string>
+    <string name="sorting_type_ascending_price">Ascending by price (A-z)</string>
+    <string name="sorting_type_descending_price">Descending by price (Z-a)</string>
+
 
 
 </resources>

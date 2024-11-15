@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.amoz.data.Employee
 
 @Composable
-fun SwipeableActionsRaw(
+fun EmployeeActionsRaw(
     employee: Employee,
     onEmployeeProfileClick: () -> Unit,
     onEmployeeDelete: () -> Unit,

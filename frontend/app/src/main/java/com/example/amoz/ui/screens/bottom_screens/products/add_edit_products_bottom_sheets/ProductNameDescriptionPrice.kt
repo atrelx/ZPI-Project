@@ -34,11 +34,11 @@ import java.util.Locale
 @Composable
 fun ProductNameDescriptionPrice(
     productName: String,
-    productDescription: String,
-    productPrice: String,
+    productDescription: String? = null,
+    productPrice: Double,
     onNameChange: (String) -> Unit,
-    onDescriptionChange: (String) -> Unit,
-    onPriceChange: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit = {},
+    onPriceChange: (Double) -> Unit,
 ) {
 
     Column(
@@ -70,28 +70,30 @@ fun ProductNameDescriptionPrice(
         )
 
         // -------------------- Product's description --------------------
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            value = productDescription,
-            onValueChange = { onDescriptionChange(it) },
-            label = { Text(stringResource(R.string.product_description)) },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
+        productDescription?.let { description ->
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                value = description,
+                onValueChange = { onDescriptionChange(it) },
+                label = { Text(stringResource(R.string.product_description)) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                )
             )
-        )
+        }
 
         // -------------------- Product's price --------------------
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
-            value = productPrice,
+            value = productPrice.toString(),
             onValueChange = {
                 val priceRegex = "^\\d*(\\.\\d{0,2})?\$".toRegex()
                 if (it.matches(priceRegex)) {
-                    onPriceChange(it)
+                    onPriceChange(it.toDoubleOrNull() ?: 0.0)
                 }
             },
             placeholder = { Text("0") },

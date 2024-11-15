@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -57,25 +56,27 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.amoz.R
-import com.example.amoz.app.NavItemType
 import com.example.amoz.data.ProductVariant
 import com.example.amoz.ui.HorizontalDividerWithText
+import com.example.amoz.ui.screens.bottom_screens.products.CategoryPicker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditSimpleProductBottomSheet(
     onDismissRequest: () -> Unit,
-    product: ProductVariant,
+    productVariant: ProductVariant,
     onComplete: (ProductVariant) -> Unit,
-    addingProductType: NavItemType,
 //    onImageUpload: (Uri, (String) -> Unit) -> Unit
 ) {
 
-    var productName by remember { mutableStateOf(product.name) }
-    var productDescription by remember { mutableStateOf(product.description) }
-    var productPrice by remember { mutableStateOf(product.price.toString()) }
-    var productImage by remember { mutableStateOf(product.imageUrl) }
-    var productFeatures by remember { mutableStateOf(product.attributes.toList()) }
+    var productName by remember { mutableStateOf(productVariant.name) }
+//    var productDescription by remember { mutableStateOf(product.description) }
+    var productPrice by remember { mutableStateOf(productVariant.impactOnPrice.toString()) }
+    var productImage by remember { mutableStateOf(productVariant.image) }
+    var productCategory by remember { mutableStateOf(
+        ""
+    ) }
+    var productFeatures by remember { mutableStateOf(productVariant.attributes.toList()) }
 
     var isUploading by remember { mutableStateOf(false) }
 
@@ -145,9 +146,9 @@ fun AddEditSimpleProductBottomSheet(
             ) {
                 ProductImagePicker(
                     isUploading = isUploading,
-                    imageUrl = productImage,
+                    image = productImage,
                     onImageClick = { imagePickerLauncher.launch("image/*") },
-                    onLongClick = { productImage = "" }
+                    onLongClick = { productImage = null }
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -180,22 +181,22 @@ fun AddEditSimpleProductBottomSheet(
             }
 
             // -------------------- Product's description --------------------
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .focusRequester(focusRequester),
-                value = productDescription,
-                onValueChange = { productDescription = it },
-                label = { Text(stringResource(R.string.product_description)) },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = { focusRequester.requestFocus() }
-                )
-            )
+//            OutlinedTextField(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(100.dp)
+//                    .focusRequester(focusRequester),
+//                value = productDescription,
+//                onValueChange = { productDescription = it },
+//                label = { Text(stringResource(R.string.product_description)) },
+//                keyboardOptions = KeyboardOptions(
+//                    keyboardType = KeyboardType.Text,
+//                    imeAction = ImeAction.Next
+//                ),
+//                keyboardActions = KeyboardActions(
+//                    onNext = { focusRequester.requestFocus() }
+//                )
+//            )
 
             // -------------------- Product's price --------------------
             OutlinedTextField(
@@ -246,22 +247,9 @@ fun AddEditSimpleProductBottomSheet(
             )
 
             // -------------------- Product's category --------------------
-            ListItem(
-                modifier = listItemModifier.then(Modifier
-                    .clickable { /*TODO*/ })
-                ,
-                leadingContent = { Icon(
-                    imageVector = Icons.Outlined.Category,
-                    contentDescription = null
-                ) },
-                overlineContent = { Text(stringResource(R.string.product_category)) },
-                headlineContent = { Text(stringResource(R.string.product_category_choose))/*TODO*/ },
-                trailingContent = { Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null
-                ) },
-                colors = listItemColors
-
+            CategoryPicker(
+                category = productCategory,
+                onCategoryChange = { productCategory = it }
             )
 
             // -------------------- Product's template --------------------
@@ -365,10 +353,10 @@ fun AddEditSimpleProductBottomSheet(
             Button(
                 onClick = {
                     onComplete(
-                        product.copy(
+                        productVariant.copy(
                             name = productName,
-                            price = productPrice,
-                            imageUrl = productImage,
+                            impactOnPrice = productPrice.toDouble(),
+                            image = productImage,
                             attributes = productFeatures.toMap()
                         )
                     )

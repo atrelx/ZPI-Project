@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Verified
@@ -23,7 +22,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -33,6 +31,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +46,7 @@ import com.example.amoz.data.ProductTemplate
 import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
 import com.example.amoz.ui.HorizontalDividerWithText
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,15 +55,18 @@ fun AddEditProductTemplateBottomSheet(
     onComplete: (ProductTemplate) -> Unit,
     product: ProductTemplate,
 ) {
+    val scope = rememberCoroutineScope()
+
     var productName by remember { mutableStateOf(product.name) }
     var productDescription by remember { mutableStateOf(product.description) }
-    var productPrice by remember { mutableStateOf(product.price) }
+    var productPrice by remember { mutableStateOf(product.basePrice) }
     var productVendor by remember { mutableStateOf(product.productVendor) }
-    var productFeatures by remember { mutableStateOf(product.attributes.toList()) }
+    var productCategory by remember { mutableStateOf(product.category) }
+    var productAttributes by remember { mutableStateOf(product.attributes.toList()) }
 
     val isFormValid by remember {
         derivedStateOf {
-            productName.isNotBlank() && productPrice.isNotBlank()
+            productName.isNotBlank() && productPrice.toString().isNotBlank()
         }
     }
 
@@ -146,7 +149,13 @@ fun AddEditProductTemplateBottomSheet(
                     contentDescription = null
                 ) },
                 overlineContent = { Text(stringResource(R.string.product_category)) },
-                headlineContent = { Text(stringResource(R.string.product_category_choose))/*TODO*/ },
+                headlineContent = {
+                    /*TODO*/
+                    Text(
+                        text = productCategory.takeIf { productCategory.isNotBlank() }
+                        ?: stringResource(R.string.product_category_choose)
+                    )
+                },
                 trailingContent = { Icon(
                     imageVector = Icons.Outlined.KeyboardArrowDown,
                     contentDescription = null
@@ -154,52 +163,11 @@ fun AddEditProductTemplateBottomSheet(
                 colors = listItemColors
             )
 
-            HorizontalDividerWithText(stringResource(R.string.product_attributes))
-
             // -------------------- Product attributes --------------------
-            productFeatures.forEachIndexed { index, (attributeName, attributeValue) ->
-
-                AttributeItem(
-                    indexInList = index,
-                    attributeName = attributeName,
-                    attributeValue = attributeValue,
-                    onDelete = { indexToDelete ->
-                        productFeatures = productFeatures.toMutableList().apply {
-                            removeAt(indexToDelete)
-                        }
-                    },
-                    onNameChange = { newName ->
-                        productFeatures = productFeatures.toMutableList().apply {
-                            set(index, newName to attributeValue)
-                        }
-                    },
-                    onValueChange = { newValue ->
-                        productFeatures = productFeatures.toMutableList().apply {
-                            set(index, attributeName to newValue)
-                        }
-                    }
-                )
-            }
-
-            // -------------------- Add a feature btn --------------------
-            OutlinedButton(
-                onClick = {
-                    productFeatures = productFeatures.toMutableList().apply {
-                        add("" to "")
-                    }
-                },
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = null
-                )
-                Text(stringResource(id = R.string.product_attributes_add_attributes))
-            }
-
+            AttributesList(
+                productAttributes = productAttributes,
+                onAttributesChange = { productAttributes = it }
+            )
 
             // -------------------- Complete adding --------------------
             Spacer(modifier = Modifier.height(15.dp))
@@ -209,9 +177,9 @@ fun AddEditProductTemplateBottomSheet(
                     onComplete(
                         product.copy(
                             name = productName,
-                            price = productPrice,
+                            basePrice = productPrice,
                             productVendor = productVendor,
-                            attributes = productFeatures.toMap()
+                            attributes = productAttributes.toMap()
                         )
                     )
                 },
@@ -219,7 +187,16 @@ fun AddEditProductTemplateBottomSheet(
                 enabled = isFormValid
             )
             // -------------------- Close bottom sheet --------------------
-            CloseOutlinedButton(onDismissRequest, stringResource(R.string.close))
+            CloseOutlinedButton(
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                        onDismissRequest()
+                    }
+                },
+                text =  stringResource(R.string.close)
+            )
         }
     }
 }
+

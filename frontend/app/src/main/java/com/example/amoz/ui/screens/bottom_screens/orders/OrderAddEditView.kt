@@ -216,22 +216,22 @@ fun OrderAddEditVIew(
                                 singleLine = true
                             )
 
-                            ProductDropDownMenu(
-                                expanded = expanded,
-                                onDismiss = { expanded = false },
-                                onProductClick = {product ->
-                                    productName = product.name
-                                    salePriceValue = product.price.toString()
-                                    features = product.attributes.toList()
-                                    imageUrl = product.imageUrl
-                                    expanded = false
-                                    updateTotalPrice()
-                                    Log.d("-----------------ASD---------------", "DropdownItem_${product.name.replace(" ", "_")}")
-                                },
-                                productList = productList,
-                                modifier = Modifier.width(with(LocalDensity.current) {
-                                    textFieldSize.width.toDp() })
-                            )
+//                            ProductDropDownMenu(
+//                                expanded = expanded,
+//                                onDismiss = { expanded = false },
+//                                onProductClick = {product ->
+//                                    productName = product.name
+//                                    salePriceValue = product.impactOnPrice.toString()
+//                                    features = product.attributes.toList()
+//                                    imageUrl = product.image
+//                                    expanded = false
+//                                    updateTotalPrice()
+//                                    Log.d("-----------------ASD---------------", "DropdownItem_${product.name.replace(" ", "_")}")
+//                                },
+//                                productList = productList,
+//                                modifier = Modifier.width(with(LocalDensity.current) {
+//                                    textFieldSize.width.toDp() })
+//                            )
                         }
 
                         // Row for price per item and amount
@@ -414,9 +414,9 @@ fun ProductDropDownMenu(
                 modifier = Modifier.testTag("DropdownItem_${product.name.replace(" ", "_")}"),  // Add testTag
                 text = { Text(text = product.name) },
                 leadingIcon = {
-                    if (product.imageUrl.isNotEmpty()) {
-                        ProductImage(product.imageUrl)
-                    }
+//                    if (product.image.isNotEmpty()) {
+//                        ProductImage(product.image)
+//                    }
                 }
             )
         }

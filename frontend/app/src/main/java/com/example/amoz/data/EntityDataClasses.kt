@@ -1,8 +1,11 @@
 package com.example.amoz.data
 
+import android.graphics.Bitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import java.time.LocalDate
+import java.util.UUID
 
+// --------------------- Person, employees, customers ---------------------
 data class Person(
     val personId: Int? = null,
     val firstName: String = "",
@@ -33,22 +36,30 @@ data class B2BCustomer(
     val companyIdentifier: String = "",
     val phoneNumber: String? = null,
 )
-
-// --------------------- Product ---------------------
-data class ProductVariant(
+// --------------------- Category ---------------------
+data class Category(
     val id: String = "",
     var name: String = "",
-    var description: String = "",
-    var price: String = "",
-    var imageUrl: String = "",
-    var attributes: Map<String, String> = emptyMap()
+    val parentCategoryId: String = "",
+    val categoryLevel: Int? = null,
+)
+// --------------------- Product ---------------------
+data class ProductVariant(
+    val id: String = UUID.randomUUID().toString(),
+    val productId: String = "",
+    val barcode: Int = 1234567890,
+    var name: String = "",
+    var impactOnPrice: Double = 0.0,
+    var image: Bitmap? = null,
+    var attributes: Map<String, String> = emptyMap(),
 )
 
 data class ProductTemplate(
     val id: String = "",
     val name: String = "",
     val description: String = "",
-    val price: String = "",
+    val basePrice: Double = 0.0,
+    val category: String = "",
     val productVendor: String = "",
     val attributes: Map<String, String> = emptyMap(),
     val mainVariantId: Int? = null

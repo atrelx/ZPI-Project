@@ -8,8 +8,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +61,7 @@ private val lightScheme = lightColorScheme(
     surfaceContainer = surfaceContainerLight,
     surfaceContainerHigh = surfaceContainerHighLight,
     surfaceContainerHighest = surfaceContainerHighestLight,
+
 )
 
 private val darkScheme = darkColorScheme(
@@ -389,6 +392,15 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
+val LocalExtendedColorScheme = staticCompositionLocalOf<ExtendedColorScheme> {
+    error("No ExtendedColorScheme provided")
+}
+
+val MaterialTheme.extendedColors: ExtendedColorScheme
+    @Composable
+    get() = LocalExtendedColorScheme.current
+
+
 @Composable
 fun AmozApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -396,17 +408,18 @@ fun AmozApplicationTheme(
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
-  val colorScheme = when {
+    val extendedColorScheme = if (darkTheme) extendedDark else extendedLight
+    val colorScheme = when {
       dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
           val context = LocalContext.current
           if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
       }
-      
+
       darkTheme -> darkScheme
       else -> lightScheme
-  }
-  val view = LocalView.current
-  if (!view.isInEditMode) {
+    }
+    val view = LocalView.current
+    if (!view.isInEditMode) {
       SideEffect {
           val window = (view.context as Activity).window
 
@@ -419,12 +432,14 @@ fun AmozApplicationTheme(
               isAppearanceLightNavigationBars = !darkTheme
           }
       }
-  }
+    }
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
-  )
+    CompositionLocalProvider(LocalExtendedColorScheme provides extendedColorScheme) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
 

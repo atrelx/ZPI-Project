@@ -51,7 +51,7 @@ fun EmployeesLazyColumn(
         items(employees) { employee ->
             SwipeableItemWithActions(
                 actions = {
-                    SwipeableActionsRaw(
+                    EmployeeActionsRaw(
                         employee = employee,
                         onEmployeeProfileClick = {
                             currentEmployee = employee

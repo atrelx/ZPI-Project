@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.products
+package com.example.amoz.ui.screens.bottom_screens.attributes
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun ProductsStockDelivery(
+fun ProductsAttributes(
     paddingValues: PaddingValues
 ) {
     Surface(

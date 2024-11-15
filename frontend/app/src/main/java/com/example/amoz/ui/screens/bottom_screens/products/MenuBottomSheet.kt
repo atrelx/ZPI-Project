@@ -24,7 +24,6 @@ import com.example.amoz.ui.BottomSheetNavigationRaw
 @Composable
 fun MenuBottomSheet(
     onDismissRequest: () -> Unit,
-    onNavigateClick: (NavItemType) -> Unit,
     onClick: (NavItemType) -> Unit,
     menuBottomSheetNavItems: Map<NavItemType, NavItem> = productScreenBottomSheetMenu
 ) {
@@ -70,7 +69,7 @@ fun MenuBottomSheet(
                     text = stringResource(id = navItem.title),
                     onClick = {
                         onDismissRequest()
-                        onNavigateClick(navItemType)
+                        onClick(navItemType)
                     }
                 )
 
