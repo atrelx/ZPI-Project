@@ -47,7 +47,7 @@ public class CategoryService {
     }
 
     public List<CategoryTreeDTO> getCategoryTree(UUID companyId) {
-        List<Category> companyCategories = categoryRepository.getCategoriesWithParentHierarchy(companyId.toString());
+        List<Category> companyCategories = categoryRepository.getCategoriesWithParentHierarchy(companyId);
         List<CategoryDTO> categoryDTOs = companyCategories
                 .stream()
                 .map(CategoryDTO::toCategoryDTO)

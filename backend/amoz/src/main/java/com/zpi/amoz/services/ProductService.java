@@ -44,7 +44,7 @@ public class ProductService {
     }
 
     public List<Product> findAllByCompanyId(UUID companyId) {
-        return productRepository.findAllByCompanyId(companyId.toString()).stream().filter(Product::isActive).collect(Collectors.toList());
+        return productRepository.findAllByCompanyId(companyId).stream().filter(Product::isActive).collect(Collectors.toList());
     }
 
     public Product save(Product product) {

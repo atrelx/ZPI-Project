@@ -35,7 +35,7 @@ public record ProductCreateRequest(
         @Schema(description = "Lista identyfikatorów wariantów produktu", example = "[\"e7e7d0ff-64a4-45f1-929b-e7e0d6e8e4b5\"]")
         List<UUID> productVariantIds,
 
-        @Schema(description = "Lista atrybutów produktu", required = true)
+        @Schema(description = "Lista atrybutów produktu")
         List<AttributeCreateRequest> productAttributes
 
 ) {

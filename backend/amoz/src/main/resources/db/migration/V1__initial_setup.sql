@@ -1,199 +1,199 @@
 CREATE TABLE Company
 (
-    CompanyID             CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CompanyNumber         VARCHAR(50)  NOT NULL UNIQUE,
+    CompanyID             UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    CompanyNumber         VARCHAR(50) NOT NULL UNIQUE,
     CountryOfRegistration VARCHAR(100) NOT NULL,
     Name                  VARCHAR(100) NOT NULL,
-    AddressID             CHAR(36)     NOT NULL UNIQUE,
-    IsActive              BOOLEAN      NOT NULL DEFAULT TRUE,
+    AddressID             UNIQUEIDENTIFIER NOT NULL UNIQUE,
+    IsActive              BIT NOT NULL DEFAULT 1,
     Regon                 VARCHAR(14) UNIQUE
 );
 
 CREATE TABLE ProductVariant
 (
-    ProductVariantID CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductID        CHAR(36)       NOT NULL,
-    Code             INT            NOT NULL UNIQUE,
-    StockID          CHAR(36)       NOT NULL,
+    ProductVariantID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    ProductID        UNIQUEIDENTIFIER NOT NULL,
+    Code             INT NOT NULL UNIQUE,
+    StockID          UNIQUEIDENTIFIER NOT NULL,
     VariantPrice     DECIMAL(10, 2) NOT NULL,
-    IsActive         BOOLEAN        NOT NULL DEFAULT TRUE,
-    DimensionsID     CHAR(36),
-    WeightID         CHAR(36),
+    IsActive         BIT NOT NULL DEFAULT 1,
+    DimensionsID     UNIQUEIDENTIFIER,
+    WeightID         UNIQUEIDENTIFIER,
     VariantName      VARCHAR(100)
 );
 
 CREATE TABLE Weight
 (
-    WeightID   CHAR(36)                    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    UnitWeight ENUM ('MG', 'G', 'KG')               DEFAULT 'KG' NOT NULL,
-    Amount     DOUBLE CHECK (Amount > 0.0) NOT NULL
+    WeightID   UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    UnitWeight VARCHAR(3) CHECK (UnitWeight IN ('MG', 'G', 'KG')) NOT NULL DEFAULT 'KG',
+    Amount     FLOAT CHECK (Amount > 0.0) NOT NULL
 );
 
 CREATE TABLE Attribute
 (
-    AttributeName VARCHAR(50) NOT NULL UNIQUE PRIMARY KEY
+    AttributeName VARCHAR(50) NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE Dimensions
 (
-    DimensionsID   CHAR(36)                    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    UnitDimensions ENUM ('MM', 'CM', 'M', 'DM')         DEFAULT 'M' NOT NULL,
-    Height         DOUBLE CHECK (Height > 0.0) NOT NULL,
-    Length         DOUBLE CHECK (Length > 0.0) NOT NULL,
-    Width          DOUBLE CHECK (Width > 0.0)  NOT NULL
+    DimensionsID   UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    UnitDimensions VARCHAR(3) CHECK (UnitDimensions IN ('MM', 'CM', 'M', 'DM')) NOT NULL DEFAULT 'M',
+    Height         FLOAT CHECK (Height > 0.0) NOT NULL,
+    Length         FLOAT CHECK (Length > 0.0) NOT NULL,
+    Width          FLOAT CHECK (Width > 0.0) NOT NULL
 );
 
 CREATE TABLE Person
 (
-    PersonID    CHAR(36)             NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    Name        VARCHAR(30)          NOT NULL,
-    Surname     VARCHAR(30)          NOT NULL,
-    DateOfBirth DATE                 NOT NULL,
-    Sex         ENUM ('M', 'F', 'O') NOT NULL
+    PersonID    UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    Name        VARCHAR(30) NOT NULL,
+    Surname     VARCHAR(30) NOT NULL,
+    DateOfBirth DATE NOT NULL,
+    Sex         VARCHAR(1) CHECK (Sex IN ('M', 'F', 'O')) NOT NULL
 );
 
 CREATE TABLE Category
 (
-    CategoryID       CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CompanyID        CHAR(36)    NOT NULL,
+    CategoryID       UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    CompanyID        UNIQUEIDENTIFIER NOT NULL,
     Name             VARCHAR(30) NOT NULL,
-    CategoryLevel    SMALLINT             DEFAULT 1 NOT NULL,
-    ParentCategoryID CHAR(36)
+    CategoryLevel    SMALLINT NOT NULL DEFAULT 1,
+    ParentCategoryID UNIQUEIDENTIFIER
 );
 
 CREATE TABLE Customer
 (
-    CustomerID               CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ContactPersonID          CHAR(36) NOT NULL,
-    CompanyID                CHAR(36) NOT NULL,
-    DefaultDeliveryAddressID CHAR(36)
+    CustomerID               UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    ContactPersonID          UNIQUEIDENTIFIER NOT NULL,
+    CompanyID                UNIQUEIDENTIFIER NOT NULL,
+    DefaultDeliveryAddressID UNIQUEIDENTIFIER
 );
 
 CREATE TABLE Employee
 (
-    EmployeeID      CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    EmployeeID      UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
     UserID          CHAR(21) NOT NULL UNIQUE,
-    ContactPersonID CHAR(36) NOT NULL UNIQUE,
-    PersonID        CHAR(36) NOT NULL UNIQUE,
-    RoleInCompany   ENUM ('OWNER', 'REGULAR'),
-    CompanyID       CHAR(36),
+    ContactPersonID UNIQUEIDENTIFIER NOT NULL UNIQUE,
+    PersonID        UNIQUEIDENTIFIER NOT NULL UNIQUE,
+    RoleInCompany   VARCHAR(10) CHECK (RoleInCompany IN ('OWNER', 'REGULAR')),
+    CompanyID       UNIQUEIDENTIFIER,
     EmploymentDate  DATE
 );
 
 CREATE TABLE Stock
 (
-    StockID         CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    AmountAvailable INT      NOT NULL DEFAULT 0 CHECK (AmountAvailable >= 0),
+    StockID         UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    AmountAvailable INT NOT NULL DEFAULT 0 CHECK (AmountAvailable >= 0),
     AlarmingAmount  INT
 );
 
-CREATE TABLE `User`
+CREATE TABLE Users
 (
-    UserID     CHAR(21)                              NOT NULL PRIMARY KEY,
-    SystemRole ENUM ('USER', 'ADMIN') DEFAULT 'USER' NOT NULL
+    UserID     CHAR(21) NOT NULL PRIMARY KEY,
+    SystemRole VARCHAR(10) CHECK (SystemRole IN ('USER', 'ADMIN')) NOT NULL DEFAULT 'USER'
 );
 
 CREATE TABLE CustomerB2C
 (
-    CustomerID CHAR(36) PRIMARY KEY,
-    PersonID   CHAR(36) NOT NULL UNIQUE
+    CustomerID UNIQUEIDENTIFIER PRIMARY KEY,
+    PersonID   UNIQUEIDENTIFIER NOT NULL UNIQUE
 );
 
 CREATE TABLE ProductOrderItem
 (
-    ProductOrderItemID CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductVariantID   CHAR(36)       NOT NULL,
-    ProductOrderID     CHAR(36)       NOT NULL,
+    ProductOrderItemID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    ProductVariantID   UNIQUEIDENTIFIER NOT NULL,
+    ProductOrderID     UNIQUEIDENTIFIER NOT NULL,
     UnitPrice          DECIMAL(10, 2) NOT NULL,
-    Amount             INT            NOT NULL CHECK (Amount > 0),
-    ProductName        VARCHAR(100)   NOT NULL,
-    UNIQUE (ProductVariantID, ProductOrderID)
+    Amount             INT NOT NULL CHECK (Amount > 0),
+    ProductName        VARCHAR(100) NOT NULL,
+    CONSTRAINT UC_ProductOrderItem UNIQUE (ProductVariantID, ProductOrderID)
 );
 
 CREATE TABLE Invoice
 (
-    InvoiceID       CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    InvoiceNumber   INT            NOT NULL UNIQUE AUTO_INCREMENT,
+    InvoiceID       UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    InvoiceNumber   INT IDENTITY(1,1) NOT NULL UNIQUE,
     AmountOnInvoice DECIMAL(10, 2) NOT NULL,
-    IssueDate       DATE           NOT NULL
+    IssueDate       DATE NOT NULL
 );
 
 CREATE TABLE ContactPerson
 (
-    ContactPersonID CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    ContactPersonID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
     ContactNumber   VARCHAR(20) NOT NULL UNIQUE,
     EmailAddress    VARCHAR(100) UNIQUE
 );
 
 CREATE TABLE Product
 (
-    ProductID            CHAR(36)       NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CategoryID           CHAR(36)       NOT NULL,
-    CompanyID            CHAR(36)       NOT NULL,
-    Name                 VARCHAR(100)   NOT NULL,
+    ProductID            UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    CategoryID           UNIQUEIDENTIFIER NOT NULL,
+    CompanyID            UNIQUEIDENTIFIER NOT NULL,
+    Name                 VARCHAR(100) NOT NULL,
     Price                DECIMAL(10, 2) NOT NULL,
-    IsActive             BOOLEAN        NOT NULL DEFAULT TRUE,
-    MainProductVariantID CHAR(36),
+    IsActive             BIT NOT NULL DEFAULT 1,
+    MainProductVariantID UNIQUEIDENTIFIER,
     Description          VARCHAR(1000),
     Brand                VARCHAR(50)
 );
 
 CREATE TABLE ProductOrder
 (
-    ProductOrderID CHAR(36) NOT NULL                                            DEFAULT (UUID()) PRIMARY KEY,
-    Status         ENUM ('NEW', 'ORDERED', 'SHIPPED', 'DELIVERED', 'CANCELLED') DEFAULT 'NEW' NOT NULL,
-    CustomerID     CHAR(36),
-    AddressID      CHAR(36),
-    InvoiceID      CHAR(36),
+    ProductOrderID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    Status         VARCHAR(10) CHECK (Status IN ('NEW', 'ORDERED', 'SHIPPED', 'DELIVERED', 'CANCELLED')) NOT NULL DEFAULT 'NEW',
+    CustomerID     UNIQUEIDENTIFIER,
+    AddressID      UNIQUEIDENTIFIER,
+    InvoiceID      UNIQUEIDENTIFIER,
     TrackingNumber VARCHAR(10),
     TimeOfSending  DATETIME,
-    TimeOfCreation DATETIME NOT NULL                                            DEFAULT CURRENT_TIMESTAMP
+    TimeOfCreation DATETIME NOT NULL DEFAULT GETDATE()
 );
 
 CREATE TABLE CustomerB2B
 (
-    CustomerID    CHAR(36) PRIMARY KEY,
-    AddressID     CHAR(36)     NOT NULL,
-    CompanyNumber VARCHAR(30)  NOT NULL UNIQUE,
+    CustomerID    UNIQUEIDENTIFIER PRIMARY KEY,
+    AddressID     UNIQUEIDENTIFIER NOT NULL,
+    CompanyNumber VARCHAR(30) NOT NULL UNIQUE,
     NameOnInvoice VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE ProductAttribute
 (
-    ProductAttributeID CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductID          CHAR(36)    NOT NULL,
+    ProductAttributeID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    ProductID          UNIQUEIDENTIFIER NOT NULL,
     AttributeName      VARCHAR(50) NOT NULL,
     Value              VARCHAR(255),
-    UNIQUE (ProductID, AttributeName)
+    CONSTRAINT UC_ProductAttribute UNIQUE (ProductID, AttributeName)
 );
 
 CREATE TABLE VariantAttribute
 (
-    VariantAttributeID CHAR(36)    NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    ProductVariantID   CHAR(36)    NOT NULL,
+    VariantAttributeID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    ProductVariantID   UNIQUEIDENTIFIER NOT NULL,
     AttributeName      VARCHAR(50) NOT NULL,
     Value              VARCHAR(255),
-    UNIQUE (ProductVariantID, AttributeName)
+    CONSTRAINT UC_VariantAttribute UNIQUE (ProductVariantID, AttributeName)
 );
 
 CREATE TABLE Address
 (
-    AddressID             CHAR(36)     NOT NULL DEFAULT (UUID()) PRIMARY KEY,
+    AddressID             UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
     City                  VARCHAR(255) NOT NULL,
     Street                VARCHAR(255) NOT NULL,
-    StreetNumber          VARCHAR(10)  NOT NULL,
-    ApartmentNumber       VARCHAR(10)  NOT NULL,
-    PostalCode            VARCHAR(10)  NOT NULL,
+    StreetNumber          VARCHAR(10) NOT NULL,
+    ApartmentNumber       VARCHAR(10) NOT NULL,
+    PostalCode            VARCHAR(10) NOT NULL,
     AdditionalInformation VARCHAR(255)
 );
 
 CREATE TABLE Invitation
 (
-    InvitationID CHAR(36) NOT NULL DEFAULT (UUID()) PRIMARY KEY,
-    CompanyID    CHAR(36) NOT NULL,
-    EmployeeID   CHAR(36) NOT NULL,
-    Token        CHAR(36) NOT NULL UNIQUE,
-    UNIQUE (CompanyID, EmployeeID)
+    InvitationID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID() PRIMARY KEY,
+    CompanyID    UNIQUEIDENTIFIER NOT NULL,
+    EmployeeID   UNIQUEIDENTIFIER NOT NULL,
+    Token        UNIQUEIDENTIFIER NOT NULL UNIQUE,
+    CONSTRAINT UC_Invitation UNIQUE (CompanyID, EmployeeID)
 );
 
 ALTER TABLE Category
@@ -235,7 +235,7 @@ ALTER TABLE Employee
 ALTER TABLE Employee
     ADD CONSTRAINT FK_Employee_PersonID FOREIGN KEY (PersonID) REFERENCES Person (PersonID);
 ALTER TABLE Employee
-    ADD CONSTRAINT FK_Employee_UserID FOREIGN KEY (UserID) REFERENCES `User` (UserID);
+    ADD CONSTRAINT FK_Employee_UserID FOREIGN KEY (UserID) REFERENCES Users (UserID);
 
 ALTER TABLE Invitation
     ADD CONSTRAINT FK_Invitation_CompanyID FOREIGN KEY (CompanyID) REFERENCES Company (CompanyID);
@@ -269,4 +269,3 @@ ALTER TABLE VariantAttribute
     ADD CONSTRAINT FK_VariantAttribute_AttributeName FOREIGN KEY (AttributeName) REFERENCES Attribute (AttributeName);
 ALTER TABLE VariantAttribute
     ADD CONSTRAINT FK_VariantAttribute_ProductVariantID FOREIGN KEY (ProductVariantID) REFERENCES ProductVariant (ProductVariantID);
-    

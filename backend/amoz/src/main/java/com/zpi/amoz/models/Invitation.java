@@ -16,7 +16,6 @@ public class Invitation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "CHAR(36)")
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID invitationId;
 
@@ -28,7 +27,7 @@ public class Invitation {
     @JoinColumn(name = "EmployeeID", nullable = false)
     private Employee employee;
 
-    @Column(name = "Token", nullable = false, columnDefinition = "CHAR(36)", unique = true)
+    @Column(name = "Token", nullable = false, unique = true)
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID token = UUID.randomUUID();
 

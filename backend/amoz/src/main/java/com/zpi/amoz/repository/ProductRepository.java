@@ -17,8 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("UPDATE Product p SET p.isActive = false WHERE p.productId = :productId")
     int deactivateProduct(UUID productId);
 
-    @Query(value = "SELECT * FROM Product WHERE Product.isActive = true AND Product.CompanyId = :companyId", nativeQuery = true)
-    List<Product> findAllByCompanyId(String companyId);
+    @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.company.companyId = :companyId")
+    List<Product> findAllByCompanyId(UUID companyId);
 
     Optional<Product> findByCategory_CategoryId(UUID categoryId);
 }

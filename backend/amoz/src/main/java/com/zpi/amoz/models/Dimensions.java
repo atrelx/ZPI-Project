@@ -13,7 +13,6 @@ import java.util.UUID;
 public class Dimensions {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "CHAR(36)")
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID dimensionsId;
 

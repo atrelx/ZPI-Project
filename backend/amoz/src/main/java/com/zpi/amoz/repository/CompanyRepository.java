@@ -15,7 +15,7 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
     @Query("UPDATE Company c SET c.isActive = false WHERE c.companyId = :companyId")
     int deactivateCompany(UUID companyId);
 
-    @Query(value = "SELECT c.* FROM Employee e INNER JOIN Company c ON c.CompanyID = e.CompanyID WHERE e.UserID = :userId", nativeQuery = true)
+    @Query("SELECT e.company FROM Employee e WHERE e.user.userId = :userId")
     Optional<Company> getCompanyByUserId(String userId);
 }
 

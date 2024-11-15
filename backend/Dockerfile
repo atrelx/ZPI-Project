@@ -8,4 +8,6 @@ WORKDIR /app
 
 COPY --from=build /app/amoz.jar /app/amoz.jar
 
+EXPOSE 8080
+
 CMD ["java", "-jar", "amoz.jar"]

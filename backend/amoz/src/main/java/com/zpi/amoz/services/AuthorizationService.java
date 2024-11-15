@@ -1,7 +1,6 @@
 package com.zpi.amoz.services;
 
 import com.zpi.amoz.enums.RoleInCompany;
-import com.zpi.amoz.interfaces.InvoiceDTO;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.*;
 import com.zpi.amoz.security.UserPrincipal;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Service
 public class AuthorizationService {
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
 
     @Autowired
     private CompanyService companyService;

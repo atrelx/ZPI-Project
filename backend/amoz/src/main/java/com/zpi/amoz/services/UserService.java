@@ -2,14 +2,11 @@ package com.zpi.amoz.services;
 
 import com.zpi.amoz.enums.SystemRole;
 import com.zpi.amoz.models.*;
-import com.zpi.amoz.repository.UserRepository;
+import com.zpi.amoz.repository.UsersRepository;
 import com.zpi.amoz.requests.UserRegisterRequest;
-import com.zpi.amoz.responses.MessageResponse;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +18,7 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
     private EmployeeService employeeService;
@@ -36,16 +33,16 @@ public class UserService {
     private EntityManager entityManager;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     public List<User> findAll() {
-        return userRepository.findAll();
+        return usersRepository.findAll();
     }
 
     public Optional<User> findById(String id) {
-        return userRepository.findById(id);
+        return usersRepository.findById(id);
     }
 
     @Transactional
@@ -80,20 +77,20 @@ public class UserService {
         User user = new User();
         user.setUserId(sub);
         user.setSystemRole(systemRole);
-        return userRepository.save(user);
+        return usersRepository.save(user);
     }
 
     public boolean isUserRegistered(String userId) {
-        return userRepository.findById(userId).isPresent();
+        return usersRepository.findById(userId).isPresent();
     }
 
     public User save(User user) {
-        return userRepository.save(user);
+        return usersRepository.save(user);
     }
 
     public boolean deleteById(String id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
+        if (usersRepository.existsById(id)) {
+            usersRepository.deleteById(id);
             return true;
         } else {
             return false;

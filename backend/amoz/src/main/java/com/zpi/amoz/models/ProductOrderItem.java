@@ -14,7 +14,6 @@ import java.util.UUID;
 public class ProductOrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "CHAR(36)")
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID productOrderItemId;
 
