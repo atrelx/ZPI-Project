@@ -24,7 +24,7 @@ public record CompanyDTO(
         @Schema(description = "Kraj rejestracji firmy", example = "Polska")
         String countryOfRegistration,
 
-        @Schema(description = "Adres firmy", example = "{ \"addressId\": \"123e4567-e89b-12d3-a456-426614174000\", \"city\": \"Warszawa\", \"street\": \"Ul. Pięciomorgowa\", \"streetNumber\": \"22\", \"apartmentNumber\": \"5A\", \"postalCode\": \"00-123\", \"additionalInformation\": \"Zamieszkuję na piętrze\" }")
+        @Schema(description = "Adres firmy", implementation = AddressDTO.class)
         AddressDTO address,
 
         @Schema(description = "Numer REGON firmy, opcjonalnie", example = "987654321", nullable = true)

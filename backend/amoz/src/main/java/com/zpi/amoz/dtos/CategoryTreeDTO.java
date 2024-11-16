@@ -1,5 +1,6 @@
 package com.zpi.amoz.dtos;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.ArrayList;
@@ -20,8 +21,7 @@ public record CategoryTreeDTO(
         @Schema(description = "Poziom kategorii w hierarchii", example = "1")
         short categoryLevel,
 
-        @Schema(description = "Lista podkategorii",
-                example = "[{\"categoryId\": \"e4b5fa0f-b8b1-4b60-bb6b-e4b3d91811ed\", \"name\": \"Telewizory\", \"categoryLevel\": 2, \"childCategories\": []}]")
+        @ArraySchema(schema = @Schema(description = "Lista podkategorii", implementation = CategoryTreeDTO.class))
         List<CategoryTreeDTO> childCategories
 ) {
 

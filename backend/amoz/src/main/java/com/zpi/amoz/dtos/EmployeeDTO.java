@@ -13,16 +13,13 @@ public record EmployeeDTO(
         @Schema(description = "Identyfikator pracownika", example = "1c0b25d2-d77e-4f85-bd27-2672f72848d1")
         UUID employeeId,
 
-        @Schema(description = "Dane użytkownika przypisane do pracownika",
-                example = "{ \"userId\": \"118443418389427414498\", \"systemRole\": \"REGULAR\" }")
+        @Schema(description = "Dane użytkownika przypisane do pracownika", implementation = UserDTO.class)
         UserDTO user,
 
-        @Schema(description = "Dane kontaktowe osoby odpowiedzialnej za kontakt z pracownikiem",
-                example = "{ \"contactPersonId\": \"e4b5fa0f-b8b1-4b60-bb6b-e4b3d91811ed\", \"contactNumber\": \"+48123456789\", \"emailAddress\": \"contact@company.com\" }")
+        @Schema(description = "Dane kontaktowe osoby odpowiedzialnej za kontakt z pracownikiem", implementation = ContactPersonDTO.class)
         ContactPersonDTO contactPerson,
 
-        @Schema(description = "Dane osobowe pracownika",
-                example = "{ \"personId\": \"1f3d4d5e-3c11-4e53-8f82-e2f0d8c94c89\", \"name\": \"Jan\", \"surname\": \"Kowalski\", \"dateOfBirth\": \"1985-04-23\", \"sex\": \"M\" }")
+        @Schema(description = "Dane osobowe pracownika", implementation = PersonDTO.class)
         PersonDTO person,
 
         @Schema(description = "Rola pracownika w firmie", example = "REGULAR")

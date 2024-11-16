@@ -2,7 +2,7 @@ package com.zpi.amoz.services;
 
 import com.zpi.amoz.enums.SystemRole;
 import com.zpi.amoz.models.*;
-import com.zpi.amoz.repository.UsersRepository;
+import com.zpi.amoz.repository.UserRepository;
 import com.zpi.amoz.requests.UserRegisterRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     private EmployeeService employeeService;
@@ -33,16 +33,16 @@ public class UserService {
     private EntityManager entityManager;
 
     @Autowired
-    public UserService(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public List<User> findAll() {
-        return usersRepository.findAll();
+        return userRepository.findAll();
     }
 
     public Optional<User> findById(String id) {
-        return usersRepository.findById(id);
+        return userRepository.findById(id);
     }
 
     @Transactional
@@ -77,20 +77,20 @@ public class UserService {
         User user = new User();
         user.setUserId(sub);
         user.setSystemRole(systemRole);
-        return usersRepository.save(user);
+        return userRepository.save(user);
     }
 
     public boolean isUserRegistered(String userId) {
-        return usersRepository.findById(userId).isPresent();
+        return userRepository.findById(userId).isPresent();
     }
 
     public User save(User user) {
-        return usersRepository.save(user);
+        return userRepository.save(user);
     }
 
     public boolean deleteById(String id) {
-        if (usersRepository.existsById(id)) {
-            usersRepository.deleteById(id);
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
             return true;
         } else {
             return false;

@@ -1,4 +1,4 @@
-package com.zpi.amoz.ids;
+package com.zpi.amoz.models;
 
 import com.zpi.amoz.models.Customer;
 import jakarta.persistence.Embeddable;

@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 public class AuthorizationService {
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private CompanyService companyService;

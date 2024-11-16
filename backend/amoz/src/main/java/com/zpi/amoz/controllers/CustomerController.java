@@ -18,6 +18,7 @@ import com.zpi.amoz.services.CompanyService;
 import com.zpi.amoz.services.CustomerService;
 import com.zpi.amoz.services.ProductOrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -173,7 +174,7 @@ public class CustomerController {
 
     @Operation(summary = "Pobierz wszystkich klientów B2B", description = "Zwraca listę wszystkich klientów B2B przypisanych do firmy.")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano klientów B2B",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2BDTO.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CustomerB2BDTO.class)))
     )
     @ApiResponse(responseCode = "404", description = "Nie znaleziono klientów",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -199,7 +200,7 @@ public class CustomerController {
 
     @Operation(summary = "Pobierz wszystkich klientów B2C", description = "Zwraca listę wszystkich klientów B2C przypisanych do firmy.")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano klientów B2C",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2CDTO.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CustomerB2CDTO.class)))
     )
     @ApiResponse(responseCode = "404", description = "Nie znaleziono klientów",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))

@@ -18,9 +18,7 @@ public record CategoryDTO(
         @Schema(description = "Poziom kategorii w hierarchii", example = "1")
         short categoryLevel,
 
-        @Schema(description = "Kategoria nadrzędna, jeśli istnieje",
-                example = "{ \"categoryId\": \"e4b5fa0f-b8b1-4b60-bb6b-e4b3d91811ed\", \"name\": \"Technologia\", \"categoryLevel\": 2, \"parentCategory\": null }",
-                nullable = true)
+        @Schema(description = "Kategoria nadrzędna, jeśli istnieje", nullable = true, implementation = CategoryDTO.class)
         Optional<CategoryDTO> parentCategory
 ) {
     public static CategoryDTO toCategoryDTO(Category category) {

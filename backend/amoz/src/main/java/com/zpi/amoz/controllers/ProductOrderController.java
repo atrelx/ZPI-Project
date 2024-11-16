@@ -16,6 +16,7 @@ import com.zpi.amoz.services.CompanyService;
 import com.zpi.amoz.services.InvoiceService;
 import com.zpi.amoz.services.ProductOrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -250,7 +251,7 @@ public class ProductOrderController {
 
     @Operation(summary = "Pobierz wszystkie zamówienia produktu", description = "Zwraca listę wszystkich zamówień w danej firmie.")
     @ApiResponse(responseCode = "200", description = "Lista zamówień została pomyślnie pobrana",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductOrderSummaryDTO.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductOrderSummaryDTO.class)))
     )
     @ApiResponse(responseCode = "404", description = "Nie znaleziono zamówień",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))

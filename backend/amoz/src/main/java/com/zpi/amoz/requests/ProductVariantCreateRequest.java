@@ -1,5 +1,6 @@
 package com.zpi.amoz.requests;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
@@ -20,17 +21,17 @@ public record ProductVariantCreateRequest(
         @NotNull(message = "Product variant code is required")
         int productVariantCode,
 
-        @Schema(description = "Informacje o stanie magazynowym wariantu produktu")
+        @Schema(description = "Informacje o stanie magazynowym wariantu produktu", implementation = StockCreateRequest.class)
         @NotNull(message = "Stock information is required")
         StockCreateRequest stock,
 
-        @Schema(description = "Informacje o wadze wariantu produktu (opcjonalne)", nullable = true)
+        @Schema(description = "Informacje o wadze wariantu produktu (opcjonalne)", nullable = true, implementation = WeightCreateRequest.class)
         Optional<WeightCreateRequest> weight,
 
-        @Schema(description = "Wymiary wariantu produktu (opcjonalne)", nullable = true)
+        @Schema(description = "Wymiary wariantu produktu (opcjonalne)", nullable = true, implementation = DimensionsCreateRequest.class)
         Optional<DimensionsCreateRequest> dimensions,
 
-        @Schema(description = "Lista atrybutów wariantu produktu")
+        @ArraySchema(schema = @Schema(description = "Lista atrybutów wariantu produktu", implementation = AttributeCreateRequest.class))
         @NotNull(message = "Variant attributes cannot be null")
         List<AttributeCreateRequest> variantAttributes,
 

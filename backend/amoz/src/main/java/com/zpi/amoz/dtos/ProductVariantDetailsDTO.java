@@ -1,7 +1,10 @@
 package com.zpi.amoz.dtos;
 
+import com.zpi.amoz.models.Dimensions;
 import com.zpi.amoz.models.ProductVariant;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.aspectj.weaver.ast.Var;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,16 +19,13 @@ public record ProductVariantDetailsDTO(
         @Schema(description = "Kod identyfikacyjny wariantu produktu", example = "12345")
         Integer code,
 
-        @Schema(description = "Informacje o stanie magazynowym wariantu produktu",
-                example = "{\"quantity\": 150}")
+        @Schema(description = "Informacje o stanie magazynowym wariantu produktu", implementation = StockDTO.class)
         StockDTO stock,
 
-        @Schema(description = "Wymiary wariantu produktu",
-                example = "{\"length\": 30, \"width\": 20, \"height\": 5}")
+        @Schema(description = "Wymiary wariantu produktu", implementation = DimensionsDTO.class)
         DimensionsDTO dimensions,
 
-        @Schema(description = "Waga wariantu produktu",
-                example = "{\"value\": 0.3}")
+        @Schema(description = "Waga wariantu produktu", implementation = WeightDTO.class)
         WeightDTO weight,
 
         @Schema(description = "Cena wariantu produktu", example = "199.99")
@@ -34,8 +34,7 @@ public record ProductVariantDetailsDTO(
         @Schema(description = "Nazwa wariantu produktu", example = "Czarny T-shirt, rozmiar M")
         String variantName,
 
-        @Schema(description = "Lista atrybutów wariantu produktu",
-                example = "[{\"attributeName\": \"Kolor\", \"attributeValue\": \"Czarny\"}, {\"attributeName\": \"Rozmiar\", \"attributeValue\": \"M\"}]")
+        @ArraySchema(schema = @Schema(description = "Lista atrybutów wariantu produktu", implementation = VariantAttributeDTO.class))
         List<VariantAttributeDTO> variantAttributes
 
 ) {

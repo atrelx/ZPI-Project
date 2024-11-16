@@ -19,10 +19,10 @@ public record InvoiceB2BDTO(
         @Schema(description = "Numer faktury", example = "12345")
         int invoiceNumber,
 
-        @Schema(description = "Informacje o firmie wystawiającej fakturę", example = "{ \"companyId\": \"b64d1982-8a74-4f91-bbfe-f63e828d8b34\", \"companyNumber\": \"123456789\", \"name\": \"Firma XYZ\", \"countryOfRegistration\": \"Polska\" }")
+        @Schema(description = "Informacje o firmie wystawiającej fakturę", implementation = CompanyDTO.class)
         CompanyDTO company,
 
-        @Schema(description = "Informacje o kliencie biznesowym (B2B), któremu wystawiona jest faktura", example = "{ \"customerId\": \"c5a98f07-4175-4b8c-939b-9b4ad87c5635\", \"contactPerson\": { \"contactPersonId\": \"e9a8b931-8d1d-4f1f-9838-3bfe5f6b697b\", \"contactNumber\": \"+48123456789\", \"emailAddress\": \"kontakt@firma.com\" }, \"defaultDeliveryAddress\": { \"addressId\": \"15e8b870-22e6-4bb3-bf4c-16ab4500fd4f\", \"city\": \"Warszawa\", \"street\": \"ul. Przykładowa\", \"streetNumber\": \"123\", \"postalCode\": \"00-001\" } }")
+        @Schema(description = "Informacje o kliencie biznesowym (B2B), któremu wystawiona jest faktura", implementation = CustomerB2BDTO.class)
         CustomerB2BDTO customerB2B,
 
         @Schema(description = "Kwota na fakturze", example = "1500.75")

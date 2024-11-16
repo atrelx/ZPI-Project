@@ -1,6 +1,7 @@
 package com.zpi.amoz.controllers;
 
 import com.zpi.amoz.dtos.ProductVariantDetailsDTO;
+import com.zpi.amoz.dtos.ProductVariantSummaryDTO;
 import com.zpi.amoz.enums.ImageDirectory;
 import com.zpi.amoz.models.ProductVariant;
 import com.zpi.amoz.requests.ProductVariantCreateRequest;
@@ -10,6 +11,7 @@ import com.zpi.amoz.services.AuthorizationService;
 import com.zpi.amoz.services.FileService;
 import com.zpi.amoz.services.ProductVariantService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -140,7 +142,7 @@ public class ProductVariantController {
 
     @Operation(summary = "Pobierz wszystkie warianty produktu", description = "Pobiera wszystkie warianty produktu na podstawie identyfikatora produktu.")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano warianty produktu",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductVariantDetailsDTO.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductVariantSummaryDTO.class)))
     )
     @ApiResponse(responseCode = "401", description = "Brak uprawnień do zarządzania produktem",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -159,8 +161,8 @@ public class ProductVariantController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Product is not in your company"));
             }
             List<ProductVariant> productVariantList = productVariantService.findAllByProductId(productId);
-            List<ProductVariantDetailsDTO> productVariantDetailsDTOS = productVariantList.stream().map(ProductVariantDetailsDTO::toProductVariantDetailsDTO).collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.OK).body(productVariantDetailsDTOS);
+            List<ProductVariantSummaryDTO> productVariantSummaryDTOs = productVariantList.stream().map(ProductVariantSummaryDTO::toProductVariantSummaryDTO).collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.OK).body(productVariantSummaryDTOs);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e));
         } catch (RuntimeException e) {

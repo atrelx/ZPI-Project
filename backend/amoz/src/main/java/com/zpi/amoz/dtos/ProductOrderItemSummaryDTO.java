@@ -13,8 +13,7 @@ public record ProductOrderItemSummaryDTO(
         @Schema(description = "Identyfikator pozycji zamówienia", example = "a2e9f5c4-4d52-40b3-bf3b-ecbb94c79e7b")
         UUID productOrderItemId,
 
-        @Schema(description = "Podsumowanie wariantu produktu",
-                example = "{\"productVariantId\": \"4d8f33b6-826f-47d9-b0fc-e1a89c00bdb3\", \"color\": \"Czerwony\", \"size\": \"L\"}")
+        @Schema(description = "Podsumowanie wariantu produktu", implementation = ProductVariantSummaryDTO.class)
         ProductVariantSummaryDTO productVariant,
 
         @Schema(description = "Cena jednostkowa produktu", example = "299.99")

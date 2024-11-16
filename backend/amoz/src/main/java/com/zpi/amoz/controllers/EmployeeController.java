@@ -12,6 +12,7 @@ import com.zpi.amoz.services.CompanyService;
 import com.zpi.amoz.services.EmployeeService;
 import com.zpi.amoz.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -160,7 +161,7 @@ public class EmployeeController {
 
     @Operation(summary = "Pobierz listę pracowników", description = "Zwraca listę wszystkich pracowników przypisanych do firmy.")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano listę pracowników",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeDTO.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = EmployeeDTO.class)))
     )
     @ApiResponse(responseCode = "404", description = "Nie znaleziono pracowników",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))

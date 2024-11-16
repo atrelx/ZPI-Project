@@ -19,8 +19,7 @@ public record ProductOrderSummaryDTO(
         @Schema(description = "Status zamówienia", example = "ORDERED")
         Status status,
 
-        @Schema(description = "Przykładowa pozycja zamówienia",
-                example = "{\"productOrderItemId\": \"f8d1a46b-50bc-46b4-bba7-1fd3cfad4a23\", \"unitPrice\": 99.99, \"amount\": 2, \"productName\": \"Koszulka Męska\"}")
+        @Schema(description = "Przykładowa pozycja zamówienia", implementation = ProductOrderItemSummaryDTO.class)
         ProductOrderItemSummaryDTO sampleProductOrderItem,
 
         @Schema(description = "Łączna kwota do zapłaty za zamówienie", example = "199.98")

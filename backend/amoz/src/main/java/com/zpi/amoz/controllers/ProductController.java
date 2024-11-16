@@ -10,6 +10,7 @@ import com.zpi.amoz.services.AuthorizationService;
 import com.zpi.amoz.services.CompanyService;
 import com.zpi.amoz.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -176,7 +177,7 @@ public class ProductController {
 
     @Operation(summary = "Pobierz wszystkie produkty", description = "Zwraca listę produktów w firmie.")
     @ApiResponse(responseCode = "200", description = "Produkty zostały pomyślnie pobrane",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductSummaryDTO.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductSummaryDTO.class)))
     )
     @ApiResponse(responseCode = "500", description = "Błąd serwera",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))

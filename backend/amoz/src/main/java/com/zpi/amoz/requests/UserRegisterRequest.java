@@ -11,11 +11,11 @@ import java.util.Optional;
 @Schema(description = "Request do rejestracji użytkownika, zawierający dane osobowe oraz dane kontaktowe osoby kontaktowej.")
 public record UserRegisterRequest(
 
-        @Schema(description = "Dane osobowe użytkownika")
+        @Schema(description = "Dane osobowe użytkownika", implementation = PersonCreateRequest.class)
         @NotNull(message = "Personal information is required")
         PersonCreateRequest person,
 
-        @Schema(description = "Dane kontaktowe osoby kontaktowej")
+        @Schema(description = "Dane kontaktowe osoby kontaktowej", implementation = ContactPersonCreateRequest.class)
         @NotNull(message = "Contact person details are required")
         ContactPersonCreateRequest contactPerson
 ) {

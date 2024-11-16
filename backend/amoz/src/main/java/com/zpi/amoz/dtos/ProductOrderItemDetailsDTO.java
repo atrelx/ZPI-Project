@@ -1,6 +1,7 @@
 package com.zpi.amoz.dtos;
 
 import com.zpi.amoz.models.ProductOrderItem;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
@@ -13,8 +14,7 @@ public record ProductOrderItemDetailsDTO(
         @Schema(description = "Identyfikator pozycji zamówienia", example = "a2e9f5c4-4d52-40b3-bf3b-ecbb94c79e7b")
         UUID productOrderItemId,
 
-        @Schema(description = "Szczegóły wariantu produktu",
-                example = "{\"productVariantId\": \"4d8f33b6-826f-47d9-b0fc-e1a89c00bdb3\", \"color\": \"Czerwony\", \"size\": \"L\"}")
+        @ArraySchema(schema = @Schema(description = "Szczegóły wariantu produktu", implementation = ProductVariantDetailsDTO.class))
         ProductVariantDetailsDTO productVariant,
 
         @Schema(description = "Cena jednostkowa produktu", example = "299.99")

@@ -1,6 +1,6 @@
 package com.zpi.amoz.services;
 
-import com.zpi.amoz.ids.CustomerId;
+import com.zpi.amoz.models.CustomerId;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.CustomerB2BRepository;
 import com.zpi.amoz.repository.CustomerB2CRepository;

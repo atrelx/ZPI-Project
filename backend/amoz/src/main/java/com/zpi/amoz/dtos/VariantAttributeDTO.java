@@ -12,8 +12,7 @@ public record VariantAttributeDTO(
         @Schema(description = "Identyfikator atrybutu wariantu", example = "b2c3248d-f91b-4a34-9d73-e4f1d0d902c3")
         UUID variantAttributeId,
 
-        @Schema(description = "Atrybut związany z wariantem produktu",
-                example = "{\"attributeName\": \"Rozmiar\"}")
+        @Schema(description = "Atrybut związany z wariantem produktu", implementation = AttributeDTO.class)
         AttributeDTO attribute,
 
         @Schema(description = "Wartość atrybutu wariantu, jeśli istnieje", example = "Czerwony")

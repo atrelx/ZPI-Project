@@ -10,6 +10,7 @@ import com.zpi.amoz.services.AuthorizationService;
 import com.zpi.amoz.services.CategoryService;
 import com.zpi.amoz.services.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -122,7 +123,7 @@ public class CategoryController {
 
     @Operation(summary = "Pobierz wszystkie kategorie firmy", description = "Pobiera wszystkie kategorie dla firmy użytkownika.")
     @ApiResponse(responseCode = "200", description = "Kategorie pomyślnie pobrane",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryTreeDTO.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CategoryTreeDTO.class)))
     )
     @ApiResponse(responseCode = "404", description = "Nie znaleziono firmy dla podanego ID użytkownika",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
