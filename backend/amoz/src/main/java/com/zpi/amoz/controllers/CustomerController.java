@@ -50,6 +50,49 @@ public class CustomerController {
     @Autowired
     private CompanyService companyService;
 
+    @Operation(summary = "Pobierz klienta na podstawie typu", description = "Zwraca klienta B2B lub B2C na podstawie przekazanego typu klienta.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano klienta B2B",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2BDTO.class))
+    )
+    @ApiResponse(responseCode = "202", description = "Pomyślnie pobrano klienta B2C",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2CDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono klienta",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @GetMapping("/{customerId}")
+    public ResponseEntity<?> getCustomerDetails(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @PathVariable("customerId") UUID customerId
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            if (!authorizationService.hasPermissionToAccessCustomer(userPrincipal, customerId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given customer is not in your company"));
+            }
+            if (customerService.isCustomerB2B(customerId)) {
+                List<CustomerB2B> customerB2BList = customerService.findAllCustomersB2BBySub(userPrincipal.getSub());
+                List<CustomerB2BDTO> customerB2BDTOs = customerB2BList.stream()
+                        .map(CustomerB2BDTO::toCustomerB2BDTO)
+                        .collect(Collectors.toList());
+                return ResponseEntity.status(HttpStatus.OK).body(customerB2BDTOs);
+            } else {
+                List<CustomerB2C> customerB2CList = customerService.findAllCustomersB2CBySub(userPrincipal.getSub());
+                List<CustomerB2CDTO> customerB2CDTOs = customerB2CList.stream()
+                        .map(CustomerB2CDTO::toCustomerB2CDTO)
+                        .collect(Collectors.toList());
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(customerB2CDTOs);
+            }
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("An unexpected error occurred: " + e));
+        }
+    }
+
     @Operation(summary = "Utwórz klienta B2B", description = "Tworzy nowego klienta B2B na podstawie danych przekazanych w żądaniu.")
     @ApiResponse(responseCode = "201", description = "Klient B2B został pomyślnie utworzony",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2BDTO.class))

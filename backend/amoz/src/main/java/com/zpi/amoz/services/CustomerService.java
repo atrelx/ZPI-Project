@@ -170,6 +170,12 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    public Boolean isCustomerB2B(UUID customerId) {
+        customerRepository.findById(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find customer for given id: " + customerId));
+        return customerB2BRepository.findById(customerId).isPresent();
+    }
+
     public List<CustomerB2B> findAllCustomersB2BBySub(String sub) {
         UUID companyId = companyService.getCompanyByUserId(sub)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find company for given sub: " + sub))

@@ -138,8 +138,11 @@ public class ProductOrderController {
     }
 
     @Operation(summary = "Generowanie faktury dla zamówienia", description = "Generuje fakturę dla istniejącego zamówienia produktu.")
-    @ApiResponse(responseCode = "200", description = "Faktura została pomyślnie wygenerowana",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceDTO.class))
+    @ApiResponse(responseCode = "200", description = "Faktura B2B została pomyślnie wygenerowana",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2BDTO.class))
+    )
+    @ApiResponse(responseCode = "202", description = "Faktura B2C została pomyślnie wygenerowana",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2CDTO.class))
     )
     @ApiResponse(responseCode = "401", description = "Brak uprawnień do generowania faktury",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -161,10 +164,11 @@ public class ProductOrderController {
             InvoiceDTO invoiceDTO;
             if (invoice.getProductOrder().getCustomer().getCustomerB2B() != null) {
                 invoiceDTO = InvoiceB2BDTO.toInvoiceDTO(invoice);
+                return ResponseEntity.ok(invoiceDTO);
             } else {
                 invoiceDTO = InvoiceB2CDTO.toInvoiceDTO(invoice);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceDTO);
             }
-            return ResponseEntity.ok(invoiceDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new MessageResponse(e.getMessage()));
@@ -175,8 +179,11 @@ public class ProductOrderController {
     }
 
     @Operation(summary = "Pobierz istniejącą fakturę", description = "Pobiera szczegóły istniejącej faktury.")
-    @ApiResponse(responseCode = "200", description = "Faktura została pomyślnie pobrana",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceDTO.class))
+    @ApiResponse(responseCode = "200", description = "Faktura B2B została pomyślnie pobrana",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2BDTO.class))
+    )
+    @ApiResponse(responseCode = "202", description = "Faktura B2C została pomyślnie pobrana",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2CDTO.class))
     )
     @ApiResponse(responseCode = "404", description = "Nie znaleziono faktury",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -202,10 +209,11 @@ public class ProductOrderController {
             }
             if (invoice.getProductOrder().getCustomer().getCustomerB2B() != null) {
                 invoiceDTO = InvoiceB2BDTO.toInvoiceDTO(invoice);
+                return ResponseEntity.ok(invoiceDTO);
             } else {
                 invoiceDTO = InvoiceB2CDTO.toInvoiceDTO(invoice);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceDTO);
             }
-            return ResponseEntity.ok(invoiceDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new MessageResponse(e.getMessage()));
