@@ -1,6 +1,6 @@
 package com.zpi.amoz.services;
 
-import com.zpi.amoz.dtos.CategoryDTO;
+import com.zpi.amoz.dtos.CategoryDetailsDTO;
 import com.zpi.amoz.dtos.CategoryTreeDTO;
 import com.zpi.amoz.models.Category;
 import com.zpi.amoz.models.Company;
@@ -48,12 +48,12 @@ public class CategoryService {
 
     public List<CategoryTreeDTO> getCategoryTree(UUID companyId) {
         List<Category> companyCategories = categoryRepository.getCategoriesWithParentHierarchy(companyId);
-        List<CategoryDTO> categoryDTOs = companyCategories
+        List<CategoryDetailsDTO> categoryDetailsDTOS = companyCategories
                 .stream()
-                .map(CategoryDTO::toCategoryDTO)
+                .map(CategoryDetailsDTO::toCategoryDTO)
                 .collect(Collectors.toList());
 
-        return CategoryTreeDTO.buildCategoryTree(categoryDTOs);
+        return CategoryTreeDTO.buildCategoryTree(categoryDetailsDTOS);
     }
 
 

@@ -21,6 +21,3 @@ public record CustomerB2CDTO(
         );
     }
 }
-
-
-

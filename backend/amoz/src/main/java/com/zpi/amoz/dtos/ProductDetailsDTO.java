@@ -1,6 +1,5 @@
 package com.zpi.amoz.dtos;
 
-import com.zpi.amoz.models.Category;
 import com.zpi.amoz.models.Product;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,8 +21,8 @@ public record ProductDetailsDTO(
         @Schema(description = "Cena produktu", example = "1999.99")
         BigDecimal price,
 
-        @Schema(description = "Kategoria produktu", implementation = CategoryDTO.class)
-        CategoryDTO category,
+        @Schema(description = "Kategoria produktu", implementation = CategoryDetailsDTO.class)
+        CategoryDetailsDTO category,
 
         @Schema(description = "Główny wariant produktu", nullable = true, implementation = ProductVariantDetailsDTO.class)
         Optional<ProductVariantDetailsDTO> mainProductVariant,
@@ -44,7 +43,7 @@ public record ProductDetailsDTO(
                 product.getProductId(),
                 product.getName(),
                 product.getPrice(),
-                CategoryDTO.toCategoryDTO(product.getCategory()),
+                CategoryDetailsDTO.toCategoryDTO(product.getCategory()),
                 Optional.ofNullable(product.getMainProductVariant() != null ? ProductVariantDetailsDTO.toProductVariantDetailsDTO(product.getMainProductVariant()) : null),
                 product.getProductAttributes() != null ? product.getProductAttributes().stream()
                         .map(ProductAttributeDTO::toProductAttributeDTO).toList() : List.of(),

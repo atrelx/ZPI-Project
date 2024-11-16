@@ -25,10 +25,10 @@ public record CategoryTreeDTO(
         List<CategoryTreeDTO> childCategories
 ) {
 
-    public static List<CategoryTreeDTO> buildCategoryTree(List<CategoryDTO> categories) {
+    public static List<CategoryTreeDTO> buildCategoryTree(List<CategoryDetailsDTO> categories) {
         Map<UUID, CategoryTreeDTO> categoryMap = categories.stream()
                 .collect(Collectors.toMap(
-                        CategoryDTO::categoryId,
+                        CategoryDetailsDTO::categoryId,
                         category -> new CategoryTreeDTO(
                                 category.categoryId(),
                                 category.name(),
@@ -39,7 +39,7 @@ public record CategoryTreeDTO(
 
         List<CategoryTreeDTO> rootCategories = new ArrayList<>();
 
-        for (CategoryDTO category : categories) {
+        for (CategoryDetailsDTO category : categories) {
             CategoryTreeDTO currentCategory = categoryMap.get(category.categoryId());
 
             if (category.parentCategory().isPresent()) {

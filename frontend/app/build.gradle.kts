@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.gms.google-services")
+    kotlin("plugin.serialization") version "1.8.0"
 }
 
 android {
@@ -10,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.amoz"
-        minSdk = 26
+        minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -59,7 +60,6 @@ dependencies {
     testImplementation ("junit:junit:4.13.2")
     testImplementation ("org.robolectric:robolectric:4.7.3")
 
-
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -69,6 +69,13 @@ dependencies {
     implementation("androidx.datastore:datastore:1.1.1")
     implementation("androidx.datastore:datastore-rxjava2:1.1.1")
     implementation("androidx.datastore:datastore-rxjava3:1.1.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
+
+    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+    implementation("jakarta.validation:jakarta.validation-api:3.1.0")
+    implementation("org.glassfish:jakarta.el:6.0.1")
+
     //  Default dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

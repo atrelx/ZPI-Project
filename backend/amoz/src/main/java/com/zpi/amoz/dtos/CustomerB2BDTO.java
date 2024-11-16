@@ -8,7 +8,7 @@ import java.util.UUID;
 @Schema(description = "DTO reprezentujące dane klienta B2B, zawierające dane klienta, adres oraz informacje dotyczące fakturowania.")
 public record CustomerB2BDTO(
 
-        @Schema(description = "Informacje o kliencie", example = "{ \"customerId\": \"f7593b1d-b85f-43c1-b876-61fc0c075123\", \"contactPerson\": { \"contactPersonId\": \"a47bc8f1-149f-4a5b-90f9-e253f70db681\", \"name\": \"Jan Kowalski\", \"email\": \"jan.kowalski@example.com\", \"phone\": \"123-456-789\" }, \"defaultDeliveryAddress\": { \"addressId\": \"123e4567-e89b-12d3-a456-426614174000\", \"city\": \"Warszawa\", \"street\": \"Ul. Pięciomorgowa\", \"streetNumber\": \"22\", \"apartmentNumber\": \"5A\", \"postalCode\": \"00-123\", \"additionalInformation\": \"Zamieszkuję na piętrze\" } }")
+        @Schema(description = "Informacje o kliencie", implementation = CustomerDTO.class)
         CustomerDTO customer,
 
         @Schema(description = "Adres klienta", implementation = AddressDTO.class)

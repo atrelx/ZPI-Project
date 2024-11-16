@@ -1,6 +1,6 @@
 package com.zpi.amoz.controllers;
 
-import com.zpi.amoz.dtos.CategoryDTO;
+import com.zpi.amoz.dtos.CategoryDetailsDTO;
 import com.zpi.amoz.dtos.CategoryTreeDTO;
 import com.zpi.amoz.models.Category;
 import com.zpi.amoz.requests.CategoryCreateRequest;
@@ -39,7 +39,7 @@ public class CategoryController {
 
     @Operation(summary = "Utwórz kategorię", description = "Tworzy nową kategorię z opcjonalną kategorią nadrzędną.")
     @ApiResponse(responseCode = "201", description = "Kategoria pomyślnie utworzona",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryDTO.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryDetailsDTO.class))
     )
     @ApiResponse(responseCode = "500", description = "Wewnętrzny błąd serwera",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -58,8 +58,8 @@ public class CategoryController {
         }
         try {
             Category category = categoryService.createCategory(userPrincipal.getSub(), categoryCreateRequest);
-            CategoryDTO categoryDTO = CategoryDTO.toCategoryDTO(category);
-            return ResponseEntity.status(HttpStatus.CREATED).body(categoryDTO);
+            CategoryDetailsDTO categoryDetailsDTO = CategoryDetailsDTO.toCategoryDTO(category);
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoryDetailsDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -67,7 +67,7 @@ public class CategoryController {
 
     @Operation(summary = "Zaktualizuj kategorię", description = "Aktualizuje istniejącą kategorię na podstawie jej ID.")
     @ApiResponse(responseCode = "200", description = "Kategoria pomyślnie zaktualizowana",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryDTO.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryDetailsDTO.class))
     )
     @ApiResponse(responseCode = "500", description = "Wewnętrzny błąd serwera",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -91,8 +91,8 @@ public class CategoryController {
                 }
             }
             Category category = categoryService.updateCategory(categoryId, categoryCreateRequest);
-            CategoryDTO categoryDTO = CategoryDTO.toCategoryDTO(category);
-            return ResponseEntity.status(HttpStatus.OK).body(categoryDTO);
+            CategoryDetailsDTO categoryDetailsDTO = CategoryDetailsDTO.toCategoryDTO(category);
+            return ResponseEntity.status(HttpStatus.OK).body(categoryDetailsDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
         }
