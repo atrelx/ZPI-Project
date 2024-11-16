@@ -74,7 +74,7 @@ dependencies {
 
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
     implementation("jakarta.validation:jakarta.validation-api:3.1.0")
-    implementation("org.glassfish:jakarta.el:6.0.1")
+    implementation("jakarta.el:jakarta.el-api:5.0.1")
 
     //  Default dependencies
     implementation(libs.androidx.core.ktx)
