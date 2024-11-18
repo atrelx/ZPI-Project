@@ -50,7 +50,7 @@ public class CustomerController {
     @Autowired
     private CompanyService companyService;
 
-    @Operation(summary = "Pobierz klienta na podstawie typu", description = "Zwraca klienta B2B lub B2C na podstawie przekazanego typu klienta.")
+    @Operation(summary = "Pobierz dane klienta", description = "Zwraca dane klienta B2B lub B2C na podstawie typu klienta.")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano klienta B2B",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerB2BDTO.class))
     )
