@@ -32,26 +32,26 @@ class AuthInterceptor @Inject constructor(
                     if (tokens?.accessToken == null) {
                         showGoogleSignInActivity()
                         if (!tokenManager.accessToken.isNullOrEmpty()) {
-                            requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
+                            requestBuilder.addHeader("Authorization", "Bearer ${tokenManager.accessToken}")
                         }
 
                     } else {
                         tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
                         if (!tokenManager.accessToken.isNullOrEmpty()) {
-                            requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
+                            requestBuilder.addHeader("Authorization", "Bearer ${tokenManager.accessToken}")
                         }
                     }
                 } else {
                     showGoogleSignInActivity()
                     if (!tokenManager.accessToken.isNullOrEmpty()) {
-                        requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
+                        requestBuilder.addHeader("Authorization", "Bearer ${tokenManager.accessToken}")
                     }
 
                 }
             }
         } else {
             if (!tokenManager.accessToken.isNullOrEmpty()) {
-                requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
+                requestBuilder.addHeader("Authorization", "Bearer ${tokenManager.accessToken}")
             }
         }
         return chain.proceed(requestBuilder.build())
