@@ -12,11 +12,11 @@ data class ProductVariantDetails(
     @Serializable(with = UUIDSerializer::class)
     val productVariantId: UUID,
     val code: Int,
-    val stock: com.example.amoz.models.Stock? = null,
-    val dimensions: com.example.amoz.models.Dimensions? = null,
-    val weight: com.example.amoz.models.Weight? = null,
+    val stock: Stock? = null,
+    val dimensions: Dimensions? = null,
+    val weight: Weight? = null,
     @Serializable(with = BigDecimalSerializer::class)
     val variantPrice: BigDecimal,
     val variantName: String,
-    val variantAttributes: List<com.example.amoz.models.VariantAttribute> = listOf()
+    val variantAttributes: List<VariantAttribute> = listOf()
 )

@@ -19,6 +19,8 @@ import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.api.sealed.SyncResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.validation.Validation
 import javax.validation.Validator
 import kotlinx.coroutines.launch
@@ -31,32 +33,32 @@ class UserViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : BaseViewModel() {
 
-    private val _createUserRegisterRequestState = MutableLiveData<SyncResultState<UserRegisterRequest>>()
-    val createUserRegisterRequestState: LiveData<SyncResultState<UserRegisterRequest>> = _createUserRegisterRequestState
+    private val _createUserRegisterRequestState = MutableStateFlow<SyncResultState<UserRegisterRequest>>(SyncResultState.Idle)
+    val createUserRegisterRequestState: StateFlow<SyncResultState<UserRegisterRequest>> = _createUserRegisterRequestState
 
-    private val _registerUserState = MutableLiveData<ResultState<com.example.amoz.models.User>>()
-    val registerUserState: LiveData<ResultState<com.example.amoz.models.User>> = _registerUserState
+    private val _registerUserState = MutableStateFlow<ResultState<User>>(ResultState.Idle)
+    val registerUserState: StateFlow<ResultState<User>> = _registerUserState
 
-    private val _updateUserState = MutableLiveData<ResultState<com.example.amoz.models.User>>()
-    val updateUserState: LiveData<ResultState<com.example.amoz.models.User>> = _updateUserState
+    private val _updateUserState = MutableStateFlow<ResultState<User>>(ResultState.Idle)
+    val updateUserState: StateFlow<ResultState<User>> = _updateUserState
 
-    private val _getProfilePictureState = MutableLiveData<ResultState<ImageBitmap>>()
-    val getProfilePictureState: LiveData<ResultState<ImageBitmap>> = _getProfilePictureState
+    private val _getProfilePictureState = MutableStateFlow<ResultState<ImageBitmap>>(ResultState.Idle)
+    val getProfilePictureState: StateFlow<ResultState<ImageBitmap>> = _getProfilePictureState
 
-    private val _uploadProfilePictureState = MutableLiveData<ResultState<Unit>>()
-    val uploadProfilePictureState: LiveData<ResultState<Unit>> = _uploadProfilePictureState
+    private val _uploadProfilePictureState = MutableStateFlow<ResultState<Unit>>(ResultState.Idle)
+    val uploadProfilePictureState: StateFlow<ResultState<Unit>> = _uploadProfilePictureState
 
-    private val _isRegisteredState = MutableLiveData<ResultState<Boolean>>()
-    val isRegisteredState: LiveData<ResultState<Boolean>> = _isRegisteredState
+    private val _isRegisteredState = MutableStateFlow<ResultState<Boolean>>(ResultState.Idle)
+    val isRegisteredState: StateFlow<ResultState<Boolean>> = _isRegisteredState
 
 
-    val name = MutableLiveData<String>()
-    val surname = MutableLiveData<String>()
-    val dateOfBirth = MutableLiveData<LocalDate>()
-    val sex = MutableLiveData<Sex>()
-    val contactNumber = MutableLiveData<String>()
-    val emailAddress = MutableLiveData<String?>()
-    val imagePickerUri = MutableLiveData<Uri?>()
+    val name = MutableStateFlow<String>("")
+    val surname = MutableStateFlow<String>("")
+    val dateOfBirth = MutableStateFlow<LocalDate>(LocalDate.now())
+    val sex = MutableStateFlow<Sex>(Sex.M)
+    val contactNumber = MutableStateFlow<String>("")
+    val emailAddress = MutableStateFlow<String?>(null)
+    val imagePickerUri = MutableStateFlow<Uri?>(null)
 
     fun registerUser() {
         createUserRegisterRequest()

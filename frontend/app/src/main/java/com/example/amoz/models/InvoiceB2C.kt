@@ -13,8 +13,8 @@ import java.util.UUID
 data class InvoiceB2C(
     @Serializable(with = UUIDSerializer::class)
     val invoiceId: UUID,
-    val company: com.example.amoz.models.Company,
-    val customerB2C: com.example.amoz.models.CustomerB2C,
+    val company: Company,
+    val customerB2C: CustomerB2C,
     val invoiceNumber: Int,
     @Serializable(with = BigDecimalSerializer::class)
     val amountOnInvoice: BigDecimal,

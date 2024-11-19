@@ -12,9 +12,9 @@ import java.util.UUID
 data class Employee(
     @Serializable(with = UUIDSerializer::class)
     val employeeId: UUID,
-    val user: com.example.amoz.models.User,
-    val contactPerson: com.example.amoz.models.ContactPerson,
-    val person: com.example.amoz.models.Person,
+    val user: User,
+    val contactPerson: ContactPerson,
+    val person: Person,
     val roleInCompany: RoleInCompany,
     @Serializable(with = LocalDateSerializer::class)
     val employmentDate: LocalDate

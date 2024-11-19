@@ -9,6 +9,6 @@ import java.util.UUID
 data class ProductAttribute(
     @Serializable(with = UUIDSerializer::class)
     val productAttributeId: UUID,
-    val attribute: com.example.amoz.models.Attribute,
+    val attribute: Attribute,
     val value: String? = null
 )

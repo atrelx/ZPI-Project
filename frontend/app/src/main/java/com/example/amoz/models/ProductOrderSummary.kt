@@ -15,7 +15,7 @@ data class ProductOrderSummary(
     @Serializable(with = UUIDSerializer::class)
     val productOrderId: UUID,
     val status: Status,
-    val sampleProductOrderItem: com.example.amoz.models.ProductOrderItemSummary,
+    val sampleProductOrderItem: ProductOrderItemSummary,
     @Serializable(with = BigDecimalSerializer::class)
     val totalDue: BigDecimal,
     val trackingNumber: String? = null,

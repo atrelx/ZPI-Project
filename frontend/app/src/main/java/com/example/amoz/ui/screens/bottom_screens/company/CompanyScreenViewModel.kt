@@ -7,13 +7,14 @@ import com.example.amoz.data.Person
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.employees.testEmployees
+import com.example.amoz.view_models.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 
-class CompanyScreenViewModel: ViewModel() {
+class CompanyScreenViewModel: BaseViewModel() {
     private val _companyUiState = MutableStateFlow(CompanyScreenUiState())
     val companyUiState: StateFlow<CompanyScreenUiState> = _companyUiState.asStateFlow()
 
@@ -37,6 +38,10 @@ class CompanyScreenViewModel: ViewModel() {
             )
         }
     }
+
+//    fun fetchEmployees() {
+//        performRepositoryAction()
+//    }
 
     fun updateCompanyName(name: String) {
         _companyUiState.update { currState ->

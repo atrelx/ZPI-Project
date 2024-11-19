@@ -16,11 +16,11 @@ data class ProductOrderDetails(
     @Serializable(with = UUIDSerializer::class)
     val productOrderId: UUID,
     val status: Status,
-    val customer: com.example.amoz.models.Customer? = null,
-    val address: com.example.amoz.models.Address? = null,
+    val customer: Customer? = null,
+    val address: Address? = null,
     @Serializable(with = UUIDSerializer::class)
     val invoiceId: UUID? = null,
-    val productOrderItems: List<com.example.amoz.models.ProductOrderItemDetails> = listOf(),
+    val productOrderItems: List<ProductOrderItemDetails> = listOf(),
     @Serializable(with = BigDecimalSerializer::class)
     val totalDue: BigDecimal,
     val trackingNumber: String? = null,

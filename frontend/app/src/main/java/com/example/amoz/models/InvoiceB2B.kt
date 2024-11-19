@@ -15,8 +15,8 @@ data class InvoiceB2B(
     @Serializable(with = UUIDSerializer::class)
     val invoiceId: UUID,
     val invoiceNumber: Int,
-    val company: com.example.amoz.models.Company,
-    val customerB2B: com.example.amoz.models.CustomerB2B,
+    val company: Company,
+    val customerB2B: CustomerB2B,
     @Serializable(with = BigDecimalSerializer::class)
     val amountOnInvoice: BigDecimal,
     @Serializable(with = LocalDateSerializer::class)

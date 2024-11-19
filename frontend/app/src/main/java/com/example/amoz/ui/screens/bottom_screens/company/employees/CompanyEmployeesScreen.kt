@@ -11,8 +11,10 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -31,6 +33,12 @@ fun CompanyEmployeesScreen(
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
+        val navBackStackEntry = remember { navController.currentBackStackEntryFlow }
+        LaunchedEffect(navBackStackEntry) {
+//            companyViewModel.fetchEmployees()
+        }
+
+
         val companyUiState by companyViewModel.companyUiState.collectAsState()
         Surface(
             modifier = Modifier

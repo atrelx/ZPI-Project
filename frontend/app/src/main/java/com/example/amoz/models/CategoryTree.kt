@@ -11,5 +11,5 @@ data class CategoryTree(
     val categoryId: UUID,
     val name: String,
     val categoryLevel: Short,
-    val childCategories: List<com.example.amoz.models.CategoryTree> = listOf()
+    val childCategories: List<CategoryTree> = listOf()
 )

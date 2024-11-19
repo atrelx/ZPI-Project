@@ -12,6 +12,6 @@ data class Company(
     val companyNumber: String,
     val name: String,
     val countryOfRegistration: String,
-    val address: com.example.amoz.models.Address,
+    val address: Address,
     val regon: String? = null
 )

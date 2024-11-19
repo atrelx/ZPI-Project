@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity(), SignInDelegate {
                         Text(text = "Google")
                     }
                     Button(
-                        onClick = { userViewModel.updateUser() },
+                        onClick = { userViewModel.registerUser() },
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(48.dp, 64.dp)

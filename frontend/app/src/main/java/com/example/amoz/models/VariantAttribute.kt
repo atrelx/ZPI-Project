@@ -9,6 +9,6 @@ import java.util.UUID
 data class VariantAttribute(
     @Serializable(with = UUIDSerializer::class)
     val variantAttributeId: UUID,
-    val attribute: com.example.amoz.models.Attribute,
+    val attribute: Attribute,
     val value: String?
 )

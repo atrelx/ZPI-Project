@@ -11,5 +11,5 @@ data class CategoryDetails(
     val categoryId: UUID,
     val name: String,
     val categoryLevel: Short,
-    val parentCategory: com.example.amoz.models.CategoryDetails? = null
+    val parentCategory: CategoryDetails? = null
 )

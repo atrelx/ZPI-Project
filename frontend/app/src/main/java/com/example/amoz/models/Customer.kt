@@ -9,6 +9,6 @@ import java.util.UUID
 data class Customer(
     @Serializable(with = UUIDSerializer::class)
     val customerId: UUID,
-    val contactPerson: com.example.amoz.models.ContactPerson,
-    val defaultDeliveryAddress: com.example.amoz.models.Address? = null
+    val contactPerson: ContactPerson,
+    val defaultDeliveryAddress: Address? = null
 )

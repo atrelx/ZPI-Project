@@ -11,7 +11,7 @@ import java.util.UUID
 data class ProductOrderItemDetails(
     @Serializable(with = UUIDSerializer::class)
     val productOrderItemId: UUID,
-    val productVariant: com.example.amoz.models.ProductVariantDetails? = null,
+    val productVariant: ProductVariantDetails? = null,
     @Serializable(with = BigDecimalSerializer::class)
     val unitPrice: BigDecimal,
     val amount: Int,

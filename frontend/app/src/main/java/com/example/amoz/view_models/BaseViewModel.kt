@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.api.sealed.SyncResultState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -14,9 +16,9 @@ abstract class BaseViewModel: ViewModel() {
     protected val tag: String
         get() = "${this::class.java.simpleName}.${Thread.currentThread().stackTrace[3].methodName}"
 
-    fun <T> performRepositoryAction(binding: MutableLiveData<ResultState<T>>,
+    fun <T> performRepositoryAction(binding: MutableStateFlow<ResultState<T>>,
                                     failureMessage: String = "Please try again later",
-                                    action: suspend () -> T?,  onSuccess: ((T) -> Unit)? = null) {
+                                    action: suspend () -> T?, onSuccess: ((T) -> Unit)? = null) {
         binding.value = ResultState.Loading
         viewModelScope.launch {
             try {
@@ -35,7 +37,7 @@ abstract class BaseViewModel: ViewModel() {
         }
     }
 
-    fun <T> assertModelIsValid(binding: LiveData<SyncResultState<T>>, action: (T) -> Unit) {
+    fun <T> assertModelIsValid(binding: StateFlow<SyncResultState<T>>, action: (T) -> Unit) {
         when (val state = binding.value) {
             is SyncResultState.Success -> {
                 action(state.data)
@@ -43,8 +45,8 @@ abstract class BaseViewModel: ViewModel() {
             is SyncResultState.Failure -> {
                 Log.w(tag, state.message)
             }
-            else ->  {
-                Log.e(tag, "Assertion error")
+            is SyncResultState.Idle -> {
+                throw IllegalStateException()
             }
         }
     }

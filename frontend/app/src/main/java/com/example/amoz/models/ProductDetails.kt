@@ -15,8 +15,8 @@ data class ProductDetails(
     @Serializable(with = BigDecimalSerializer::class)
     val price: BigDecimal,
     val category: com.example.amoz.models.CategoryDetails,
-    val mainProductVariant: com.example.amoz.models.ProductVariantDetails? = null,
-    val productAttributes: List<com.example.amoz.models.ProductAttribute>,
+    val mainProductVariant: ProductVariantDetails? = null,
+    val productAttributes: List<ProductAttribute>,
     val description: String? = null,
     val brand: String? = null
 )

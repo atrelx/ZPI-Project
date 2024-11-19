@@ -3,8 +3,6 @@ package com.example.amoz.view_models
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.interfaces.SignInDelegate

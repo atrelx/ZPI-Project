@@ -6,8 +6,8 @@ import java.util.UUID
 
 @Serializable
 data class CustomerB2B(
-    val customer: com.example.amoz.models.Customer,
-    val address: com.example.amoz.models.Address,
+    val customer: Customer,
+    val address: Address,
     val nameOnInvoice: String,
     val companyNumber: String
 )
