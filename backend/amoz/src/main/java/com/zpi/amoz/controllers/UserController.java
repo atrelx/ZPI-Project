@@ -63,10 +63,10 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Pomyślnie zaktualizowano użytkownika",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class))
     )
-    @ApiResponse(responseCode = "404", description = "Użytkownik nie znaleziony",
+    @ApiResponse(responseCode = "400", description = "Błąd konfliktu",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
     )
-    @ApiResponse(responseCode = "409", description = "Błąd konfliktu",
+    @ApiResponse(responseCode = "404", description = "Użytkownik nie znaleziony",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
     )
     @PutMapping
@@ -80,9 +80,9 @@ public class UserController {
             UserDTO userDTO = UserDTO.toUserDTO(user);
             return ResponseEntity.status(HttpStatus.OK).body(userDTO);
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(e.toString()));
         }
     }
 

@@ -147,6 +147,10 @@
 
 
 
+    // --------------------- Properties ---------------------
+    <string name="google_sign_in_client_id">51440805312-7aq0a0kn9iqs21raedh7i6ihppbs63nu.apps.googleusercontent.com</string>
+<!--    <string name="base_url">http://10.0.2.2:8080/</string>-->
+    <string name="base_url">https://amoz-backend.azurewebsites.net/</string>
 
 
 </resources>

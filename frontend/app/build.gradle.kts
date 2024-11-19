@@ -1,8 +1,10 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
     id("com.google.gms.google-services")
-    kotlin("plugin.serialization") version "1.8.0"
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -49,35 +51,41 @@ android {
 }
 
 dependencies {
-    implementation ("androidx.navigation:navigation-compose:2.7.7")
-    implementation ("androidx.compose.material:material-icons-extended:1.7.1")
-    implementation ("io.coil-kt:coil-compose:2.3.0")
-    implementation("androidx.compose.material3:material3:1.3.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation (libs.androidx.navigation.compose)
+    implementation (libs.androidx.material.icons.extended)
+    implementation (libs.coil.compose)
+    implementation(libs.material3)
     implementation(libs.androidx.ui.text.google.fonts)
 
-    testImplementation ("org.mockito:mockito-core:5.3.1")
-    testImplementation ("org.mockito.kotlin:mockito-kotlin:5.3.1")
-    testImplementation ("junit:junit:4.13.2")
-    testImplementation ("org.robolectric:robolectric:4.7.3")
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.mockito.kotlin)
+    testImplementation (libs.junit)
+    testImplementation (libs.robolectric)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation("androidx.datastore:datastore-preferences-rxjava2:1.1.1")
-    implementation("androidx.datastore:datastore-preferences-rxjava3:1.1.1")
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.rxjava2)
+    implementation(libs.androidx.datastore.preferences.rxjava3)
 
-    implementation("androidx.datastore:datastore:1.1.1")
-    implementation("androidx.datastore:datastore-rxjava2:1.1.1")
-    implementation("androidx.datastore:datastore-rxjava3:1.1.1")
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.rxjava2)
+    implementation(libs.androidx.datastore.rxjava3)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
+    implementation(libs.kotlinx.serialization.json.jvm)
 
-    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
-    implementation("jakarta.validation:jakarta.validation-api:3.1.0")
-    implementation("jakarta.el:jakarta.el-api:5.0.1")
+    implementation(libs.hibernate.validator)
+    implementation(libs.jakarta.validation.api)
+    implementation("org.glassfish:javax.el:3.0.1-b08")
 
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.kotlinx.serialization)
+    implementation(libs.play.services.auth)
 
     //  Default dependencies
     implementation(libs.androidx.core.ktx)
