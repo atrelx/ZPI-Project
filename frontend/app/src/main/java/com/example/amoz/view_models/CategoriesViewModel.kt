@@ -1,9 +1,9 @@
-package com.example.amoz.ui.screens.bottom_screens.categories
+package com.example.amoz.view_models
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.screens.bottom_screens.categories.filtered_list.CategoryListFilter
+import com.example.amoz.ui.states.CategoriesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

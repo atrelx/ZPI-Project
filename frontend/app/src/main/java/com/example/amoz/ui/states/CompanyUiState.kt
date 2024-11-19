@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.company
+package com.example.amoz.ui.states
 
 import com.example.amoz.data.Person
 import com.example.amoz.R
@@ -8,7 +8,7 @@ import com.example.amoz.models.Employee
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
 
-data class CompanyScreenUiState (
+data class CompanyUiState (
     val companyLogo: Int = R.drawable.pizzeria,
     val companyName: String = "Company Name",
     val companyNumber: String = "0123456789",

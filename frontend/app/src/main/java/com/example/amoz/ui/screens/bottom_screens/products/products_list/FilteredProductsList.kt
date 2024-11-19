@@ -20,7 +20,7 @@ import com.example.amoz.data.AppPreferences
 import com.example.amoz.data.ProductTemplate
 import com.example.amoz.data.ProductVariant
 import com.example.amoz.ui.commonly_used_components.SearchTextField
-import com.example.amoz.ui.screens.bottom_screens.products.ProductsViewModel
+import com.example.amoz.view_models.ProductsViewModel
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductTemplateListItem
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductVariantListItem
 

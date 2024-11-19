@@ -27,11 +27,12 @@ import com.example.amoz.app.NavItemType
 import com.example.amoz.app.productScreenBottomSheetMenu
 import com.example.amoz.data.ProductTemplate
 import com.example.amoz.data.ProductVariant
-import com.example.amoz.ui.screens.bottom_screens.products.ProductsViewModel.BottomSheetType
+import com.example.amoz.view_models.ProductsViewModel.BottomSheetType
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductTemplateBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductVariantBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditSimpleProductBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.FilteredProductsList
+import com.example.amoz.view_models.ProductsViewModel
 
 
 @Composable

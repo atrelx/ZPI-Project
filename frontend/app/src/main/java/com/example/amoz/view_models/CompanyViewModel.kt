@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.company
+package com.example.amoz.view_models
 
 import com.example.amoz.api.repositories.CompanyRepository
 import com.example.amoz.api.repositories.EmployeeRepository
@@ -10,7 +10,7 @@ import com.example.amoz.models.Company
 import com.example.amoz.models.Employee
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
-import com.example.amoz.view_models.BaseViewModel
+import com.example.amoz.ui.states.CompanyUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,13 +21,13 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class CompanyScreenViewModel @Inject constructor(
+class CompanyViewModel @Inject constructor(
     val employeeRepository: EmployeeRepository,
     val companyRepository: CompanyRepository
 )
     : BaseViewModel() {
-    private val _companyUiState = MutableStateFlow(CompanyScreenUiState())
-    val companyUiState: StateFlow<CompanyScreenUiState> = _companyUiState.asStateFlow()
+    private val _companyUiState = MutableStateFlow(CompanyUiState())
+    val companyUiState: StateFlow<CompanyUiState> = _companyUiState.asStateFlow()
 
     private val _fetchEmployeesState = MutableStateFlow<ResultState<List<Employee>>>(ResultState.Idle)
     val fetchEmployeesState: StateFlow<ResultState<List<Employee>>> = _fetchEmployeesState.asStateFlow()

@@ -49,12 +49,13 @@ import com.example.amoz.app.companyInfoScreenItemsMap
 import com.example.amoz.data.NavItem
 import com.example.amoz.ui.commonly_used_components.AddressBottomSheet
 import com.example.amoz.ui.theme.AmozApplicationTheme
+import com.example.amoz.view_models.CompanyViewModel
 
 @Composable
 fun CompanyScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    companyViewModel: CompanyScreenViewModel,
+    companyViewModel: CompanyViewModel,
     companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList()
 ) {
     AmozApplicationTheme {

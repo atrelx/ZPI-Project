@@ -30,13 +30,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.amoz.data.B2BCustomer
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun B2BCustomerScreen(
     b2bCustomersList: List<B2BCustomer>,
-    companyViewModel: CompanyScreenViewModel,
+    companyViewModel: CompanyViewModel,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {

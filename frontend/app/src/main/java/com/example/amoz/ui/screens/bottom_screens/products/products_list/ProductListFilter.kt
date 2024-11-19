@@ -2,7 +2,7 @@ package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
 import com.example.amoz.data.ProductTemplate
 import com.example.amoz.data.ProductVariant
-import com.example.amoz.ui.screens.bottom_screens.products.ProductsViewModel
+import com.example.amoz.view_models.ProductsViewModel
 
 class ProductListFilter {
     fun filterProductTemplates(

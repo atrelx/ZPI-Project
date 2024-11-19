@@ -25,6 +25,7 @@ import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 import com.example.amoz.ui.commonly_used_components.filters.ListSorting
 import com.example.amoz.ui.commonly_used_components.filters.PriceFilter
+import com.example.amoz.view_models.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
