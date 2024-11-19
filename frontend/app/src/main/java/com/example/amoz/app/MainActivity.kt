@@ -61,22 +61,22 @@ class MainActivity : ComponentActivity(), SignInDelegate {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AppMainScaffold()
 
-                    Button(
-                        onClick = { startSignInActivityForResult() },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(48.dp, 64.dp)
-                    ) {
-                        Text(text = "Google")
-                    }
-                    Button(
-                        onClick = { userViewModel.registerUser() },
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(48.dp, 64.dp)
-                    ) {
-                        Text(text = "Test")
-                    }
+//                    Button(
+//                        onClick = { startSignInActivityForResult() },
+//                        modifier = Modifier
+//                            .align(Alignment.TopEnd)
+//                            .padding(48.dp, 64.dp)
+//                    ) {
+//                        Text(text = "Google")
+//                    }
+//                    Button(
+//                        onClick = { userViewModel.registerUser() },
+//                        modifier = Modifier
+//                            .align(Alignment.TopStart)
+//                            .padding(48.dp, 64.dp)
+//                    ) {
+//                        Text(text = "Test")
+//                    }
                 }
             }
         }

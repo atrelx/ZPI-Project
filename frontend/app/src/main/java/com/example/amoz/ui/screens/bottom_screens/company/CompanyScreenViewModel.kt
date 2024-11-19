@@ -1,17 +1,15 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
-import androidx.lifecycle.ViewModel
 import com.example.amoz.api.repositories.CompanyRepository
 import com.example.amoz.api.repositories.EmployeeRepository
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.data.Address
 import com.example.amoz.data.B2BCustomer
 import com.example.amoz.data.Person
+import com.example.amoz.models.Address
+import com.example.amoz.models.Company
 import com.example.amoz.models.Employee
-import com.example.amoz.models.User
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
-import com.example.amoz.ui.screens.bottom_screens.company.employees.testEmployees
 import com.example.amoz.view_models.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,35 +30,66 @@ class CompanyScreenViewModel @Inject constructor(
     val companyUiState: StateFlow<CompanyScreenUiState> = _companyUiState.asStateFlow()
 
     private val _fetchEmployeesState = MutableStateFlow<ResultState<List<Employee>>>(ResultState.Idle)
-    val fetchEmployeesState: StateFlow<ResultState<List<Employee>>> = _fetchEmployeesState
+    val fetchEmployeesState: StateFlow<ResultState<List<Employee>>> = _fetchEmployeesState.asStateFlow()
+
+    private val _fetchCompanyDetails = MutableStateFlow<ResultState<Company>>(ResultState.Idle)
+//    val fetchCompanyDetails =
 
     fun updateCompanyAddress(
-        street: String, houseNumber: String, apartmentNumber: String,
+        street: String, houseNumber: String, apartmentNumber: String?,
         city: String, postalCode: String, additionalInfo: String
     ) {
+        _companyUiState.value.companyAddress?.let {
+            _companyUiState.update { currState ->
+                val newAddress = Address(
+                    addressId = it.addressId,
+                    city = city,
+                    street = street,
+                    streetNumber = houseNumber,
+                    apartmentNumber = apartmentNumber,
+                    postalCode = postalCode,
+                    additionalInformation = additionalInfo,
+                )
+
+                currState.copy(
+                    companyAddress = newAddress,
+                    companyFullAddress = buildFullAddressString(newAddress)
+                )
+            }
+        }
+    }
+
+    fun fetchCompanyDetails() {
+        performRepositoryAction(
+            binding = _fetchCompanyDetails,
+            failureMessage = "Sorry, nie tym razem",
+            action = { companyRepository.getUserCompany() },
+            onSuccess = { company ->
+                _companyUiState.update { currState ->
+                    currState.copy(
+                        companyName = company.name,
+                        companyNumber = company.companyNumber,
+                        companyAddress = company.address,
+                    )
+                }
+            }
+        )
+    }
+
+    fun updateCompanyDetailsLoading(isLoading: Boolean) {
         _companyUiState.update { currState ->
             currState.copy(
-                companyAddress = Address(
-                    street = street,
-                    houseNumber = houseNumber,
-                    apartmentNumber = apartmentNumber,
-                    city = city,
-                    postalCode = postalCode,
-                    additionalInfo = additionalInfo,
-                ),
-                companyFullAddress = buildFullAddressString(
-                    street, houseNumber, apartmentNumber, city, postalCode
-                )
+                companyDetailsLoading = isLoading
             )
         }
     }
 
     fun fetchEmployees() {
         performRepositoryAction(_fetchEmployeesState, "Could not fetch employees. Try again later.",
-            action = {
-                employeeRepository.fetchEmployees()
-            }, onSuccess = { result ->
-                _companyUiState.value = _companyUiState.value.copy(companyEmployees = result)
+            action = { employeeRepository.fetchEmployees() },
+            onSuccess = { result ->
+
+                _companyUiState.value = _companyUiState.value.copy(companyEmployees = result, companyDetailsLoading = false)
             }
         )
     }
@@ -161,14 +190,11 @@ class CompanyScreenViewModel @Inject constructor(
         )
     }
 
-    private fun buildFullAddressString(
-        street: String, houseNumber: String, apartmentNumber: String,
-        city: String, postalCode: String
-    ): String {
+    private fun buildFullAddressString(address: Address): String {
         return buildString {
-            append("$street, $houseNumber")
-            if (apartmentNumber.isNotBlank()) append(", $apartmentNumber")
-            append(", $city, $postalCode")
+            append("${address.street}, ${address.streetNumber}")
+            address.apartmentNumber?.let { append(", $it") }
+            append(", ${address.city}, ${address.postalCode}")
         }
     }
 

@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,6 +58,11 @@ fun CompanyScreen(
     companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList()
 ) {
     AmozApplicationTheme {
+        val navBackStackEntry = remember { navController.currentBackStackEntryFlow }
+        LaunchedEffect(navBackStackEntry) {
+            companyViewModel.fetchCompanyDetails()
+        }
+
         val companyUiState by companyViewModel.companyUiState.collectAsState()
         val clipboardManager = LocalClipboardManager.current
 
@@ -145,20 +151,16 @@ fun CompanyScreen(
         if (companyUiState.changeCompanyAddressBottomSheetExpanded) {
             AddressBottomSheet(
                 bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
-                street = companyUiState.companyAddress.street,
-                houseNumber = companyUiState.companyAddress.houseNumber,
-                apartmentNumber = companyUiState.companyAddress.apartmentNumber,
-                city = companyUiState.companyAddress.city,
-                postalCode = companyUiState.companyAddress.postalCode,
-                additionalInfo = companyUiState.companyAddress.additionalInfo,
+                street = companyUiState.companyAddress?.street ?: "",
+                houseNumber = companyUiState.companyAddress?.streetNumber ?: "",
+                apartmentNumber = companyUiState.companyAddress?.apartmentNumber,
+                city = companyUiState.companyAddress?.city ?: "",
+                postalCode = companyUiState.companyAddress?.postalCode ?: "",
+                additionalInfo = companyUiState.companyAddress?.additionalInformation ?: "",
                 onDismissRequest = {
                     companyViewModel.expandChangeCompanyAddressBottomSheet(false)
                 },
-                onDone = { street, houseNum, apartmentNum, city, postalCode, additionalInfo ->
-                    companyViewModel.updateCompanyAddress(
-                        street, houseNum, apartmentNum, city, postalCode, additionalInfo
-                    )
-                }
+                onDone = companyViewModel::updateCompanyAddress
             )
         }
 

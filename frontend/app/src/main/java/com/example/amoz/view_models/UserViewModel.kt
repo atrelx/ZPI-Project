@@ -122,8 +122,8 @@ class UserViewModel @Inject constructor(
         val surname = "Drobitko"
         val dateOfBirth = LocalDate.of(2000, 3, 21)
         val sex = Sex.M
-        val contactNumber = "45443534543"
-        val emailAddress = "email@example.com"
+        val contactNumber = "48123456789"
+        val emailAddress = "anddro458@gmai.com"
 
         if (name == null ||
             surname == null ||

@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -33,13 +35,14 @@ fun CompanyEmployeesScreen(
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
+        val companyUiState by companyViewModel.companyUiState.collectAsState()
+
         val navBackStackEntry = remember { navController.currentBackStackEntryFlow }
         LaunchedEffect(navBackStackEntry) {
+            companyViewModel.updateCompanyDetailsLoading(true)
             companyViewModel.fetchEmployees()
         }
 
-
-        val companyUiState by companyViewModel.companyUiState.collectAsState()
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,9 +52,13 @@ fun CompanyEmployeesScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp),
             ) {
                 // -------------------- Employees list --------------------
+                if(companyUiState.companyDetailsLoading){
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+
                 EmployeesLazyColumn(
                     employees = companyUiState.companyEmployees,
                     callSnackBar = callSnackBar,

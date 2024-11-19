@@ -49,12 +49,12 @@ fun AddressBottomSheet(
     bottomSheetTitle: String = stringResource(id = R.string.address_change_title),
     street: String,
     houseNumber: String,
-    apartmentNumber: String,
+    apartmentNumber: String?,
     city: String,
     postalCode: String,
     additionalInfo: String,
     onDismissRequest: () -> Unit,
-    onDone: (String, String, String,
+    onDone: (String, String, String?,
              String, String, String) -> Unit
 ) {
     var streetState by remember { mutableStateOf(street) }
@@ -165,7 +165,7 @@ fun AddressBottomSheet(
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[2]),
                 label = { Text(text = stringResource(id = R.string.apartment_number)) },
-                value = apartmentNumberState,
+                value = apartmentNumberState ?: "",
                 onValueChange = {
                     if (it.length <= shortValueLength) {
                         apartmentNumberState = it
