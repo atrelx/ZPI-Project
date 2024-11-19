@@ -74,6 +74,7 @@
     <string name="add_subcategory">Add subcategory</string>
     <string name="add_category_title">Add category</string>
     <string name="edit_category_title">Edit category</string>
+<!--    <string name="google_sign_in_client_id">Edit category</string>-->
 
     <string name="select_category">Select</string>
 

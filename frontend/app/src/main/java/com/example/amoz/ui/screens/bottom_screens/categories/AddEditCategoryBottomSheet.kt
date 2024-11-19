@@ -33,22 +33,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.data.Category
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.HorizontalDividerWithText
 import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 import com.example.amoz.ui.screens.bottom_screens.categories.filtered_list.CategoryListItem
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCategoryBottomSheet(
-    category: Category? = null,
+    category: CategoryTree? = null,
     onDismissRequest: () -> Unit,
     onComplete: (String, List<String>) -> Unit,
-    onSubcategoryEdit: (Category) -> Unit
+    onSubcategoryEdit: (CategoryTree) -> Unit
 ) {
     var categoryName by remember { mutableStateOf(category?.name ?: "") }
     var categoryChildren = category?.childCategories?.toMutableList() ?: mutableListOf()
@@ -89,7 +87,7 @@ fun AddEditCategoryBottomSheet(
             )
             Spacer(modifier = Modifier.height(10.dp))
 
-            // -------------------- Category name --------------------
+            // -------------------- CategoryTree name --------------------
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = categoryName,

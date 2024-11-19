@@ -18,16 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.data.Category
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.commonly_used_components.SearchTextField
 
 @Composable
 fun CategoriesFilteredList(
-    categories: List<Category>,
+    categories: List<CategoryTree>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onEdit: (Category) -> Unit,
+    onEdit: (CategoryTree) -> Unit,
     onAdd: () -> Unit,
 ) {
     LazyColumn(
@@ -41,13 +40,12 @@ fun CategoriesFilteredList(
                 isMoreFiltersVisible = false,
             )
         }
-        items(categories) { category ->
+        items(categories, key = { it.categoryId } ) { category ->
             Box(modifier = Modifier.animateItem()) {
                 CategoryWithChildren(
                     category = category,
                     allCategories = categories,
                     onEdit = onEdit,
-                    isListFiltered = searchQuery.isNotBlank()
                 )
             }
         }

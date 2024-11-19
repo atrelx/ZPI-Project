@@ -2,7 +2,7 @@ package com.example.amoz.ui.screens.bottom_screens.categories
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.amoz.data.Category
+import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.screens.bottom_screens.categories.filtered_list.CategoryListFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +30,7 @@ class CategoriesViewModel: ViewModel() {
         }
     }
 
-    fun updateCurrentAddEditCategory(category: Category?) {
+    fun updateCurrentAddEditCategory(category: CategoryTree?) {
         _categoriesUiState.update { currState ->
             currState.copy(
                 currAddEditCategory = category

@@ -12,44 +12,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.amoz.data.Category
 import com.example.amoz.models.CategoryTree
 
 @Composable
 fun CategoryWithChildren(
-    category: Category,
-    allCategories: List<Category>,
+    category: CategoryTree,
+    allCategories: List<CategoryTree>,
     level: Int = 0,
     isChild: Boolean = false,
-    isListFiltered: Boolean = false,
-    onEdit: (Category) -> Unit,
+    onEdit: (CategoryTree) -> Unit,
 ) {
-    val children by remember {
-        mutableStateOf(category.childCategories)
-    }
+    val children = category.childCategories
     var childrenListExpanded by remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        if (!isListFiltered) {
-            CategoryListItem(
-                category = category,
-                isChild = isChild,
-                isExpanded = childrenListExpanded,
-                hasChildren = children.isNotEmpty(),
-                onExpand = { childrenListExpanded = !childrenListExpanded },
-                onEdit = onEdit
-            )
-        }
-        else {
-            CategoryListItem(
-                category = category,
-                hasChildren = false,
-                onEdit = onEdit
-            )
-        }
-        if (childrenListExpanded && !isListFiltered) {
+        CategoryListItem(
+            category = category,
+            isChild = isChild,
+            isExpanded = childrenListExpanded,
+            hasChildren = children.isNotEmpty(),
+            onExpand = { childrenListExpanded = !childrenListExpanded },
+            onEdit = onEdit
+        )
+
+        if (childrenListExpanded) {
             children.forEach { child ->
                 Box(
                     modifier = Modifier.padding(start = (5.dp * (level + 1)))
@@ -59,7 +47,6 @@ fun CategoryWithChildren(
                         allCategories = allCategories,
                         level = level + 1,
                         isChild = true,
-                        isListFiltered = isListFiltered,
                         onEdit = onEdit,
                     )
                 }

@@ -111,19 +111,19 @@ class UserViewModel @Inject constructor(
     }
 
     private fun createUserRegisterRequest() {
-        val name = name.value
-        val surname = surname.value
-        val dateOfBirth = dateOfBirth.value
-        val sex = sex.value
-        val contactNumber = contactNumber.value
-        val emailAddress = emailAddress.value
+//        val name = name.value
+//        val surname = surname.value
+//        val dateOfBirth = dateOfBirth.value
+//        val sex = sex.value
+//        val contactNumber = contactNumber.value
+//        val emailAddress = emailAddress.value
 
-//        val name = "Kamil gfdd"
-//        val surname = "Nowak"
-//        val dateOfBirth = LocalDate.of(2000, 3, 21)
-//        val sex = Sex.M
-//        val contactNumber = "45443534543"
-//        val emailAddress = "email@example.com"
+        val name = "Andrii"
+        val surname = "Drobitko"
+        val dateOfBirth = LocalDate.of(2000, 3, 21)
+        val sex = Sex.M
+        val contactNumber = "45443534543"
+        val emailAddress = "email@example.com"
 
         if (name == null ||
             surname == null ||

@@ -1,12 +1,12 @@
 package com.example.amoz.ui.screens.bottom_screens.categories.filtered_list
 
-import com.example.amoz.data.Category
+import com.example.amoz.models.CategoryTree
 
 class CategoryListFilter {
     fun filterCategoryList(
-        categoryList: List<Category>,
+        categoryList: List<CategoryTree>,
         searchQuery: String
-    ): List<Category> {
+    ): List<CategoryTree> {
         if (searchQuery.isBlank()) {
             return categoryList.filter { it.categoryLevel.toInt() == 1 }
         }

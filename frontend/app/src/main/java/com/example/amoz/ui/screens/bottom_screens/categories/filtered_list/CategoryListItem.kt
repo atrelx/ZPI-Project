@@ -26,15 +26,14 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.data.Category
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.theme.extendedColors
 
 @Composable
 fun CategoryListItem(
-    category: Category,
-    onEdit: (Category) -> Unit = {},
-    onSelect: (Category) -> Unit = {},
+    category: CategoryTree,
+    onEdit: (CategoryTree) -> Unit = {},
+    onSelect: (CategoryTree) -> Unit = {},
     onExpand: () -> Unit = {},
     isEditable: Boolean = true,
     isSelectable: Boolean = false,
