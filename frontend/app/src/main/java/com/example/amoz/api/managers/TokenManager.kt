@@ -30,6 +30,10 @@ class TokenManager @Inject constructor(
         return duration.toSeconds().toInt()
     }
 
+    val accessToken: String? get() {
+        return sharedPreferences.getString("ACCESS_TOKEN", null)
+    }
+
     fun saveTokens(accessToken: String?, refreshToken: String?) {
         with(sharedPreferences.edit()) {
             if (accessToken != null) {
@@ -57,10 +61,6 @@ class TokenManager @Inject constructor(
             apply()
         }
         invalidationTime = time
-    }
-
-    fun getAccessToken(): String? {
-        return sharedPreferences.getString("ACCESS_TOKEN", null)
     }
 
     fun getRefreshToken(): String? {

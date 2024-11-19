@@ -24,8 +24,6 @@ class AuthInterceptor @Inject constructor(
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder = chain.request().newBuilder()
-        val accessToken = tokenManager.getAccessToken()
-
         if (tokenManager.accessTokenTTLSeconds < 300) {
             runBlocking {
                 val refreshToken = tokenManager.getRefreshToken()
@@ -33,27 +31,27 @@ class AuthInterceptor @Inject constructor(
                     val tokens = authenticationRepository.refreshAccessToken(refreshToken)
                     if (tokens?.accessToken == null) {
                         showGoogleSignInActivity()
-                        if (!accessToken.isNullOrEmpty()) {
-                            requestBuilder.addHeader("Authorization", "Bearer $accessToken")
+                        if (!tokenManager.accessToken.isNullOrEmpty()) {
+                            requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
                         }
 
                     } else {
                         tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                        if (!accessToken.isNullOrEmpty()) {
-                            requestBuilder.addHeader("Authorization", "Bearer $accessToken")
+                        if (!tokenManager.accessToken.isNullOrEmpty()) {
+                            requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
                         }
                     }
                 } else {
                     showGoogleSignInActivity()
-                    if (!accessToken.isNullOrEmpty()) {
-                        requestBuilder.addHeader("Authorization", "Bearer $accessToken")
+                    if (!tokenManager.accessToken.isNullOrEmpty()) {
+                        requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
                     }
 
                 }
             }
         } else {
-            if (!accessToken.isNullOrEmpty()) {
-                requestBuilder.addHeader("Authorization", "Bearer $accessToken")
+            if (!tokenManager.accessToken.isNullOrEmpty()) {
+                requestBuilder.addHeader("Authorization", "Bearer $tokenManager.accessToken")
             }
         }
         return chain.proceed(requestBuilder.build())

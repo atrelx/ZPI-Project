@@ -35,7 +35,7 @@ class AuthenticationViewModel @Inject constructor(
                 val authCode = googleAuthManager.handleSignInResult(task)
                 authenticationRepository.getTokens(authCode)?.let {
                     tokenManager.saveTokens(it.accessToken, it.refreshToken)
-                    Log.d("access_token", tokenManager.getAccessToken() ?: "null token")
+                    Log.d("access_token", tokenManager.accessToken ?: "null token")
                     completion?.invoke()
                 }
             } catch(e: Exception) {
