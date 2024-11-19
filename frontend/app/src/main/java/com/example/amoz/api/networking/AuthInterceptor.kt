@@ -59,8 +59,6 @@ class AuthInterceptor @Inject constructor(
 
     private suspend fun showGoogleSignInActivity() {
         tokenManager.clearTokens()
-        Log.i("interceptor", "start activity")
-
         return suspendCancellableCoroutine { continuation ->
             googleAuthManager.startSignInActivity {
                 try {
