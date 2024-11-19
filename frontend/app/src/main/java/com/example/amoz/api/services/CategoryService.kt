@@ -1,7 +1,7 @@
 package com.example.amoz.api.services
 
-import com.example.amoz.api.models.CategoryDetails
-import com.example.amoz.api.models.CategoryTree
+import com.example.amoz.models.CategoryDetails
+import com.example.amoz.models.CategoryTree
 import com.example.amoz.api.requests.CategoryCreateRequest
 import com.example.amoz.api.responses.MessageResponse
 import kotlinx.serialization.json.JsonElement
@@ -18,17 +18,17 @@ import java.util.UUID
 interface CategoryService {
 
     @POST("api/categories")
-    suspend fun createCategory(@Body categoryCreateRequest: CategoryCreateRequest): Response<CategoryDetails>
+    suspend fun createCategory(@Body categoryCreateRequest: CategoryCreateRequest): Response<com.example.amoz.models.CategoryDetails>
 
     @PUT("api/categories/{categoryId}")
     suspend fun updateCategory(
         @Path("categoryId") categoryId: UUID,
         @Body categoryCreateRequest: CategoryCreateRequest
-    ): Response<CategoryDetails>
+    ): Response<com.example.amoz.models.CategoryDetails>
 
     @DELETE("api/categories/{categoryId}")
     suspend fun deleteCategory(@Path("categoryId") categoryId: UUID): Response<Unit>
 
     @GET("api/categories")
-    suspend fun getAllCompanyCategories(): Response<List<CategoryTree>>
+    suspend fun getAllCompanyCategories(): Response<List<com.example.amoz.models.CategoryTree>>
 }

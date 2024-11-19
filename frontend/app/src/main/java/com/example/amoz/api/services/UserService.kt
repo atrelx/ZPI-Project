@@ -1,6 +1,6 @@
 package com.example.amoz.api.services
 
-import com.example.amoz.api.models.User
+import com.example.amoz.models.User
 import com.example.amoz.api.requests.UserRegisterRequest
 import com.example.amoz.api.responses.MessageResponse
 import com.example.amoz.api.responses.UserIsRegisteredResponse
@@ -13,10 +13,10 @@ import retrofit2.http.*
 
 interface UserService {
     @POST("api/users")
-    suspend fun registerUser(@Body request: UserRegisterRequest): Response<User>
+    suspend fun registerUser(@Body request: UserRegisterRequest): Response<com.example.amoz.models.User>
 
     @PUT("api/users")
-    suspend fun updateUser(@Body request: UserRegisterRequest): Response<User>
+    suspend fun updateUser(@Body request: UserRegisterRequest): Response<com.example.amoz.models.User>
 
     @Multipart
     @PUT("api/users/picture")

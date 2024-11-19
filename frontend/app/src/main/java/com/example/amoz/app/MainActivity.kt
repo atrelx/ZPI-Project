@@ -30,8 +30,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.amoz.api.interfaces.SignInDelegate
 import com.example.amoz.ui.theme.AmozApplicationTheme
-import com.example.amoz.api.view_models.AuthenticationViewModel
-import com.example.amoz.api.view_models.UserViewModel
+import com.example.amoz.view_models.AuthenticationViewModel
+import com.example.amoz.view_models.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException

@@ -1,7 +1,7 @@
 package com.example.amoz.api.services
 
-import com.example.amoz.api.models.ProductVariantDetails
-import com.example.amoz.api.models.ProductVariantSummary
+import com.example.amoz.models.ProductVariantDetails
+import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.responses.MessageResponse
 import kotlinx.serialization.json.JsonElement
@@ -22,13 +22,13 @@ interface ProductVariantService {
     @POST("api/productVariants")
     suspend fun createProductVariant(
         @Body request: ProductVariantCreateRequest
-    ): Response<ProductVariantDetails>
+    ): Response<com.example.amoz.models.ProductVariantDetails>
 
     @PUT("api/productVariants/{productVariantId}")
     suspend fun updateProductVariant(
         @Path("productVariantId") productVariantId: UUID,
         @Body request: ProductVariantCreateRequest
-    ): Response<ProductVariantDetails>
+    ): Response<com.example.amoz.models.ProductVariantDetails>
 
     @PATCH("api/productVariants/{productVariantId}")
     suspend fun deactivateProductVariant(
@@ -38,12 +38,12 @@ interface ProductVariantService {
     @GET("api/productVariants/product/{productId}")
     suspend fun getAllProductVariantsByProductId(
         @Path("productId") productId: UUID
-    ): Response<List<ProductVariantSummary>>
+    ): Response<List<com.example.amoz.models.ProductVariantSummary>>
 
     @GET("api/productVariants/{productVariantId}")
     suspend fun getProductVariant(
         @Path("productVariantId") productVariantId: UUID
-    ): Response<ProductVariantDetails>
+    ): Response<com.example.amoz.models.ProductVariantDetails>
 
     @PUT("api/productVariants/picture/{productVariantId}")
     suspend fun uploadProductVariantPicture(

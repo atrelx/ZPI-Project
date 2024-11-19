@@ -2,7 +2,7 @@ package com.example.amoz.api.repositories
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.example.amoz.api.extensions.toImageBitmap
-import com.example.amoz.api.models.Company
+import com.example.amoz.models.Company
 import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.services.CompanyService
 import okhttp3.MultipartBody
@@ -13,19 +13,19 @@ class CompanyRepository @Inject constructor(
     private val companyService: CompanyService
 ) : BaseRepository() {
 
-    suspend fun createCompany(request: CompanyCreateRequest): Company? {
+    suspend fun createCompany(request: CompanyCreateRequest): com.example.amoz.models.Company? {
         return performRequest {
             companyService.createCompany(request)
         }
     }
 
-    suspend fun getUserCompany(): Company? {
+    suspend fun getUserCompany(): com.example.amoz.models.Company? {
         return performRequest {
             companyService.getUserCompany()
         }
     }
 
-    suspend fun updateCompany(request: CompanyCreateRequest): Company? {
+    suspend fun updateCompany(request: CompanyCreateRequest): com.example.amoz.models.Company? {
         return performRequest {
             companyService.updateCompany(request)
         }

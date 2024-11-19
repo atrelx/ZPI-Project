@@ -1,6 +1,6 @@
 package com.example.amoz.api.repositories
 
-import com.example.amoz.api.models.Employee
+import com.example.amoz.models.Employee
 import com.example.amoz.api.services.EmployeeService
 import java.util.UUID
 import javax.inject.Inject
@@ -33,7 +33,7 @@ class EmployeeRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchEmployees(): List<Employee> {
+    suspend fun fetchEmployees(): List<com.example.amoz.models.Employee> {
         return performRequest {
             employeeService.fetchEmployees()
         } ?: listOf()

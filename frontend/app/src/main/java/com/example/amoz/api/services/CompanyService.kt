@@ -1,6 +1,6 @@
 package com.example.amoz.api.services
 
-import com.example.amoz.api.models.Company
+import com.example.amoz.models.Company
 import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.responses.MessageResponse
 import kotlinx.serialization.json.JsonElement
@@ -18,13 +18,13 @@ import retrofit2.http.Part
 interface CompanyService {
 
     @POST("api/companies")
-    suspend fun createCompany(@Body request: CompanyCreateRequest): Response<Company>
+    suspend fun createCompany(@Body request: CompanyCreateRequest): Response<com.example.amoz.models.Company>
 
     @GET("api/companies")
-    suspend fun getUserCompany(): Response<Company>
+    suspend fun getUserCompany(): Response<com.example.amoz.models.Company>
 
     @PUT("api/companies")
-    suspend fun updateCompany(@Body request: CompanyCreateRequest): Response<Company>
+    suspend fun updateCompany(@Body request: CompanyCreateRequest): Response<com.example.amoz.models.Company>
 
     @PATCH("api/companies")
     suspend fun deactivateCompany(): Response<Unit>

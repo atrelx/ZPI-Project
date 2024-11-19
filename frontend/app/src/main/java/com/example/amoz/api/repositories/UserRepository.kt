@@ -1,7 +1,7 @@
 package com.example.amoz.api.repositories
 
 import android.media.Image
-import com.example.amoz.api.models.User
+import com.example.amoz.models.User
 import com.example.amoz.api.requests.UserRegisterRequest
 import com.example.amoz.api.services.UserService
 import retrofit2.Response
@@ -17,13 +17,13 @@ import okhttp3.ResponseBody
 class UserRepository @Inject constructor(
     private val userService: UserService
 ) : BaseRepository() {
-    suspend fun registerUser(request: UserRegisterRequest): User? {
+    suspend fun registerUser(request: UserRegisterRequest): com.example.amoz.models.User? {
         return performRequest {
             userService.registerUser(request)
         }
     }
 
-    suspend fun updateUser(request: UserRegisterRequest): User? {
+    suspend fun updateUser(request: UserRegisterRequest): com.example.amoz.models.User? {
         return performRequest {
             userService.updateUser(request)
         }

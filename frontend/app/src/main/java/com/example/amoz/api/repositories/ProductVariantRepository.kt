@@ -2,8 +2,8 @@ package com.example.amoz.api.repositories
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.example.amoz.api.extensions.toImageBitmap
-import com.example.amoz.api.models.ProductVariantDetails
-import com.example.amoz.api.models.ProductVariantSummary
+import com.example.amoz.models.ProductVariantDetails
+import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.services.ProductVariantService
 import okhttp3.MultipartBody
@@ -15,13 +15,13 @@ class ProductVariantRepository @Inject constructor(
     private val productVariantService: ProductVariantService
 ) : BaseRepository() {
 
-    suspend fun createProductVariant(request: ProductVariantCreateRequest): ProductVariantDetails? {
+    suspend fun createProductVariant(request: ProductVariantCreateRequest): com.example.amoz.models.ProductVariantDetails? {
         return performRequest {
             productVariantService.createProductVariant(request)
         }
     }
 
-    suspend fun updateProductVariant(productVariantId: UUID, request: ProductVariantCreateRequest): ProductVariantDetails? {
+    suspend fun updateProductVariant(productVariantId: UUID, request: ProductVariantCreateRequest): com.example.amoz.models.ProductVariantDetails? {
         return performRequest {
             productVariantService.updateProductVariant(productVariantId, request)
         }
@@ -33,13 +33,13 @@ class ProductVariantRepository @Inject constructor(
         }
     }
 
-    suspend fun getAllProductVariantsByProductId(productId: UUID): List<ProductVariantSummary> {
+    suspend fun getAllProductVariantsByProductId(productId: UUID): List<com.example.amoz.models.ProductVariantSummary> {
         return performRequest {
             productVariantService.getAllProductVariantsByProductId(productId)
         } ?: listOf()
     }
 
-    suspend fun getProductVariant(productVariantId: UUID): ProductVariantDetails? {
+    suspend fun getProductVariant(productVariantId: UUID): com.example.amoz.models.ProductVariantDetails? {
         return performRequest {
             productVariantService.getProductVariant(productVariantId)
         }

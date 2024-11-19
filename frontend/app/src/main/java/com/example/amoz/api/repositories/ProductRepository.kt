@@ -1,7 +1,7 @@
 package com.example.amoz.api.repositories
 
-import com.example.amoz.api.models.ProductDetails
-import com.example.amoz.api.models.ProductSummary
+import com.example.amoz.models.ProductDetails
+import com.example.amoz.models.ProductSummary
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.services.ProductService
 import java.util.UUID
@@ -11,19 +11,19 @@ class ProductRepository @Inject constructor(
     private val productService: ProductService
 ) : BaseRepository() {
 
-    suspend fun createProduct(request: ProductCreateRequest): ProductDetails? {
+    suspend fun createProduct(request: ProductCreateRequest): com.example.amoz.models.ProductDetails? {
         return performRequest {
             productService.createProduct(request)
         }
     }
 
-    suspend fun updateProduct(productId: UUID, request: ProductCreateRequest): ProductDetails? {
+    suspend fun updateProduct(productId: UUID, request: ProductCreateRequest): com.example.amoz.models.ProductDetails? {
         return performRequest {
             productService.updateProduct(productId, request)
         }
     }
 
-    suspend fun setMainVariant(productId: UUID, mainVariantId: UUID): ProductDetails? {
+    suspend fun setMainVariant(productId: UUID, mainVariantId: UUID): com.example.amoz.models.ProductDetails? {
         return performRequest {
             productService.setMainVariant(productId, mainVariantId)
         }
@@ -35,13 +35,13 @@ class ProductRepository @Inject constructor(
         }
     }
 
-    suspend fun getAllProducts(): List<ProductSummary> {
+    suspend fun getAllProducts(): List<com.example.amoz.models.ProductSummary> {
         return performRequest {
             productService.getAllProducts()
         } ?: listOf()
     }
 
-    suspend fun getProductDetails(productId: UUID): ProductDetails? {
+    suspend fun getProductDetails(productId: UUID): com.example.amoz.models.ProductDetails? {
         return performRequest {
             productService.getProductDetails(productId)
         }

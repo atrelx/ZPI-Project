@@ -1,6 +1,6 @@
 package com.example.amoz.api.services
 
-import com.example.amoz.api.models.Attribute
+import com.example.amoz.models.Attribute
 import com.example.amoz.api.requests.AttributeCreateRequest
 import retrofit2.Call
 import retrofit2.http.Body
@@ -15,12 +15,12 @@ import retrofit2.Response
 interface AttributeService {
 
     @GET("api/attributes")
-    suspend fun getAllAttributes(): Response<List<Attribute>>
+    suspend fun getAllAttributes(): Response<List<com.example.amoz.models.Attribute>>
 
     @GET("api/attributes/product")
-    suspend fun getProductAttributes(): Response<List<Attribute>>
+    suspend fun getProductAttributes(): Response<List<com.example.amoz.models.Attribute>>
 
     @GET("api/attributes/variant")
-    suspend fun getVariantAttributes(): Response<List<Attribute>>
+    suspend fun getVariantAttributes(): Response<List<com.example.amoz.models.Attribute>>
 }
 

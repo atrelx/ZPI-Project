@@ -1,7 +1,7 @@
 package com.example.amoz.api.repositories
 
-import com.example.amoz.api.models.ProductOrderDetails
-import com.example.amoz.api.models.ProductOrderSummary
+import com.example.amoz.models.ProductOrderDetails
+import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.api.requests.ProductOrderCreateRequest
 import com.example.amoz.api.services.ProductOrderService
 import kotlinx.serialization.json.JsonElement
@@ -12,13 +12,13 @@ class ProductOrderRepository @Inject constructor(
     private val productOrderService: ProductOrderService
 ) : BaseRepository() {
 
-    suspend fun createProductOrder(request: ProductOrderCreateRequest): ProductOrderDetails? {
+    suspend fun createProductOrder(request: ProductOrderCreateRequest): com.example.amoz.models.ProductOrderDetails? {
         return performRequest {
             productOrderService.createProductOrder(request)
         }
     }
 
-    suspend fun updateProductOrder(productOrderId: UUID, request: ProductOrderCreateRequest): ProductOrderDetails? {
+    suspend fun updateProductOrder(productOrderId: UUID, request: ProductOrderCreateRequest): com.example.amoz.models.ProductOrderDetails? {
         return performRequest {
             productOrderService.updateProductOrder(productOrderId, request)
         }
@@ -36,13 +36,13 @@ class ProductOrderRepository @Inject constructor(
 //        }
 //    }
 
-    suspend fun getProductOrderDetails(productOrderId: UUID): ProductOrderDetails? {
+    suspend fun getProductOrderDetails(productOrderId: UUID): com.example.amoz.models.ProductOrderDetails? {
         return performRequest {
             productOrderService.getProductOrderDetails(productOrderId)
         }
     }
 
-    suspend fun getAllProductOrders(): List<ProductOrderSummary> {
+    suspend fun getAllProductOrders(): List<com.example.amoz.models.ProductOrderSummary> {
         return performRequest {
             productOrderService.getAllProductOrders()
         } ?: listOf()
