@@ -65,6 +65,19 @@
 
     <string name="product_template_delete">Delete product template</string>
 
+    // --------------------- Category Screen ---------------------
+    <string name="subcategories">Subcategories</string>
+
+    <string name="subcategory_name">Subcategory name</string>
+    <string name="category_name">Category name</string>
+
+    <string name="add_subcategory">Add subcategory</string>
+    <string name="add_category_title">Add category</string>
+    <string name="edit_category_title">Edit category</string>
+
+    <string name="select_category">Select</string>
+
+
     // --------------------- Company screen ---------------------
     <string name="company_name">Company name</string>
     <string name="company_screen_description">This is your company. Manage your employees, add customers and change all company data if you need.</string>
@@ -117,14 +130,22 @@
     // --------------------- Filters ---------------------
     <string name="apply_filters">Apply filters</string>
     <string name="clear_filters">Clear filters</string>
+
     <string name="price_from">Price from</string>
     <string name="price_to">Price to</string>
+
     <string name="sorting_type">Sorting type</string>
     <string name="sorting_type_none">No sorting</string>
+
     <string name="sorting_type_ascending_name">Ascending by name (A-z)</string>
     <string name="sorting_type_descending_name">Descending by name (Z-a)</string>
     <string name="sorting_type_ascending_price">Ascending by price (A-z)</string>
     <string name="sorting_type_descending_price">Descending by price (Z-a)</string>
+
+    <string name="search_products_placeholder">Search products by name, vendor</string>
+    <string name="search_categories_placeholder">Search categories by name</string>
+
+
 
 
 

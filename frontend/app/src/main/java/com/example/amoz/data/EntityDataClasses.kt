@@ -2,6 +2,8 @@ package com.example.amoz.data
 
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.util.UUID
 
@@ -37,11 +39,12 @@ data class B2BCustomer(
     val phoneNumber: String? = null,
 )
 // --------------------- Category ---------------------
+@Serializable
 data class Category(
-    val id: String = "",
-    var name: String = "",
-    val parentCategoryId: String = "",
-    val categoryLevel: Int? = null,
+    @Contextual val categoryId: UUID,
+    val name: String,
+    val categoryLevel: Short,
+    val childCategories: List<Category> = listOf()
 )
 // --------------------- Product ---------------------
 data class ProductVariant(
