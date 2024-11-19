@@ -17,5 +17,8 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
     @Query("SELECT e.company FROM Employee e WHERE e.user.userId = :userId")
     Optional<Company> getCompanyByUserId(String userId);
+
+    @Query("SELECT e.company FROM Employee e WHERE e.employeeId = :employeeId")
+    Optional<Company> getCompanyByEmployeeId(UUID employeeId);
 }
 

@@ -47,6 +47,10 @@ public class CompanyService {
         return companyRepository.getCompanyByUserId(userId);
     }
 
+    public Optional<Company> getCompanyByEmployeeId(UUID employeeId) {
+        return companyRepository.getCompanyByEmployeeId(employeeId);
+    }
+
     public Company save(Company company) {
         return companyRepository.save(company);
     }

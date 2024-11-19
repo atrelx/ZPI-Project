@@ -126,6 +126,7 @@ public class EmployeeService {
          return employeeRepository.findAllByCompany(company);
     }
 
+
     @Transactional
     public Employee createEmployee(User user, ContactPerson contactPerson, Person person) {
         Employee employee = new Employee();

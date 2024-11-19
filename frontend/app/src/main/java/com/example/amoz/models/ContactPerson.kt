@@ -10,5 +10,5 @@ data class ContactPerson(
     @Serializable(with = UUIDSerializer::class)
     val contactPersonId: UUID,
     val contactNumber: String,
-    val emailAddress: String
+    val emailAddress: String?
 )

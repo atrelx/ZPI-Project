@@ -25,15 +25,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.data.Employee
+import com.example.amoz.models.Employee
 import com.example.amoz.ui.commonly_used_components.SwipeableItemWithActions
 import java.time.LocalDate
+import java.util.UUID
 
 @Composable
 fun EmployeesLazyColumn(
     employees: List<Employee>,
     callSnackBar: (String, ImageVector?) -> Unit,
-    changeEmploymentDate: (Int, LocalDate) -> Unit,
+    changeEmploymentDate: (UUID, LocalDate) -> Unit,
     employeeProfileBottomSheetExpanded: Boolean,
     expandEmployeeProfileBottomSheet: (Boolean) -> Unit,
 ) {
@@ -66,17 +67,17 @@ fun EmployeesLazyColumn(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp)),
                     leadingContent = {
-                        employee.personPhoto?.let {
-                            Image(
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(RoundedCornerShape(10.dp)),
-                                painter = painterResource(id = employee.personPhoto),
-                                contentDescription = null)
-                        }
+//                        employee.personPhoto?.let {
+//                            Image(
+//                                modifier = Modifier
+//                                    .size(56.dp)
+//                                    .clip(RoundedCornerShape(10.dp)),
+//                                painter = painterResource(id = employee.personPhoto),
+//                                contentDescription = null)
+//                        }
                     },
-                    headlineContent = { Text(text = employee.firstName + " " + employee.lastName) },
-                    supportingContent = { Text(text = employee.email) },
+                    headlineContent = { Text(text = employee.person.name + " " + employee.person.surname) },
+                    supportingContent = { Text(text = employee.contactPerson.emailAddress ?: "No email address") },
                     colors = ListItemDefaults.colors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer
                     ),

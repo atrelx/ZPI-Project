@@ -2,15 +2,13 @@ package com.zpi.amoz.controllers;
 
 import com.azure.core.annotation.Delete;
 import com.zpi.amoz.dtos.EmployeeDTO;
+import com.zpi.amoz.enums.ImageDirectory;
 import com.zpi.amoz.models.Company;
 import com.zpi.amoz.models.Employee;
 import com.zpi.amoz.models.User;
 import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
-import com.zpi.amoz.services.AuthorizationService;
-import com.zpi.amoz.services.CompanyService;
-import com.zpi.amoz.services.EmployeeService;
-import com.zpi.amoz.services.UserService;
+import com.zpi.amoz.services.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,10 +19,12 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,6 +44,9 @@ public class EmployeeController {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    private FileService fileService;
 
     @Operation(summary = "Zaakceptuj zaproszenie do firmy", description = "Umożliwia pracownikowi zaakceptowanie zaproszenia do firmy.")
     @ApiResponse(responseCode = "200", description = "Zaproszenie zostało zaakceptowane pomyślnie")
@@ -156,6 +159,47 @@ public class EmployeeController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "Pobieranie zdjęcia profilowego", description = "Pobiera zdjęcie profilowe pracownika.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano zdjęcie",
+            content = @Content(mediaType = "image/jpeg"))
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono zdjęcia",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @GetMapping("/picture/{employeeId}")
+    public ResponseEntity<?> getEmployeeProfilePicture(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @PathVariable UUID employeeId
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            UUID employeeCompanyId = companyService.getCompanyByEmployeeId(employeeId)
+                    .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
+                    .getCompanyId();
+
+            if (!authorizationService.hasPermissionToReadCompany(userPrincipal, employeeCompanyId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("You are not company owner"));
+            }
+
+            String employeeUserId = employeeService.findById(employeeId)
+                    .orElseThrow(() -> new EntityNotFoundException("Could not found employee for given employee ID"))
+                    .getUser()
+                    .getUserId();
+
+            byte[] imageBytes = fileService.downloadFile(employeeUserId, ImageDirectory.USER_IMAGES);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imageBytes);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
         }
     }
 

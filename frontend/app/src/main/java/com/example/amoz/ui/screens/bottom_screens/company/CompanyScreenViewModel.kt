@@ -1,22 +1,38 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
 import androidx.lifecycle.ViewModel
+import com.example.amoz.api.repositories.CompanyRepository
+import com.example.amoz.api.repositories.EmployeeRepository
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.data.Address
 import com.example.amoz.data.B2BCustomer
 import com.example.amoz.data.Person
+import com.example.amoz.models.Employee
+import com.example.amoz.models.User
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.employees.testEmployees
 import com.example.amoz.view_models.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
+import java.util.UUID
+import javax.inject.Inject
 
-class CompanyScreenViewModel: BaseViewModel() {
+@HiltViewModel
+class CompanyScreenViewModel @Inject constructor(
+    val employeeRepository: EmployeeRepository,
+    val companyRepository: CompanyRepository
+)
+    : BaseViewModel() {
     private val _companyUiState = MutableStateFlow(CompanyScreenUiState())
     val companyUiState: StateFlow<CompanyScreenUiState> = _companyUiState.asStateFlow()
+
+    private val _fetchEmployeesState = MutableStateFlow<ResultState<List<Employee>>>(ResultState.Idle)
+    val fetchEmployeesState: StateFlow<ResultState<List<Employee>>> = _fetchEmployeesState
 
     fun updateCompanyAddress(
         street: String, houseNumber: String, apartmentNumber: String,
@@ -39,9 +55,24 @@ class CompanyScreenViewModel: BaseViewModel() {
         }
     }
 
-//    fun fetchEmployees() {
-//        performRepositoryAction()
+    fun fetchEmployees() {
+        performRepositoryAction(_fetchEmployeesState, "Could not fetch employees. Try again later.",
+            action = {
+                employeeRepository.fetchEmployees()
+            }, onSuccess = { result ->
+                _companyUiState.value = _companyUiState.value.copy(companyEmployees = result)
+            }
+        )
+    }
+
+//    fun getProfilePicture() {
+//        performRepositoryAction(_getProfilePictureState, "Could fetch profile picture. Try again later.",
+//            action = {
+//                userRepository.getProfilePicture()
+//            }
+//        )
 //    }
+
 
     fun updateCompanyName(name: String) {
         _companyUiState.update { currState ->
@@ -49,11 +80,11 @@ class CompanyScreenViewModel: BaseViewModel() {
         }
     }
 
-    fun updateEmploymentDate(employeeId: Int, newDate: LocalDate) {
+    fun updateEmploymentDate(employeeId: UUID, newDate: LocalDate) {
         /*TODO: Change employmentDate of employee*/
-        testEmployees[employeeId] = testEmployees[employeeId].copy(
-            employmentDate = newDate
-        )
+//        testEmployees[employeeId] = testEmployees[employeeId].copy(
+//            employmentDate = newDate
+//        )
     }
 
     fun updateCompanyNipRegon(nip: String, regon: String) {

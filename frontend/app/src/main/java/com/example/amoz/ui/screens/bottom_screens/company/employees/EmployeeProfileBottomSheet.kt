@@ -36,17 +36,18 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.data.Employee
+import com.example.amoz.models.Employee
 import com.example.amoz.ui.PersonProfileColumn
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmployeeProfileBottomSheet(
     onDismissRequest: () -> Unit,
-    onDone: (Int, LocalDate) -> Unit,
+    onDone: (UUID, LocalDate) -> Unit,
     employee: Employee,
 ) {
     ModalBottomSheet(
@@ -78,13 +79,13 @@ fun EmployeeProfileBottomSheet(
 
             // -------------------- Person profile data --------------------
             PersonProfileColumn(
-                personPhoto = employee.personPhoto,
-                personFirstName = employee.firstName,
-                personLastName = employee.lastName,
-                personEmail = employee.email,
-                personPhoneNumber = employee.phoneNumber,
-                personSex = employee.sex,
-                personBirthDate = employee.dateOfBirth
+                personPhoto = R.drawable.lukasz_photo,
+                personFirstName = employee.person.name,
+                personLastName = employee.person.surname,
+                personEmail = employee.contactPerson.emailAddress ?: "No email address",
+                personPhoneNumber = employee.contactPerson.contactNumber,
+                personSex = employee.person.sex.toString(),
+                personBirthDate = employee.person.dateOfBirth
             )
 
             HorizontalDivider()

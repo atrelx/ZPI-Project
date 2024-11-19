@@ -3,9 +3,12 @@ package com.zpi.amoz.services;
 import com.zpi.amoz.enums.RoleInCompany;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.*;
+import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -57,6 +60,13 @@ public class AuthorizationService {
         return employee.getCompany().getCompanyId().equals(companyId) && employee.getRoleInCompany() == RoleInCompany.OWNER;
     }
 
+    public boolean hasPermissionToReadCompany(UserPrincipal userPrincipal, UUID companyId) {
+        Employee employee = employeeRepository.findByUser_UserId(userPrincipal.getSub())
+                .orElseThrow(() -> new EntityNotFoundException("Could not find Employee for given user id: " + userPrincipal.getSub()));
+
+        return employee.getCompany().getCompanyId().equals(companyId) && employee.getRoleInCompany() == RoleInCompany.OWNER;
+    }
+
 
     public boolean hasPermissionToManageProduct(UserPrincipal userPrincipal, UUID productId) {
         UUID userCompanyId = getCompanyIdForUserPrincipal(userPrincipal);
@@ -99,6 +109,7 @@ public class AuthorizationService {
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
         return employee.getCompany().getCompanyId().equals(userCompanyId);
     }
+
     public boolean hasPermissionToManageInvoice(UserPrincipal userPrincipal, UUID invoiceId) {
         UUID userCompanyId = getCompanyIdForUserPrincipal(userPrincipal);
         Invoice invoice = invoiceRepository.findById(invoiceId)

@@ -35,7 +35,7 @@ fun CompanyEmployeesScreen(
     AmozApplicationTheme {
         val navBackStackEntry = remember { navController.currentBackStackEntryFlow }
         LaunchedEffect(navBackStackEntry) {
-//            companyViewModel.fetchEmployees()
+            companyViewModel.fetchEmployees()
         }
 
 

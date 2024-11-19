@@ -11,7 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.example.amoz.data.Employee
+import com.example.amoz.models.Employee
 
 @Composable
 fun EmployeeActionsRaw(
@@ -35,7 +35,7 @@ fun EmployeeActionsRaw(
     IconButton(
         onClick = {
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:${employee.email}")
+                data = Uri.parse("mailto:${employee.contactPerson.emailAddress}")
             }
             context.startActivity(emailIntent)
         }
@@ -44,7 +44,7 @@ fun EmployeeActionsRaw(
     }
 
     // -------------------- Worker's phone --------------------
-    employee.phoneNumber?.let { phoneNumber ->
+    employee.contactPerson.contactNumber.let { phoneNumber ->
         IconButton(
             onClick = {
                 val callIntent = Intent(Intent.ACTION_DIAL).apply {
