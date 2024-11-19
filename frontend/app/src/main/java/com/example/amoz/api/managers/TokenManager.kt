@@ -22,7 +22,13 @@ class TokenManager @Inject constructor(
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
-    private var invalidationTime: LocalDateTime = getInvalidationTime()
+    private val invalidationTime: LocalDateTime get() {
+        return try {
+            LocalDateTime.parse(sharedPreferences.getString("INVALIDATION_TIME", null))
+        } catch (e: Exception) {
+            LocalDateTime.now()
+        }
+    }
 
     val accessTokenTTLSeconds: Int get() {
         val currentTime = LocalDateTime.now()
@@ -47,20 +53,11 @@ class TokenManager @Inject constructor(
         }
     }
 
-    private fun getInvalidationTime(): LocalDateTime {
-        return try {
-            LocalDateTime.parse(sharedPreferences.getString("INVALIDATION_TIME", null))
-        } catch (e: Exception) {
-            LocalDateTime.now()
-        }
-    }
-
     private fun setInvalidationTime(time: LocalDateTime) {
         with(sharedPreferences.edit()) {
             putString("INVALIDATION_TIME", time.toString())
             apply()
         }
-        invalidationTime = time
     }
 
     fun getRefreshToken(): String? {
@@ -71,6 +68,7 @@ class TokenManager @Inject constructor(
         with(sharedPreferences.edit()) {
             remove("ACCESS_TOKEN")
             remove("REFRESH_TOKEN")
+            remove("INVALIDATION_TIME")
             apply()
         }
     }
