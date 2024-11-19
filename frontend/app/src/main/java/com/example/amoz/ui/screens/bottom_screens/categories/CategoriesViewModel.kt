@@ -13,7 +13,7 @@ import java.util.UUID
 class CategoriesViewModel: ViewModel() {
     private val _categoriesUiState = MutableStateFlow(CategoriesUiState())
     val categoriesUiState: StateFlow<CategoriesUiState> = _categoriesUiState.asStateFlow()
-    val categoryListFilter = CategoryListFilter()
+    private val categoryListFilter = CategoryListFilter()
 
     fun updateCategory(categoryId: UUID, newName: String) {
         /*TODO*/
