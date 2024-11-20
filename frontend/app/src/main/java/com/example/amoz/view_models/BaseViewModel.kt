@@ -16,23 +16,23 @@ abstract class BaseViewModel: ViewModel() {
     protected val tag: String
         get() = "${this::class.java.simpleName}.${Thread.currentThread().stackTrace[3].methodName}"
 
-    fun <T> performRepositoryAction(binding: MutableStateFlow<ResultState<T>>,
+    fun <T> performRepositoryAction(binding: MutableStateFlow<ResultState<T>>?,
                                     failureMessage: String = "Please try again later",
                                     action: suspend () -> T?, onSuccess: ((T) -> Unit)? = null) {
-        binding.value = ResultState.Loading
+        binding?.value = ResultState.Loading
         viewModelScope.launch {
             try {
                 val response = action()
                 if (response != null) {
                     Log.i(tag, response.toString())
-                    binding.value = ResultState.Success(response)
+                    binding?.value = ResultState.Success(response)
                     onSuccess?.invoke(response)
                 } else {
-                    binding.value = ResultState.Failure(failureMessage)
+                    binding?.value = ResultState.Failure(failureMessage)
                 }
             } catch (e: Exception) {
                 Log.e(tag, "An exeption has occured: ${e.message}", e)
-                binding.value = ResultState.Failure("Please try again later")
+                binding?.value = ResultState.Failure("Please try again later")
             }
         }
     }

@@ -3,6 +3,7 @@ package com.example.amoz.api.requests
 import com.example.amoz.enums.Status
 import com.example.amoz.api.serializers.LocalDateTimeSerializer
 import com.example.amoz.api.serializers.UUIDSerializer
+import com.example.amoz.interfaces.ValidatableRequest
 import kotlinx.serialization.Serializable
 import javax.validation.constraints.*
 import kotlinx.serialization.Contextual
@@ -27,4 +28,4 @@ data class ProductOrderCreateRequest(
     @field:PastOrPresent(message = "Time of sending cannot be in the future")
     @Serializable(with = LocalDateTimeSerializer::class)
     val timeOfSending: LocalDateTime? = null
-)
+) : ValidatableRequest<ProductOrderCreateRequest>()

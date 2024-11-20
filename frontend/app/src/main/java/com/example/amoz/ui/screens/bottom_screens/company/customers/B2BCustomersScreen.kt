@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -19,7 +20,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,20 +32,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.amoz.data.B2BCustomer
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.amoz.models.CustomerB2B
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun B2BCustomerScreen(
-    b2bCustomersList: List<B2BCustomer>,
-    companyViewModel: CompanyScreenViewModel,
+    b2bCustomersList: List<CustomerB2B>,
+    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
         val companyUiState by companyViewModel.companyUIState.collectAsState()
 
-        var currentB2bCustomer by remember { mutableStateOf<B2BCustomer?>(null) }
+        var currentB2bCustomer by remember { mutableStateOf<CustomerB2B?>(null) }
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,16 +59,16 @@ fun B2BCustomerScreen(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(b2bCustomersList.reversed()) { company ->
+                items(b2bCustomersList) { customerB2B ->
                     ListItem(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
-                                currentB2bCustomer = company
+                                currentB2bCustomer = customerB2B
                                 companyViewModel.expandCustomerProfileDataBottomSheet(true)
                             },
-                        headlineContent = { Text(company.companyName) },
-                        supportingContent = { Text(text = company.companyAddress) },
+                        headlineContent = { Text(customerB2B.nameOnInvoice) },
+                        supportingContent = { Text(text = customerB2B.address.fullAddress) },
                         colors = ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
@@ -94,20 +98,23 @@ fun B2BCustomerScreen(
                     companyViewModel.expandAddB2BCustomerBottomSheet(false)
                 },
                 callSnackBar = callSnackBar,
-                addB2BCustomer = { name, email, address, number ->
-                    companyViewModel.addB2BCustomer(name, email, address, number)
+                customer = companyViewModel.customerB2BCreateRequestState.collectAsState().value,
+                onDone = { request ->
+                    companyViewModel.createB2BCustomer(request)
                 }
 
             )
         }
         if (companyUiState.customerProfileDataBottomSheetExpanded && currentB2bCustomer != null) {
-            B2BCustomerProfileDataBottomSheet(
-                onDismissRequest = {
-                    currentB2bCustomer = null
-                    companyViewModel.expandCustomerProfileDataBottomSheet(false)
-                },
-                b2BCustomer = currentB2bCustomer!!
-            )
+            currentB2bCustomer?.let {
+                B2BCustomerProfileDataBottomSheet(
+                    onDismissRequest = {
+                        currentB2bCustomer = null
+                        companyViewModel.expandCustomerProfileDataBottomSheet(false)
+                    },
+                    b2BCustomer = it
+                )
+            }
         }
     }
 }

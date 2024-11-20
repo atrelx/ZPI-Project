@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.amoz.data.Person
+import androidx.lifecycle.Lifecycle
+import com.example.amoz.models.CustomerB2C
+import com.example.amoz.models.Person
 import com.example.amoz.ui.PersonProfileColumn
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
@@ -41,13 +44,13 @@ import com.example.amoz.ui.theme.AmozApplicationTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun B2CCustomerScreen(
-    b2cCustomersList: List<Person>,
+    b2cCustomersList: List<CustomerB2C>,
     companyViewModel: CompanyScreenViewModel,
     callSnackBar: (String, ImageVector?) -> Unit,
-    ) {
+) {
     AmozApplicationTheme {
         val companyUiState by companyViewModel.companyUIState.collectAsState()
-        var currentB2cCustomer by remember { mutableStateOf<Person?>(null) }
+        var currentB2cCustomer by remember { mutableStateOf<CustomerB2C?>(null) }
 
         Surface(
             modifier = Modifier
@@ -61,16 +64,18 @@ fun B2CCustomerScreen(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(b2cCustomersList.reversed()) { person ->
+                items(b2cCustomersList.reversed()) { customerB2C ->
+                    val person = customerB2C.person
+                    val contactPerson = customerB2C.customer.contactPerson
                     ListItem(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
-                                currentB2cCustomer = person
+                                currentB2cCustomer = customerB2C
                                 companyViewModel.expandCustomerProfileDataBottomSheet(true)
                             },
-                        headlineContent = { Text(person.firstName + " " + person.lastName) },
-                        supportingContent = { Text(text = person.email) },
+                        headlineContent = { Text(person.name + " " + person.surname) },
+                        supportingContent = { Text(text = contactPerson.emailAddress ?: "") },
                         colors = ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
@@ -113,20 +118,22 @@ fun B2CCustomerScreen(
                     companyViewModel.expandAddB2CCustomerBottomSheet(false)
                 },
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                ) {
+            ) {
                 Column (
                     modifier = Modifier
                         .padding(16.dp),
                 ) {
                     currentB2cCustomer?.let { currentCustomer ->
+                        val person = currentCustomer.person
+                        val contactPerson = currentCustomer.customer.contactPerson
                         PersonProfileColumn(
                             personPhoto = null,
-                            personFirstName = currentCustomer.firstName,
-                            personLastName = currentCustomer.lastName,
-                            personEmail = currentCustomer.email,
-                            personPhoneNumber = currentCustomer.phoneNumber,
-                            personSex = currentCustomer.sex,
-                            personBirthDate = currentCustomer.dateOfBirth
+                            personFirstName = person.name,
+                            personLastName = person.surname,
+                            personEmail = contactPerson.emailAddress,
+                            personPhoneNumber = contactPerson.contactNumber,
+                            personSex = person.sex,
+                            personBirthDate = person.dateOfBirth
                         )
                     }
                 }

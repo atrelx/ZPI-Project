@@ -2,9 +2,12 @@ package com.example.amoz.ui.screens.bottom_screens.company
 
 import android.util.Log
 import com.example.amoz.api.repositories.CompanyRepository
+import com.example.amoz.api.repositories.CustomerRepository
 import com.example.amoz.api.repositories.EmployeeRepository
 import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.api.requests.CompanyCreateRequest
+import com.example.amoz.api.requests.CustomerB2BCreateRequest
+import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.data.B2BCustomer
 import com.example.amoz.data.Person
@@ -24,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CompanyScreenViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
-    private val companyRepository: CompanyRepository
+    private val companyRepository: CompanyRepository,
+    private val customerRepository: CustomerRepository
 )
     : BaseViewModel() {
     private val _companyUIState = MutableStateFlow(CompanyScreenUIState())
@@ -32,6 +36,12 @@ class CompanyScreenViewModel @Inject constructor(
 
     private val _companyCreateRequestState: MutableStateFlow<CompanyCreateRequest> = MutableStateFlow(CompanyCreateRequest())
     val companyCreateRequestState: StateFlow<CompanyCreateRequest> = _companyCreateRequestState.asStateFlow()
+
+    private val _customerB2BCreateRequestState: MutableStateFlow<CustomerB2BCreateRequest> = MutableStateFlow(CustomerB2BCreateRequest())
+    val customerB2BCreateRequestState: StateFlow<CustomerB2BCreateRequest> = _customerB2BCreateRequestState.asStateFlow()
+
+    private val _customerB2CCreateRequestState: MutableStateFlow<CustomerB2CCreateRequest> = MutableStateFlow(CustomerB2CCreateRequest())
+    val customerB2CCreateRequestState: StateFlow<CustomerB2CCreateRequest> = _customerB2CCreateRequestState.asStateFlow()
 
     init {
         fetchCompanyDetails()
@@ -104,8 +114,24 @@ class CompanyScreenViewModel @Inject constructor(
         }
     }
 
-//    fun updateEmploymentDate(employeeId: UUID, newDate: LocalDate) {
-//        /*TODO: Change employmentDate of employee*/
+    fun fetchCustomersB2B() {
+        performRepositoryAction(_companyUIState.value.companyB2BCustomers, "Could not fetch employees. Try again later.",
+            action = {
+                customerRepository.getAllCustomersB2B().toMutableList()
+            }
+        )
+    }
+
+    fun fetchCustomersB2C() {
+        performRepositoryAction(_companyUIState.value.companyB2CCustomers, "Could not fetch employees. Try again later.",
+            action = {
+                customerRepository.getAllCustomersB2C().toMutableList()
+            }
+        )
+    }
+
+//    fun updateEmploymentDate(update: UUID, newDate: LocalDate) {
+//
 ////        testEmployees[employeeId] = testEmployees[employeeId].copy(
 ////            employmentDate = newDate
 ////        )
@@ -172,16 +198,20 @@ class CompanyScreenViewModel @Inject constructor(
         )
     }
 
-    fun addB2BCustomer(companyName: String, companyEmail: String,
-                       companyAddress: String, companyIdentifier: String) {
-        /*TODO: Change add b2b customer func*/
-        testB2BCustomers.add(
-            B2BCustomer(
-                companyName = companyName,
-                email = companyEmail,
-                companyAddress = companyAddress,
-                companyIdentifier = companyIdentifier
-            )
-        )
+    fun createB2BCustomer(b2bCustomerCreateRequest: CustomerB2BCreateRequest) {
+        val validationErrorMessage = b2bCustomerCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(null, "Could not create company",
+                action = {
+                    customerRepository.createCustomerB2B(b2bCustomerCreateRequest)
+                }, onSuccess = { newCustomer ->
+                    _companyUIState.value.companyB2BCustomers.updateResultState {
+                        it.add(newCustomer)
+                        it
+                    }
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
     }
 }

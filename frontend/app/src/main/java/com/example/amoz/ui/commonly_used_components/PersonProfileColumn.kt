@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.enums.Sex
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -45,9 +46,9 @@ fun PersonProfileColumn(
     personPhoto: Int?,
     personFirstName: String,
     personLastName: String,
-    personEmail: String,
-    personPhoneNumber: String?,
-    personSex: String,
+    personEmail: String?,
+    personPhoneNumber: String,
+    personSex: Sex,
     personBirthDate: LocalDate
 ) {
 
@@ -94,20 +95,22 @@ fun PersonProfileColumn(
         ListItem(
             modifier = modifier.then(Modifier
                 .clickable {
-                    clipboardManager.setText(
-                        AnnotatedString(personEmail)
-                    )
+                    personEmail?.let {
+                        clipboardManager.setText(
+                            AnnotatedString(it)
+                        )
+                    }
                 }),
             leadingContent = {
                 Icon(imageVector = Icons.Outlined.Mail, contentDescription = null)
             },
             overlineContent = { Text(text = stringResource(id = R.string.profile_email)) },
-            headlineContent = { Text(text = personEmail) },
+            headlineContent = { Text(text = personEmail ?: "No e-mail") },
             colors = listItemColors
         )
 
         // -------------------- Phone number --------------------
-        personPhoneNumber?.let { phone ->
+        personPhoneNumber.let { phone ->
             ListItem(
                 modifier = modifier.then(Modifier
                     .clickable {
@@ -131,7 +134,7 @@ fun PersonProfileColumn(
                 Icon(imageVector = Icons.Outlined.Man, contentDescription = null)
             },
             overlineContent = { Text(text = stringResource(id = R.string.profile_sex)) },
-            headlineContent = { Text(text = personSex) },
+            headlineContent = { Text(text = personSex.getName()) },
             colors = listItemColors
         )
 
