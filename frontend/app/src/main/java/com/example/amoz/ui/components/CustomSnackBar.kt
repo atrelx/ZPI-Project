@@ -1,4 +1,4 @@
-package com.example.amoz.app
+package com.example.amoz.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

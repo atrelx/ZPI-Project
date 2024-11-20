@@ -1,16 +1,14 @@
-package com.example.amoz.app
+package com.example.amoz.view_models
 
-import android.content.Context
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
+import com.example.amoz.navigation.NavItemType
+import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.data.NavItem
+import com.example.amoz.ui.states.AppUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
 
 class AppViewModel: ViewModel() {
     private val _appUiState = MutableStateFlow(AppUiState())

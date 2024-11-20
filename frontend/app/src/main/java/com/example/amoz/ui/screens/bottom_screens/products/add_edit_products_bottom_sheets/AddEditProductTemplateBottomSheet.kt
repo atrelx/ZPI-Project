@@ -43,9 +43,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.data.ProductTemplate
-import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
-import com.example.amoz.ui.HorizontalDividerWithText
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import com.example.amoz.ui.components.CloseOutlinedButton
+import com.example.amoz.ui.components.PrimaryFilledButton
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.example.amoz.ui.commonly_used_components
+package com.example.amoz.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +41,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.amoz.R
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

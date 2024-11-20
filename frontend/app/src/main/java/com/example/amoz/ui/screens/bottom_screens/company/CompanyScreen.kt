@@ -45,9 +45,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.app.companyInfoScreenItemsMap
+import com.example.amoz.navigation.companyInfoScreenItemsMap
 import com.example.amoz.data.NavItem
-import com.example.amoz.ui.commonly_used_components.AddressBottomSheet
+import com.example.amoz.ui.components.AddressBottomSheet
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.CompanyScreenViewModel
 

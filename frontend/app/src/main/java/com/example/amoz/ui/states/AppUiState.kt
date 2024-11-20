@@ -1,5 +1,7 @@
-package com.example.amoz.app
+package com.example.amoz.ui.states
 
+import com.example.amoz.navigation.NavItemType
+import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.data.NavItem
 
 data class AppUiState (

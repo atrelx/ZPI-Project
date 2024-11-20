@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.app.NavItemType
-import com.example.amoz.app.productScreenBottomSheetMenu
+import com.example.amoz.navigation.NavItemType
+import com.example.amoz.navigation.productScreenBottomSheetMenu
 import com.example.amoz.data.NavItem
 import com.example.amoz.ui.BottomSheetNavigationRaw
 

@@ -1,4 +1,4 @@
-package com.example.amoz.ui.commonly_used_components.filters
+package com.example.amoz.ui.components.filters
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

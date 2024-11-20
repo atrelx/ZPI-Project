@@ -1,4 +1,4 @@
-package com.example.amoz.ui.commonly_used_components.filters
+package com.example.amoz.ui.components.filters
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.HorizontalDividerWithText
-import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import com.example.amoz.ui.components.CloseOutlinedButton
+import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.screens.categories.filtered_list.CategoryListItem
 import kotlinx.coroutines.launch
 

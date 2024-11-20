@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.models.Employee
 import com.example.amoz.ui.PersonProfileColumn
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import com.example.amoz.ui.components.PrimaryFilledButton
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID

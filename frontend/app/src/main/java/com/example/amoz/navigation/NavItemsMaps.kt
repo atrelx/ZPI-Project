@@ -1,4 +1,4 @@
-package com.example.amoz.app
+package com.example.amoz.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle

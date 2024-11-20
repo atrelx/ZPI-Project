@@ -23,8 +23,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.amoz.app.NavItemType
-import com.example.amoz.app.productScreenBottomSheetMenu
+import com.example.amoz.navigation.NavItemType
+import com.example.amoz.navigation.productScreenBottomSheetMenu
 import com.example.amoz.data.ProductTemplate
 import com.example.amoz.data.ProductVariant
 import com.example.amoz.view_models.ProductsViewModel.BottomSheetType

@@ -1,4 +1,4 @@
-package com.example.amoz.app
+package com.example.amoz.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -22,7 +22,7 @@ import com.example.amoz.ui.screens.bottom_screens.orders.OrdersScreen
 import com.example.amoz.ui.screens.bottom_screens.products.ProductScreen
 import com.example.amoz.ui.screens.bottom_screens.products.ProductsAttributes
 import com.example.amoz.ui.screens.categories.CategoriesScreen
-import com.example.amoz.ui.screens.delivery_stock.ProductsStockDelivery
+import com.example.amoz.ui.screens.stock_update.StockUpdate
 import com.example.amoz.ui.screens.profile.ProfileScreen
 
 @Composable
@@ -81,7 +81,7 @@ fun AppNavigationHost(
             ) }
 
         composable(Screens.StockDelivery.route) {
-            ProductsStockDelivery(
+            StockUpdate(
                 paddingValues = paddingValues,
             ) }
 

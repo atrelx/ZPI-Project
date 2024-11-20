@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
-import com.example.amoz.ui.commonly_used_components.filters.ListSorting
-import com.example.amoz.ui.commonly_used_components.filters.PriceFilter
+import com.example.amoz.ui.components.CloseOutlinedButton
+import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.ui.components.filters.ListSorting
+import com.example.amoz.ui.components.filters.PriceFilter
 import com.example.amoz.view_models.ProductsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

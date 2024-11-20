@@ -1,4 +1,4 @@
-package com.example.amoz.ui.commonly_used_components
+package com.example.amoz.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

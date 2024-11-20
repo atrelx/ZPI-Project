@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.amoz.R
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.view_models.CompanyScreenViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 

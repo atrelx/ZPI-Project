@@ -12,8 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ConfirmationNumber
-import androidx.compose.material.icons.filled.QrCode2
-import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,9 +35,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.data.ProductVariant
-import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
-import com.example.amoz.ui.commonly_used_components.ImageWithIcon
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import com.example.amoz.ui.components.CloseOutlinedButton
+import com.example.amoz.ui.components.ImageWithIcon
+import com.example.amoz.ui.components.PrimaryFilledButton
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
