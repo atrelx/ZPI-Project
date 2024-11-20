@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.more_button
+package com.example.amoz.ui.screens.more_button
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api

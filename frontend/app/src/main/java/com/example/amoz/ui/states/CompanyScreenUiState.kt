@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.company
+package com.example.amoz.ui.states
 
 import com.example.amoz.data.Person
 import com.example.amoz.R

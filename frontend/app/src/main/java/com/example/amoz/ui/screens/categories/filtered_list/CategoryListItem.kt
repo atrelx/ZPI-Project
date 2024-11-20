@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.categories.filtered_list
+package com.example.amoz.ui.screens.categories.filtered_list
 
 import android.widget.BaseExpandableListAdapter
 import androidx.compose.foundation.border

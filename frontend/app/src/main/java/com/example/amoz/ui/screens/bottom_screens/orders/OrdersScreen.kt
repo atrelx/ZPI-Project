@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.amoz.ui.theme.AmozApplicationTheme
+import com.example.amoz.view_models.OrdersViewModel
 
 @Composable
 fun OrdersScreen(

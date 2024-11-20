@@ -28,7 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.amoz.R
 import com.example.amoz.data.NavItem
-import com.example.amoz.ui.screens.bottom_screens.more_button.MoreBottomSheet
+import com.example.amoz.ui.screens.more_button.MoreBottomSheet
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

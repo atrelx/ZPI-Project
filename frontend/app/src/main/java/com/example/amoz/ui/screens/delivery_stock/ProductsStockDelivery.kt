@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.delivery_stock
+package com.example.amoz.ui.screens.delivery_stock
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize

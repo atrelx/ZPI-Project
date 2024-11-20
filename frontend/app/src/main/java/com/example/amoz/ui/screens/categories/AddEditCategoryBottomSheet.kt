@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.categories
+package com.example.amoz.ui.screens.categories
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,7 +37,7 @@ import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.HorizontalDividerWithText
 import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
-import com.example.amoz.ui.screens.bottom_screens.categories.filtered_list.CategoryListItem
+import com.example.amoz.ui.screens.categories.filtered_list.CategoryListItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.orders
+package com.example.amoz.ui.states
 
 import com.example.amoz.data.ProductVariant
 import com.example.amoz.firebase.SoldProduct

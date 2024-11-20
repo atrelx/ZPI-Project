@@ -30,7 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.amoz.data.B2BCustomer
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.view_models.CompanyScreenViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable

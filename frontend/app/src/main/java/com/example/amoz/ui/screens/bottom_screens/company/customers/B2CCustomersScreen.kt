@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.amoz.data.Person
 import com.example.amoz.ui.PersonProfileColumn
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.view_models.CompanyScreenViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

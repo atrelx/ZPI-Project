@@ -1,9 +1,10 @@
-package com.example.amoz.ui.screens.bottom_screens.orders
+package com.example.amoz.view_models
 
 import androidx.lifecycle.ViewModel
 import com.example.amoz.firebase.FirebaseRepository
 import com.example.amoz.data.ProductVariant
 import com.example.amoz.firebase.SoldProduct
+import com.example.amoz.ui.states.OrderUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

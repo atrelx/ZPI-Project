@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.company
+package com.example.amoz.view_models
 
 import com.example.amoz.api.repositories.CompanyRepository
 import com.example.amoz.api.repositories.EmployeeRepository
@@ -10,7 +10,7 @@ import com.example.amoz.models.Company
 import com.example.amoz.models.Employee
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
-import com.example.amoz.view_models.BaseViewModel
+import com.example.amoz.ui.states.CompanyScreenUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

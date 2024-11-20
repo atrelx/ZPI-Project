@@ -1,8 +1,8 @@
-package com.example.amoz.ui.screens.bottom_screens.products
+package com.example.amoz.ui.states
 
 import com.example.amoz.data.ProductTemplate
 import com.example.amoz.data.ProductVariant
-import com.example.amoz.ui.screens.bottom_screens.products.ProductsViewModel.SortingType
+import com.example.amoz.view_models.ProductsViewModel.SortingType
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.testProductTemplatesList
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.testProductVariantsList
 

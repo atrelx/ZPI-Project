@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.amoz.R
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.view_models.CompanyScreenViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import kotlinx.coroutines.launch
 
