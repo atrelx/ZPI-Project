@@ -6,7 +6,7 @@ import android.media.Image
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import com.example.amoz.api.extensions.toBitmap
+import com.example.amoz.extensions.toBitmap
 import okhttp3.ResponseBody
 import retrofit2.Response
 

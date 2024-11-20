@@ -50,7 +50,7 @@ public class AddressService {
         address.setCity(request.city());
         address.setStreet(request.street());
         address.setStreetNumber(request.streetNumber());
-        address.setApartmentNumber(request.apartmentNumber());
+        request.apartmentNumber().ifPresent(address::setApartmentNumber);
         address.setPostalCode(request.postalCode());
         request.additionalInformation().ifPresent(address::setAdditionalInformation);
         return addressRepository.save(address);
@@ -64,7 +64,8 @@ public class AddressService {
         address.setCity(request.city());
         address.setStreet(request.street());
         address.setStreetNumber(request.streetNumber());
-        address.setApartmentNumber(request.apartmentNumber());
+        request.apartmentNumber()
+                .ifPresentOrElse(address::setApartmentNumber, () -> address.setApartmentNumber(null));
         address.setPostalCode(request.postalCode());
         request.additionalInformation()
                 .ifPresentOrElse(address::setAdditionalInformation, () -> address.setAdditionalInformation(null));

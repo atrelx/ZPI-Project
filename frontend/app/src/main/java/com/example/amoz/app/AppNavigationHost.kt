@@ -16,7 +16,7 @@ import com.example.amoz.ui.screens.bottom_screens.additional_screens.SupportScre
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreen
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
 import com.example.amoz.ui.screens.bottom_screens.company.customers.CompanyCustomersScreen
-import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
+//import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
 import com.example.amoz.ui.screens.bottom_screens.home.HomeScreen
 import com.example.amoz.ui.screens.bottom_screens.orders.OrdersScreen
 import com.example.amoz.ui.screens.bottom_screens.products.ProductScreen
@@ -110,12 +110,13 @@ fun AppNavigationHost(
         // -------------------- Company info screens --------------------
 
         composable(Screens.Employees.route) {
-            CompanyEmployeesScreen(
-                navController = navController,
-                companyViewModel = companyViewModel,
-                paddingValues = paddingValues,
-                callSnackBar = { text, icon -> callSnackBar(text, icon) },
-            ) }
+//            CompanyEmployeesScreen(
+//                navController = navController,
+//                companyViewModel = companyViewModel,
+//                paddingValues = paddingValues,
+//                callSnackBar = { text, icon -> callSnackBar(text, icon) },
+//            )
+        }
         composable(Screens.Customers.route) {
             CompanyCustomersScreen(
                 navController = navController,

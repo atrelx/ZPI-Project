@@ -35,7 +35,7 @@ fun CompanyCustomersScreen(
     companyViewModel: CompanyScreenViewModel,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
-    val companyUiState by companyViewModel.companyUiState.collectAsState()
+    val companyUiState by companyViewModel.companyUIState.collectAsState()
 
     val tabTitles = listOf(
         stringResource(id = R.string.company_customers_b2c),

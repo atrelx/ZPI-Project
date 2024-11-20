@@ -1,17 +1,20 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.compose.runtime.collectAsState
 import com.example.amoz.api.repositories.CompanyRepository
 import com.example.amoz.api.repositories.EmployeeRepository
+import com.example.amoz.api.requests.AddressCreateRequest
+import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.data.Address
 import com.example.amoz.data.B2BCustomer
 import com.example.amoz.data.Person
+import com.example.amoz.extensions.fetchDataIfSuccess
+import com.example.amoz.extensions.updateResultState
+import com.example.amoz.models.Address
 import com.example.amoz.models.Employee
-import com.example.amoz.models.User
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
 import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
-import com.example.amoz.ui.screens.bottom_screens.company.employees.testEmployees
 import com.example.amoz.view_models.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,48 +24,77 @@ import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
+import javax.validation.ValidationException
 
 @HiltViewModel
 class CompanyScreenViewModel @Inject constructor(
-    val employeeRepository: EmployeeRepository,
-    val companyRepository: CompanyRepository
+    private val employeeRepository: EmployeeRepository,
+    private val companyRepository: CompanyRepository
 )
     : BaseViewModel() {
-    private val _companyUiState = MutableStateFlow(CompanyScreenUiState())
-    val companyUiState: StateFlow<CompanyScreenUiState> = _companyUiState.asStateFlow()
+    private val _companyUiState = MutableStateFlow(CompanyScreenUIState())
+    val companyUIState: StateFlow<CompanyScreenUIState> = _companyUiState.asStateFlow()
 
-    private val _fetchEmployeesState = MutableStateFlow<ResultState<List<Employee>>>(ResultState.Idle)
-    val fetchEmployeesState: StateFlow<ResultState<List<Employee>>> = _fetchEmployeesState
+    private val _companyCreateRequestState: MutableStateFlow<CompanyCreateRequest> = MutableStateFlow(CompanyCreateRequest())
+    val companyCreateRequestState: StateFlow<CompanyCreateRequest> = _companyCreateRequestState.asStateFlow()
 
     fun updateCompanyAddress(
-        street: String, houseNumber: String, apartmentNumber: String,
-        city: String, postalCode: String, additionalInfo: String
+        street: String, houseNumber: String, apartmentNumber: String?,
+        city: String, postalCode: String, additionalInfo: String?
     ) {
-        _companyUiState.update { currState ->
-            currState.copy(
-                companyAddress = Address(
-                    street = street,
-                    houseNumber = houseNumber,
-                    apartmentNumber = apartmentNumber,
-                    city = city,
-                    postalCode = postalCode,
-                    additionalInfo = additionalInfo,
-                ),
-                companyFullAddress = buildFullAddressString(
-                    street, houseNumber, apartmentNumber, city, postalCode
-                )
+        _companyUiState.value.company.updateResultState { company ->
+            val updatedAddress = company.address.copy(
+                street = street,
+                streetNumber = houseNumber,
+                apartmentNumber = apartmentNumber,
+                city = city,
+                postalCode = postalCode,
+                additionalInformation = additionalInfo,
             )
+            company.copy(address = updatedAddress)
         }
     }
 
+    fun createCompany() {
+        val companyCreateRequest = _companyCreateRequestState.value
+        val validationErrorMessage = companyCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(_companyUiState.value.company, "Could not create company",
+                action = {
+                    companyRepository.createCompany(companyCreateRequest)
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
+    }
+
+    fun updateCompany() {
+        val companyCreateRequest = _companyCreateRequestState.value
+        val validationErrorMessage = companyCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(_companyUiState.value.company, "Could not update company",
+                action = {
+                    companyRepository.updateCompany(companyCreateRequest)
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
+    }
+
+    fun fetchCompanyDetails() {
+        performRepositoryAction(_companyUiState.value.company, "Could not fetch company details. Try again later.",
+            action = {
+                companyRepository.getUserCompany()
+            }, onSuccess = { company ->
+                _companyCreateRequestState.value = CompanyCreateRequest(company)
+            })
+    }
+
     fun fetchEmployees() {
-        performRepositoryAction(_fetchEmployeesState, "Could not fetch employees. Try again later.",
+        performRepositoryAction(_companyUiState.value.companyEmployees, "Could not fetch employees. Try again later.",
             action = {
                 employeeRepository.fetchEmployees()
-            }, onSuccess = { result ->
-                _companyUiState.value = _companyUiState.value.copy(companyEmployees = result)
-            }
-        )
+            })
     }
 
 //    fun getProfilePicture() {
@@ -75,21 +107,21 @@ class CompanyScreenViewModel @Inject constructor(
 
 
     fun updateCompanyName(name: String) {
-        _companyUiState.update { currState ->
-            currState.copy(companyName = name)
+        _companyUiState.value.company.updateResultState { company ->
+            company.copy(name = name)
         }
     }
 
-    fun updateEmploymentDate(employeeId: UUID, newDate: LocalDate) {
-        /*TODO: Change employmentDate of employee*/
-//        testEmployees[employeeId] = testEmployees[employeeId].copy(
-//            employmentDate = newDate
-//        )
-    }
+//    fun updateEmploymentDate(employeeId: UUID, newDate: LocalDate) {
+//        /*TODO: Change employmentDate of employee*/
+////        testEmployees[employeeId] = testEmployees[employeeId].copy(
+////            employmentDate = newDate
+////        )
+//    }
 
     fun updateCompanyNipRegon(nip: String, regon: String) {
-        _companyUiState.update { currState ->
-            currState.copy(companyNumber = nip, companyRegon = regon)
+        _companyUiState.value.company.updateResultState { company ->
+            company.copy(companyNumber = nip, regon = regon)
         }
     }
 
@@ -160,16 +192,4 @@ class CompanyScreenViewModel @Inject constructor(
             )
         )
     }
-
-    private fun buildFullAddressString(
-        street: String, houseNumber: String, apartmentNumber: String,
-        city: String, postalCode: String
-    ): String {
-        return buildString {
-            append("$street, $houseNumber")
-            if (apartmentNumber.isNotBlank()) append(", $apartmentNumber")
-            append(", $city, $postalCode")
-        }
-    }
-
 }

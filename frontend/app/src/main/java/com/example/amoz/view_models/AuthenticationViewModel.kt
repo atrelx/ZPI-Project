@@ -5,7 +5,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.amoz.api.interfaces.SignInDelegate
+import com.example.amoz.interfaces.SignInDelegate
 import com.example.amoz.api.managers.GoogleAuthManager
 import com.example.amoz.api.managers.TokenManager
 import com.example.amoz.api.repositories.AuthenticationRepository

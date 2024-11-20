@@ -28,7 +28,7 @@ import androidx.core.app.ActivityCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.amoz.api.interfaces.SignInDelegate
+import com.example.amoz.interfaces.SignInDelegate
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.UserViewModel

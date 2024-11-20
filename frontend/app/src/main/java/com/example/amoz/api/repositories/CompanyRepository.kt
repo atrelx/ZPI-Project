@@ -1,7 +1,7 @@
 package com.example.amoz.api.repositories
 
 import androidx.compose.ui.graphics.ImageBitmap
-import com.example.amoz.api.extensions.toImageBitmap
+import com.example.amoz.extensions.toImageBitmap
 import com.example.amoz.models.Company
 import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.services.CompanyService

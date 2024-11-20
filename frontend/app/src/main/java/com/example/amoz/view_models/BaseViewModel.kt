@@ -27,7 +27,6 @@ abstract class BaseViewModel: ViewModel() {
                     Log.i(tag, response.toString())
                     binding.value = ResultState.Success(response)
                     onSuccess?.invoke(response)
-                    binding.value = ResultState.Idle
                 } else {
                     binding.value = ResultState.Failure(failureMessage)
                 }

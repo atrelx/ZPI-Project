@@ -1,4 +1,4 @@
-package com.example.amoz.api.extensions
+package com.example.amoz.extensions
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap

@@ -40,7 +40,7 @@ fun B2BCustomerScreen(
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
-        val companyUiState by companyViewModel.companyUiState.collectAsState()
+        val companyUiState by companyViewModel.companyUIState.collectAsState()
 
         var currentB2bCustomer by remember { mutableStateOf<B2BCustomer?>(null) }
         Surface(
