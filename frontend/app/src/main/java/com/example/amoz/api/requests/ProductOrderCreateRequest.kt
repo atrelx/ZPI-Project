@@ -1,6 +1,6 @@
 package com.example.amoz.api.requests
 
-import com.example.amoz.api.enums.Status
+import com.example.amoz.enums.Status
 import com.example.amoz.api.serializers.LocalDateTimeSerializer
 import com.example.amoz.api.serializers.UUIDSerializer
 import kotlinx.serialization.Serializable
@@ -12,7 +12,7 @@ import java.util.*
 @Serializable
 data class ProductOrderCreateRequest(
 
-    val status: com.example.amoz.api.enums.Status,
+    val status: Status,
 
     @field:Size(min = 1, message = "At least one product order item is required")
     val productOrderItems: List<ProductOrderItemCreateRequest>,

@@ -1,6 +1,6 @@
 package com.example.amoz.api.requests
 
-import com.example.amoz.api.enums.UnitDimensions
+import com.example.amoz.enums.UnitDimensions
 import kotlinx.serialization.Serializable
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Positive
@@ -8,7 +8,7 @@ import javax.validation.constraints.Positive
 @Serializable
 data class DimensionsCreateRequest(
     @field:Positive(message = "Unit weight must be greater than 0")
-    val unitDimensions: com.example.amoz.api.enums.UnitDimensions,
+    val unitDimensions: UnitDimensions,
 
     @field:Positive(message = "Height must be greater than 0")
     val height: Double,

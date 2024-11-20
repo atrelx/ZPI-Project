@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -57,13 +58,15 @@ import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.companyInfoScreenItemsMap
 import com.example.amoz.data.NavItem
 import com.example.amoz.ui.commonly_used_components.AddressBottomSheet
+import com.example.amoz.ui.commonly_used_components.LoadingView
+import com.example.amoz.ui.commonly_used_components.ResultStateView
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun CompanyScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    companyViewModel: CompanyScreenViewModel,
+    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
     companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList()
 ) {
     AmozApplicationTheme {
@@ -84,137 +87,113 @@ fun CompanyScreen(
             }
         }
 
-        LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-            companyViewModel.fetchCompanyDetails()
-        }
+//        LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+//            companyViewModel.fetchCompanyDetails()
+//        }
 
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when (val resultState = companyUIState.company.collectAsState().value) {
-                is ResultState.Idle -> {
-                    Unit
-                }
-                is ResultState.Loading -> {
-                    LoadingView()
-                }
-                is ResultState.Failure -> {
-                    LaunchedEffect(resultState.message) {
-                        Toast.makeText(context, resultState.message, Toast.LENGTH_SHORT).show()
-                    }
-                }
-                is ResultState.Success -> {
-                    val company = resultState.data
-                    val address = company.address
+            ResultStateView(companyUIState.company) { company ->
+                val address = company.address
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp)
+                ) {
+                    // --------------------- Company banner, logo ---------------------
+                    CompanyLogoAndName(
+                        companyLogo = companyUIState.companyLogo,
+                        companyName = company.name,
+                        onClick = { companyViewModel.expandChangeCompanyNameBottomSheet(true) }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // --------------------- Company info ---------------------
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 16.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        // --------------------- Company banner, logo ---------------------
-                        CompanyLogoAndName(
-                            companyLogo = companyUIState.companyLogo,
-                            companyName = company.name,
-                            onClick = { companyViewModel.expandChangeCompanyNameBottomSheet(true) }
+                        companyInfoScreenItems.zip(itemsDescriptions)
+                            .forEach { (companyInfoItem, description) ->
+                                CompanyInfoItem(
+                                    leadingIcon = companyInfoItem.icon,
+                                    title = stringResource(companyInfoItem.title),
+                                    itemDescription = description,
+                                    trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                                    onClick = {
+                                        navController.navigate(companyInfoItem.screenRoute)
+                                    }
+                                )
+                            }
+
+                        // ------------------- Company address -------------------
+                        CompanyInfoItem(
+                            leadingIcon = Icons.Outlined.LocationOn,
+                            title = stringResource(R.string.company_address_screen),
+                            itemDescription = address.fullAddress,
+                            trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                            onClick = {
+                                companyViewModel.expandChangeCompanyAddressBottomSheet(true)
+                            }
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // --------------------- Company info ---------------------
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            companyInfoScreenItems.zip(itemsDescriptions)
-                                .forEach { (companyInfoItem, description) ->
-                                    CompanyInfoItem(
-                                        leadingIcon = companyInfoItem.icon,
-                                        title = stringResource(companyInfoItem.title),
-                                        itemDescription = description,
-                                        trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                                        onClick = {
-                                            navController.navigate(companyInfoItem.screenRoute)
-                                        }
-                                    )
-                                }
-
-                            // ------------------- Company address -------------------
-                            CompanyInfoItem(
-                                leadingIcon = Icons.Outlined.LocationOn,
-                                title = stringResource(R.string.company_address_screen),
-                                itemDescription = address.fullAddress,
-                                trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                                onClick = {
-                                    companyViewModel.expandChangeCompanyAddressBottomSheet(true)
-                                }
-                            )
-
-                            // ------------------- Company Nip, Regon -------------------
-                            CompanyInfoItem(
-                                leadingIcon = null,
-                                title = stringResource(R.string.company_number_name),
-                                itemDescription = company.companyNumber,
-                                trailingIcon = null,
-                                onClick = {
+                        // ------------------- Company Nip, Regon -------------------
+                        CompanyInfoItem(
+                            leadingIcon = null,
+                            title = stringResource(R.string.company_number_name),
+                            itemDescription = company.companyNumber,
+                            trailingIcon = null,
+                            onClick = {
+                                clipboardManager.setText(
+                                    AnnotatedString(company.companyNumber)
+                                )
+                            }
+                        )
+                        CompanyInfoItem(
+                            leadingIcon = null,
+                            title = stringResource(R.string.company_number_additional),
+                            itemDescription = company.regon ?: "No REGON",
+                            trailingIcon = null,
+                            onClick = {
+                                if (company.regon != null) {
                                     clipboardManager.setText(
-                                        AnnotatedString(company.companyNumber)
+                                        AnnotatedString(company.regon)
                                     )
                                 }
-                            )
-                            CompanyInfoItem(
-                                leadingIcon = null,
-                                title = stringResource(R.string.company_number_additional),
-                                itemDescription = company.regon ?: "No REGON",
-                                trailingIcon = null,
-                                onClick = {
-                                    if (company.regon != null) {
-                                        clipboardManager.setText(
-                                            AnnotatedString(company.regon)
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    }
-                    if (companyUIState.changeCompanyAddressBottomSheetExpanded) {
-                        AddressBottomSheet(
-                            bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
-                            onDismissRequest = {
-                                companyViewModel.expandChangeCompanyAddressBottomSheet(false)
-                            },
-                            address = companyViewModel.companyCreateRequestState.collectAsState().value.address,
-                            onDone = { request ->
-                                companyViewModel.companyCreateRequestState.value.address = request
-                                companyViewModel.updateCompany()
                             }
                         )
                     }
+                }
+                if (companyUIState.changeCompanyAddressBottomSheetExpanded) {
+                    AddressBottomSheet(
+                        bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
+                        onDismissRequest = {
+                            companyViewModel.expandChangeCompanyAddressBottomSheet(false)
+                        },
+                        address = companyViewModel.companyCreateRequestState.collectAsState().value.address,
+                        onDone = { request ->
+                            companyViewModel.updateCompanyAddress(request)
+                        }
+                    )
+                }
 
-                    if (companyUIState.changeCompanyNameBottomSheetExpanded) {
-                        ChangeCompanyNameBottomSheet(
-                            companyName = company.name,
-                            onDismissRequest = {
-                                companyViewModel.expandChangeCompanyNameBottomSheet(false)
-                            },
-                            onDone = { newName -> companyViewModel.updateCompanyName(newName) }
-                        )
-                    }
+                if (companyUIState.changeCompanyNameBottomSheetExpanded) {
+                    ChangeCompanyNameBottomSheet(
+                        company = companyViewModel.companyCreateRequestState.collectAsState().value,
+                        onDismissRequest = {
+                            companyViewModel.expandChangeCompanyNameBottomSheet(false)
+                        },
+                        onDone = { request ->
+                            companyViewModel.updateCompany(request)
+                        }
+                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun LoadingView() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
     }
 }
 

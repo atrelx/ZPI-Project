@@ -1,6 +1,6 @@
 package com.example.amoz.api.requests
 
-import com.example.amoz.api.enums.UnitWeight
+import com.example.amoz.enums.UnitWeight
 import javax.validation.constraints.Positive
 import kotlinx.serialization.Serializable
 

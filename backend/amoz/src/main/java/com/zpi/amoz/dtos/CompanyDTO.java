@@ -34,8 +34,8 @@ public record CompanyDTO(
         return new CompanyDTO(
                 company.getCompanyId(),
                 company.getCompanyNumber(),
-                company.getCountryOfRegistration(),
                 company.getName(),
+                company.getCountryOfRegistration(),
                 AddressDTO.toAddressDTO(company.getAddress()),
                 Optional.ofNullable(company.getRegon())
         );
