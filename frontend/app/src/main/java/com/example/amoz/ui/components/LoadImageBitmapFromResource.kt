@@ -1,4 +1,4 @@
-package com.example.amoz.ui.commonly_used_components
+package com.example.amoz.ui.components
 
 import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable

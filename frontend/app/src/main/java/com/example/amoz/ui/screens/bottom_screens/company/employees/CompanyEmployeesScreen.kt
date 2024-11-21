@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.amoz.R
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
-import com.example.amoz.ui.commonly_used_components.ResultStateView
+import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 

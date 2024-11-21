@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.enums.Sex
+import com.example.amoz.api.enums.Sex
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

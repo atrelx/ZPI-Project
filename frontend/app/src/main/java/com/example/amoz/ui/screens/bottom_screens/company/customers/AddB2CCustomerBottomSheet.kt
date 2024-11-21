@@ -46,8 +46,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
-import com.example.amoz.enums.Sex
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import com.example.amoz.api.enums.Sex
+import com.example.amoz.ui.components.PrimaryFilledButton
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

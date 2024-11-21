@@ -1,15 +1,8 @@
 package com.example.amoz.view_models
 
-import android.content.Context
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
-import com.example.amoz.ui.states.AppUiState
-import com.example.amoz.app.NavItemType
-import com.example.amoz.app.bottomNavigationBarNavItemsMap
 import com.example.amoz.data.NavItem
 import com.example.amoz.ui.states.AppUiState
 import kotlinx.coroutines.flow.MutableStateFlow

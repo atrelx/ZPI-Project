@@ -1,6 +1,6 @@
 package com.example.amoz.api.requests
 
-import com.example.amoz.enums.Status
+import com.example.amoz.api.enums.Status
 import com.example.amoz.api.serializers.LocalDateTimeSerializer
 import com.example.amoz.api.serializers.UUIDSerializer
 import com.example.amoz.interfaces.ValidatableRequest

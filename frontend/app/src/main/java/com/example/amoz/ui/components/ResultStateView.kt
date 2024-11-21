@@ -1,15 +1,13 @@
-package com.example.amoz.ui.commonly_used_components
+package com.example.amoz.ui.components
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.example.amoz.api.sealed.ResultState
 import kotlinx.coroutines.flow.MutableStateFlow
 

@@ -1,4 +1,4 @@
-package com.example.amoz.enums
+package com.example.amoz.api.enums
 
 import android.content.Context
 import android.graphics.BitmapFactory

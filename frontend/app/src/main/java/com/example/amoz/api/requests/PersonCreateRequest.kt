@@ -1,6 +1,6 @@
 package com.example.amoz.api.requests
 
-import com.example.amoz.enums.Sex
+import com.example.amoz.api.enums.Sex
 import com.example.amoz.api.serializers.LocalDateSerializer
 import com.example.amoz.api.serializers.UUIDSerializer
 import com.example.amoz.interfaces.ValidatableRequest

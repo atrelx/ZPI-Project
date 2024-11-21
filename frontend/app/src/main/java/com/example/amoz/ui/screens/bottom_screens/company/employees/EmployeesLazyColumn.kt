@@ -29,9 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.models.Employee
-import com.example.amoz.ui.commonly_used_components.ResultStateView
-import com.example.amoz.ui.commonly_used_components.SwipeableItemWithActions
-import com.example.amoz.ui.commonly_used_components.loadImageBitmapFromResource
+import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.components.SwipeableItemWithActions
+import com.example.amoz.ui.components.loadImageBitmapFromResource
 import com.example.amoz.view_models.CompanyViewModel
 import java.time.LocalDate
 import java.util.UUID
