@@ -1,9 +1,9 @@
 package com.example.amoz.view_models
 
 import androidx.lifecycle.ViewModel
-import com.example.amoz.firebase.FirebaseRepository
-import com.example.amoz.models.ProductVariantDetails
-import com.example.amoz.firebase.SoldProduct
+//import com.example.amoz.firebase.FirebaseRepository
+import com.example.amoz.data.ProductVariant
+//import com.example.amoz.firebase.SoldProduct
 import com.example.amoz.ui.states.OrderUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,35 +15,35 @@ class OrdersViewModel : ViewModel() {
     val orderUiState: StateFlow<OrderUIState> = _orderUiState.asStateFlow()
 
     init {
-        FirebaseRepository.getSales { salesList ->
-            updateSalesList(salesList)
-        }
+//        FirebaseRepository.getSales { salesList ->
+//            updateSalesList(salesList)
+//        }
 //        FirebaseRepository.getProducts { products ->
 //            updateProductsList(products)
 //        }
     }
 
-    fun updateSalesList(salesList: List<SoldProduct>) {
-        _orderUiState.update { currState ->
-            currState.copy(salesList = salesList, salesListIsLoading = false)
-        }
-    }
+//    fun updateSalesList(salesList: List<SoldProduct>) {
+//        _orderUiState.update { currState ->
+//            currState.copy(salesList = salesList, salesListIsLoading = false)
+//        }
+//    }
 
-    fun updateProductsList(productsList: List<ProductVariantDetails>) {
+    fun updateProductsList(productsList: List<ProductVariant>) {
         _orderUiState.update { currState ->
             currState.copy(productsList = productsList)
         }
     }
-    fun updateSoldProduct(soldProduct: SoldProduct) {
-        FirebaseRepository.upsertSale(soldProduct)
-    }
+//    fun updateSoldProduct(soldProduct: SoldProduct) {
+//        FirebaseRepository.upsertSale(soldProduct)
+//    }
 
-    fun updateAddEditViewState(
-        productEditDialogShow: Boolean,
-        currentSoldProductInEdit: SoldProduct = SoldProduct() ) {
-        updateCurrentSaleProduct(currentSoldProductInEdit)
-        updateDialogShow(productEditDialogShow)
-    }
+//    fun updateAddEditViewState(
+//        productEditDialogShow: Boolean,
+//        currentSoldProductInEdit: SoldProduct = SoldProduct() ) {
+//        updateCurrentSaleProduct(currentSoldProductInEdit)
+//        updateDialogShow(productEditDialogShow)
+//    }
 
     fun updateDialogShow(dialogShow: Boolean) {
         _orderUiState.update { currState ->
@@ -57,10 +57,10 @@ class OrdersViewModel : ViewModel() {
         }
     }
 
-    fun updateCurrentSaleProduct(currentSoldProductInEdit: SoldProduct) {
-        _orderUiState.update { currState ->
-            currState.copy(currentAddEditSaleProduct = currentSoldProductInEdit)
-        }
-    }
+//    fun updateCurrentSaleProduct(currentSoldProductInEdit: SoldProduct) {
+//        _orderUiState.update { currState ->
+//            currState.copy(currentAddEditSaleProduct = currentSoldProductInEdit)
+//        }
+//    }
 
 }

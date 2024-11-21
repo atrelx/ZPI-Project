@@ -2,6 +2,7 @@ package com.zpi.amoz.requests;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -37,7 +38,7 @@ public record ProductCreateRequest(
         List<UUID> productVariantIds,
 
         @ArraySchema(schema = @Schema(description = "Lista atrybutów produktu", implementation = AttributeCreateRequest.class))
-        List<AttributeCreateRequest> productAttributes
+        List<@Valid AttributeCreateRequest> productAttributes
 
 ) {
 

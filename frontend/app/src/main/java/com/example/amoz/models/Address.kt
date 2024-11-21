@@ -15,5 +15,8 @@ data class Address(
     val apartmentNumber: String? = null,
     val postalCode: String,
     val additionalInformation: String? = null
-)
+) {
+    val fullAddress: String get() = listOfNotNull(street, streetNumber, apartmentNumber, city, postalCode).joinToString(", ")
+}
+
 

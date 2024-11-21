@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.data.NavItem
-import com.example.amoz.view_models.OrdersViewModel
+//import com.example.amoz.view_models.OrdersViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 
@@ -34,7 +34,8 @@ fun HomeScreen(
     navController: NavController,
     navigateToScreen: (NavItem) -> Unit,
     paddingValues: PaddingValues,
-    salesViewModel: OrdersViewModel = viewModel() ) {
+//    salesViewModel: OrdersViewModel = viewModel()
+) {
     AmozApplicationTheme {
         Surface(
                 modifier = Modifier
@@ -42,7 +43,7 @@ fun HomeScreen(
                     .padding(paddingValues),
                 color = MaterialTheme.colorScheme.background
         ) {
-            val salesUiState by salesViewModel.orderUiState.collectAsState()
+//            val salesUiState by salesViewModel.orderUiState.collectAsState()
 
             Column {
                 CardsLazyRow(cardsList = homeCardItemsList)
@@ -52,7 +53,7 @@ fun HomeScreen(
                         val ordersNavItem = bottomNavigationBarNavItemsMap[NavItemType.Orders]
                         navigateToScreen(ordersNavItem!!)
                     } )
-                LastOrdersLazyList(salesList = salesUiState.salesList, maxListItemsVisible = 10 )
+//                LastOrdersLazyList(salesList = salesUiState.salesList, maxListItemsVisible = 10 )
             }
         }
     }

@@ -6,7 +6,9 @@ import android.media.Image
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import com.example.amoz.api.extensions.toBitmap
+import androidx.compose.ui.res.painterResource
+import com.example.amoz.R
+import com.example.amoz.extensions.toBitmap
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -19,7 +21,7 @@ abstract class BaseRepository {
                 Log.i(tag, "${response.code()} ${response.body()}")
                 response.body()
             } else {
-                Log.d(tag, "${response.code()} ${response.body()}")
+                Log.d(tag, "${response.code()} ${response.errorBody()?.toString()}")
                 null
             }
         } catch (e: Exception) {

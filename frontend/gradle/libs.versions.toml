@@ -12,6 +12,7 @@ coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
+kotlinReflect = "1.8.0"
 kotlinxSerializationJsonJvm = "1.6.0"
 lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.7.0"
@@ -71,6 +72,7 @@ androidx-navigation-testing = { group = "androidx.navigation", name = "navigatio
 androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 androidx-espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 kotlinx-serialization-json-jvm = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "kotlinxSerializationJsonJvm" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }

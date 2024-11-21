@@ -34,30 +34,36 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.api.requests.AddressCreateRequest
+import com.example.amoz.api.requests.CustomerB2BCreateRequest
+import com.example.amoz.api.requests.CustomerCreateRequest
+import com.example.amoz.ui.components.PrimaryFilledButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddB2BCustomerBottomSheet(
     onDismissRequest: () -> Unit,
     callSnackBar: (String, ImageVector?) -> Unit,
-    addB2BCustomer: (String, String, String, String) -> Unit
+    customer: CustomerB2BCreateRequest,
+    onDone: (CustomerB2BCreateRequest) -> Unit
 ) {
-    var companyName by remember { mutableStateOf("") }
-    var companyEmail by remember { mutableStateOf("") }
-    var companyAddress by remember { mutableStateOf("") }
-    var companyIdentifier by remember { mutableStateOf("") }
+//    var companyName by remember { mutableStateOf("") }
+//    var companyEmail by remember { mutableStateOf("") }
+//    var companyAddress by remember { mutableStateOf("") }
+//    var companyIdentifier by remember { mutableStateOf("") }
+    var customerState by remember {  mutableStateOf(customer) }
 
     val emailPattern = stringResource(id = R.string.email_pattern)
 
-    val isFormValid by remember {
-        derivedStateOf {
-            companyName.isNotBlank() &&
-            companyAddress.isNotBlank() &&
-            companyIdentifier.isNotBlank() &&
-            companyEmail.matches(emailPattern.toRegex())
-
-        }
-    }
+//    val isFormValid by remember {
+//        derivedStateOf {
+//            companyName.isNotBlank() &&
+//            companyAddress.isNotBlank() &&
+//            companyIdentifier.isNotBlank() &&
+//            companyEmail.matches(emailPattern.toRegex())
+//
+//        }
+//    }
 
     val invSentSuccessful = stringResource(id = R.string.company_add_customer_successful)
 
@@ -85,9 +91,9 @@ fun AddB2BCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.company_name))
                 },
-                value = companyName,
+                value = customerState.nameOnInvoice,
                 onValueChange = {
-                    companyName = it
+                    customerState = customerState.copy(nameOnInvoice = it)
                 },
                 leadingIcon = {
                     Icon(
@@ -105,9 +111,9 @@ fun AddB2BCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_email))
                 },
-                value = companyEmail,
+                value = customerState.customer.contactPerson.emailAddress ?: "",
                 onValueChange = {
-                    companyEmail = it
+                    customerState.customer.contactPerson = customerState.customer.contactPerson.copy(emailAddress = it)
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Mail, contentDescription = null)
@@ -118,21 +124,21 @@ fun AddB2BCustomerBottomSheet(
             )
 
             // -------------------- Company Address --------------------
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = stringResource(id = R.string.company_address))
-                },
-                value = companyAddress,
-                onValueChange = {
-                    companyAddress = it
-                },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Outlined.Place, contentDescription = null)
-                },
-                maxLines = 1,
-                singleLine = true
-            )
+//            OutlinedTextField(
+//                modifier = Modifier.fillMaxWidth(),
+//                label = {
+//                    Text(text = stringResource(id = R.string.company_address))
+//                },
+//                value = companyAddress,
+//                onValueChange = {
+//                    customerState.address = customerState.address.
+//                },
+//                leadingIcon = {
+//                    Icon(imageVector = Icons.Outlined.Place, contentDescription = null)
+//                },
+//                maxLines = 1,
+//                singleLine = true
+//            )
 
             // -------------------- Company number --------------------
             OutlinedTextField(
@@ -140,9 +146,9 @@ fun AddB2BCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.company_number))
                 },
-                value = companyIdentifier,
+                value = customerState.companyNumber,
                 onValueChange = {
-                    companyIdentifier = it
+                    customerState = customerState.copy(companyNumber = it)
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Numbers, contentDescription = null)
@@ -155,12 +161,8 @@ fun AddB2BCustomerBottomSheet(
             // -------------------- Confirm button --------------------
             PrimaryFilledButton(
                 onClick = {
-                    /*TODO: Change addB2CCustomer func*/
-                    addB2BCustomer(
-                        companyName,
-                        companyAddress,
-                        companyEmail,
-                        companyIdentifier
+                    onDone(
+                        customerState
                     )
                     onDismissRequest()
                     callSnackBar(
@@ -168,7 +170,8 @@ fun AddB2BCustomerBottomSheet(
                         Icons.Outlined.Done
                     )
                 },
-                enabled = isFormValid,
+//                enabled = isFormValid,
+                enabled = true,
                 text = stringResource(id = R.string.done)
             )
         }

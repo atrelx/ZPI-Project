@@ -29,20 +29,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.example.amoz.data.B2BCustomer
-import com.example.amoz.view_models.CompanyScreenViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.amoz.models.CustomerB2B
+import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun B2BCustomerScreen(
-    b2bCustomersList: List<B2BCustomer>,
-    companyViewModel: CompanyScreenViewModel,
+    b2bCustomersList: List<CustomerB2B>,
+    companyViewModel: CompanyViewModel = hiltViewModel(),
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
-        val companyUiState by companyViewModel.companyUiState.collectAsState()
+        val companyUiState by companyViewModel.companyUIState.collectAsState()
 
-        var currentB2bCustomer by remember { mutableStateOf<B2BCustomer?>(null) }
+        var currentB2bCustomer by remember { mutableStateOf<CustomerB2B?>(null) }
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,16 +56,16 @@ fun B2BCustomerScreen(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(b2bCustomersList.reversed()) { company ->
+                items(b2bCustomersList) { customerB2B ->
                     ListItem(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
-                                currentB2bCustomer = company
+                                currentB2bCustomer = customerB2B
                                 companyViewModel.expandCustomerProfileDataBottomSheet(true)
                             },
-                        headlineContent = { Text(company.companyName) },
-                        supportingContent = { Text(text = company.companyAddress) },
+                        headlineContent = { Text(customerB2B.nameOnInvoice) },
+                        supportingContent = { Text(text = customerB2B.address.fullAddress) },
                         colors = ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
@@ -94,20 +95,23 @@ fun B2BCustomerScreen(
                     companyViewModel.expandAddB2BCustomerBottomSheet(false)
                 },
                 callSnackBar = callSnackBar,
-                addB2BCustomer = { name, email, address, number ->
-                    companyViewModel.addB2BCustomer(name, email, address, number)
+                customer = companyViewModel.customerB2BCreateRequestState.collectAsState().value,
+                onDone = { request ->
+                    companyViewModel.createB2BCustomer(request)
                 }
 
             )
         }
         if (companyUiState.customerProfileDataBottomSheetExpanded && currentB2bCustomer != null) {
-            B2BCustomerProfileDataBottomSheet(
-                onDismissRequest = {
-                    currentB2bCustomer = null
-                    companyViewModel.expandCustomerProfileDataBottomSheet(false)
-                },
-                b2BCustomer = currentB2bCustomer!!
-            )
+            currentB2bCustomer?.let {
+                B2BCustomerProfileDataBottomSheet(
+                    onDismissRequest = {
+                        currentB2bCustomer = null
+                        companyViewModel.expandCustomerProfileDataBottomSheet(false)
+                    },
+                    b2BCustomer = it
+                )
+            }
         }
     }
 }

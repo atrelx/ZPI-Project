@@ -1,8 +1,11 @@
 package com.example.amoz.api.services
 
+import androidx.compose.ui.graphics.ImageBitmap
 import com.example.amoz.models.Employee
 import com.example.amoz.api.responses.MessageResponse
+import com.example.amoz.extensions.toImageBitmap
 import kotlinx.serialization.json.JsonElement
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.PATCH
@@ -30,5 +33,10 @@ interface EmployeeService {
     suspend fun leaveCompany(): Response<Unit>
 
     @GET("api/employees")
-    suspend fun fetchEmployees(): Response<List<com.example.amoz.models.Employee>>
+    suspend fun fetchEmployees(): Response<List<Employee>>
+
+    @GET("api/employees/picture/{employeeId}")
+    suspend fun getEmployeePicture(
+        @Path("employeeId") employeeId: UUID
+    ): Response<ResponseBody>
 }

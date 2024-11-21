@@ -1,6 +1,7 @@
 package com.zpi.amoz.requests;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,7 @@ public record CompanyCreateRequest(
 
         @Schema(description = "Adres firmy", implementation = AddressCreateRequest.class)
         @NotNull(message = "Address is required")
+        @Valid
         AddressCreateRequest address,
 
         @Schema(description = "Numer REGON firmy, jeśli istnieje", example = "12345678901234", nullable = true)

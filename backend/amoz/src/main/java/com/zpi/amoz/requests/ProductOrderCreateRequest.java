@@ -3,6 +3,7 @@ package com.zpi.amoz.requests;
 import com.zpi.amoz.enums.Status;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
@@ -20,10 +21,10 @@ public record ProductOrderCreateRequest(
         @ArraySchema(schema = @Schema(description = "Lista elementów zamówienia", implementation = ProductOrderCreateRequest.class))
         @NotNull(message = "Product order items cannot be null")
         @Size(min = 1, message = "At least one product order item is required")
-        List<ProductOrderItemCreateRequest> productOrderItems,
+        List<@Valid ProductOrderItemCreateRequest> productOrderItems,
 
         @Schema(description = "Adres dostawy, jeśli istnieje", implementation = AddressCreateRequest.class)
-        Optional<AddressCreateRequest> address,
+        Optional<@Valid AddressCreateRequest> address,
 
         @Schema(description = "Identyfikator klienta, jeśli istnieje", example = "e7e7d0ff-64a4-45f1-929b-e7e0d6e8e4b5", nullable = true)
         Optional<UUID> customerId,

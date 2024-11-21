@@ -84,7 +84,7 @@ fun EmployeeProfileBottomSheet(
                 personLastName = employee.person.surname,
                 personEmail = employee.contactPerson.emailAddress ?: "No email address",
                 personPhoneNumber = employee.contactPerson.contactNumber,
-                personSex = employee.person.sex.toString(),
+                personSex = employee.person.sex,
                 personBirthDate = employee.person.dateOfBirth
             )
 
@@ -92,10 +92,12 @@ fun EmployeeProfileBottomSheet(
 
             // -------------------- Employment date --------------------
             ListItem(
-                modifier = listItemModifier.then(Modifier
-                    .clickable {
-                        isDatePickerVisible = true
-                    } ),
+                modifier = listItemModifier
+//                    .then(Modifier
+//                    .clickable {
+//                        isDatePickerVisible = true
+//                    } )
+                ,
                 leadingContent = {
                     Icon(imageVector = Icons.Outlined.CalendarToday, contentDescription = null)
                 },

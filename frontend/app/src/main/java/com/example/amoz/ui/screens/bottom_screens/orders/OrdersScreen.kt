@@ -29,7 +29,8 @@ import com.example.amoz.view_models.OrdersViewModel
 fun OrdersScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    salesViewModel: OrdersViewModel = viewModel() ) {
+    salesViewModel: OrdersViewModel = viewModel()
+) {
     AmozApplicationTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -38,25 +39,25 @@ fun OrdersScreen(
             val salesUiState by salesViewModel.orderUiState.collectAsState()
 
             if (salesUiState.showAddEditSaleDialog)
-                OrderAddEditVIew(
-                    saleProduct = salesUiState.currentAddEditSaleProduct,
-                    productList = salesUiState.productsList,
-                    onComplete = { salesViewModel.updateSoldProduct(it) },
-                    closeAddEditDialog = {
-                        salesViewModel.updateAddEditViewState(false)
-                    }
-                )
+//                OrderAddEditVIew(
+//                    saleProduct = salesUiState.currentAddEditSaleProduct,
+//                    productList = salesUiState.productsList,
+//                    onComplete = { salesViewModel.updateSoldProduct(it) },
+//                    closeAddEditDialog = {
+//                        salesViewModel.updateAddEditViewState(false)
+//                    }
+//                )
 
             if (!salesUiState.salesListIsLoading) {
-                OrdersLazyColumn(
-                    paddingValues = paddingValues,
-                    salesList = salesUiState.salesList,
-                    onSoldProductClick = { saleProduct ->
-                        salesViewModel.updateAddEditViewState(true, saleProduct)
-                    },
-                    filterBottomSheetShowed = salesUiState.showFilterBottomSheet,
-                    updateFilterBottomSheetShowState = { salesViewModel.showFilterBottomSheet(it) }
-                )
+//                OrdersLazyColumn(
+//                    paddingValues = paddingValues,
+//                    salesList = salesUiState.salesList,
+//                    onSoldProductClick = { saleProduct ->
+//                        salesViewModel.updateAddEditViewState(true, saleProduct)
+//                    },
+//                    filterBottomSheetShowed = salesUiState.showFilterBottomSheet,
+//                    updateFilterBottomSheetShowState = { salesViewModel.showFilterBottomSheet(it) }
+//                )
             }
             Box(
                 modifier = Modifier
@@ -70,7 +71,7 @@ fun OrdersScreen(
                 }
                 ExtendedFloatingActionButton(
                     onClick = {
-                        salesViewModel.updateAddEditViewState(true)
+//                        salesViewModel.updateAddEditViewState(true)
                     },
                     modifier = Modifier
                         .padding(16.dp)

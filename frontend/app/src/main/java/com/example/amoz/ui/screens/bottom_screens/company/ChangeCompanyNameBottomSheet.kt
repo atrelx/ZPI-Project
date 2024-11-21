@@ -31,20 +31,22 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.api.requests.CompanyCreateRequest
+import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangeCompanyNameBottomSheet(
-    companyName: String,
+    company: CompanyCreateRequest,
     onDismissRequest: () -> Unit,
-    onDone: (String) -> Unit
+    onDone: (CompanyCreateRequest) -> Unit
 ) {
     val companyNameValueLength = 30
-    var companyNameState by remember { mutableStateOf(companyName)}
-    val isCompanyNameStateValid by remember { derivedStateOf{
-        companyNameState.isNotBlank() && companyNameState.length < companyNameValueLength }
-    }
+    var companyState by remember { mutableStateOf(company)}
+
+//    val isCompanyNameStateValid by remember { derivedStateOf{
+//        companyNameState.isNotBlank() && companyNameState.length < companyNameValueLength }
+//    }
 
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
         Column(
@@ -60,11 +62,11 @@ fun ChangeCompanyNameBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.company_name)) },
-                value = companyNameState,
+                value = companyState.name,
                 onValueChange = {
-                    if (it.length <= companyNameValueLength) {
-                        companyNameState = it
-                    }
+//                    if (it.length <= companyNameValueLength) {
+                        companyState = companyState.copy(name = it)
+//                    }
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.DriveFileRenameOutline, contentDescription = null)
@@ -75,13 +77,13 @@ fun ChangeCompanyNameBottomSheet(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (isCompanyNameStateValid) {
+//                        if (isCompanyNameStateValid) {
                             onDismissRequest()
-                            onDone(companyNameState)
-                        }
+                            onDone(companyState)
+//                        }
                     }
                 ),
-                isError = !isCompanyNameStateValid,
+//                isError = !isCompanyNameStateValid,
                 maxLines = 1,
                 singleLine = true
             )
@@ -89,10 +91,10 @@ fun ChangeCompanyNameBottomSheet(
             Spacer(modifier = Modifier.height(5.dp))
             PrimaryFilledButton(
                 onClick = {
-                    onDone(companyNameState)
+                    onDone(companyState)
                     onDismissRequest()
                 },
-                enabled = isCompanyNameStateValid,
+//                enabled = isCompanyNameStateValid,
                 text = stringResource(id = R.string.done),
                 leadingIcon = Icons.Outlined.Done
             )
