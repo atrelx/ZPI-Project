@@ -1,10 +1,8 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.ModeEdit
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -30,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,17 +45,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.lifecycle.compose.LifecycleStartEffect
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.companyInfoScreenItemsMap
 import com.example.amoz.data.NavItem
 import com.example.amoz.ui.commonly_used_components.AddressBottomSheet
-import com.example.amoz.ui.commonly_used_components.LoadingView
 import com.example.amoz.ui.commonly_used_components.ResultStateView
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
@@ -67,7 +57,7 @@ import com.example.amoz.ui.theme.AmozApplicationTheme
 fun CompanyScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
+    companyViewModel: CompanyViewModel = hiltViewModel(),
     companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList()
 ) {
     AmozApplicationTheme {

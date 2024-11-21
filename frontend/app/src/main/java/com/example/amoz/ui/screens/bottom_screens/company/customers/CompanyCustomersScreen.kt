@@ -23,12 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import com.example.amoz.R
 import com.example.amoz.ui.commonly_used_components.ResultStateView
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import kotlinx.coroutines.launch
 
@@ -36,7 +35,7 @@ import kotlinx.coroutines.launch
 fun CompanyCustomersScreen(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    companyViewModel: CompanyScreenViewModel,
+    companyViewModel: CompanyViewModel,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     val companyUiState by companyViewModel.companyUIState.collectAsState()

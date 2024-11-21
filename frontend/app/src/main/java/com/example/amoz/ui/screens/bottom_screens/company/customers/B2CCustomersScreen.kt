@@ -23,7 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,18 +34,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import com.example.amoz.models.CustomerB2C
-import com.example.amoz.models.Person
 import com.example.amoz.ui.PersonProfileColumn
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun B2CCustomerScreen(
     b2cCustomersList: List<CustomerB2C>,
-    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
+    companyViewModel: CompanyViewModel = hiltViewModel(),
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {

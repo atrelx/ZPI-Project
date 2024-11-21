@@ -21,7 +21,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
@@ -30,11 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import com.example.amoz.R
-import com.example.amoz.data.B2BCustomer
 import com.example.amoz.models.CustomerB2B
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +44,7 @@ fun B2BCustomerProfileDataBottomSheet(
             brush = SolidColor(MaterialTheme.colorScheme.outline),
             shape = RoundedCornerShape(5.dp)
         ),
-    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
+    companyViewModel: CompanyViewModel = hiltViewModel(),
     onDismissRequest: () -> Unit,
     b2BCustomer: CustomerB2B
 ) {

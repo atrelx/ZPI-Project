@@ -22,16 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.amoz.R
-import com.example.amoz.extensions.fetchDataIfSuccess
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 import com.example.amoz.ui.commonly_used_components.ResultStateView
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
+import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun CompanyEmployeesScreen(
     navController: NavHostController,
-    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
+    companyViewModel: CompanyViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {

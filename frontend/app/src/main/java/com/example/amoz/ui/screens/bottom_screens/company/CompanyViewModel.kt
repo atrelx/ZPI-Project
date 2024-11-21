@@ -9,23 +9,18 @@ import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.requests.CustomerB2BCreateRequest
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.data.B2BCustomer
-import com.example.amoz.data.Person
 import com.example.amoz.extensions.updateResultState
-import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
-import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
 import com.example.amoz.view_models.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class CompanyScreenViewModel @Inject constructor(
+class CompanyViewModel @Inject constructor(
     private val employeeRepository: EmployeeRepository,
     private val companyRepository: CompanyRepository,
     private val customerRepository: CustomerRepository
