@@ -46,6 +46,7 @@ object ApiModule {
     @Named("authenticatedRetrofit")
     fun provideAuthenticatedRetrofit(interceptor: AuthInterceptor, @ApplicationContext context: Context): Retrofit {
         val json = Json {
+            encodeDefaults = true
             ignoreUnknownKeys = true
             isLenient = true
         }
@@ -74,6 +75,7 @@ object ApiModule {
     @Named("unauthenticatedRetrofit")
     fun provideUnauthenticatedRetrofit(@ApplicationContext context: Context): Retrofit {
         val json = Json {
+            encodeDefaults = true
             ignoreUnknownKeys = true
             isLenient = true
         }

@@ -45,6 +45,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.api.requests.CustomerB2CCreateRequest
+import com.example.amoz.enums.Sex
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -54,28 +56,35 @@ import java.time.format.DateTimeFormatter
 fun AddB2CCustomerBottomSheet(
     onDismissRequest: () -> Unit,
     callSnackBar: (String, ImageVector?) -> Unit,
-    addB2CCustomer: (String, String, String, String?) -> Unit
+    customerRequest: CustomerB2CCreateRequest,
+    onDone: (CustomerB2CCreateRequest) -> Unit
 ) {
-    var customerFirstName by remember { mutableStateOf("") }
-    var customerLastName by remember { mutableStateOf("") }
-    var customerSex by remember { mutableStateOf("") }
-    var customerEmail by remember { mutableStateOf("") }
-    var customerPhoneNumber by remember { mutableStateOf("") }
-    var customerBirthDate by remember { mutableStateOf(LocalDate.now()) }
+//    var customerFirstName by remember { mutableStateOf("") }
+//    var customerLastName by remember { mutableStateOf("") }
+//    var customerSex by remember { mutableStateOf("") }
+//    var customerEmail by remember { mutableStateOf("") }
+//    var customerPhoneNumber by remember { mutableStateOf("") }
+//    var customerBirthDate by remember { mutableStateOf(LocalDate.now()) }
+
+    var customerState by remember { mutableStateOf(customerRequest) }
 
     val emailPattern = stringResource(id = R.string.email_pattern)
     val phonePattern = stringResource(id = R.string.phone_pattern)
 
-    val isFormValid by remember {
-        derivedStateOf {
-            customerFirstName.isNotBlank() &&
-                    customerLastName.isNotBlank() &&
-                    customerSex.isNotBlank() &&
-                    customerEmail.matches(emailPattern.toRegex()) &&
-                    (customerPhoneNumber.isBlank() ||
-                            customerPhoneNumber.matches(phonePattern.toRegex()))
-        }
-    }
+    val person = customerState.person
+    val contactPerson = customerState.customer.contactPerson
+
+//    val isFormValid by remember {
+//        derivedStateOf {
+//            customerFirstName.isNotBlank() &&
+//                    customerLastName.isNotBlank() &&
+//                    customerSex.isNotBlank() &&
+//                    customerEmail.matches(emailPattern.toRegex()) &&
+//                    (customerPhoneNumber.isBlank() ||
+//                            customerPhoneNumber.matches(phonePattern.toRegex()))
+//        }
+//    }
+
     val invSentSuccessful = stringResource(id = R.string.company_add_customer_successful)
 
     var isDatePickerVisible by remember { mutableStateOf(false)}
@@ -105,9 +114,9 @@ fun AddB2CCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_first_name))
                 },
-                value = customerFirstName,
+                value = customerState.person.name,
                 onValueChange = {
-                    customerFirstName = it
+                    customerState = customerState.copy(person = customerState.person.copy(name = it))
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.TextFields, contentDescription = null)
@@ -122,9 +131,9 @@ fun AddB2CCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_last_name))
                 },
-                value = customerLastName,
+                value = person.surname,
                 onValueChange = {
-                    customerLastName = it
+                    customerState = customerState.copy(person = customerState.person.copy(surname = it))
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.TextFields, contentDescription = null)
@@ -139,9 +148,9 @@ fun AddB2CCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_sex))
                 },
-                value = customerSex,
+                value = "M",
                 onValueChange = {
-                    customerSex = it
+                    customerState = customerState.copy(person = customerState.person.copy(sex = Sex.valueOf(it)))
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Man, contentDescription = null)
@@ -156,9 +165,12 @@ fun AddB2CCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_email))
                 },
-                value = customerEmail,
+                value = contactPerson.emailAddress ?: "",
                 onValueChange = {
-                    customerEmail = it
+                    customerState = customerState
+                        .copy(customer = customerState.customer
+                        .copy(contactPerson = customerState.customer.contactPerson
+                            .copy(emailAddress = it)))
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Mail, contentDescription = null)
@@ -174,9 +186,12 @@ fun AddB2CCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_phone_number))
                 },
-                value = customerPhoneNumber,
+                value = contactPerson.contactNumber,
                 onValueChange = {
-                    customerPhoneNumber = it
+                    customerState = customerState
+                        .copy(customer = customerState.customer
+                            .copy(contactPerson = customerState.customer.contactPerson
+                                .copy(contactNumber = it)))
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Phone, contentDescription = null)
@@ -204,7 +219,7 @@ fun AddB2CCustomerBottomSheet(
                 overlineContent = { Text(text = stringResource(id = R.string.profile_birth_date)) },
                 headlineContent = {
                     Text(
-                        text = customerBirthDate.format(
+                        text = customerState.person.dateOfBirth.format(
                             DateTimeFormatter.ofPattern("dd-MM-yyyy")
                         )
                     )
@@ -217,12 +232,8 @@ fun AddB2CCustomerBottomSheet(
             // -------------------- Confirm button --------------------
             PrimaryFilledButton(
                 onClick = {
-                    /*TODO: Change addB2CCustomer func*/
-                    addB2CCustomer(
-                        customerFirstName,
-                        customerLastName,
-                        customerEmail,
-                        customerPhoneNumber
+                    onDone(
+                        customerState
                     )
                     onDismissRequest()
                     callSnackBar(
@@ -230,7 +241,8 @@ fun AddB2CCustomerBottomSheet(
                         Icons.Outlined.Done
                     )
                 },
-                enabled = isFormValid,
+//                enabled = isFormValid,
+                enabled = true,
                 text = stringResource(id = R.string.done)
             )
         }
@@ -243,7 +255,9 @@ fun AddB2CCustomerBottomSheet(
                 TextButton(
                     onClick = {
                         dateState.selectedDateMillis?.let {
-                            customerBirthDate = LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000))
+                            val dateOfBirth = LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000))
+                            customerState = customerState.copy(person = customerState.person
+                                .copy(dateOfBirth = dateOfBirth))
                         }
                         isDatePickerVisible = false
                     }

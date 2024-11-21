@@ -1,4 +1,4 @@
-package com.example.amoz.api.extensions
+package com.example.amoz.extensions
 
 import android.net.Uri
 import java.io.InputStream

@@ -1,5 +1,6 @@
 package com.example.amoz.api.requests
 
+import com.example.amoz.interfaces.ValidatableRequest
 import kotlinx.serialization.Serializable
 
 import javax.validation.constraints.NotBlank
@@ -14,4 +15,4 @@ data class AttributeCreateRequest(
 
     @field:Size(max = 255, message = "Attribute value should not exceed 255 characters")
     val value: String? = null
-)
+) : ValidatableRequest<AttributeCreateRequest>()

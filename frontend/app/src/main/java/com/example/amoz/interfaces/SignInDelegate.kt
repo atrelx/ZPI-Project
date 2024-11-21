@@ -1,4 +1,4 @@
-package com.example.amoz.api.interfaces
+package com.example.amoz.interfaces
 
 interface SignInDelegate {
     fun startSignInActivityForResult(completion: (() -> Unit)? = null)

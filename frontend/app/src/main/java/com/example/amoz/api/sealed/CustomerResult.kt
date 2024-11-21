@@ -1,6 +1,6 @@
 package com.example.amoz.api.sealed
 
-import com.example.amoz.api.extensions.tryParse
+import com.example.amoz.extensions.tryParse
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
 import kotlinx.serialization.json.Json

@@ -1,6 +1,7 @@
 package com.example.amoz.api.requests
 
 import com.example.amoz.api.serializers.UUIDSerializer
+import com.example.amoz.interfaces.ValidatableRequest
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Contextual
 import java.util.UUID
@@ -14,4 +15,4 @@ data class CategoryCreateRequest(
 
     @Serializable(with = UUIDSerializer::class)
     val parentCategoryId: UUID? = null
-)
+) : ValidatableRequest<CategoryCreateRequest>()

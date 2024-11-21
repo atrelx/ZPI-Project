@@ -24,10 +24,8 @@ public record AddressCreateRequest(
         @Size(max = 10)
         String streetNumber,
 
-        @Schema(description = "Numer mieszkania (jeśli dotyczy)", example = "3A")
-        @NotBlank
-        @Size(max = 10)
-        String apartmentNumber,
+        @Schema(description = "Numer mieszkania (opcjonalne)", example = "3A", nullable = true)
+        Optional<@Size(max = 10) String> apartmentNumber,
 
         @Schema(description = "Kod pocztowy", example = "00-001")
         @NotBlank

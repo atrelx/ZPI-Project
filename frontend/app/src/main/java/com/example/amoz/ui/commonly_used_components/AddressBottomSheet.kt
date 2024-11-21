@@ -41,48 +41,46 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.amoz.R
+import com.example.amoz.api.requests.AddressCreateRequest
+import com.example.amoz.models.Address
 import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddressBottomSheet(
     bottomSheetTitle: String = stringResource(id = R.string.address_change_title),
-    street: String,
-    houseNumber: String,
-    apartmentNumber: String?,
-    city: String,
-    postalCode: String,
-    additionalInfo: String,
+    address: AddressCreateRequest,
     onDismissRequest: () -> Unit,
-    onDone: (String, String, String?,
-             String, String, String) -> Unit
+    onDone: (AddressCreateRequest) -> Unit
 ) {
-    var streetState by remember { mutableStateOf(street) }
-    var houseNumberState by remember { mutableStateOf(houseNumber) }
-    var apartmentNumberState by remember { mutableStateOf(apartmentNumber) }
-    var cityState by remember { mutableStateOf(city) }
-    var postalCodeState by remember { mutableStateOf(postalCode) }
-    var additionalInfoState by remember { mutableStateOf(additionalInfo) }
+//    var streetState by remember { mutableStateOf(address.street) }
+    var addressState by remember { mutableStateOf(address) }
+//    var houseNumberState by remember { mutableStateOf(address.streetNumber) }
+//    var apartmentNumberState by remember { mutableStateOf(address.apartmentNumber ?: "") }
+//    var cityState by remember { mutableStateOf(address.city) }
+//    var postalCodeState by remember { mutableStateOf(address.postalCode) }
+//    var additionalInfoState by remember { mutableStateOf(address.additionalInformation ?: "") }
 
     val regularValueLength = 255
     val shortValueLength = 10
     val postalCodeValueLength = 5
 
-    val isStreetStateValid by remember { derivedStateOf { streetState.isNotBlank() } }
-    val isHouseNumberStateValid by remember { derivedStateOf { houseNumberState.isNotBlank() } }
-    val isCityStateValid by remember { derivedStateOf { cityState.isNotBlank() } }
-    val isPostalCodeStateValid by remember {
-        derivedStateOf {
-            postalCodeState.isNotBlank() && postalCodeState.length > 2
-        }
-    }
+//    val isStreetStateValid by remember { derivedStateOf { streetState.isNotBlank() } }
+//    val isHouseNumberStateValid by remember { derivedStateOf { houseNumberState.isNotBlank() } }
+//    val isCityStateValid by remember { derivedStateOf { cityState.isNotBlank() } }
+//    val isPostalCodeStateValid by remember {
+//        derivedStateOf {
+//            postalCodeState.isNotBlank() && postalCodeState.length > 2
+//        }
+//    }
 
-    val isAddressFormValid by remember {
-        derivedStateOf {
-            isStreetStateValid && isHouseNumberStateValid &&
-                    isCityStateValid && isPostalCodeStateValid
-        }
-    }
+//    val isAddressFormValid by remember {
+//        derivedStateOf {
+//            isStreetStateValid &&
+//                    isHouseNumberStateValid &&
+//                    isCityStateValid && isPostalCodeStateValid
+//        }
+//    }
 
     val focusRequesters = remember { List(6) { FocusRequester() } }
 
@@ -111,10 +109,10 @@ fun AddressBottomSheet(
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[0]),
                 label = { Text(text = stringResource(id = R.string.street)) },
-                value = streetState,
+                value = addressState.street,
                 onValueChange = {
                     if (it.length <= regularValueLength) {
-                        streetState = it
+                        addressState = addressState.copy(street = it)
                     }
                 },
                 leadingIcon = {
@@ -127,7 +125,7 @@ fun AddressBottomSheet(
                 keyboardActions = KeyboardActions(
                     onNext = { focusRequesters[1].requestFocus() }
                 ),
-                isError = !isStreetStateValid,
+//                isError = !isStreetStateValid,
                 maxLines = 1,
                 singleLine = true
             )
@@ -138,10 +136,10 @@ fun AddressBottomSheet(
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[1]),
                 label = { Text(text = stringResource(id = R.string.house_number)) },
-                value = houseNumberState,
+                value = addressState.streetNumber,
                 onValueChange = {
                     if (it.length <= shortValueLength) {
-                        houseNumberState = it
+                        addressState = addressState.copy(streetNumber = it)
                     }
                 },
                 leadingIcon = {
@@ -154,7 +152,7 @@ fun AddressBottomSheet(
                 keyboardActions = KeyboardActions(
                     onNext = { focusRequesters[2].requestFocus() }
                 ),
-                isError = !isHouseNumberStateValid,
+//                isError = !isHouseNumberStateValid,
                 maxLines = 1,
                 singleLine = true
             )
@@ -165,10 +163,10 @@ fun AddressBottomSheet(
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[2]),
                 label = { Text(text = stringResource(id = R.string.apartment_number)) },
-                value = apartmentNumberState ?: "",
+                value = addressState.apartmentNumber ?: "",
                 onValueChange = {
                     if (it.length <= shortValueLength) {
-                        apartmentNumberState = it
+                        addressState = addressState.copy(apartmentNumber = it)
                     }
                 },
                 leadingIcon = {
@@ -191,10 +189,10 @@ fun AddressBottomSheet(
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[3]),
                 label = { Text(text = stringResource(id = R.string.city)) },
-                value = cityState,
+                value = addressState.city,
                 onValueChange = {
                     if (it.length <= regularValueLength) {
-                        cityState = it
+                        addressState = addressState.copy(city = it)
                     }
                 },
                 leadingIcon = {
@@ -207,7 +205,7 @@ fun AddressBottomSheet(
                 keyboardActions = KeyboardActions(
                     onNext = { focusRequesters[4].requestFocus() }
                 ),
-                isError = !isCityStateValid,
+//                isError = !isCityStateValid,
                 maxLines = 1,
                 singleLine = true
             )
@@ -218,10 +216,10 @@ fun AddressBottomSheet(
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[4]),
                 label = { Text(text = stringResource(id = R.string.postal_code)) },
-                value = postalCodeState,
+                value = addressState.postalCode,
                 onValueChange = {
                     if (it.length <= postalCodeValueLength && it.isDigitsOnly()) {
-                        postalCodeState = it
+                        addressState = addressState.copy(postalCode = it)
                     }
                 },
                 leadingIcon = {
@@ -235,7 +233,7 @@ fun AddressBottomSheet(
                     onNext = { focusRequesters[5].requestFocus() }
                 ),
                 maxLines = 1,
-                isError = !isPostalCodeStateValid,
+//                isError = !isPostalCodeStateValid,
                 singleLine = true
             )
 
@@ -245,11 +243,11 @@ fun AddressBottomSheet(
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[5]),
                 label = { Text(text = stringResource(id = R.string.additional_info)) },
-                value = additionalInfoState,
+                value = addressState.additionalInformation ?: "",
                 onValueChange = {
-                    if (additionalInfoState.length < regularValueLength) {
-                        additionalInfoState = it
-                    }
+//                    if (additionalInfoState.length < regularValueLength) {
+                    addressState = addressState.copy(additionalInformation = it)
+//                    }
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
@@ -267,12 +265,13 @@ fun AddressBottomSheet(
             PrimaryFilledButton(
                 onClick = {
                     onDone(
-                        streetState, houseNumberState, apartmentNumberState, cityState,
-                        postalCodeState, additionalInfoState
+//                        streetState, houseNumberState, apartmentNumberState, cityState,
+//                        postalCodeState, additionalInfoState
+                        addressState
                     )
                     onDismissRequest()
                 },
-                enabled = isAddressFormValid,
+//                enabled = isAddressFormValid,
                 text = stringResource(id = R.string.done),
                 leadingIcon = Icons.Outlined.Done
             )

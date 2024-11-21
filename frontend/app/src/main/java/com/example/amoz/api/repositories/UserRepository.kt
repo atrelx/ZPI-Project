@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
-import com.example.amoz.api.extensions.toImageBitmap
+import com.example.amoz.extensions.toImageBitmap
 import kotlinx.coroutines.coroutineScope
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody

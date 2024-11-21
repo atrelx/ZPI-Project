@@ -2,6 +2,7 @@ package com.example.amoz.api.requests
 
 import com.example.amoz.api.serializers.BigDecimalSerializer
 import com.example.amoz.api.serializers.UUIDSerializer
+import com.example.amoz.interfaces.ValidatableRequest
 import kotlinx.serialization.Serializable
 import javax.validation.constraints.*
 import kotlinx.serialization.Contextual
@@ -30,4 +31,4 @@ data class ProductCreateRequest(
     val productVariantIds: List<@Serializable(with = UUIDSerializer::class) UUID> = listOf(),
 
     val productAttributes: List<AttributeCreateRequest> = listOf()
-)
+) : ValidatableRequest<ProductCreateRequest>()

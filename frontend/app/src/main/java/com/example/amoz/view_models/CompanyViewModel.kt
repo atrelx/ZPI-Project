@@ -1,201 +1,220 @@
 package com.example.amoz.view_models
 
+import android.util.Log
 import com.example.amoz.api.repositories.CompanyRepository
+import com.example.amoz.api.repositories.CustomerRepository
 import com.example.amoz.api.repositories.EmployeeRepository
+import com.example.amoz.api.requests.AddressCreateRequest
+import com.example.amoz.api.requests.CompanyCreateRequest
+import com.example.amoz.api.requests.CustomerB2BCreateRequest
+import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.data.B2BCustomer
-import com.example.amoz.data.Person
-import com.example.amoz.models.Address
-import com.example.amoz.models.Company
-import com.example.amoz.models.Employee
-import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2BCustomers
-import com.example.amoz.ui.screens.bottom_screens.company.customers.testB2СCustomers
-import com.example.amoz.ui.states.CompanyUiState
+import com.example.amoz.extensions.updateResultState
+import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class CompanyViewModel @Inject constructor(
-    val employeeRepository: EmployeeRepository,
-    val companyRepository: CompanyRepository
+    private val employeeRepository: EmployeeRepository,
+    private val companyRepository: CompanyRepository,
+    private val customerRepository: CustomerRepository
 )
     : BaseViewModel() {
-    private val _companyUiState = MutableStateFlow(CompanyUiState())
-    val companyUiState: StateFlow<CompanyUiState> = _companyUiState.asStateFlow()
+    private val _companyUIState = MutableStateFlow(CompanyScreenUIState())
+    val companyUIState: StateFlow<CompanyScreenUIState> = _companyUIState.asStateFlow()
 
-    private val _fetchEmployeesState = MutableStateFlow<ResultState<List<Employee>>>(ResultState.Idle)
-    val fetchEmployeesState: StateFlow<ResultState<List<Employee>>> = _fetchEmployeesState.asStateFlow()
+    private val _companyCreateRequestState: MutableStateFlow<CompanyCreateRequest> = MutableStateFlow(CompanyCreateRequest())
+    val companyCreateRequestState: StateFlow<CompanyCreateRequest> = _companyCreateRequestState.asStateFlow()
 
-    private val _fetchCompanyDetails = MutableStateFlow<ResultState<Company>>(ResultState.Idle)
-//    val fetchCompanyDetails =
+    private val _customerB2BCreateRequestState: MutableStateFlow<CustomerB2BCreateRequest> = MutableStateFlow(CustomerB2BCreateRequest())
+    val customerB2BCreateRequestState: StateFlow<CustomerB2BCreateRequest> = _customerB2BCreateRequestState.asStateFlow()
 
-    fun updateCompanyAddress(
-        street: String, houseNumber: String, apartmentNumber: String?,
-        city: String, postalCode: String, additionalInfo: String
-    ) {
-        _companyUiState.value.companyAddress?.let {
-            _companyUiState.update { currState ->
-                val newAddress = Address(
-                    addressId = it.addressId,
-                    city = city,
-                    street = street,
-                    streetNumber = houseNumber,
-                    apartmentNumber = apartmentNumber,
-                    postalCode = postalCode,
-                    additionalInformation = additionalInfo,
-                )
+    private val _customerB2CCreateRequestState: MutableStateFlow<CustomerB2CCreateRequest> = MutableStateFlow(CustomerB2CCreateRequest())
+    val customerB2CCreateRequestState: StateFlow<CustomerB2CCreateRequest> = _customerB2CCreateRequestState.asStateFlow()
 
-                currState.copy(
-                    companyAddress = newAddress,
-                    companyFullAddress = buildFullAddressString(newAddress)
-                )
-            }
+    init {
+        fetchCompanyDetails()
+    }
+
+    fun createCompany() {
+        val companyCreateRequest = _companyCreateRequestState.value
+        val validationErrorMessage = companyCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(_companyUIState.value.company, "Could not create company",
+                action = {
+                    companyRepository.createCompany(companyCreateRequest)
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
         }
     }
 
-    fun fetchCompanyDetails() {
-        performRepositoryAction(
-            binding = _fetchCompanyDetails,
-            failureMessage = "Sorry, nie tym razem",
-            action = { companyRepository.getUserCompany() },
-            onSuccess = { company ->
-                _companyUiState.update { currState ->
-                    currState.copy(
-                        companyName = company.name,
-                        companyNumber = company.companyNumber,
-                        companyAddress = company.address,
-                    )
-                }
-            }
-        )
+    fun updateCompany(companyCreateRequest: CompanyCreateRequest) {
+        val validationErrorMessage = companyCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(_companyUIState.value.company, "Could not update company",
+                skipLoading = true,
+                action = {
+                    companyRepository.updateCompany(companyCreateRequest)
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
     }
 
-    fun updateCompanyDetailsLoading(isLoading: Boolean) {
-        _companyUiState.update { currState ->
-            currState.copy(
-                companyDetailsLoading = isLoading
+    fun updateCompanyAddress(request: AddressCreateRequest) {
+        companyCreateRequestState.value.address = request
+        updateCompany(_companyCreateRequestState.value)
+    }
+
+    fun fetchCompanyDetails() {
+        performRepositoryAction(_companyUIState.value.company, "Could not fetch company details. Try again later.",
+            action = {
+                companyRepository.getUserCompany()
+            }, onSuccess = { company ->
+                _companyCreateRequestState.value = CompanyCreateRequest(company)
+            })
+    }
+
+    fun fetchEmployees() {
+        performRepositoryAction(_companyUIState.value.employees, "Could not fetch employees. Try again later.",
+            action = {
+                employeeRepository.fetchEmployees()
+            })
+    }
+
+    fun getProfilePicture(employeeId: UUID) {
+        val map = _companyUIState.value.employeeImages.value
+        if (!map.containsKey(employeeId)) {
+            map[employeeId] = MutableStateFlow(ResultState.Idle)
+        }
+        map[employeeId]?.let {
+            performRepositoryAction(it, "Could fetch employee profile picture. Try again later.",
+                action = {
+                    employeeRepository.getEmployeePicture(employeeId)
+                }
             )
         }
     }
 
-    fun fetchEmployees() {
-        performRepositoryAction(_fetchEmployeesState, "Could not fetch employees. Try again later.",
-            action = { employeeRepository.fetchEmployees() },
-            onSuccess = { result ->
-
-                _companyUiState.value = _companyUiState.value.copy(companyEmployees = result, companyDetailsLoading = false)
+    fun fetchCustomersB2B() {
+        performRepositoryAction(_companyUIState.value.companyB2BCustomers, "Could not fetch employees. Try again later.",
+            action = {
+                customerRepository.getAllCustomersB2B().toMutableList()
             }
         )
     }
 
-//    fun getProfilePicture() {
-//        performRepositoryAction(_getProfilePictureState, "Could fetch profile picture. Try again later.",
-//            action = {
-//                userRepository.getProfilePicture()
-//            }
-//        )
-//    }
+    fun fetchCustomersB2C() {
+        performRepositoryAction(_companyUIState.value.companyB2CCustomers, "Could not fetch employees. Try again later.",
+            action = {
+                customerRepository.getAllCustomersB2C().toMutableList()
+            }
+        )
+    }
 
 
-    fun updateCompanyName(name: String) {
-        _companyUiState.update { currState ->
-            currState.copy(companyName = name)
+    fun createB2BCustomer(b2bCustomerCreateRequest: CustomerB2BCreateRequest) {
+        val validationErrorMessage = b2bCustomerCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(null, "Could not create company",
+                skipLoading = true,
+                action = {
+                    customerRepository.createCustomerB2B(b2bCustomerCreateRequest)
+                }, onSuccess = { newCustomer ->
+                    _companyUIState.value.companyB2BCustomers.updateResultState {
+                        it.add(newCustomer)
+                        it
+                    }?.let {
+                        _companyUIState.value = _companyUIState.value.copy(
+                            companyB2BCustomers = MutableStateFlow(it)
+                        )
+                    }
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
         }
     }
 
-    fun updateEmploymentDate(employeeId: UUID, newDate: LocalDate) {
-        /*TODO: Change employmentDate of employee*/
+    fun createB2CCustomer(b2cCustomerCreateRequest: CustomerB2CCreateRequest) {
+        val validationErrorMessage = b2cCustomerCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(null, "Could not create company",
+                skipLoading = true,
+                action = {
+                    customerRepository.createCustomerB2C(b2cCustomerCreateRequest)
+                }, onSuccess = { newCustomer ->
+                    _companyUIState.value.companyB2CCustomers.updateResultState {
+                        it.add(newCustomer)
+                        it
+                    }?.let {
+                        _companyUIState.value = _companyUIState.value.copy(
+                            companyB2CCustomers = MutableStateFlow(it)
+                        )
+                    }
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
+    }
+
+//    fun updateEmploymentDate(update: UUID, newDate: LocalDate) {
+//
 //        testEmployees[employeeId] = testEmployees[employeeId].copy(
 //            employmentDate = newDate
 //        )
-    }
+//    }
 
     fun updateCompanyNipRegon(nip: String, regon: String) {
-        _companyUiState.update { currState ->
-            currState.copy(companyNumber = nip, companyRegon = regon)
+        _companyUIState.value.company.updateResultState { company ->
+            company.copy(companyNumber = nip, regon = regon)
         }
     }
 
     fun expandCustomerProfileDataBottomSheet(expand: Boolean) {
-        _companyUiState.update { currState ->
+        _companyUIState.update { currState ->
             currState.copy(customerProfileDataBottomSheetExpanded = expand)
         }
     }
     fun expandEmployeeProfileBottomSheet(expand: Boolean) {
-        _companyUiState.update { currState ->
+        _companyUIState.update { currState ->
             currState.copy(employeeProfileBottomSheetExpanded = expand)
         }
     }
 
     fun expandChangeCompanyNameBottomSheet(expand: Boolean) {
-        _companyUiState.update { currState ->
+        _companyUIState.update { currState ->
             currState.copy(changeCompanyNameBottomSheetExpanded = expand)
         }
     }
 
     fun expandChangeCompanyAddressBottomSheet(expand: Boolean) {
-        _companyUiState.update { currState ->
+        _companyUIState.update { currState ->
             currState.copy(changeCompanyAddressBottomSheetExpanded = expand)
         }
     }
 
     fun expandAddEmployeeBottomSheet(expand: Boolean) {
-        _companyUiState.update { currState ->
+        _companyUIState.update { currState ->
             currState.copy(addEmployeeBottomSheetExpanded = expand)
         }
     }
 
     fun expandAddB2BCustomerBottomSheet(isVisible: Boolean) {
-        _companyUiState.update { currState ->
+        _companyUIState.update { currState ->
             currState.copy(addB2BCustomerBottomSheetExpanded = isVisible)
         }
     }
 
     fun expandAddB2CCustomerBottomSheet(isVisible: Boolean) {
-        _companyUiState.update { currState ->
+        _companyUIState.update { currState ->
             currState.copy(addB2CCustomerBottomSheetExpanded = isVisible)
         }
     }
-
-    fun addB2CCustomer(customerFirstName: String, customerLastName: String,
-                       customerEmail: String, customerPhoneNumber: String?) {
-        /*TODO: Change add b2c customer func*/
-        testB2СCustomers.add(
-            Person(
-                firstName = customerFirstName,
-                lastName = customerLastName,
-                email = customerEmail,
-                phoneNumber = customerPhoneNumber,
-                dateOfBirth = LocalDate.of(2020, 1, 15)
-            )
-        )
-    }
-
-    fun addB2BCustomer(companyName: String, companyEmail: String,
-                       companyAddress: String, companyIdentifier: String) {
-        /*TODO: Change add b2b customer func*/
-        testB2BCustomers.add(
-            B2BCustomer(
-                companyName = companyName,
-                email = companyEmail,
-                companyAddress = companyAddress,
-                companyIdentifier = companyIdentifier
-            )
-        )
-    }
-
-    private fun buildFullAddressString(address: Address): String {
-        return buildString {
-            append("${address.street}, ${address.streetNumber}")
-            address.apartmentNumber?.let { append(", $it") }
-            append(", ${address.city}, ${address.postalCode}")
-        }
-    }
-
 }

@@ -1,0 +1,2 @@
+ALTER TABLE Address
+ALTER COLUMN ApartmentNumber VARCHAR(10) NULL;

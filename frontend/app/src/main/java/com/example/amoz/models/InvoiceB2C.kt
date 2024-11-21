@@ -1,6 +1,6 @@
 package com.example.amoz.models
 
-import com.example.amoz.api.interfaces.InvoiceDTO
+import com.example.amoz.interfaces.InvoiceDTO
 import com.example.amoz.api.serializers.BigDecimalSerializer
 import com.example.amoz.api.serializers.LocalDateSerializer
 import com.example.amoz.api.serializers.UUIDSerializer

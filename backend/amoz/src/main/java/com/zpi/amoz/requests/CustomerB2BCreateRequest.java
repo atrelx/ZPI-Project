@@ -1,6 +1,7 @@
 package com.zpi.amoz.requests;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,6 +11,7 @@ public record CustomerB2BCreateRequest(
 
         @Schema(description = "Sekcja klienta, zawierająca dane klienta", implementation = CustomerCreateRequest.class)
         @NotNull(message = "Customer section must be filled")
+        @Valid
         CustomerCreateRequest customer,
 
         @Schema(description = "Numer identyfikacyjny firmy", example = "1234567890")
@@ -24,6 +26,7 @@ public record CustomerB2BCreateRequest(
 
         @Schema(description = "Adres firmy", implementation = AddressCreateRequest.class)
         @NotNull(message = "Company's address must be given")
+        @Valid
         AddressCreateRequest address
 
 ) {

@@ -1,4 +1,4 @@
-package com.example.amoz.api.enums
+package com.example.amoz.enums
 
 import kotlinx.serialization.Serializable
 

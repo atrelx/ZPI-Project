@@ -2,47 +2,33 @@
 package com.example.amoz.app
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import com.example.amoz.api.interfaces.SignInDelegate
+import com.example.amoz.interfaces.SignInDelegate
+import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.Observer
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SignInDelegate {
     private val authenticationViewModel: AuthenticationViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
+    private val companyViewModel: CompanyViewModel by viewModels()
     private var completion: (() -> Unit)? = null
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

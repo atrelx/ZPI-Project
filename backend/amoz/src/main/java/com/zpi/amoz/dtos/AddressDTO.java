@@ -25,7 +25,7 @@ public record AddressDTO(
         String streetNumber,
 
         @Schema(description = "Numer mieszkania (opcjonalnie)", example = "5A")
-        String apartmentNumber,
+        Optional<String> apartmentNumber,
 
         @Schema(description = "Kod pocztowy", example = "00-123")
         String postalCode,
@@ -39,7 +39,7 @@ public record AddressDTO(
                 address.getCity(),
                 address.getStreet(),
                 address.getStreetNumber(),
-                address.getApartmentNumber(),
+                Optional.ofNullable(address.getApartmentNumber()),
                 address.getPostalCode(),
                 Optional.ofNullable(address.getAdditionalInformation())
         );

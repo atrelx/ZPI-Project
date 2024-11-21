@@ -1,4 +1,4 @@
-package com.example.amoz.api.extensions
+package com.example.amoz.extensions
 
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json

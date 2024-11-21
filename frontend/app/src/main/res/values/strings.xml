@@ -27,8 +27,8 @@
     <string name="profile_first_name">First name</string>
     <string name="profile_last_name">Last name</string>
     <string name="profile_full_name">Full name</string>
-    <string name="profile_email">Email</string>
-    <string name="profile_phone_number">Phone number (optional)</string>
+    <string name="profile_email">Email (optional)</string>
+    <string name="profile_phone_number">Phone number</string>
     <string name="profile_sex">Sex</string>
     <string name="profile_birth_date">Birth Date</string>
     <string name="profile_employment_date">Employment Date</string>
