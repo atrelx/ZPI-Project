@@ -25,7 +25,7 @@ data class PersonCreateRequest(
 
     @field:Past(message = "Date of birth must be a date in the past.")
     @Serializable(with = LocalDateSerializer::class)
-    val dateOfBirth: LocalDate = LocalDate.MAX,
+    val dateOfBirth: LocalDate = LocalDate.of(2000, 1, 1),
 
     val sex: Sex = Sex.M
 ) : ValidatableRequest<PersonCreateRequest>() {

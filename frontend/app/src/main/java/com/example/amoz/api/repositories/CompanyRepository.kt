@@ -13,19 +13,19 @@ class CompanyRepository @Inject constructor(
     private val companyService: CompanyService
 ) : BaseRepository() {
 
-    suspend fun createCompany(request: CompanyCreateRequest): com.example.amoz.models.Company? {
+    suspend fun createCompany(request: CompanyCreateRequest): Company? {
         return performRequest {
             companyService.createCompany(request)
         }
     }
 
-    suspend fun getUserCompany(): com.example.amoz.models.Company? {
+    suspend fun getUserCompany(): Company? {
         return performRequest {
             companyService.getUserCompany()
         }
     }
 
-    suspend fun updateCompany(request: CompanyCreateRequest): com.example.amoz.models.Company? {
+    suspend fun updateCompany(request: CompanyCreateRequest): Company? {
         return performRequest {
             companyService.updateCompany(request)
         }

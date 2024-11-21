@@ -28,7 +28,9 @@ import androidx.core.app.ActivityCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.amoz.interfaces.SignInDelegate
+import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.UserViewModel
@@ -43,6 +45,7 @@ import io.reactivex.Observer
 class MainActivity : ComponentActivity(), SignInDelegate {
     private val authenticationViewModel: AuthenticationViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
+    private val companyViewModel: CompanyScreenViewModel by viewModels()
     private var completion: (() -> Unit)? = null
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

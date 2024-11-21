@@ -18,8 +18,11 @@ abstract class BaseViewModel: ViewModel() {
 
     fun <T> performRepositoryAction(binding: MutableStateFlow<ResultState<T>>?,
                                     failureMessage: String = "Please try again later",
+                                    skipLoading: Boolean = false,
                                     action: suspend () -> T?, onSuccess: ((T) -> Unit)? = null) {
-        binding?.value = ResultState.Loading
+        if (!skipLoading) {
+            binding?.value = ResultState.Loading
+        }
         viewModelScope.launch {
             try {
                 val response = action()

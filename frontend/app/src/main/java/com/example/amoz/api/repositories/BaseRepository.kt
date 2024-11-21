@@ -21,7 +21,7 @@ abstract class BaseRepository {
                 Log.i(tag, "${response.code()} ${response.body()}")
                 response.body()
             } else {
-                Log.d(tag, "${response.code()} ${response.body()}")
+                Log.d(tag, "${response.code()} ${response.errorBody()?.toString()}")
                 null
             }
         } catch (e: Exception) {

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import com.example.amoz.models.CustomerB2C
 import com.example.amoz.models.Person
@@ -45,7 +46,7 @@ import com.example.amoz.ui.theme.AmozApplicationTheme
 @Composable
 fun B2CCustomerScreen(
     b2cCustomersList: List<CustomerB2C>,
-    companyViewModel: CompanyScreenViewModel,
+    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
@@ -104,9 +105,10 @@ fun B2CCustomerScreen(
                 onDismissRequest = {
                     companyViewModel.expandAddB2CCustomerBottomSheet(false)
                 },
+                customerRequest = companyViewModel.customerB2CCreateRequestState.collectAsState().value,
                 callSnackBar = callSnackBar,
-                addB2CCustomer = { firstName, lastName, email, phone ->
-                    companyViewModel.addB2CCustomer(firstName, lastName, email, phone)
+                onDone = { request ->
+                    companyViewModel.createB2CCustomer(request)
                 }
 
             )

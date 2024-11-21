@@ -2,6 +2,7 @@ package com.zpi.amoz.requests;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -23,17 +24,18 @@ public record ProductVariantCreateRequest(
 
         @Schema(description = "Informacje o stanie magazynowym wariantu produktu", implementation = StockCreateRequest.class)
         @NotNull(message = "Stock information is required")
+        @Valid
         StockCreateRequest stock,
 
         @Schema(description = "Informacje o wadze wariantu produktu (opcjonalne)", nullable = true, implementation = WeightCreateRequest.class)
-        Optional<WeightCreateRequest> weight,
+        Optional<@Valid WeightCreateRequest> weight,
 
         @Schema(description = "Wymiary wariantu produktu (opcjonalne)", nullable = true, implementation = DimensionsCreateRequest.class)
-        Optional<DimensionsCreateRequest> dimensions,
+        Optional<@Valid DimensionsCreateRequest> dimensions,
 
         @ArraySchema(schema = @Schema(description = "Lista atrybutów wariantu produktu", implementation = AttributeCreateRequest.class))
         @NotNull(message = "Variant attributes cannot be null")
-        List<AttributeCreateRequest> variantAttributes,
+        List<@Valid AttributeCreateRequest> variantAttributes,
 
         @Schema(description = "Nazwa wariantu produktu (opcjonalna)", example = "Czarny T-shirt, rozmiar M", nullable = true)
         Optional<@Size(max = 100, message = "Variant name cannot exceed 100 characters") String> variantName,

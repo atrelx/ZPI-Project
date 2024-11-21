@@ -10,11 +10,13 @@ import com.example.amoz.ui.commonly_used_components.LoadingView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-fun <T> MutableStateFlow<ResultState<T>>.updateResultState(function: (T) -> T)  {
+fun <T> MutableStateFlow<ResultState<T>>.updateResultState(function: (T) -> T): ResultState<T>?  {
     this.fetchDataIfSuccess()?.let {
         val updatedData = function(it)
         this.value = ResultState.Success(updatedData)
+        return ResultState.Success(updatedData)
     }
+    return null
 }
 
 fun <T> MutableStateFlow<ResultState<T>>.fetchDataIfSuccess(): T? {

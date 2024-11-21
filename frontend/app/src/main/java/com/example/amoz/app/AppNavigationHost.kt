@@ -3,6 +3,7 @@ package com.example.amoz.app
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -33,6 +34,8 @@ fun AppNavigationHost(
     navigateToScreen: (NavItem) -> Unit,
     callSnackBar: (String, ImageVector?) -> Unit
 ) {
+    val companyViewModel: CompanyScreenViewModel = hiltViewModel()
+
     NavHost(navController = navController, startDestination = Screens.Home.route) {
 
         // -------------------- Bottom navigation screens --------------------
@@ -55,6 +58,7 @@ fun AppNavigationHost(
         composable(Screens.Company.route) {
             CompanyScreen(
                 navController = navController,
+                companyViewModel = companyViewModel,
                 paddingValues = paddingValues
             ) }
 
@@ -110,6 +114,7 @@ fun AppNavigationHost(
         composable(Screens.Employees.route) {
             CompanyEmployeesScreen(
                 navController = navController,
+                companyViewModel = companyViewModel,
                 paddingValues = paddingValues,
                 callSnackBar = { text, icon -> callSnackBar(text, icon) },
             )
@@ -117,6 +122,7 @@ fun AppNavigationHost(
         composable(Screens.Customers.route) {
             CompanyCustomersScreen(
                 navController = navController,
+                companyViewModel = companyViewModel,
                 paddingValues = paddingValues,
                 callSnackBar = { text, icon -> callSnackBar(text, icon) },
             ) }

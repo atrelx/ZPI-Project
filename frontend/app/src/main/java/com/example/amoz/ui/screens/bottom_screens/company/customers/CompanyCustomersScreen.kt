@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 fun CompanyCustomersScreen(
     navController: NavHostController,
     paddingValues: PaddingValues,
-    companyViewModel: CompanyScreenViewModel = hiltViewModel(),
+    companyViewModel: CompanyScreenViewModel,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     val companyUiState by companyViewModel.companyUIState.collectAsState()
@@ -99,7 +99,7 @@ fun CompanyCustomersScreen(
                                 B2CCustomerScreen(
                                     b2cCustomersList = customers,
                                     companyViewModel = companyViewModel,
-                                    callSnackBar = callSnackBar,
+                                    callSnackBar = callSnackBar
                                 )
                             }
                         }

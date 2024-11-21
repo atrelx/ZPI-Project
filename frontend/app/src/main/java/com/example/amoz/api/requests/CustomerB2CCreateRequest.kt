@@ -10,7 +10,7 @@ data class CustomerB2CCreateRequest(
 
     val customer: CustomerCreateRequest = CustomerCreateRequest(),
 
-    val person: PersonCreateRequest = PersonCreateRequest()
+    var person: PersonCreateRequest = PersonCreateRequest()
 ) : ValidatableRequest<CustomerB2CCreateRequest>() {
     constructor(customerB2C: CustomerB2C): this(
         customer = CustomerCreateRequest(customerB2C.customer),

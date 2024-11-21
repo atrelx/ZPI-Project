@@ -64,6 +64,7 @@ class CompanyScreenViewModel @Inject constructor(
         val validationErrorMessage = companyCreateRequest.validate()
         if (validationErrorMessage == null) {
             performRepositoryAction(_companyUIState.value.company, "Could not update company",
+                skipLoading = true,
                 action = {
                     companyRepository.updateCompany(companyCreateRequest)
                 })
@@ -107,13 +108,6 @@ class CompanyScreenViewModel @Inject constructor(
         }
     }
 
-
-    fun updateCompanyName(name: String) {
-        _companyUIState.value.company.updateResultState { company ->
-            company.copy(name = name)
-        }
-    }
-
     fun fetchCustomersB2B() {
         performRepositoryAction(_companyUIState.value.companyB2BCustomers, "Could not fetch employees. Try again later.",
             action = {
@@ -130,11 +124,56 @@ class CompanyScreenViewModel @Inject constructor(
         )
     }
 
+
+    fun createB2BCustomer(b2bCustomerCreateRequest: CustomerB2BCreateRequest) {
+        val validationErrorMessage = b2bCustomerCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(null, "Could not create company",
+                skipLoading = true,
+                action = {
+                    customerRepository.createCustomerB2B(b2bCustomerCreateRequest)
+                }, onSuccess = { newCustomer ->
+                    _companyUIState.value.companyB2BCustomers.updateResultState {
+                        it.add(newCustomer)
+                        it
+                    }?.let {
+                        _companyUIState.value = _companyUIState.value.copy(
+                            companyB2BCustomers = MutableStateFlow(it)
+                        )
+                    }
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
+    }
+
+    fun createB2CCustomer(b2cCustomerCreateRequest: CustomerB2CCreateRequest) {
+        val validationErrorMessage = b2cCustomerCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(null, "Could not create company",
+                skipLoading = true,
+                action = {
+                    customerRepository.createCustomerB2C(b2cCustomerCreateRequest)
+                }, onSuccess = { newCustomer ->
+                    _companyUIState.value.companyB2CCustomers.updateResultState {
+                        it.add(newCustomer)
+                        it
+                    }?.let {
+                        _companyUIState.value = _companyUIState.value.copy(
+                            companyB2CCustomers = MutableStateFlow(it)
+                        )
+                    }
+                })
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
+    }
+
 //    fun updateEmploymentDate(update: UUID, newDate: LocalDate) {
 //
-////        testEmployees[employeeId] = testEmployees[employeeId].copy(
-////            employmentDate = newDate
-////        )
+//        testEmployees[employeeId] = testEmployees[employeeId].copy(
+//            employmentDate = newDate
+//        )
 //    }
 
     fun updateCompanyNipRegon(nip: String, regon: String) {
@@ -181,37 +220,6 @@ class CompanyScreenViewModel @Inject constructor(
     fun expandAddB2CCustomerBottomSheet(isVisible: Boolean) {
         _companyUIState.update { currState ->
             currState.copy(addB2CCustomerBottomSheetExpanded = isVisible)
-        }
-    }
-
-    fun addB2CCustomer(customerFirstName: String, customerLastName: String,
-                       customerEmail: String, customerPhoneNumber: String?) {
-        /*TODO: Change add b2c customer func*/
-        testB2СCustomers.add(
-            Person(
-                firstName = customerFirstName,
-                lastName = customerLastName,
-                email = customerEmail,
-                phoneNumber = customerPhoneNumber,
-                dateOfBirth = LocalDate.of(2020, 1, 15)
-            )
-        )
-    }
-
-    fun createB2BCustomer(b2bCustomerCreateRequest: CustomerB2BCreateRequest) {
-        val validationErrorMessage = b2bCustomerCreateRequest.validate()
-        if (validationErrorMessage == null) {
-            performRepositoryAction(null, "Could not create company",
-                action = {
-                    customerRepository.createCustomerB2B(b2bCustomerCreateRequest)
-                }, onSuccess = { newCustomer ->
-                    _companyUIState.value.companyB2BCustomers.updateResultState {
-                        it.add(newCustomer)
-                        it
-                    }
-                })
-        } else {
-            Log.w(tag, validationErrorMessage)
         }
     }
 }
