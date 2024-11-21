@@ -13,26 +13,23 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.amoz.data.AppPreferences
-import com.example.amoz.data.ProductTemplate
-import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.DismissBackground
+import com.example.amoz.models.ProductSummary
+import java.util.UUID
 
 @Composable
-fun ProductTemplateListItem(
-    productTemplate: ProductTemplate,
+fun ProductListItem(
+    product: ProductSummary,
     onClick: () -> Unit,
-    onProductTemplateEdit: (ProductTemplate) -> Unit,
-    onProductRemove: (ProductTemplate) -> Unit,
+    onProductTemplateEdit: (UUID) -> Unit,
+    onProductRemove: (ProductSummary) -> Unit,
     currency: String,
     positionalThreshold: Float = .45f
 ) {
@@ -42,14 +39,14 @@ fun ProductTemplateListItem(
             when (newValue) {
                 SwipeToDismissBoxValue.StartToEnd -> {
                     if (currentFraction >= positionalThreshold && currentFraction < 1.0f) {
-                        onProductRemove(productTemplate)
+                        onProductRemove(product)
                         return@rememberSwipeToDismissBoxState false
                     }
                     return@rememberSwipeToDismissBoxState false
                 }
                 SwipeToDismissBoxValue.EndToStart -> {
                     if (currentFraction >= positionalThreshold && currentFraction < 1.0f) {
-                        onProductTemplateEdit(productTemplate)
+                        onProductTemplateEdit(product.productId)
                         return@rememberSwipeToDismissBoxState false
                     }
                     return@rememberSwipeToDismissBoxState false
@@ -80,7 +77,7 @@ fun ProductTemplateListItem(
                     imageVector = Icons.Outlined.FilterList,
                     contentDescription = null
                 )
-                productTemplate.mainVariantId?.let {
+                product.mainProductVariant?.let {
 //                            Image(
 //                                painter = rememberAsyncImagePainter(productTemplate.imageUrl),
 //                                contentDescription = "Product Image",
@@ -93,21 +90,24 @@ fun ProductTemplateListItem(
             },
             headlineContent = {
                 Text(
-                    text = productTemplate.name,
+                    text = product.name,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             },
             supportingContent = {
-                Text(
-                    text = productTemplate.description,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                product.description?.let {
+                    Text(
+                        text = it,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
             },
             trailingContent = {
                 Text(
-                    text = "${productTemplate.basePrice} $currency"
+                    text = "${product.price} $currency"
                 )
             },
             colors = ListItemDefaults.colors(

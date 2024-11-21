@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -20,13 +18,13 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.amoz.data.ProductTemplate
-import com.example.amoz.data.ProductVariant
+import com.example.amoz.models.ProductDetails
+import com.example.amoz.models.ProductVariantDetails
+import com.example.amoz.models.ProductVariantSummary
 
 @Composable
 fun ProductVariantListItem(
-    productVariant: ProductVariant,
-    productVariantTemplate: ProductTemplate,
+    productVariant: ProductVariantSummary,
     onClick: () -> Unit,
     currency: String
 ) {
@@ -36,34 +34,34 @@ fun ProductVariantListItem(
             .clickable(
                 onClick = onClick,
             ),
-        leadingContent = {
-            productVariant.image?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    contentScale = ContentScale.Crop
-                )
-            } ?: run {
-                Icon(
-                    imageVector = Icons.Default.Inventory,
-                    contentDescription = "product image"
-                )
-            }
-        },
+//        leadingContent = {
+//            productVariant.image?.let {
+//                Image(
+//                    bitmap = it.asImageBitmap(),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(40.dp),
+//                    contentScale = ContentScale.Crop
+//                )
+//            } ?: run {
+//                Icon(
+//                    imageVector = Icons.Default.Inventory,
+//                    contentDescription = "product image"
+//                )
+//            }
+//        },
         headlineContent = {
             Text(
-                text = productVariant.name,
+                text = productVariant.variantName,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         supportingContent = {
-            Text(text = "Category: ${productVariantTemplate.category}")
+            Text(text = "Category: ${productVariant.code}")
         },
         trailingContent = {
             Text(
-                text = "${productVariantTemplate.basePrice + productVariant.impactOnPrice} $currency",
+                text = "${productVariant.variantPrice} $currency",
             )
         },
         colors = ListItemDefaults.colors(

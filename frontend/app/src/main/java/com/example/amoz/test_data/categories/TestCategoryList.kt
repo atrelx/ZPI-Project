@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.categories
+package com.example.amoz.test_data.categories
 
 import com.example.amoz.models.CategoryTree
 import java.util.UUID

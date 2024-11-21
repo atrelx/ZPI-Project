@@ -34,7 +34,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.data.ProductVariant
+import com.example.amoz.api.requests.ProductVariantCreateRequest
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
@@ -44,20 +45,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddEditProductVariantBottomSheet(
     onDismissRequest: () -> Unit,
-    onComplete: (ProductVariant) -> Unit,
-    productVariant: ProductVariant,
+    onComplete: (ProductVariantCreateRequest) -> Unit,
+    productVariant: ProductVariantCreateRequest,
 ) {
-    var productName by remember { mutableStateOf(productVariant.name) }
-    var productBarcode by remember { mutableStateOf(productVariant.barcode) }
-    var productImpactOnPrice by remember { mutableStateOf(productVariant.impactOnPrice) }
-    var productImage by remember { mutableStateOf(productVariant.image) }
-    var productAttributes by remember { mutableStateOf(productVariant.attributes.toList()) }
-
-    val isFormValid by remember {
-        derivedStateOf {
-            productName.isNotBlank() && productImpactOnPrice.toString().isNotBlank()
-        }
-    }
+    var productVariantState by remember { mutableStateOf(productVariant) }
 
     val scope = rememberCoroutineScope()
     val sheetState =
@@ -92,19 +83,19 @@ fun AddEditProductVariantBottomSheet(
 
             // -------------------- Product basic info --------------------
             ProductNameDescriptionPrice(
-                productName = productName,
-                productPrice = productImpactOnPrice,
-                onNameChange = { productName = it },
-                onPriceChange = { productImpactOnPrice = it },
+                productName = productVariantState.variantName,
+                productPrice = productVariantState.variantPrice,
+                onNameChange = { productVariantState = productVariantState.copy(variantName = it) },
+                onPriceChange = { productVariantState = productVariantState.copy(variantPrice = it) },
             )
             // -------------------- Product barcode --------------------
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                value = productBarcode.toString(),
+                value = productVariantState.productVariantCode.toString(),
                 onValueChange = { newBarcode ->
                     newBarcode.toIntOrNull()?.let {
-                        productBarcode = it
+                        productVariantState = productVariantState.copy(productVariantCode = it)
                     }
                 },
                 label = { Text(text = stringResource(R.string.product_barcode)) },
@@ -123,8 +114,10 @@ fun AddEditProductVariantBottomSheet(
             )
             // -------------------- Product barcode --------------------
             AttributesList(
-                productAttributes = productAttributes,
-                onAttributesChange = { productAttributes = it }
+                productAttributes = productVariantState.variantAttributes,
+                onAttributesChange = {
+                    productVariantState = productVariantState.copy(variantAttributes = it)
+                }
             )
 
             // -------------------- Complete adding --------------------
@@ -132,19 +125,11 @@ fun AddEditProductVariantBottomSheet(
 
             PrimaryFilledButton(
                 onClick = {
-                    onComplete(
-                        productVariant.copy(
-                            name = productName,
-                            impactOnPrice = productImpactOnPrice,
-                            barcode = productBarcode,
-                            image = productImage,
-                            attributes = productAttributes.toMap()
-                        )
-                    )
+                    onComplete(productVariantState)
                     onDismissRequest()
                 },
                 text = stringResource(id = R.string.done),
-                enabled = isFormValid
+//                enabled = isFormValid
             )
             // -------------------- Close bottom sheet --------------------
             CloseOutlinedButton(

@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.products
+package com.example.amoz.ui.components.filters
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,11 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.models.CategorySummary
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
-import com.example.amoz.ui.components.filters.ListSorting
-import com.example.amoz.ui.components.filters.PriceFilter
+import com.example.amoz.ui.screens.bottom_screens.products.CategoryPicker
 import com.example.amoz.view_models.ProductsViewModel
+import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,10 +34,10 @@ fun MoreFiltersBottomSheet(
     onDismissRequest: () -> Unit,
     onCancelFilters: () -> Unit,
     onApplyFilters: (ProductsViewModel.FilterParams) -> Unit,
-    priceFrom: Double,
-    priceTo: Double,
+    priceFrom: BigDecimal?,
+    priceTo: BigDecimal?,
     sortingType: ProductsViewModel.SortingType,
-    category: String,
+    category: CategorySummary?,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -44,12 +45,12 @@ fun MoreFiltersBottomSheet(
 
     var priceFromState by remember {
         mutableStateOf(
-            if (priceFrom == 0.0) { "" } else { priceFrom.toString() }
+            if (priceFrom == BigDecimal.ZERO) { "" } else { priceFrom.toString() }
         )
     }
     var priceToState by remember {
         mutableStateOf(
-            if (priceTo == Int.MAX_VALUE.toDouble()) { "" } else { priceTo.toString() }
+            priceTo.toString()
         )
     }
 
@@ -102,8 +103,8 @@ fun MoreFiltersBottomSheet(
                     onApplyFilters(
                         ProductsViewModel.FilterParams(
                             sortingTypeState,
-                            priceFromState.toDoubleOrNull()?:0.0,
-                            priceToState.toDoubleOrNull()?:Int.MAX_VALUE.toDouble(),
+                            priceFromState.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                            priceToState.toBigDecimalOrNull(),
                             categoryState
                         )
                     )

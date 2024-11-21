@@ -16,15 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import java.math.BigDecimal
 
 @Composable
 fun FilterChips(
     modifier: Modifier = Modifier,
     productTemplateChipValue: String?,
     onProductTemplateChipClick: () -> Unit,
-    priceFrom: Double,
+    priceFrom: BigDecimal,
     onPriceFromClick: () -> Unit,
-    priceTo: Double,
+    priceTo: BigDecimal?,
     onPriceToClick: () -> Unit,
 ) {
     Row(
@@ -47,7 +48,7 @@ fun FilterChips(
                 }
             )
         }
-        if(priceFrom != 0.0) {
+        if(priceFrom != BigDecimal.ZERO) {
             FilterChip(
                 onClick = onPriceFromClick,
                 label = { Text(stringResource(id = R.string.price_from) + ": $priceFrom") },
@@ -61,8 +62,7 @@ fun FilterChips(
                 }
             )
         }
-
-        if(priceTo != Int.MAX_VALUE.toDouble()) {
+        priceTo?.let {
             FilterChip(
                 onClick = onPriceToClick,
                 label = { Text(stringResource(id = R.string.price_to) + ": $priceTo") },

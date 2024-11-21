@@ -42,32 +42,31 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.data.ProductTemplate
+import com.example.amoz.api.requests.ProductCreateRequest
+import com.example.amoz.models.CategoryDetails
+import com.example.amoz.models.ProductAttribute
+import com.example.amoz.models.ProductDetails
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductTemplateBottomSheet(
+    product: ProductCreateRequest,
+    onComplete: (ProductCreateRequest) -> Unit,
     onDismissRequest: () -> Unit,
-    onComplete: (ProductTemplate) -> Unit,
-    product: ProductTemplate,
 ) {
     val scope = rememberCoroutineScope()
 
-    var productName by remember { mutableStateOf(product.name) }
-    var productDescription by remember { mutableStateOf(product.description) }
-    var productPrice by remember { mutableStateOf(product.basePrice) }
-    var productVendor by remember { mutableStateOf(product.productVendor) }
-    var productCategory by remember { mutableStateOf(product.category) }
-    var productAttributes by remember { mutableStateOf(product.attributes.toList()) }
+    var productState by remember { mutableStateOf(product) }
 
-    val isFormValid by remember {
-        derivedStateOf {
-            productName.isNotBlank() && productPrice.toString().isNotBlank()
-        }
-    }
+//    val isFormValid by remember {
+//        derivedStateOf {
+//            productName.isNotBlank() && productPrice.toString().isNotBlank()
+//        }
+//    }
 
     val sheetState =
         rememberModalBottomSheetState( skipPartiallyExpanded = true,
@@ -109,12 +108,12 @@ fun AddEditProductTemplateBottomSheet(
 
             // -------------------- Product basic info --------------------
             ProductNameDescriptionPrice(
-                productName = productName,
-                productDescription = productDescription,
-                productPrice = productPrice,
-                onNameChange = { productName = it },
-                onDescriptionChange = { productDescription = it },
-                onPriceChange = { productPrice = it },
+                productName = productState.name,
+                productDescription = productState.description,
+                productPrice = productState.price,
+                onNameChange = { productState = productState.copy(name = it) },
+                onDescriptionChange = { productState = productState.copy(description = it) },
+                onPriceChange = { productState = productState.copy(price = it) },
             )
 
             // -------------------- Product vendor --------------------
@@ -122,8 +121,8 @@ fun AddEditProductTemplateBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth(),
                 label = { Text(stringResource(R.string.product_vendor)) },
-                value = productVendor,
-                onValueChange = { productVendor = it },
+                value = productState.brand ?: "",
+                onValueChange = { productState = productState.copy(brand = it.takeIf { it.isNotBlank() }) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Verified,
@@ -138,7 +137,7 @@ fun AddEditProductTemplateBottomSheet(
                 singleLine = true
             )
 
-            // -------------------- Product's category --------------------
+//             -------------------- Product's category --------------------
             ListItem(
                 modifier = listItemModifier.then(Modifier
                     .clickable { /*TODO*/ })
@@ -149,10 +148,8 @@ fun AddEditProductTemplateBottomSheet(
                 ) },
                 overlineContent = { Text(stringResource(R.string.product_category)) },
                 headlineContent = {
-                    /*TODO*/
                     Text(
-                        text = productCategory.takeIf { productCategory.isNotBlank() }
-                        ?: stringResource(R.string.product_category_choose)
+                        text = stringResource(R.string.product_category_choose)
                     )
                 },
                 trailingContent = { Icon(
@@ -164,8 +161,8 @@ fun AddEditProductTemplateBottomSheet(
 
             // -------------------- Product attributes --------------------
             AttributesList(
-                productAttributes = productAttributes,
-                onAttributesChange = { productAttributes = it }
+                productAttributes = productState.productAttributes,
+                onAttributesChange = { productState = productState.copy(productAttributes = it) }
             )
 
             // -------------------- Complete adding --------------------
@@ -173,17 +170,10 @@ fun AddEditProductTemplateBottomSheet(
 
             PrimaryFilledButton(
                 onClick = {
-                    onComplete(
-                        product.copy(
-                            name = productName,
-                            basePrice = productPrice,
-                            productVendor = productVendor,
-                            attributes = productAttributes.toMap()
-                        )
-                    )
+                    onComplete(productState)
                 },
                 text = stringResource(id = R.string.done),
-                enabled = isFormValid
+//                enabled = isFormValid
             )
             // -------------------- Close bottom sheet --------------------
             CloseOutlinedButton(

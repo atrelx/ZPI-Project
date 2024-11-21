@@ -1,7 +1,7 @@
 package com.example.amoz.ui.states
 
 import com.example.amoz.models.CategoryTree
-import com.example.amoz.ui.screens.categories.testCategoriesList
+import com.example.amoz.test_data.categories.testCategoriesList
 
 data class CategoriesUiState (
     val categoryList: List<CategoryTree> = testCategoriesList,

@@ -19,14 +19,15 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.models.CategorySummary
 
 @Composable
 fun CategoryPicker(
-    category: String,
-    onCategoryChange: (String) -> Unit,
+    category: CategorySummary?,
+    onCategoryChange: (CategorySummary) -> Unit,
 ) {
     val categoryChooseText = stringResource(R.string.product_category_choose)
-    val categoryState = category.takeIf { it.isNotBlank() } ?: categoryChooseText
+    val categoryState = category?.name ?: categoryChooseText
 
     // -------------------- Product's category --------------------
     ListItem(

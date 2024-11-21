@@ -2,7 +2,7 @@ package com.example.amoz.view_models
 
 import androidx.lifecycle.ViewModel
 import com.example.amoz.firebase.FirebaseRepository
-import com.example.amoz.data.ProductVariant
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.firebase.SoldProduct
 import com.example.amoz.ui.states.OrderUIState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +29,7 @@ class OrdersViewModel : ViewModel() {
         }
     }
 
-    fun updateProductsList(productsList: List<ProductVariant>) {
+    fun updateProductsList(productsList: List<ProductVariantDetails>) {
         _orderUiState.update { currState ->
             currState.copy(productsList = productsList)
         }

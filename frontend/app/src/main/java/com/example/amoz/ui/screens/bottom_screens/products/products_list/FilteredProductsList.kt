@@ -17,19 +17,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.amoz.R
 import com.example.amoz.data.AppPreferences
-import com.example.amoz.data.ProductTemplate
-import com.example.amoz.data.ProductVariant
+import com.example.amoz.models.ProductSummary
+import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.ui.components.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel
-import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductTemplateListItem
+import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductVariantListItem
+import java.util.UUID
 
 @Composable
 fun FilteredProductsList(
     onMoreFiltersClick: () -> Unit,
-    onProductTemplateEdit: (ProductTemplate) -> Unit,
-    onProductTemplateDelete: (ProductTemplate) -> Unit,
-    onProductVariantEdit: (ProductVariant) -> Unit,
+    onProductEdit: (UUID) -> Unit,
+    onProductDelete: (ProductSummary) -> Unit,
+    onProductVariantEdit: (UUID) -> Unit,
     productsViewModel: ProductsViewModel = viewModel()
 ) {
     val productsListUiState by productsViewModel.productUiState.collectAsState()
@@ -53,9 +54,9 @@ fun FilteredProductsList(
                 onMoreFiltersClick = onMoreFiltersClick
             )
             FilterChips(
-                productTemplateChipValue = productsListUiState.selectedProductTemplate?.name,
+                productTemplateChipValue = productsListUiState.filteredByProduct?.name,
                 onProductTemplateChipClick = {
-                    productsViewModel.updateSelectedProductTemplate(null)
+                    productsViewModel.updateFilteredByProduct(null)
                 },
                 priceFrom = productsListUiState.filterPriceFrom,
                 onPriceFromClick = { productsViewModel.clearPriceFilter(true) },
@@ -65,21 +66,21 @@ fun FilteredProductsList(
         }
 
         // -------------------- ProductTemplates list --------------------
-        if (productsListUiState.showProductTemplatesList) {
+        if (productsListUiState.showProductsList) {
             items(
                 productsListUiState.filteredSortedProductTemplatesList,
-                key = { it.id }
+                key = { it.productId }
             ) { productTemplate ->
                 Box(
                     modifier = Modifier.animateItem()
                 ) {
-                    ProductTemplateListItem(
-                        productTemplate = productTemplate,
+                    ProductListItem(
+                        product = productTemplate,
                         onClick = {
-                            productsViewModel.updateSelectedProductTemplate(productTemplate)
+                            productsViewModel.updateFilteredByProduct(productTemplate)
                         },
-                        onProductRemove = onProductTemplateDelete,
-                        onProductTemplateEdit = onProductTemplateEdit,
+                        onProductRemove = onProductDelete,
+                        onProductTemplateEdit = onProductEdit,
                         currency = currency!!,
                     )
                 }
@@ -90,18 +91,15 @@ fun FilteredProductsList(
         if(productsListUiState.showProductVariantsList) {
             items(
                 productsListUiState.filteredSortedProductVariantsList,
-                key = { it.id }
+                key = { it.productVariantId }
             ) { productVariant ->
                 Box(modifier = Modifier.animateItem()
                 ) {
-                    productsViewModel.getProductVariantTemplateById(productVariant)?.let {
-                        ProductVariantListItem(
-                            productVariant = productVariant,
-                            productVariantTemplate = it,
-                            currency = currency!!,
-                            onClick = { onProductVariantEdit(productVariant) }
-                        )
-                    }
+                    ProductVariantListItem(
+                        productVariant = productVariant,
+                        currency = currency!!,
+                        onClick = { onProductVariantEdit(productVariant.productVariantId) }
+                    )
                 }
             }
         }

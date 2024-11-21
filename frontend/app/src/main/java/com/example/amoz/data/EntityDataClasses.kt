@@ -1,6 +1,5 @@
 package com.example.amoz.data
 
-import android.graphics.Bitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -45,27 +44,6 @@ data class Category(
     val name: String,
     val categoryLevel: Short,
     val childCategories: List<Category> = listOf()
-)
-// --------------------- Product ---------------------
-data class ProductVariant(
-    val id: String = UUID.randomUUID().toString(),
-    val productId: String = "",
-    val barcode: Int = 1234567890,
-    var name: String = "",
-    var impactOnPrice: Double = 0.0,
-    var image: Bitmap? = null,
-    var attributes: Map<String, String> = emptyMap(),
-)
-
-data class ProductTemplate(
-    val id: String = "",
-    val name: String = "",
-    val description: String = "",
-    val basePrice: Double = 0.0,
-    val category: String = "",
-    val productVendor: String = "",
-    val attributes: Map<String, String> = emptyMap(),
-    val mainVariantId: Int? = null
 )
 
 // --------------------- Address ---------------------

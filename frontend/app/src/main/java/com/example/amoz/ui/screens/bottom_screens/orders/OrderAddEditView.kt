@@ -3,7 +3,6 @@ package com.example.amoz.ui.screens.bottom_screens.orders
 import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
@@ -50,7 +49,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -65,7 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
-import com.example.amoz.data.ProductVariant
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.firebase.SoldProduct
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -80,7 +78,7 @@ fun OrderAddEditVIew(
     saleProduct: SoldProduct,
     closeAddEditDialog: () -> Unit,
     onComplete: (SoldProduct) -> Unit,
-    productList: List<ProductVariant> ) {
+    productList: List<ProductVariantDetails> ) {
         var productName by remember { mutableStateOf(saleProduct.name) }
         var salePriceValue by remember { mutableStateOf(saleProduct.salePrice.toString() ) }
         var saleDateValue by remember { mutableStateOf(saleProduct.saleDate) }
@@ -399,8 +397,8 @@ fun OrderAddEditVIew(
 fun ProductDropDownMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
-    onProductClick: (ProductVariant) -> Unit,
-    productList: List<ProductVariant>,
+    onProductClick: (ProductVariantDetails) -> Unit,
+    productList: List<ProductVariantDetails>,
     modifier: Modifier
 ) {
     DropdownMenu(
@@ -411,8 +409,8 @@ fun ProductDropDownMenu(
         productList.forEach { product ->
             DropdownMenuItem(
                 onClick = { onProductClick(product) },
-                modifier = Modifier.testTag("DropdownItem_${product.name.replace(" ", "_")}"),  // Add testTag
-                text = { Text(text = product.name) },
+                modifier = Modifier.testTag("DropdownItem_${product.variantName.replace(" ", "_")}"),  // Add testTag
+                text = { Text(text = product.variantName) },
                 leadingIcon = {
 //                    if (product.image.isNotEmpty()) {
 //                        ProductImage(product.image)
