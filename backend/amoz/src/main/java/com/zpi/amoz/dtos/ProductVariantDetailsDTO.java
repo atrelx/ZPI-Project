@@ -8,6 +8,7 @@ import org.aspectj.weaver.ast.Var;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Schema(description = "DTO reprezentujące szczegóły wariantu produktu, w tym identyfikator, cenę, wymiary, wagę oraz atrybuty wariantu.")
@@ -31,8 +32,8 @@ public record ProductVariantDetailsDTO(
         @Schema(description = "Cena wariantu produktu", example = "199.99")
         BigDecimal variantPrice,
 
-        @Schema(description = "Nazwa wariantu produktu", example = "Czarny T-shirt, rozmiar M")
-        String variantName,
+        @Schema(description = "Nazwa wariantu produktu", example = "rozmiar M")
+        Optional<String> variantName,
 
         @ArraySchema(schema = @Schema(description = "Lista atrybutów wariantu produktu", implementation = VariantAttributeDTO.class))
         List<VariantAttributeDTO> variantAttributes
@@ -47,7 +48,7 @@ public record ProductVariantDetailsDTO(
                 productVariant.getDimensions() != null ? DimensionsDTO.toDimensionsDTO(productVariant.getDimensions()) : null,
                 productVariant.getWeight() != null ? WeightDTO.toWeightDTO(productVariant.getWeight()) : null,
                 productVariant.getVariantPrice(),
-                productVariant.getVariantName(),
+                Optional.ofNullable(productVariant.getVariantName()),
                 productVariant.getVariantAttributes() != null ? productVariant.getVariantAttributes().stream()
                         .map(VariantAttributeDTO::toVariantAttributeDTO).toList() : List.of()
         );

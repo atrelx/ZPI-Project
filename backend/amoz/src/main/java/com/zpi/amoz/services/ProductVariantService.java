@@ -83,7 +83,7 @@ public class ProductVariantService {
         initialProductVariant.setVariantName(request.variantName().orElse(null));
 
         initialProductVariant.setCode(request.productVariantCode());
-        initialProductVariant.setVariantPrice(request.variantPrice().orElse(product.getPrice()));
+        initialProductVariant.setVariantPrice(request.variantPrice());
 
         ProductVariant productVariant = productVariantRepository.save(initialProductVariant);
 
@@ -141,7 +141,7 @@ public class ProductVariantService {
         existingProductVariant.setProduct(product);
         existingProductVariant.setVariantName(request.variantName().orElse(null));
         existingProductVariant.setCode(request.productVariantCode());
-        existingProductVariant.setVariantPrice(request.variantPrice().orElse(product.getPrice()));
+        existingProductVariant.setVariantPrice(request.variantPrice());
 
         variantAttributeRepository.deleteAllByProductVariantId(productVariantId);
 
