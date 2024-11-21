@@ -10,7 +10,7 @@ import com.example.amoz.api.requests.CustomerB2BCreateRequest
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.extensions.updateResultState
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreenUIState
+import com.example.amoz.ui.states.CompanyScreenUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
