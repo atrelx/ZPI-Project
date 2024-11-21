@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.example.amoz.app.NavItemType
 import com.example.amoz.app.bottomNavigationBarNavItemsMap
 import com.example.amoz.data.NavItem
-import com.example.amoz.ui.screens.bottom_screens.orders.OrdersViewModel
+import com.example.amoz.view_models.OrdersViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 

@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.categories
+package com.example.amoz.ui.screens.categories
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.amoz.R
-import com.example.amoz.ui.screens.bottom_screens.categories.filtered_list.CategoriesFilteredList
+import com.example.amoz.ui.screens.categories.filtered_list.CategoriesFilteredList
 import com.example.amoz.view_models.CategoriesViewModel
 
 @Composable

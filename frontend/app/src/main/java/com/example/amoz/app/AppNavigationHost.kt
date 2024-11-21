@@ -16,13 +16,12 @@ import com.example.amoz.ui.screens.bottom_screens.additional_screens.SupportScre
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreen
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.screens.bottom_screens.company.customers.CompanyCustomersScreen
-//import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
+import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
 import com.example.amoz.ui.screens.bottom_screens.home.HomeScreen
 import com.example.amoz.ui.screens.bottom_screens.orders.OrdersScreen
 import com.example.amoz.ui.screens.bottom_screens.products.ProductScreen
 import com.example.amoz.ui.screens.bottom_screens.attributes.ProductsAttributes
 import com.example.amoz.ui.screens.bottom_screens.categories.CategoriesScreen
-import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
 import com.example.amoz.ui.screens.bottom_screens.delivery_stock.ProductsStockDelivery
 import com.example.amoz.ui.screens.profile.ProfileScreen
 

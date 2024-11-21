@@ -3,6 +3,7 @@ package com.example.amoz.view_models
 import androidx.lifecycle.ViewModel
 import com.example.amoz.data.ProductTemplate
 import com.example.amoz.data.ProductVariant
+import com.example.amoz.ui.states.ProductsUiState
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.ProductListFilter
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.testProductTemplatesList
 import com.example.amoz.ui.states.ProductsUiState
