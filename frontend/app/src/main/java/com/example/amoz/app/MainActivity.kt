@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.amoz.interfaces.SignInDelegate
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
+import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.UserViewModel

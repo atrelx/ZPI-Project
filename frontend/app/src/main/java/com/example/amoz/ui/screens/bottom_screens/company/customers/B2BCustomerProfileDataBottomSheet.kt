@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.amoz.R
 import com.example.amoz.models.CustomerB2B
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
+import com.example.amoz.view_models.CompanyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

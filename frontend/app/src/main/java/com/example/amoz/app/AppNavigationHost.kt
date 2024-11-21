@@ -14,7 +14,7 @@ import com.example.amoz.ui.screens.bottom_screens.additional_screens.FAQScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.SettingsScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.SupportScreen
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreen
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
+import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.screens.bottom_screens.company.customers.CompanyCustomersScreen
 //import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
 import com.example.amoz.ui.screens.bottom_screens.home.HomeScreen

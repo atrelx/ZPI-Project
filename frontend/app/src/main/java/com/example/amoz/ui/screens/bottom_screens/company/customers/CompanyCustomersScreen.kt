@@ -27,7 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import com.example.amoz.R
 import com.example.amoz.ui.commonly_used_components.ResultStateView
-import com.example.amoz.ui.screens.bottom_screens.company.CompanyViewModel
+import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import kotlinx.coroutines.launch
 
