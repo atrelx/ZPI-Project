@@ -91,7 +91,7 @@ public class EmployeeService {
 
         UUID confirmationToken = invitation.getToken();
 
-        String deeplink = "amoz://acceptInvitation?token=" + confirmationToken.toString();
+        String deeplink = "amoz://acceptinvitation?token=" + confirmationToken.toString();
 
         String subject = "Zostałeś zaproszony do firmy " + company.getName() + " w aplikacji AMOZ.";
         String htmlContent = "<html><body>" +
@@ -109,12 +109,11 @@ public class EmployeeService {
             throw new RuntimeException("Email sending failed.");
         } else {
             User user = employee.getUser();
-            PushRequest request = new PushRequest(user.getPushToken(),
-                    "Zostałeś zaproszony do firmy " + company.getName(),
+            PushRequest request = new PushRequest("Zostałeś zaproszony do firmy " + company.getName(),
                     "Kliknij w poniższe powiadomienie by odpowiedzieć na zaproszenie w aplikacji AMOZ",
                     Optional.of(deeplink));
             try {
-                pushService.sendMessage(request);
+                pushService.sendMessage(user.getPushToken(), request);
             } catch (FirebaseMessagingException e) {
                 throw new RuntimeException("Push sending failed");
             }

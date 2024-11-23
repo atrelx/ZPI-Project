@@ -3,23 +3,24 @@ package com.zpi.amoz.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 @Configuration
 public class FirebaseConfig {
-
-    @Value("${firebase.service-account-key-path}")
-    private String serviceAccountKeyPath;
-
-
     @Bean
     public FirebaseApp initializeFirebase() throws IOException {
-        FileInputStream serviceAccount = new FileInputStream(serviceAccountKeyPath);
+        InputStream serviceAccount = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("google/amoz-firebase-service-account-key.json");
+
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build();
@@ -28,6 +29,11 @@ public class FirebaseConfig {
             return FirebaseApp.initializeApp(options);
         }
         return FirebaseApp.getInstance();
+    }
+
+    @Bean
+    FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp) {
+        return FirebaseMessaging.getInstance(firebaseApp);
     }
 }
 

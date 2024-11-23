@@ -1,24 +1,50 @@
 package com.zpi.amoz.services;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import com.zpi.amoz.requests.PushRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PushService {
-    public String sendMessage(PushRequest request) throws FirebaseMessagingException {
-        Message message = Message.builder()
-                .setToken(request.targetToken())
-                .setNotification(Notification.builder()
-                        .setTitle(request.title())
-                        .setBody(request.body())
-                        .build())
-                .putData("deeplink", request.deeplink().orElse(null))
-                .build();
+    @Autowired
+    private FirebaseMessaging firebaseMessaging;
 
-        return FirebaseMessaging.getInstance().send(message);
+    public String sendMessage(String pushToken, PushRequest request) throws FirebaseMessagingException {
+        Message.Builder builder = Message.builder()
+                .setToken(pushToken)
+                .putData("title", request.title())
+                .putData("body", request.body());
+        if (request.deeplink().isPresent()) {
+            builder = builder.putData("deeplink", request.deeplink().get());
+        }
+
+        return firebaseMessaging.send(builder.build());
     }
+
+    public void sendBulkPushMessages(List<String> pushTokens, PushRequest request) {
+        final int MAX_TOKENS = 500;
+        for (int i = 0; i < pushTokens.size(); i += MAX_TOKENS) {
+            List<String> tokens = pushTokens.subList(i, Math.min(i + MAX_TOKENS, pushTokens.size()));
+
+            MulticastMessage.Builder builder = MulticastMessage.builder()
+                    .addAllTokens(tokens)
+                    .putData("title", request.title())
+                    .putData("body", request.body());
+
+            if (request.deeplink().isPresent()) {
+                builder = builder.putData("deeplink", request.deeplink().get());
+            }
+
+            try {
+                BatchResponse response = firebaseMessaging.sendMulticast(builder.build());
+                System.out.println("Sent message to " + response.getSuccessCount() + " recipients.");
+            } catch (FirebaseMessagingException e) {
+                throw new RuntimeException("Push sending failed", e);
+            }
+        }
+    }
+
 }

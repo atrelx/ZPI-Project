@@ -70,7 +70,7 @@ public class CategoryService {
                 .map(parentId -> categoryRepository.findById(parentId)
                         .orElseThrow(() -> new EntityNotFoundException("Parent category with given id not found: " + parentId)))
                 .ifPresent(parent -> {
-                    if (categoryRepository.isDirectProductCategory(parent.getCategoryId())) {
+                    if (categoryRepository.countProductsByCategory(parent.getCategoryId()) > 0) {
                         throw new IllegalArgumentException("Parent category cannot be direct category of any product");
                     }
                     category.setParentCategory(parent);
@@ -91,7 +91,7 @@ public class CategoryService {
                 .map(parentId -> categoryRepository.findById(parentId)
                         .orElseThrow(() -> new EntityNotFoundException("Parent category with given id not found: " + parentId)))
                 .ifPresent(parent -> {
-                    if (categoryRepository.isDirectProductCategory(parent.getCategoryId())) {
+                    if (categoryRepository.countProductsByCategory(parent.getCategoryId()) > 0) {
                         throw new IllegalArgumentException("Parent category cannot be direct category of any product");
                     }
                     category.setParentCategory(parent);

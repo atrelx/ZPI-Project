@@ -8,6 +8,7 @@ import com.zpi.amoz.models.Company;
 import com.zpi.amoz.models.Employee;
 import com.zpi.amoz.models.Invitation;
 import com.zpi.amoz.models.User;
+import com.zpi.amoz.requests.PushRequest;
 import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
 import com.zpi.amoz.services.*;
@@ -49,6 +50,9 @@ public class EmployeeController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private PushService pushService;
 
     @Operation(summary = "Zaakceptuj zaproszenie do firmy", description = "Umożliwia pracownikowi zaakceptowanie zaproszenia do firmy.")
     @ApiResponse(responseCode = "200", description = "Zaproszenie zostało zaakceptowane pomyślnie")
@@ -267,6 +271,23 @@ public class EmployeeController {
             List<Invitation> invitations = employeeService.fetchAllInvitations(userPrincipal.getSub());
             List<InvitationDTO> invitationDTOs = invitations.stream().map(InvitationDTO::toInvitationDTO).collect(Collectors.toList());
             return ResponseEntity.ok(invitationDTOs);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/testPushNotification")
+    public ResponseEntity<?> inviteEmployeeToCompany(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @RequestBody PushRequest pushRequest,
+            @RequestParam String pushToken
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            pushService.sendMessage(pushToken, pushRequest);
+            return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
         } catch (Exception e) {

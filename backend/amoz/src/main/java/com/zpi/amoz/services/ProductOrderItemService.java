@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductOrderItemService {
@@ -81,20 +83,21 @@ public class ProductOrderItemService {
                     .getProduct()
                     .getCompany()
                     .getCompanyId());
-            employees.stream().map(Employee::getUser).map(User::getPushToken).forEach(pushToken -> {
-                if (pushToken != null) {
-                    PushRequest pushRequest = new PushRequest(pushToken,
-                            "Alert: Stan produktu na magazynie osiągnął stan krytyczny",
-                            "Zostały tylko " + stock.getAmountAvailable() + " sztuki produktu: " + productOrderItem.getProductName(),
-                            null);
-                    try {
-                        pushService.sendMessage(pushRequest);
-                    } catch (FirebaseMessagingException e) {
-                        throw new RuntimeException("Push sending failed");
-                    }
-                }
-            });
+
+            List<String> pushTokens = employees.stream()
+                    .map(Employee::getUser)
+                    .map(User::getPushToken)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            PushRequest pushRequest = new PushRequest(
+                    "Alert: Stan produktu na magazynie osiągnął stan krytyczny",
+                    "Zostały tylko " + stock.getAmountAvailable() + " sztuki produktu: " + productOrderItem.getProductName(),
+                    null);
+
+            pushService.sendBulkPushMessages(pushTokens, pushRequest);
         }
+
 
         stock.decreaseStock(request.amount());
         productOrderItem.setAmount(request.amount());

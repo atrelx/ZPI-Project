@@ -2,6 +2,7 @@ package com.example.amoz.api
 
 import android.content.Context
 import com.example.amoz.R
+import com.example.amoz.api.managers.FirebaseManager
 import com.example.amoz.api.managers.GoogleAuthManager
 import com.example.amoz.api.networking.AuthInterceptor
 import com.example.amoz.api.managers.TokenManager
@@ -140,8 +141,8 @@ object ApiModule {
     }
 
     @Provides
-    fun provideUserRepository(userService: UserService): UserRepository {
-        return UserRepository(userService)
+    fun provideUserRepository(userService: UserService, firebaseManager: FirebaseManager): UserRepository {
+        return UserRepository(firebaseManager, userService)
     }
 
     @Provides

@@ -15,6 +15,6 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     @Query(value = "SELECT CASE WHEN COUNT(A1) > 0 THEN true ELSE false END FROM Category A1 WHERE A1.parentCategory.categoryId = :categoryId")
     boolean hasChild(@Param("categoryId") UUID categoryId);
 
-    @Query("SELECT COUNT(p) > 0 FROM Product p WHERE p.category.categoryId = :categoryId")
-    Boolean isDirectProductCategory(@Param("categoryId") UUID categoryId);
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.category.categoryId = :categoryId")
+    Long countProductsByCategory(@Param("categoryId") UUID categoryId);
 }
