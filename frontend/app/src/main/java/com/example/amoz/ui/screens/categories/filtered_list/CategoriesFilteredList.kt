@@ -13,13 +13,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.models.CategoryTree
-import com.example.amoz.ui.commonly_used_components.SearchTextField
+import com.example.amoz.ui.components.SearchTextField
 
 @Composable
 fun CategoriesFilteredList(

@@ -6,7 +6,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.amoz.data.NavItem
-import com.example.amoz.app.moreBottomSheetItemsMap
+import com.example.amoz.navigation.moreBottomSheetItemsMap
 import com.example.amoz.ui.BottomSheetNavigationRaw
 
 

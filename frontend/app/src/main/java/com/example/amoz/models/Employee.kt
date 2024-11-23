@@ -1,6 +1,6 @@
 package com.example.amoz.models
 
-import com.example.amoz.enums.RoleInCompany
+import com.example.amoz.api.enums.RoleInCompany
 import com.example.amoz.api.serializers.LocalDateSerializer
 import com.example.amoz.api.serializers.UUIDSerializer
 import kotlinx.serialization.Contextual

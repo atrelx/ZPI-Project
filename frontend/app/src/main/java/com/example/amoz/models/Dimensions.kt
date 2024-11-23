@@ -1,6 +1,6 @@
 package com.example.amoz.models
 
-import com.example.amoz.enums.UnitDimensions
+import com.example.amoz.api.enums.UnitDimensions
 import com.example.amoz.api.serializers.UUIDSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable

@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.amoz.enums.Sex
+import com.example.amoz.api.enums.Sex
 import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.models.User
 import com.example.amoz.api.repositories.UserRepository

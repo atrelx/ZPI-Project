@@ -1,76 +1,73 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
-import com.example.amoz.data.ProductTemplate
-import com.example.amoz.data.ProductVariant
+import com.example.amoz.models.CategorySummary
+import com.example.amoz.models.ProductDetails
+import com.example.amoz.models.ProductSummary
+import com.example.amoz.models.ProductVariantDetails
+import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.view_models.ProductsViewModel
+import java.math.BigDecimal
 
 class ProductListFilter {
     fun filterProductTemplates(
-        templates: List<ProductTemplate>,
+        templates: List<ProductSummary>,
         searchQuery: String,
         sortingType: ProductsViewModel.SortingType,
-        priceFrom: Double,
-        priceTo: Double,
-        category: String
-    ): List<ProductTemplate> {
+        priceFrom: BigDecimal,
+        priceTo: BigDecimal?,
+        category: CategorySummary?
+    ): List<ProductSummary> {
         return templates
-            .filter { template ->
+            .filter { product ->
                 // Filter by search query
                 (searchQuery.takeIf { it.isNotBlank() }?.let {
-                    template.name.contains(it, ignoreCase = true) ||
-                    template.productVendor.contains(it, ignoreCase = true)
+                    product.name.contains(it, ignoreCase = true) ||
+                    product.brand?.contains(it, ignoreCase = true) ?: true
                 } ?: true) &&
                     // Filter by category
-                    (category.takeIf { it.isNotBlank() }?.let {
-                        template.category == it
+                    (category?.let {
+                        product.category.name == it.name
                     } ?: true) &&
                         // Filter by base price
-                    (template.basePrice in priceFrom..priceTo)
+                    (product.price in priceFrom..(priceTo ?: BigDecimal(Int.MAX_VALUE)))
 
             }
             .sortedWith(
                 when (sortingType) {
                     ProductsViewModel.SortingType.ASCENDING_NAME -> compareBy { it.name }
                     ProductsViewModel.SortingType.DESCENDING_NAME -> compareByDescending { it.name }
-                    ProductsViewModel.SortingType.ASCENDING_PRICE -> compareBy { it.basePrice }
-                    ProductsViewModel.SortingType.DESCENDING_PRICE -> compareByDescending { it.basePrice }
-                    ProductsViewModel.SortingType.NONE -> compareBy { it.id } // Default or no sorting
+                    ProductsViewModel.SortingType.ASCENDING_PRICE -> compareBy { it.price }
+                    ProductsViewModel.SortingType.DESCENDING_PRICE -> compareByDescending { it.price }
+                    ProductsViewModel.SortingType.NONE -> compareBy { it.productId } // Default or no sorting
                 }
             )
     }
 
     fun filterProductVariants(
-        variants: List<ProductVariant>,
-        getProductVariantTemplateById: (ProductVariant) -> ProductTemplate?,
+        variants: List<ProductVariantSummary>,
         searchQuery: String,
-        selectedTemplate: ProductTemplate?,
+        selectedTemplate: ProductSummary?,
         sortingType: ProductsViewModel.SortingType,
-        priceFrom: Double,
-        priceTo: Double
-    ): List<ProductVariant> {
+        priceFrom: BigDecimal,
+        priceTo: BigDecimal?
+    ): List<ProductVariantSummary> {
         return variants
             .filter { variant ->
-                val productVariantFullPrice =
-                    (getProductVariantTemplateById(variant)?.basePrice ?: 0.0) + variant.impactOnPrice
                 // Filter by search query
                 (searchQuery.takeIf { it.isNotBlank() }
-                    ?.let { variant.name.contains(it, ignoreCase = true) } ?: true) &&
+                    ?.let { variant.variantName.contains(it, ignoreCase = true) } ?: true) &&
                         // Filter by selected template
-                        (selectedTemplate?.let { variant.productId == it.id } ?: true) &&
+                        (selectedTemplate?.let { variant.productVariantId == it.productId } ?: true) &&
                         // Filter by price range
-                        (productVariantFullPrice in priceFrom..priceTo)
+                        (variant.variantPrice in priceFrom..(priceTo ?: BigDecimal(Int.MAX_VALUE)))
             }
             .sortedWith(
                 when (sortingType) {
-                    ProductsViewModel.SortingType.ASCENDING_NAME -> compareBy { it.name }
-                    ProductsViewModel.SortingType.DESCENDING_NAME -> compareByDescending { it.name }
-                    ProductsViewModel.SortingType.ASCENDING_PRICE -> compareBy {
-                        (getProductVariantTemplateById(it)?.basePrice ?: 0.0) + it.impactOnPrice
-                    }
-                    ProductsViewModel.SortingType.DESCENDING_PRICE -> compareByDescending {
-                        (getProductVariantTemplateById(it)?.basePrice ?: 0.0) + it.impactOnPrice
-                    }
-                    ProductsViewModel.SortingType.NONE -> compareBy { it.id } // Default or no sorting
+                    ProductsViewModel.SortingType.ASCENDING_NAME -> compareBy { it.variantName }
+                    ProductsViewModel.SortingType.DESCENDING_NAME -> compareByDescending { it.variantName }
+                    ProductsViewModel.SortingType.ASCENDING_PRICE -> compareBy { it.variantPrice }
+                    ProductsViewModel.SortingType.DESCENDING_PRICE -> compareByDescending { it.variantPrice }
+                    ProductsViewModel.SortingType.NONE -> compareBy { it.productVariantId } // Default or no sorting
                 }
             )
     }

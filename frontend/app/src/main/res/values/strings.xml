@@ -40,7 +40,7 @@
     <string name="products_delete_product_template_confirm">Do you really want to delete:\n%1$s?</string>
     <string name="products_categories_screen">Categories</string>
     <string name="products_attributes_screen">Attributes</string>
-    <string name="products_stock_delivery_screen">Stock delivery</string>
+    <string name="products_stock_delivery_screen">Stock update</string>
 
     <string name="product_name">Product name</string>
     <string name="product_description">Product description</string>
@@ -110,6 +110,10 @@
     <string name="company_customers_add_customer">Add new customer!</string>
     <string name="company_add_customer_successful">Customer successfully added</string>
 
+    // --------------------- Stock update ---------------------
+    <string name="empty_list_greeting">Add product variant to manage it\'s stock</string>
+    <string name="add_product_variant">Add product variant</string>
+
 
     // --------------------- Address ---------------------
     <string name="address_change_title">Change the address</string>
@@ -126,6 +130,7 @@
     <string name="close">Close</string>
     <string name="confirm">Confirm</string>
     <string name="action_undone">This action cannot be undone</string>
+    <string name="nothing_here">There is nothing here yet…</string>
 
 
     // --------------------- Filters ---------------------

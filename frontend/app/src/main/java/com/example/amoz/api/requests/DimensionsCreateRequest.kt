@@ -1,6 +1,6 @@
 package com.example.amoz.api.requests
 
-import com.example.amoz.enums.UnitDimensions
+import com.example.amoz.api.enums.UnitDimensions
 import com.example.amoz.interfaces.ValidatableRequest
 import kotlinx.serialization.Serializable
 import javax.validation.constraints.NotNull

@@ -28,6 +28,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.amoz.R
 import com.example.amoz.data.NavItem
+import com.example.amoz.navigation.AppNavigationHost
+import com.example.amoz.navigation.NavItemType
+import com.example.amoz.navigation.allApplicationScreensMap
+import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
+import com.example.amoz.navigation.otherNavigationItemsMap
+import com.example.amoz.ui.components.CustomSnackBar
 import com.example.amoz.ui.screens.more_button.MoreBottomSheet
 import com.example.amoz.view_models.AppViewModel
 import kotlinx.coroutines.launch

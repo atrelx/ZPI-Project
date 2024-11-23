@@ -19,14 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.amoz.app.NavItemType
-import com.example.amoz.app.productScreenBottomSheetMenu
-import com.example.amoz.data.ProductTemplate
-import com.example.amoz.data.ProductVariant
+import com.example.amoz.navigation.NavItemType
+import com.example.amoz.navigation.productScreenBottomSheetMenu
+import com.example.amoz.ui.components.filters.MoreFiltersBottomSheet
 import com.example.amoz.view_models.ProductsViewModel.BottomSheetType
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductTemplateBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductVariantBottomSheet
@@ -43,9 +39,6 @@ fun ProductScreen(
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
 
-    var currentProductTemplate by remember { mutableStateOf<ProductTemplate?>(null) }
-    var currentProductVariant by remember { mutableStateOf<ProductVariant?>(null) }
-
     fun onMenuItemClick(
         navItemType: NavItemType
     ) {
@@ -58,7 +51,7 @@ fun ProductScreen(
 
             }
             NavItemType.AddProductTemplate -> {
-                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_TEMPLATE, true)
+                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
             }
             else -> {
                 navController.navigate(
@@ -78,16 +71,16 @@ fun ProductScreen(
         ) {
             // -------------------- Products --------------------
             FilteredProductsList(
-                onProductTemplateEdit = { productTemplate ->
-                    currentProductTemplate = productTemplate
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_TEMPLATE, true)
+                onProductEdit = {
+                    productsViewModel.updateCurrentAddEditProduct(it)
+                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
                 },
-                onProductTemplateDelete = {
-                    currentProductTemplate = it
-                    productsViewModel.expandBottomSheet(BottomSheetType.DELETE_TEMPLATE, true)
+                onProductDelete = {
+                    productsViewModel.updateCurrentProductToDelete(it)
+                    productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, true)
                 },
                 onProductVariantEdit = {
-                    currentProductVariant = it
+                    productsViewModel.updateCurrentAddEditProductVariant(null /*TODO*/, it)
                     productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
                 },
                 onMoreFiltersClick = {
@@ -103,7 +96,7 @@ fun ProductScreen(
             ) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        productsViewModel.updateAddEditViewState(true)
+                        productsViewModel.expandBottomSheet(BottomSheetType.MENU, true)
                     },
                     modifier = Modifier
                         .padding(16.dp),
@@ -138,15 +131,15 @@ fun ProductScreen(
             )
         }
 
-        if (productsUiState.deleteProductTemplateBottomSheetExpanded) {
-            currentProductTemplate?.let {
+        if (productsUiState.deleteProductBottomSheetExpanded) {
+             productsUiState.currentProductToDelete?.let {
                 ConfirmDeleteProductBottomSheet(
                     onDismissRequest = {
-                        currentProductTemplate = null
-                        productsViewModel.expandBottomSheet(BottomSheetType.DELETE_TEMPLATE, false)
+                        productsViewModel.updateCurrentProductToDelete(null)
+                        productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, false)
                     },
                     onDeleteConfirm = {
-                        productsViewModel.removeProductTemplateFromList(it)
+                        productsViewModel.removeProductFromList(it)
                     },
                     productNameToDelete = it.name
                 )
@@ -155,40 +148,46 @@ fun ProductScreen(
 
         // -------------------- Add/Edit Simple Product --------------------
         if (productsUiState.addEditSimpleProductBottomSheetExpanded) {
-            AddEditSimpleProductBottomSheet(
-                onDismissRequest = {
-                    currentProductVariant = null
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
-                },
-                productVariant = currentProductVariant ?: ProductVariant(),
-                onComplete = {},
-            )
+            productsUiState.currentAddEditProduct?.let {
+                AddEditSimpleProductBottomSheet(
+                    onDismissRequest = {
+                        productsViewModel.updateCurrentAddEditProduct(null)
+                        productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
+                    },
+                    productVariant = it,
+                    onComplete = {},
+                )
+            }
         }
 
         // -------------------- Add/Edit Product Variant --------------------
         if (productsUiState.addEditProductVariantBottomSheetExpanded) {
-            currentProductVariant?.let {
-                AddEditProductVariantBottomSheet (
+            productsUiState.currentAddEditProductVariant?.let {
+                AddEditProductVariantBottomSheet(
                     onDismissRequest = {
-                        currentProductVariant = null
+                        productsViewModel.updateCurrentAddEditProductVariant(null, null)
                         productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
                     },
                     productVariant = it,
-                    onComplete = {  }
+                    onComplete = { }
                 )
             }
         }
 
         // -------------------- Add/Edit Product Template --------------------
-        if (productsUiState.addEditProductTemplateBottomSheetExpanded) {
-            AddEditProductTemplateBottomSheet(
-                onDismissRequest = {
-                    currentProductTemplate = null
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_TEMPLATE, false)
-                },
-                product = currentProductTemplate ?: ProductTemplate(),
-                onComplete = {},
-            )
+        if (productsUiState.addEditProductBottomSheetExpanded) {
+            productsUiState.currentAddEditProduct?.let {
+                AddEditProductTemplateBottomSheet(
+                    onDismissRequest = {
+                        productsViewModel.updateCurrentAddEditProduct(null)
+                        productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, false)
+                    },
+                    product = it,
+                    onComplete = { productState ->
+
+                    },
+                )
+            }
         }
     }
 }

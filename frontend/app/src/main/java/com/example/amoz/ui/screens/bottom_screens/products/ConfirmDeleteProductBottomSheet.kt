@@ -16,8 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.ui.commonly_used_components.CloseOutlinedButton
-import com.example.amoz.ui.commonly_used_components.PrimaryFilledButton
+import com.example.amoz.ui.components.CloseOutlinedButton
+import com.example.amoz.ui.components.PrimaryFilledButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

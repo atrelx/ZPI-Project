@@ -68,18 +68,18 @@ fun AttributeItem(
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     )
 
+    val textFieldColors = TextFieldDefaults.colors(
+        focusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    )
+
     var currentFraction by remember { mutableStateOf(0f) }
     val swipeState = rememberSwipeToDismissBoxState(
         confirmValueChange = { newValue ->
             when (newValue) {
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    if (currentFraction >= positionalThreshold && currentFraction < 1.0f) {
-                        onDelete(indexInList)
-                        return@rememberSwipeToDismissBoxState false
-                    }
-                    return@rememberSwipeToDismissBoxState false
-                }
-                SwipeToDismissBoxValue.EndToStart -> {
                     if (currentFraction >= positionalThreshold && currentFraction < 1.0f) {
                         onDelete(indexInList)
                         return@rememberSwipeToDismissBoxState false
@@ -100,8 +100,6 @@ fun AttributeItem(
             DismissBackground(swipeState)
         }
     ) {
-
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -113,26 +111,27 @@ fun AttributeItem(
                 ),
         ) {
             // -------------------- Product attribute name --------------------
-            ListItem(
+            OutlinedTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        onClick = { /*TODO*/ },
-                    ),
-                leadingContent = {
+                    .fillMaxWidth(),
+                placeholder = { Text(defaultAttributeNameText) },
+                value = attributeNameState,
+                onValueChange = { onNameChange(it) },
+                leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.CheckBoxOutlineBlank,
                         contentDescription = null
                     )
                 },
-                headlineContent = { Text(attributeNameState) },
-                trailingContent = {
+                trailingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.KeyboardArrowDown,
+                        imageVector = Icons.Outlined.Edit,
                         contentDescription = null
                     )
                 },
-                colors = listItemColors
+                maxLines = 1,
+                singleLine = true,
+                colors = textFieldColors
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
@@ -157,13 +156,7 @@ fun AttributeItem(
                 },
                 maxLines = 1,
                 singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                )
-
+                colors = textFieldColors
             )
         }
     }

@@ -27,18 +27,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.amoz.R
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
 fun ProductNameDescriptionPrice(
-    productName: String,
+    productName: String?,
     productDescription: String? = null,
-    productPrice: Double,
+    productPrice: BigDecimal?,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit = {},
-    onPriceChange: (Double) -> Unit,
+    onPriceChange: (BigDecimal) -> Unit,
 ) {
 
     Column(
@@ -53,7 +54,7 @@ fun ProductNameDescriptionPrice(
             modifier = Modifier
                 .fillMaxWidth(),
             label = { Text(stringResource(R.string.product_name)) },
-            value = productName,
+            value = productName ?: "",
             onValueChange = { onNameChange(it) },
             leadingIcon = {
                 Icon(
@@ -89,14 +90,14 @@ fun ProductNameDescriptionPrice(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
-            value = productPrice.toString(),
+            value = productPrice?.toPlainString() ?: "",
             onValueChange = {
                 val priceRegex = "^\\d*(\\.\\d{0,2})?\$".toRegex()
                 if (it.matches(priceRegex)) {
-                    onPriceChange(it.toDoubleOrNull() ?: 0.0)
+                    onPriceChange(it.toBigDecimalOrNull() ?: BigDecimal.ZERO)
                 }
             },
-            placeholder = { Text("0") },
+            placeholder = { Text("0.00") },
             label = { Text(stringResource(R.string.product_price)) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,

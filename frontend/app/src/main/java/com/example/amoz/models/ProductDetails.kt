@@ -3,7 +3,6 @@ package com.example.amoz.models
 import com.example.amoz.api.serializers.BigDecimalSerializer
 import com.example.amoz.api.serializers.UUIDSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Contextual
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -14,7 +13,7 @@ data class ProductDetails(
     val name: String,
     @Serializable(with = BigDecimalSerializer::class)
     val price: BigDecimal,
-    val category: com.example.amoz.models.CategoryDetails,
+    val category: CategoryDetails,
     val mainProductVariant: ProductVariantDetails? = null,
     val productAttributes: List<ProductAttribute>,
     val description: String? = null,
