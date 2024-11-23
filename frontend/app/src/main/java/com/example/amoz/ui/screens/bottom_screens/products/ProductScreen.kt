@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.productScreenBottomSheetMenu
 import com.example.amoz.ui.components.filters.MoreFiltersBottomSheet
@@ -35,7 +35,7 @@ import com.example.amoz.view_models.ProductsViewModel
 fun ProductScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    productsViewModel: ProductsViewModel = viewModel()
+    productsViewModel: ProductsViewModel = hiltViewModel()
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
 
@@ -131,6 +131,7 @@ fun ProductScreen(
             )
         }
 
+        // -------------------- Confirm product delete --------------------
         if (productsUiState.deleteProductBottomSheetExpanded) {
              productsUiState.currentProductToDelete?.let {
                 ConfirmDeleteProductBottomSheet(
@@ -176,18 +177,22 @@ fun ProductScreen(
 
         // -------------------- Add/Edit Product Template --------------------
         if (productsUiState.addEditProductBottomSheetExpanded) {
-            productsUiState.currentAddEditProduct?.let {
-                AddEditProductTemplateBottomSheet(
-                    onDismissRequest = {
-                        productsViewModel.updateCurrentAddEditProduct(null)
-                        productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, false)
-                    },
-                    product = it,
-                    onComplete = { productState ->
-
-                    },
-                )
-            }
+            AddEditProductTemplateBottomSheet(
+                productDetailsState = productsUiState.currentAddEditProductState,
+                navController = navController,
+                onSaveProduct = productsViewModel::saveCurrentAddEditProduct,
+                onComplete = { productState ->
+                    productsViewModel.saveCurrentAddEditProduct(productState)
+                    productsViewModel.updateProduct()
+                },
+                onDismissRequest = {
+                    productsViewModel.updateCurrentAddEditProduct(null)
+                    productsViewModel.expandBottomSheet(
+                        BottomSheetType.ADD_EDIT_PRODUCT,
+                        false
+                    )
+                },
+            )
         }
     }
 }

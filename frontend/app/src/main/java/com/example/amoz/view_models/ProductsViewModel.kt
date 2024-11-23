@@ -1,60 +1,140 @@
 package com.example.amoz.view_models
 
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewModelScope
+import com.example.amoz.api.repositories.ProductRepository
+import com.example.amoz.api.repositories.ProductVariantRepository
 import com.example.amoz.api.requests.AttributeCreateRequest
 import com.example.amoz.api.requests.DimensionsCreateRequest
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.requests.StockCreateRequest
 import com.example.amoz.api.requests.WeightCreateRequest
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.CategorySummary
-import com.example.amoz.models.ProductDetails
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.models.ProductVariantSummary
-import com.example.amoz.test_data.products.details.testProductDetailsList
 import com.example.amoz.test_data.products.details.testProductVariantDetailsList
 import com.example.amoz.ui.states.ProductsUiState
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.ProductListFilter
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.UUID
+import javax.inject.Inject
 
-class ProductsViewModel : ViewModel() {
+@HiltViewModel
+class ProductsViewModel @Inject constructor(
+    private val productRepository: ProductRepository,
+    private val productVariantRepository: ProductVariantRepository
+) : BaseViewModel() {
     private val _productUiState = MutableStateFlow(ProductsUiState())
     val productUiState: StateFlow<ProductsUiState> = _productUiState.asStateFlow()
     private val productFilter = ProductListFilter()
 
-    fun getProductDetails(productId: UUID?): ProductDetails? {
-        /*TODO*/
-        return productId?.let { testProductDetailsList.find { it.productId == productId } }
+    init {
+        fetchProductsList()
+
+        viewModelScope.launch {
+            _productUiState
+                .map { it.filteredByProduct }
+                .distinctUntilChanged()
+                .collect { filteredProduct ->
+                    filteredProduct?.let { fetchProductVariantsList(it.productId) }
+                }
+        }
     }
+
+    fun fetchProductsList(skipLoading: Boolean = false) {
+        performRepositoryAction(
+            binding = _productUiState.value.productsListFetched,
+            failureMessage = "Could not fetch products, try again",
+            skipLoading = skipLoading,
+            action = { productRepository.getAllProducts() },
+            onSuccess = { productsList ->
+                _productUiState.update { it.copy(productsList = productsList) }
+                applyFilters()
+            }
+        )
+    }
+
+    fun fetchProductVariantsList(productId: UUID, skipLoading: Boolean = false) {
+        performRepositoryAction(
+            binding = _productUiState.value.productVariantsListFetched,
+            failureMessage = "Could not fetch product variants, try again",
+            skipLoading = skipLoading,
+            action = { productVariantRepository.getAllProductVariantsByProductId(productId) },
+            onSuccess = { productVariantsList ->
+                _productUiState.update { it.copy(productVariantsList = productVariantsList) }
+                applyFilters()
+            }
+        )
+    }
+
+    fun fetchProductDetails(productId: UUID) {
+        performRepositoryAction(
+            binding = _productUiState.value.currentAddEditProductState,
+            failureMessage = "Could not fetch product details, try again",
+            action = {
+                ProductCreateRequest(productRepository.getProductDetails(productId))
+            },
+            onSuccess = { _productUiState.update { it.copy(currentAddEditProductId = productId) } }
+        )
+    }
+
+    fun updateProduct() {
+        val currentState = _productUiState.value.currentAddEditProductState.value
+        val currentProductStateId = _productUiState.value.currentAddEditProductId
+        if ((currentState is ResultState.Success) && currentProductStateId != null) {
+            val productRequest = currentState.data
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Failed to update product",
+                action = {
+                    productRepository.updateProduct(
+                        productId = currentProductStateId,
+                        request = productRequest
+                    )
+                },
+                onSuccess = {
+                    fetchProductsList(true)
+                }
+            )
+
+        } else {
+            Log.e("updateProduct", "Invalid state: $currentState or id: $currentProductStateId")
+        }
+    }
+
 
     fun getProductVariantDetails(productVariantId: UUID?): ProductVariantDetails? {
         /*TODO*/
         return productVariantId?.let { testProductVariantDetailsList.find { it.productVariantId == productVariantId } }
     }
 
+    fun saveCurrentAddEditProduct(productCreateRequest: ProductCreateRequest) {
+        _productUiState.update {
+            it.copy(
+                currentAddEditProductState = MutableStateFlow(ResultState.Success(productCreateRequest))
+            )
+        }
+    }
+
     fun updateCurrentAddEditProduct(productId: UUID?) {
-        val product: ProductDetails? = getProductDetails(productId)
-        val addEditProduct = ProductCreateRequest(
-            name = product?.name ?: "",
-            price = product?.price ?: BigDecimal.ZERO,
-            categoryId = product?.category?.categoryId ?: UUID.randomUUID() /*TODO*/,
-            description = product?.description,
-            brand = product?.brand,
-            productVariantIds = emptyList(),
-            productAttributes = product?.productAttributes?.map {
-                AttributeCreateRequest(
-                    attributeName = it.attribute.attributeName,
-                    value = it.value
-                )
-            } ?: emptyList()
-        )
-        _productUiState.update { it.copy(currentAddEditProduct = addEditProduct) }
+        if (productId == null) {
+            saveCurrentAddEditProduct(ProductCreateRequest())
+        }
+        else {
+            fetchProductDetails(productId)
+        }
     }
 
     fun updateCurrentAddEditProductVariant(productId: UUID?, productVariantId: UUID?) {
@@ -135,7 +215,7 @@ class ProductsViewModel : ViewModel() {
                     productFilter.filterProductVariants(
                         variants = currState.productVariantsList,
                         searchQuery = currState.searchQuery,
-                        selectedTemplate = currState.filteredByProduct,
+//                        selectedTemplate = currState.filteredByProduct,
                         sortingType = currState.sortingType,
                         priceFrom = currState.filterPriceFrom,
                         priceTo = currState.filterPriceTo
@@ -167,12 +247,12 @@ class ProductsViewModel : ViewModel() {
         applyFilters()
     }
 
-    fun updateFilteredByProduct(selectedProductTemplate: ProductSummary?) {
+    fun showProductVariants(selectedProduct: ProductSummary?) {
         _productUiState.update { currState ->
             currState.copy(
-                showProductsList = selectedProductTemplate == null,
-                showProductVariantsList = selectedProductTemplate != null,
-                filteredByProduct = selectedProductTemplate
+                showProductsList = selectedProduct == null,
+                showProductVariantsList = selectedProduct != null,
+                filteredByProduct = selectedProduct
             )
         }
         applyFilters()

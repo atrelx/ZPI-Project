@@ -41,9 +41,6 @@ class MainActivity : ComponentActivity(), SignInDelegate {
 
         setContent {
             AmozApplicationTheme {
-//                Box(modifier = Modifier.fillMaxSize()) {
-//                    AppMainScaffold()
-//                }
                 Box(modifier = Modifier.fillMaxSize()) {
                     AppMainScaffold()
 

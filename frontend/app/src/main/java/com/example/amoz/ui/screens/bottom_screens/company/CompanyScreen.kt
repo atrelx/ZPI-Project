@@ -88,7 +88,7 @@ fun CompanyScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            ResultStateView(companyUIState.company) { company ->
+            ResultStateView(state = companyUIState.company) { company ->
                 val address = company.address
                 Column(
                     modifier = Modifier

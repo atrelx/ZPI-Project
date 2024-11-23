@@ -46,7 +46,7 @@ class ProductListFilter {
     fun filterProductVariants(
         variants: List<ProductVariantSummary>,
         searchQuery: String,
-        selectedTemplate: ProductSummary?,
+//        selectedTemplate: ProductSummary?,
         sortingType: ProductsViewModel.SortingType,
         priceFrom: BigDecimal,
         priceTo: BigDecimal?
@@ -57,7 +57,7 @@ class ProductListFilter {
                 (searchQuery.takeIf { it.isNotBlank() }
                     ?.let { variant.variantName.contains(it, ignoreCase = true) } ?: true) &&
                         // Filter by selected template
-                        (selectedTemplate?.let { variant.productVariantId == it.productId } ?: true) &&
+//                        (selectedTemplate?.let { variant.productVariantId == it.productId } ?: true) &&
                         // Filter by price range
                         (variant.variantPrice in priceFrom..(priceTo ?: BigDecimal(Int.MAX_VALUE)))
             }

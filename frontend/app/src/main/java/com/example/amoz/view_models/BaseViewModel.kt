@@ -34,7 +34,7 @@ abstract class BaseViewModel: ViewModel() {
                     binding?.value = ResultState.Failure(failureMessage)
                 }
             } catch (e: Exception) {
-                Log.e(tag, "An exeption has occured: ${e.message}", e)
+                Log.e(tag, "An exception has occurred: ${e.message}", e)
                 binding?.value = ResultState.Failure("Please try again later")
             }
         }

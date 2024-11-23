@@ -28,7 +28,7 @@ import java.util.UUID
 fun ProductListItem(
     product: ProductSummary,
     onClick: () -> Unit,
-    onProductTemplateEdit: (UUID) -> Unit,
+    onProductEdit: (UUID) -> Unit,
     onProductRemove: (ProductSummary) -> Unit,
     currency: String,
     positionalThreshold: Float = .45f
@@ -46,7 +46,7 @@ fun ProductListItem(
                 }
                 SwipeToDismissBoxValue.EndToStart -> {
                     if (currentFraction >= positionalThreshold && currentFraction < 1.0f) {
-                        onProductTemplateEdit(product.productId)
+                        onProductEdit(product.productId)
                         return@rememberSwipeToDismissBoxState false
                     }
                     return@rememberSwipeToDismissBoxState false

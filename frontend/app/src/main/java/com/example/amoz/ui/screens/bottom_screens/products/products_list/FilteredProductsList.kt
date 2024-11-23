@@ -14,15 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.amoz.R
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.data.AppPreferences
 import com.example.amoz.models.ProductSummary
-import com.example.amoz.models.ProductVariantSummary
+import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductVariantListItem
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 
 @Composable
@@ -31,7 +33,7 @@ fun FilteredProductsList(
     onProductEdit: (UUID) -> Unit,
     onProductDelete: (ProductSummary) -> Unit,
     onProductVariantEdit: (UUID) -> Unit,
-    productsViewModel: ProductsViewModel = viewModel()
+    productsViewModel: ProductsViewModel = hiltViewModel()
 ) {
     val productsListUiState by productsViewModel.productUiState.collectAsState()
     val currContext = LocalContext.current
@@ -39,67 +41,90 @@ fun FilteredProductsList(
 
     val currency by appPreferences.currency.collectAsState(initial = "USD")
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(15.dp)
-    ) {
-        // -------------------- Search text field, filter chips --------------------
-        item {
-            SearchTextField(
-                searchQuery = productsListUiState.searchQuery,
-                placeholder = stringResource(id = R.string.search_products_placeholder),
-                onSearchQueryChange = { productsViewModel.updateSearchQuery(it) },
-                onMoreFiltersClick = onMoreFiltersClick
-            )
-            FilterChips(
-                productTemplateChipValue = productsListUiState.filteredByProduct?.name,
-                onProductTemplateChipClick = {
-                    productsViewModel.updateFilteredByProduct(null)
-                },
-                priceFrom = productsListUiState.filterPriceFrom,
-                onPriceFromClick = { productsViewModel.clearPriceFilter(true) },
-                priceTo = productsListUiState.filterPriceTo,
-                onPriceToClick = { productsViewModel.clearPriceFilter(false) }
-            )
+    val stateView: MutableStateFlow<ResultState<List<Any>>> =
+        if (productsListUiState.filteredByProduct == null) {
+            productsListUiState.productsListFetched as MutableStateFlow<ResultState<List<Any>>>
+        } else {
+            productsListUiState.productVariantsListFetched as MutableStateFlow<ResultState<List<Any>>>
         }
 
-        // -------------------- ProductTemplates list --------------------
-        if (productsListUiState.showProductsList) {
-            items(
-                productsListUiState.filteredSortedProductTemplatesList,
-                key = { it.productId }
-            ) { productTemplate ->
-                Box(
-                    modifier = Modifier.animateItem()
-                ) {
-                    ProductListItem(
-                        product = productTemplate,
-                        onClick = {
-                            productsViewModel.updateFilteredByProduct(productTemplate)
-                        },
-                        onProductRemove = onProductDelete,
-                        onProductTemplateEdit = onProductEdit,
-                        currency = currency!!,
-                    )
-                }
+
+    ResultStateView(
+        state = stateView,
+        onPullToRefresh = {
+            if (productsListUiState.filteredByProduct != null) {
+                productsViewModel.fetchProductVariantsList(
+                    productId = productsListUiState.filteredByProduct!!.productId,
+                    skipLoading = true
+                )
+            }
+            else {
+                productsViewModel.fetchProductsList(skipLoading = true)
             }
         }
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
+        ) {
+            // -------------------- Search text field, filter chips --------------------
+            item {
+                SearchTextField(
+                    searchQuery = productsListUiState.searchQuery,
+                    placeholder = stringResource(id = R.string.search_products_placeholder),
+                    onSearchQueryChange = { productsViewModel.updateSearchQuery(it) },
+                    onMoreFiltersClick = onMoreFiltersClick
+                )
+                FilterChips(
+                    productTemplateChipValue = productsListUiState.filteredByProduct?.name,
+                    onProductTemplateChipClick = {
+                        productsViewModel.showProductVariants(null)
+                    },
+                    priceFrom = productsListUiState.filterPriceFrom,
+                    onPriceFromClick = { productsViewModel.clearPriceFilter(true) },
+                    priceTo = productsListUiState.filterPriceTo,
+                    onPriceToClick = { productsViewModel.clearPriceFilter(false) }
+                )
+            }
 
-        // -------------------- ProductVariant list --------------------
-        if(productsListUiState.showProductVariantsList) {
-            items(
-                productsListUiState.filteredSortedProductVariantsList,
-                key = { it.productVariantId }
-            ) { productVariant ->
-                Box(modifier = Modifier.animateItem()
-                ) {
-                    ProductVariantListItem(
-                        productVariant = productVariant,
-                        currency = currency!!,
-                        onClick = { onProductVariantEdit(productVariant.productVariantId) }
-                    )
+            // -------------------- ProductTemplates list --------------------
+            if (productsListUiState.showProductsList) {
+                items(
+                    productsListUiState.filteredSortedProductTemplatesList,
+                    key = { it.productId }
+                ) { productTemplate ->
+                    Box(
+                        modifier = Modifier.animateItem()
+                    ) {
+                        ProductListItem(
+                            product = productTemplate,
+                            onClick = {
+                                productsViewModel.showProductVariants(productTemplate)
+                            },
+                            onProductRemove = onProductDelete,
+                            onProductEdit = onProductEdit,
+                            currency = currency!!,
+                        )
+                    }
+                }
+            }
+
+            // -------------------- ProductVariant list --------------------
+            if(productsListUiState.showProductVariantsList) {
+                items(
+                    productsListUiState.filteredSortedProductVariantsList,
+                    key = { it.productVariantId }
+                ) { productVariant ->
+                    Box(modifier = Modifier.animateItem()
+                    ) {
+                        ProductVariantListItem(
+                            productVariant = productVariant,
+                            currency = currency!!,
+                            onClick = { onProductVariantEdit(productVariant.productVariantId) }
+                        )
+                    }
                 }
             }
         }

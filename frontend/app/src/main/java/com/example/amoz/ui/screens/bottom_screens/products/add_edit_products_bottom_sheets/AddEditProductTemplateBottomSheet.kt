@@ -27,6 +27,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,32 +42,33 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.requests.ProductCreateRequest
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.CategoryDetails
 import com.example.amoz.models.ProductAttribute
 import com.example.amoz.models.ProductDetails
+import com.example.amoz.navigation.NavItemType
+import com.example.amoz.navigation.allApplicationScreensMap
+import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.ui.components.ResultStateView
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductTemplateBottomSheet(
-    product: ProductCreateRequest,
+    productDetailsState:  MutableStateFlow<ResultState<ProductCreateRequest>>,
+    onSaveProduct: (ProductCreateRequest) -> Unit,
     onComplete: (ProductCreateRequest) -> Unit,
+    navController: NavController,
     onDismissRequest: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-
-    var productState by remember { mutableStateOf(product) }
-
-//    val isFormValid by remember {
-//        derivedStateOf {
-//            productName.isNotBlank() && productPrice.toString().isNotBlank()
-//        }
-//    }
 
     val sheetState =
         rememberModalBottomSheetState( skipPartiallyExpanded = true,
@@ -87,104 +89,122 @@ fun AddEditProductTemplateBottomSheet(
             shape = RoundedCornerShape(5.dp)
         )
 
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            // -------------------- Bottom sheet title --------------------
-            Text(
-                text = stringResource(R.string.products_add_product_template),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Spacer(modifier = Modifier.height(10.dp))
+        ResultStateView(productDetailsState) { product ->
+            var productState by remember { mutableStateOf(product) }
 
-            // -------------------- Product basic info --------------------
-            ProductNameDescriptionPrice(
-                productName = productState.name,
-                productDescription = productState.description,
-                productPrice = productState.price,
-                onNameChange = { productState = productState.copy(name = it) },
-                onDescriptionChange = { productState = productState.copy(description = it) },
-                onPriceChange = { productState = productState.copy(price = it) },
-            )
-
-            // -------------------- Product vendor --------------------
-            OutlinedTextField(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(stringResource(R.string.product_vendor)) },
-                value = productState.brand ?: "",
-                onValueChange = { productState = productState.copy(brand = it.takeIf { it.isNotBlank() }) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Verified,
-                        contentDescription = null
-                    )
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done
-                ),
-                maxLines = 1,
-                singleLine = true
-            )
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                // -------------------- Bottom sheet title --------------------
+                Text(
+                    text = stringResource(R.string.products_add_product_template),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // -------------------- Product basic info --------------------
+                ProductNameDescriptionPrice(
+                    productName = productState.name,
+                    productDescription = productState.description,
+                    productPrice = productState.price,
+                    onNameChange = { productState = productState.copy(name = it) },
+                    onDescriptionChange = { productState = productState.copy(description = it) },
+                    onPriceChange = { productState = productState.copy(price = it) },
+                )
+
+                // -------------------- Product vendor --------------------
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = { Text(stringResource(R.string.product_vendor)) },
+                    value = productState.brand ?: "",
+                    onValueChange = {
+                        productState = productState.copy(brand = it.takeIf { it.isNotBlank() })
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Verified,
+                            contentDescription = null
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    maxLines = 1,
+                    singleLine = true
+                )
 
 //             -------------------- Product's category --------------------
-            ListItem(
-                modifier = listItemModifier.then(Modifier
-                    .clickable { /*TODO*/ })
-                ,
-                leadingContent = { Icon(
-                    imageVector = Icons.Outlined.Category,
-                    contentDescription = null
-                ) },
-                overlineContent = { Text(stringResource(R.string.product_category)) },
-                headlineContent = {
-                    Text(
-                        text = stringResource(R.string.product_category_choose)
-                    )
-                },
-                trailingContent = { Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null
-                ) },
-                colors = listItemColors
-            )
+                ListItem(
+                    modifier = listItemModifier.then(Modifier
+                        .clickable {
+                            onSaveProduct(productState)
+                            navController.navigate(
+                                allApplicationScreensMap[NavItemType.Categories]!!.screenRoute
+                            )
+                        }),
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Outlined.Category,
+                            contentDescription = null
+                        )
+                    },
+                    overlineContent = { Text(stringResource(R.string.product_category)) },
+                    headlineContent = {
+                        Text(
+                            text = stringResource(R.string.product_category_choose)
+                        )
+                    },
+                    trailingContent = {
+                        Icon(
+                            imageVector = Icons.Outlined.KeyboardArrowDown,
+                            contentDescription = null
+                        )
+                    },
+                    colors = listItemColors
+                )
 
-            // -------------------- Product attributes --------------------
-            AttributesList(
-                productAttributes = productState.productAttributes,
-                onAttributesChange = { productState = productState.copy(productAttributes = it) }
-            )
-
-            // -------------------- Complete adding --------------------
-            Spacer(modifier = Modifier.height(15.dp))
-
-            PrimaryFilledButton(
-                onClick = {
-                    onComplete(productState)
-                },
-                text = stringResource(id = R.string.done),
-//                enabled = isFormValid
-            )
-            // -------------------- Close bottom sheet --------------------
-            CloseOutlinedButton(
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onDismissRequest()
+                // -------------------- Product attributes --------------------
+                AttributesList(
+                    productAttributes = productState.productAttributes,
+                    onAttributesChange = {
+                        productState = productState.copy(productAttributes = it)
                     }
-                },
-                text =  stringResource(R.string.close)
-            )
+                )
+
+                // -------------------- Complete adding --------------------
+                Spacer(modifier = Modifier.height(15.dp))
+
+                PrimaryFilledButton(
+                    onClick = {
+                        onComplete(productState)
+                        onDismissRequest()
+                    },
+                    text = stringResource(id = R.string.done),
+//                enabled = isFormValid
+                )
+                // -------------------- Close bottom sheet --------------------
+                CloseOutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismissRequest()
+                        }
+                    },
+                    text = stringResource(R.string.close)
+                )
+            }
         }
     }
 }
