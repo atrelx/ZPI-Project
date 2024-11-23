@@ -1,12 +1,11 @@
 package com.zpi.amoz.services;
 
-import com.zpi.amoz.models.ProductOrder;
-import com.zpi.amoz.models.ProductOrderItem;
-import com.zpi.amoz.models.ProductVariant;
-import com.zpi.amoz.models.Stock;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.ProductOrderItemRepository;
 import com.zpi.amoz.repository.ProductVariantRepository;
 import com.zpi.amoz.requests.ProductOrderItemCreateRequest;
+import com.zpi.amoz.requests.PushRequest;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,12 @@ public class ProductOrderItemService {
 
     @Autowired
     private ProductVariantService productVariantService;
+
+    @Autowired
+    private PushService pushService;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     public List<ProductOrderItem> findAll() {
         return productOrderItemRepository.findAll();
@@ -68,9 +73,31 @@ public class ProductOrderItemService {
         if (stock.getAmountAvailable() < request.amount()) {
             throw new IllegalArgumentException("Requested amount is bigger than amount available in stock");
         }
+
+        if (stock.isAlarmTriggered()) {
+            List<Employee> employees = employeeService.getEmployeesByCompanyId(productOrder
+                    .getOrderItems().get(0)
+                    .getProductVariant()
+                    .getProduct()
+                    .getCompany()
+                    .getCompanyId());
+            employees.stream().map(Employee::getUser).map(User::getPushToken).forEach(pushToken -> {
+                if (pushToken != null) {
+                    PushRequest pushRequest = new PushRequest(pushToken,
+                            "Alert: Stan produktu na magazynie osiągnął stan krytyczny",
+                            "Zostały tylko " + stock.getAmountAvailable() + " sztuki produktu: " + productOrderItem.getProductName(),
+                            null);
+                    try {
+                        pushService.sendMessage(pushRequest);
+                    } catch (FirebaseMessagingException e) {
+                        throw new RuntimeException("Push sending failed");
+                    }
+                }
+            });
+        }
+
         stock.decreaseStock(request.amount());
         productOrderItem.setAmount(request.amount());
-
         return productOrderItemRepository.save(productOrderItem);
     }
 

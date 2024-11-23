@@ -47,6 +47,7 @@ public class AddressService {
 
     public Address createAddress(AddressCreateRequest request) {
         Address address = new Address();
+        address.setCountry(request.country());
         address.setCity(request.city());
         address.setStreet(request.street());
         address.setStreetNumber(request.streetNumber());
@@ -61,6 +62,7 @@ public class AddressService {
     public Address updateAddress(UUID addressId, AddressCreateRequest request) {
         Address address = addressRepository.findById(addressId)
                         .orElseThrow(() -> new EntityNotFoundException("Could not find address for given id: " + addressId));
+        address.setCountry(request.country());
         address.setCity(request.city());
         address.setStreet(request.street());
         address.setStreetNumber(request.streetNumber());

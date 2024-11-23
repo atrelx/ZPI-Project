@@ -28,7 +28,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity(), SignInDelegate {
     private val authenticationViewModel: AuthenticationViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
-    private val companyViewModel: CompanyViewModel by viewModels()
     private var completion: (() -> Unit)? = null
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -36,33 +35,14 @@ class MainActivity : ComponentActivity(), SignInDelegate {
 
         super.onCreate(savedInstanceState)
         authenticationViewModel.setSignInDelegate(this)
+        userViewModel.isRegistered()
 
         enableEdgeToEdge()
 
         setContent {
             AmozApplicationTheme {
-//                Box(modifier = Modifier.fillMaxSize()) {
-//                    AppMainScaffold()
-//                }
                 Box(modifier = Modifier.fillMaxSize()) {
                     AppMainScaffold()
-
-//                    Button(
-//                        onClick = { startSignInActivityForResult() },
-//                        modifier = Modifier
-//                            .align(Alignment.TopEnd)
-//                            .padding(48.dp, 64.dp)
-//                    ) {
-//                        Text(text = "Google")
-//                    }
-//                    Button(
-//                        onClick = { userViewModel.registerUser() },
-//                        modifier = Modifier
-//                            .align(Alignment.TopStart)
-//                            .padding(48.dp, 64.dp)
-//                    ) {
-//                        Text(text = "Test")
-//                    }
                 }
             }
         }

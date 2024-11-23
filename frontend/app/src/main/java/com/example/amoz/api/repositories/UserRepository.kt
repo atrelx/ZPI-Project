@@ -9,12 +9,14 @@ import javax.inject.Inject
 
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
+import com.example.amoz.api.managers.FirebaseManager
 import com.example.amoz.extensions.toImageBitmap
 import kotlinx.coroutines.coroutineScope
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 
 class UserRepository @Inject constructor(
+    private val firebaseManager: FirebaseManager,
     private val userService: UserService
 ) : BaseRepository() {
     suspend fun registerUser(request: UserRegisterRequest): com.example.amoz.models.User? {
@@ -39,6 +41,15 @@ class UserRepository @Inject constructor(
         return performRequest {
             userService.getProfilePicture()
         }.toImageBitmap()
+    }
+
+    suspend fun updatePushToken() {
+        firebaseManager.getDeviceToken()
+            ?.let { pushToken ->
+                performRequest {
+                    userService.updatePushToken(pushToken)
+                }
+            }
     }
 
     suspend fun isUserRegistered(): Boolean {

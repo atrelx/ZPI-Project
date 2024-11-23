@@ -27,4 +27,8 @@ interface UserService {
 
     @GET("api/users/isRegistered")
     suspend fun isUserRegistered(): Response<UserIsRegisteredResponse>
+
+    @POST("api/users/pushToken")
+    suspend fun updatePushToken(@Query("token") token: String): Response<Unit>
+
 }

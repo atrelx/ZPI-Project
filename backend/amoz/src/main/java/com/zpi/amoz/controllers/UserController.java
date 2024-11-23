@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -157,6 +158,30 @@ public class UserController {
         boolean isRegistered = userService.isUserRegistered(userPrincipal.getSub());
         UserIsRegisteredResponse response = new UserIsRegisteredResponse(isRegistered);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Zaktualizuj token urządzenia", description = "Aktualizuje token urządzenia używanego do wysyłania powiadomień Push")
+    @ApiResponse(responseCode = "204", description = "Token zaktualizowany pomyslnie")
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono użytkownika",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @PostMapping("/pushToken")
+    public ResponseEntity<?> inviteEmployeeToCompany(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @RequestParam String token
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            userService.updatePushToken(userPrincipal.getSub(), token);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+        }
     }
 }
 

@@ -8,6 +8,10 @@ import java.util.Optional;
 
 @Schema(description = "Request do tworzenia adresu z wymaganymi polami: miasto, ulica, numer domu, numer mieszkania, kod pocztowy oraz dodatkowe informacje.")
 public record AddressCreateRequest(
+        @Schema(description = "Nazwa kraju", example = "Polska")
+        @NotBlank
+        @Size(max = 50)
+        String country,
 
         @Schema(description = "Nazwa miasta", example = "Warszawa")
         @NotBlank

@@ -2,9 +2,11 @@ package com.zpi.amoz.controllers;
 
 import com.azure.core.annotation.Delete;
 import com.zpi.amoz.dtos.EmployeeDTO;
+import com.zpi.amoz.dtos.InvitationDTO;
 import com.zpi.amoz.enums.ImageDirectory;
 import com.zpi.amoz.models.Company;
 import com.zpi.amoz.models.Employee;
+import com.zpi.amoz.models.Invitation;
 import com.zpi.amoz.models.User;
 import com.zpi.amoz.responses.MessageResponse;
 import com.zpi.amoz.security.UserPrincipal;
@@ -59,6 +61,20 @@ public class EmployeeController {
     ) {
         UUID confirmationToken = UUID.fromString(token);
         employeeService.acceptInvitationToCompany(confirmationToken);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Odrzuć zaproszenie do firmy", description = "Umożliwia pracownikowi odrzucenie zaproszenia do firmy.")
+    @ApiResponse(responseCode = "200", description = "Zaproszenie zostało odrzucone pomyślnie")
+    @ApiResponse(responseCode = "400", description = "Błąd w przetwarzaniu zaproszenia",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @PostMapping("/rejectInvitation")
+    public ResponseEntity<Void> rejectInvitationToCompany(
+            @RequestParam String token
+    ) {
+        UUID confirmationToken = UUID.fromString(token);
+        employeeService.rejectInvitationToCompany(confirmationToken);
         return ResponseEntity.ok().build();
     }
 
@@ -217,14 +233,40 @@ public class EmployeeController {
     public ResponseEntity<?> fetchEmployees(
             @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal
     ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
         try {
-            UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
             UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
                     .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
                     .getCompanyId();
             List<Employee> employees = employeeService.getEmployeesByCompanyId(companyId);
             List<EmployeeDTO> employeeDTOs = employees.stream().map(EmployeeDTO::toEmployeeDTO).collect(Collectors.toList());
             return ResponseEntity.ok(employeeDTOs);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "Pobierz zaproszenia", description = "Zwraca listę wszystkich zaproszeń użytkownika do firm.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano zaproszenia",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = EmployeeDTO.class)))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono pracowników",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "500", description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @GetMapping("/invitations")
+    public ResponseEntity<?> fetchInvitations(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            List<Invitation> invitations = employeeService.fetchAllInvitations(userPrincipal.getSub());
+            List<InvitationDTO> invitationDTOs = invitations.stream().map(InvitationDTO::toInvitationDTO).collect(Collectors.toList());
+            return ResponseEntity.ok(invitationDTOs);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
         } catch (Exception e) {

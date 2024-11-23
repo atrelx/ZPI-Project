@@ -67,10 +67,18 @@ class UserViewModel @Inject constructor(
                 action = {
                     userRepository.registerUser(data)
                 }, onSuccess = {
+                    updatePushToken()
                     uploadProfilePicture()
                 }
             )
         }
+    }
+
+    private fun updatePushToken() {
+        performRepositoryAction(null,
+            action =  {
+                userRepository.updatePushToken()
+            })
     }
 
     fun updateUser() {
@@ -106,6 +114,8 @@ class UserViewModel @Inject constructor(
         performRepositoryAction(_isRegisteredState,
             action = {
                 userRepository.isUserRegistered()
+            }, onSuccess = {
+                updatePushToken()
             }
         )
     }

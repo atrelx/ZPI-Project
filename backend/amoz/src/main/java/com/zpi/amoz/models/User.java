@@ -20,6 +20,8 @@ public class User {
     @Column(nullable = false)
     private SystemRole systemRole = SystemRole.USER;
 
+    private String pushToken;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Employee employee;
@@ -46,5 +48,13 @@ public class User {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public String getPushToken() {
+        return pushToken;
+    }
+
+    public void setPushToken(String pushToken) {
+        this.pushToken = pushToken;
     }
 }

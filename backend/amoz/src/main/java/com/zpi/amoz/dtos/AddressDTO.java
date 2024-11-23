@@ -15,6 +15,9 @@ public record AddressDTO(
         @Schema(description = "Unikalny identyfikator adresu", example = "123e4567-e89b-12d3-a456-426614174000")
         UUID addressId,
 
+        @Schema(description = "Kraj, w którym znajduje się adres", example = "Poland")
+        String country,
+
         @Schema(description = "Miasto, w którym znajduje się adres", example = "Warszawa")
         String city,
 
@@ -36,6 +39,7 @@ public record AddressDTO(
     static AddressDTO toAddressDTO(Address address) {
         return new AddressDTO(
                 address.getAddressId(),
+                address.getCountry(),
                 address.getCity(),
                 address.getStreet(),
                 address.getStreetNumber(),

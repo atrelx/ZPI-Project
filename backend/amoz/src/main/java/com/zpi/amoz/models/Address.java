@@ -1,5 +1,6 @@
 package com.zpi.amoz.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -14,6 +15,9 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID addressId;
+
+    @Column(nullable = false, length = 255)
+    private String country;
 
     @Column(nullable = false, length = 255)
     private String city;
@@ -90,6 +94,22 @@ public class Address {
 
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }
 
