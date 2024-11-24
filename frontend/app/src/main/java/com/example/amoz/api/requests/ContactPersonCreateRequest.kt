@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ContactPersonCreateRequest(
 
-    @field:NotBlank(nameOfField = "Contact number is required.")
+    @field:NotBlank(nameOfField = "Contact number")
     val contactNumber: String = "",
 
     @field:Email(nameOfField = "Email address")

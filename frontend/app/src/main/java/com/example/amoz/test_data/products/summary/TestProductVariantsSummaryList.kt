@@ -8,6 +8,6 @@ val testProductVariantSummariesList = testProductVariantDetailsList.map {
         productVariantId = it.productVariantId,
         code = it.code,
         variantPrice = it.variantPrice,
-        variantName = it.variantName
+        variantName = it.variantName ?: "name"
     )
 }

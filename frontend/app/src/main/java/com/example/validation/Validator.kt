@@ -27,7 +27,7 @@ class Validator {
                         field.name
                     } else {
                         annotation.nameOfField
-                    }.lowercase()
+                    }
 
                     if (value < annotation.value) {
                         return@validateTemplate "Wartość pola '${fieldName}' musi być większa " +
@@ -48,7 +48,7 @@ class Validator {
                         field.name
                     } else {
                         annotation.nameOfField
-                    }.lowercase()
+                    }
 
                     if (value.size < annotation.min) {
                         return@validateTemplate "Lista '${fieldName}' musi zawierać przynajmniej " +
@@ -73,7 +73,7 @@ class Validator {
                             field.name
                         } else {
                             annotation.nameOfField
-                        }.lowercase()
+                        }
 
                         return@validateTemplate "Pole '${fieldName}' musi mieć wartość z maksymalnie ${annotation.integer} cyframi całkowitymi i " +
                                 "${annotation.fraction} miejscami po przecinku."
@@ -96,7 +96,7 @@ class Validator {
                             field.name
                         } else {
                             annotation.nameOfField
-                        }.lowercase()
+                        }
 
                         return@validateTemplate "Pole '${fieldName}' musi mieć wartość większą niż ${annotation.value}."
                     }
@@ -116,7 +116,7 @@ class Validator {
                             field.name
                         } else {
                             annotation.nameOfField
-                        }.lowercase()
+                        }
 
                         return@validateTemplate "Pole '${fieldName}' musi być datą z przeszłości"
                     }
@@ -135,7 +135,7 @@ class Validator {
                             field.name
                         } else {
                             annotation.nameOfField
-                        }.lowercase()
+                        }
 
                         return@validateTemplate "Pole '${fieldName}' musi być datą z przeszłości"
                     }
@@ -152,7 +152,7 @@ class Validator {
                         field.name
                     } else {
                         annotation.nameOfField
-                    }.lowercase()
+                    }
 
                     return@validateTemplate "Pole '${fieldName}' musi być nieujemne"
                 }
@@ -168,7 +168,7 @@ class Validator {
                         field.name
                     } else {
                         annotation.nameOfField
-                    }.lowercase()
+                    }
 
                     return@validateTemplate "Pole '${fieldName}' nie może być puste"
                 }
@@ -185,7 +185,7 @@ class Validator {
                         field.name
                     } else {
                         annotation.nameOfField
-                    }.lowercase()
+                    }
 
                     if (!Patterns.EMAIL_ADDRESS.matcher(value).matches()) {
                         return@validateTemplate "Pole '${fieldName}' nie jest adresem email"
@@ -203,12 +203,12 @@ class Validator {
                         field.name
                     } else {
                         annotation.nameOfField
-                    }.lowercase()
+                    }
 
                     if (value.length > annotation.max) {
-                        return@validateTemplate "Pole '${fieldName}' przekracza maksymalną długość ${annotation.max}"
+                        return@validateTemplate "Pole '${fieldName}' przekracza maksymalną długość: ${annotation.max}"
                     } else if (value.length < annotation.min) {
-                        return@validateTemplate "Pole '${fieldName}' przekracza minimalną długość ${annotation.min}"
+                        return@validateTemplate "Pole '${fieldName}' nie ma minimalnej długości: ${annotation.min}"
                     }
                 }
                 return@validateTemplate null
@@ -223,7 +223,7 @@ class Validator {
                         field.name
                     } else {
                         annotation.nameOfField
-                    }.lowercase()
+                    }
 
                     return@validateTemplate "Pole '${fieldName}' jest puste"
 

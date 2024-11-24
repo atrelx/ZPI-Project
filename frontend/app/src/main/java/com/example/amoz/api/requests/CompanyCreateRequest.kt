@@ -11,16 +11,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CompanyCreateRequest(
 
-    @field:NotBlank(nameOfField = "Company number is required")
-    @field:Size(max = 50, nameOfField = "Company number should not exceed 50 characters")
+    @field:NotBlank(nameOfField = "Company number")
+    @field:Size(max = 50, nameOfField = "Company number")
     var companyNumber: String = "",
 
-    @field:NotBlank(nameOfField = "Country of registration is required")
-    @field:Size(max = 100, nameOfField = "Country of registration should not exceed 100 characters")
+    @field:NotBlank(nameOfField = "Country of registration")
+    @field:Size(max = 100, nameOfField = "Country of registration")
     var countryOfRegistration: String = "",
 
-    @field:NotBlank(nameOfField = "Company name is required")
-    @field:Size(max = 100, nameOfField = "Company name should not exceed 100 characters")
+    @field:NotBlank(nameOfField = "Company name")
+    @field:Size(max = 100, nameOfField = "Company name")
     var name: String = "",
 
     @field:NotNullable(nameOfField = "Address")

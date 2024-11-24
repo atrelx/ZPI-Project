@@ -12,7 +12,7 @@ import java.util.UUID
 @Serializable
 data class CategoryCreateRequest(
 
-    @field:NotBlank(nameOfField = "Category name is required")
+    @field:NotBlank(nameOfField = "Category name")
     val name: String,
 
     @Serializable(with = UUIDSerializer::class)
