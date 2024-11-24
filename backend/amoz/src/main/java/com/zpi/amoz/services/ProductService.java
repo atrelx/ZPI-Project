@@ -79,12 +79,14 @@ public class ProductService {
 
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find company for given id"));
-        Category category = categoryRepository.findById(productDetails.categoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Could not find category for given id"));
-        if (categoryRepository.hasChild(category.getCategoryId())) {
-            throw new IllegalArgumentException("Given category is not at the bottom level");
+        if (productDetails.categoryId().isPresent()) {
+            Category category = categoryRepository.findById(productDetails.categoryId().get())
+                    .orElseThrow(() -> new EntityNotFoundException("Could not find category for given id"));
+            if (categoryRepository.hasChild(category.getCategoryId())) {
+                throw new IllegalArgumentException("Given category is not at the bottom level");
+            }
+            initialProduct.setCategory(category);
         }
-        initialProduct.setCategory(category);
         initialProduct.setCompany(company);
 
         Product product = productRepository.save(initialProduct);
@@ -110,11 +112,13 @@ public class ProductService {
         product.setPrice(productDetails.price());
         product.setDescription(productDetails.description().orElse(null));
         product.setBrand(productDetails.brand().orElse(null));
-
-        Category category = categoryRepository.findById(productDetails.categoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-        if (categoryRepository.hasChild(category.getCategoryId())) {
-            throw new IllegalArgumentException("Given category is not at the bottom level");
+        if (productDetails.categoryId().isPresent()) {
+            Category category = categoryRepository.findById(productDetails.categoryId().get())
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+            if (categoryRepository.hasChild(category.getCategoryId())) {
+                throw new IllegalArgumentException("Given category is not at the bottom level");
+            }
+            product.setCategory(category);
         }
 
         productAttributeRepository.deleteAllByProductId(productId);
@@ -124,7 +128,7 @@ public class ProductService {
                 .collect(Collectors.toList());
         List<ProductVariant> productVariants = productVariantRepository.findAllById(productDetails.productVariantIds());
 
-        product.setCategory(category);
+
         product.setProductAttributes(productAttributes);
         product.setProductVariants(productVariants);
 

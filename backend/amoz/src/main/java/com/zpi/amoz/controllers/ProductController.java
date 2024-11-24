@@ -65,8 +65,10 @@ public class ProductController {
             UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
                     .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
                     .getCompanyId();
-            if (!authorizationService.hasPermissionToManageCategory(userPrincipal, request.categoryId())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given category is not in your company"));
+            if (request.categoryId().isPresent()) {
+                if (!authorizationService.hasPermissionToManageCategory(userPrincipal, request.categoryId().get())) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given category is not in your company"));
+                }
             }
             for (UUID productVariantId : request.productVariantIds()) {
                 if (!authorizationService.hasPermissionToManageProductVariant(userPrincipal, productVariantId)) {
@@ -104,8 +106,10 @@ public class ProductController {
             if (!authorizationService.hasPermissionToManageProduct(userPrincipal, productId)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Product is not in your company"));
             }
-            if (!authorizationService.hasPermissionToManageCategory(userPrincipal, request.categoryId())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given category is not in your company"));
+            if (request.categoryId().isPresent()) {
+                if (!authorizationService.hasPermissionToManageCategory(userPrincipal, request.categoryId().get())) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given category is not in your company"));
+                }
             }
             for (UUID productVariantId : request.productVariantIds()) {
                 if (!authorizationService.hasPermissionToManageProductVariant(userPrincipal, productVariantId)) {
