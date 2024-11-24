@@ -21,8 +21,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.validation.Validation
-import javax.validation.Validator
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject

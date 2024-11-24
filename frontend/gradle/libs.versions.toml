@@ -3,10 +3,13 @@ agp = "8.6.0"
 coilCompose = "2.3.0"
 converterKotlinxSerialization = "2.11.0"
 datastorePreferences = "1.1.1"
-hibernateValidator = "6.2.0.Final"
 hiltNavigationCompose = "1.2.0"
 hiltVersion = "2.51.1"
+
+hibernateValidator = "6.2.0.Final"
 jakartaValidationApi = "2.0.1.Final"
+javaxEl = "3.0.1-b08"
+
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -52,6 +55,7 @@ hibernate-validator = { module = "org.hibernate.validator:hibernate-validator", 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltVersion" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltVersion" }
 jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakartaValidationApi" }
+javax-el = { module = "org.glassfish:javax.el", version.ref = "javaxEl" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

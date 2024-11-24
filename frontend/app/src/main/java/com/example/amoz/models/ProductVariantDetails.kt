@@ -11,11 +11,11 @@ data class ProductVariantDetails(
     @Serializable(with = UUIDSerializer::class)
     val productVariantId: UUID,
     val code: Int,
-    val stock: Stock? = null,
+    val stock: Stock,
     val dimensions: Dimensions? = null,
     val weight: Weight? = null,
     @Serializable(with = BigDecimalSerializer::class)
     val variantPrice: BigDecimal,
-    val variantName: String,
+    val variantName: String? = null,
     val variantAttributes: List<VariantAttribute> = listOf()
 )

@@ -1,19 +1,18 @@
 package com.example.amoz.api.requests
 
+import com.example.validation.annotations.Email
+import com.example.validation.annotations.NotBlank
 import com.example.amoz.interfaces.ValidatableRequest
 import com.example.amoz.models.ContactPerson
 import com.example.amoz.models.Customer
 import kotlinx.serialization.Serializable
-import javax.validation.constraints.Email
-import javax.validation.constraints.NotBlank
-
 @Serializable
 data class ContactPersonCreateRequest(
 
-    @field:NotBlank(message = "Contact number is required.")
+    @field:NotBlank(nameOfField = "Contact number is required.")
     val contactNumber: String = "",
 
-    @field:Email(message = "Email must be valid.")
+    @field:Email(nameOfField = "Email address")
     val emailAddress: String? = null
 ) : ValidatableRequest<ContactPersonCreateRequest>() {
     constructor(contactPerson: ContactPerson) : this(

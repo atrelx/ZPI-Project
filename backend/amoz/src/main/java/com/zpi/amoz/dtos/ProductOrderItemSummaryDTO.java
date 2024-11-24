@@ -30,7 +30,7 @@ public record ProductOrderItemSummaryDTO(
     public static ProductOrderItemSummaryDTO toProductOrderItemSummaryDTO(ProductOrderItem productOrderItem) {
         return new ProductOrderItemSummaryDTO(
                 productOrderItem.getProductOrderItemId(),
-                productOrderItem.getProductVariant() != null ? ProductVariantSummaryDTO.toProductVariantSummaryDTO(productOrderItem.getProductVariant()) : null,
+                ProductVariantSummaryDTO.toProductVariantSummaryDTO(productOrderItem.getProductVariant()),
                 productOrderItem.getUnitPrice(),
                 productOrderItem.getAmount(),
                 Optional.ofNullable(productOrderItem.getProductName())

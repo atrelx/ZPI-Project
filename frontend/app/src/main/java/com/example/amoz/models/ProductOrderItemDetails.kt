@@ -10,7 +10,7 @@ import java.util.UUID
 data class ProductOrderItemDetails(
     @Serializable(with = UUIDSerializer::class)
     val productOrderItemId: UUID,
-    val productVariant: ProductVariantDetails? = null,
+    val productVariant: ProductVariantDetails,
     @Serializable(with = BigDecimalSerializer::class)
     val unitPrice: BigDecimal,
     val amount: Int,
