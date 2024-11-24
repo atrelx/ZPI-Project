@@ -61,18 +61,10 @@ fun AppNavigationHost(
             ) }
 
         // -------------------- Products screens --------------------
-//        composable(Screens.AddEditProduct.route) {
-//            ProductAddEditScreen(
-//                navController = navController,
-//                paddingValues = paddingValues,
-//                product = Product(),
-//                onComplete = {},
-////                onImageUpload = {}
-//            ) }
-
         composable(Screens.Categories.route) {
             CategoriesScreen(
                 paddingValues = paddingValues,
+                navController = navController,
             ) }
 
         composable(Screens.Attributes.route) {

@@ -2,6 +2,8 @@ package com.example.amoz.ui.screens.categories.filtered_list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,10 +27,13 @@ fun CategoriesFilteredList(
     categories: List<CategoryTree>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onEdit: (CategoryTree) -> Unit,
     onAdd: () -> Unit,
+    onEdit: ((CategoryTree) -> Unit)? = null,
+    onSelect: ((CategoryTree) -> Unit)? = null,
+    onDelete: ((CategoryTree) -> Unit)? = null,
 ) {
     LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item {
@@ -45,11 +50,14 @@ fun CategoriesFilteredList(
                     category = category,
                     allCategories = categories,
                     onEdit = onEdit,
+                    onSelect = onSelect,
+                    onDelete = onDelete
                 )
             }
         }
         item {
             // -------------------- Add a category btn --------------------
+            Spacer(Modifier.height(15.dp))
             OutlinedButton(
                 onClick = onAdd,
                 shape = RoundedCornerShape(10.dp),

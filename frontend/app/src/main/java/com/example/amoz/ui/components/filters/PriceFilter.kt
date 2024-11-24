@@ -14,45 +14,32 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.ui.components.PriceTextField
+import java.math.BigDecimal
 
 @Composable
 fun PriceFilter(
-    priceFrom: String,
-    priceTo: String,
-    onPriceFromChange: (String) -> Unit,
-    onPriceToChange: (String) -> Unit,
+    priceFrom: BigDecimal?,
+    priceTo: BigDecimal?,
+    onPriceFromChange: (BigDecimal) -> Unit,
+    onPriceToChange: (BigDecimal) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
-        OutlinedTextField(
+        PriceTextField(
             modifier = Modifier.weight(1f),
-            value = priceFrom,
-            onValueChange = {
-                onPriceFromChange(it)
-            },
-            label = { Text(stringResource(id = R.string.price_from)) },
-            placeholder = { Text("0") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            singleLine = true
+            label = stringResource(id = R.string.price_from),
+            price = priceFrom,
+            onPriceChange = { onPriceFromChange(it) }
         )
         Spacer(modifier = Modifier.width(10.dp))
-        OutlinedTextField(
+        PriceTextField(
             modifier = Modifier.weight(1f),
-            value = priceTo,
-            onValueChange = {
-                onPriceToChange(it)
-            },
-            label = { Text(stringResource(id = R.string.price_to)) },
-            placeholder = { Text("-") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            singleLine = true
+            label = stringResource(id = R.string.price_to),
+            price = priceTo,
+            onPriceChange = { onPriceToChange(it) }
         )
+
     }
 }

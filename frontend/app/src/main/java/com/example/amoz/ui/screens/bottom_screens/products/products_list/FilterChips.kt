@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.models.CategoryTree
 import java.math.BigDecimal
 
 @Composable
@@ -23,7 +24,9 @@ fun FilterChips(
     modifier: Modifier = Modifier,
     productTemplateChipValue: String?,
     onProductTemplateChipClick: () -> Unit,
-    priceFrom: BigDecimal,
+    category: CategoryTree?,
+    onCategoryClick: () -> Unit,
+    priceFrom: BigDecimal?,
     onPriceFromClick: () -> Unit,
     priceTo: BigDecimal?,
     onPriceToClick: () -> Unit,
@@ -34,6 +37,20 @@ fun FilterChips(
         ),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        category?.let {
+            FilterChip(
+                onClick = onCategoryClick,
+                label = { Text("Category: ${it.name}") },
+                selected = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Done,
+                        contentDescription = "Done icon",
+                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                    )
+                }
+            )
+        }
         productTemplateChipValue?.let {
             FilterChip(
                 onClick = onProductTemplateChipClick,
@@ -48,7 +65,7 @@ fun FilterChips(
                 }
             )
         }
-        if(priceFrom != BigDecimal.ZERO) {
+        priceFrom?.let {
             FilterChip(
                 onClick = onPriceFromClick,
                 label = { Text(stringResource(id = R.string.price_from) + ": $priceFrom") },

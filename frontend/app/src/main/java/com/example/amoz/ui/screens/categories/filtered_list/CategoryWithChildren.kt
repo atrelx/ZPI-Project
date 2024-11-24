@@ -20,7 +20,9 @@ fun CategoryWithChildren(
     allCategories: List<CategoryTree>,
     level: Int = 0,
     isChild: Boolean = false,
-    onEdit: (CategoryTree) -> Unit,
+    onEdit: ((CategoryTree) -> Unit)? = null,
+    onSelect: ((CategoryTree) -> Unit)? = null,
+    onDelete: ((CategoryTree) -> Unit)? = null,
 ) {
     val children = category.childCategories
     var childrenListExpanded by remember { mutableStateOf(false) }
@@ -34,7 +36,9 @@ fun CategoryWithChildren(
             isExpanded = childrenListExpanded,
             hasChildren = children.isNotEmpty(),
             onExpand = { childrenListExpanded = !childrenListExpanded },
-            onEdit = onEdit
+            onEdit = onEdit,
+            onSelect = onSelect,
+            onDelete = onDelete,
         )
 
         if (childrenListExpanded) {
@@ -48,6 +52,8 @@ fun CategoryWithChildren(
                         level = level + 1,
                         isChild = true,
                         onEdit = onEdit,
+                        onSelect = onSelect,
+                        onDelete = onDelete,
                     )
                 }
             }

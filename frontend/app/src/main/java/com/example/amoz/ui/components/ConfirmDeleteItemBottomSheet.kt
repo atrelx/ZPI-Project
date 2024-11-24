@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.products
+package com.example.amoz.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,15 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.ui.components.CloseOutlinedButton
-import com.example.amoz.ui.components.PrimaryFilledButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfirmDeleteProductBottomSheet(
+fun ConfirmDeleteItemBottomSheet(
     onDismissRequest: () -> Unit,
     onDeleteConfirm: () -> Unit,
-    productNameToDelete: String,
+    itemNameToDelete: String,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest
@@ -37,7 +35,7 @@ fun ConfirmDeleteProductBottomSheet(
             Text(
                 text = stringResource(
                     id = R.string.products_delete_product_template_confirm,
-                    productNameToDelete
+                    itemNameToDelete
                 ),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center
@@ -50,8 +48,8 @@ fun ConfirmDeleteProductBottomSheet(
             // -------------------- Cancel and apply --------------------
             PrimaryFilledButton(
                 onClick = {
-                    onDismissRequest()
                     onDeleteConfirm()
+                    onDismissRequest()
                 },
                 text = stringResource(id = R.string.confirm)
             )

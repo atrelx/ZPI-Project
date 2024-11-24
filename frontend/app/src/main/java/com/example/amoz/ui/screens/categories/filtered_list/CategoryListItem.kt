@@ -1,8 +1,10 @@
 package com.example.amoz.ui.screens.categories.filtered_list
 
 import android.widget.BaseExpandableListAdapter
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,20 +31,19 @@ import com.example.amoz.R
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.theme.extendedColors
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryListItem(
     category: CategoryTree,
-    onEdit: (CategoryTree) -> Unit = {},
-    onSelect: (CategoryTree) -> Unit = {},
-    onExpand: () -> Unit = {},
-    isEditable: Boolean = true,
-    isSelectable: Boolean = false,
+    onEdit: ((CategoryTree) -> Unit)? = null,
+    onSelect: ((CategoryTree) -> Unit)? = null,
+    onDelete: ((CategoryTree) -> Unit)? = null,
+    onExpand: (() -> Unit)? = null,
     isChild: Boolean = false,
     isExpanded: Boolean = false,
     hasChildren: Boolean = true,
 
 ) {
-
     val childrenListExpandedIcon =
         if(isExpanded) {
             Icons.Default.ArrowCircleUp}
@@ -67,9 +68,10 @@ fun CategoryListItem(
                 brush = SolidColor(borderColor),
                 shape = RoundedCornerShape(5.dp)
             )
-            .clickable {
-                onExpand()
-            },
+            .combinedClickable(
+                onClick = { onExpand?.invoke() },
+                onLongClick = { onDelete?.invoke(category) }
+            ),
         leadingContent = {
             if (!isChild) {
                 Icon(
@@ -83,7 +85,7 @@ fun CategoryListItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isEditable) {
+                if (onEdit != null) {
                     IconButton(onClick = { onEdit(category) }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
@@ -91,13 +93,12 @@ fun CategoryListItem(
                         )
                     }
                 }
-                if (isSelectable) {
+                if (onSelect != null && !hasChildren) {
                     IconButton(onClick = { onSelect(category) }) {
                         Icon(
                             imageVector = Icons.Filled.CheckCircle,
                             contentDescription = "select category"
                         )
-                        Text(text = stringResource(id = R.string.select_category))
                     }
                 }
                 if (hasChildren) {

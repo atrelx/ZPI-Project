@@ -1,21 +1,15 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
-import com.example.amoz.models.CategorySummary
-import com.example.amoz.models.ProductDetails
 import com.example.amoz.models.ProductSummary
-import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.view_models.ProductsViewModel
 import java.math.BigDecimal
 
 class ProductListFilter {
-    fun filterProductTemplates(
+    fun filterProducts(
         templates: List<ProductSummary>,
         searchQuery: String,
-        sortingType: ProductsViewModel.SortingType,
-        priceFrom: BigDecimal,
-        priceTo: BigDecimal?,
-        category: CategorySummary?
+        filterParams: ProductsViewModel.FilterParams,
     ): List<ProductSummary> {
         return templates
             .filter { product ->
@@ -25,15 +19,17 @@ class ProductListFilter {
                     product.brand?.contains(it, ignoreCase = true) ?: true
                 } ?: true) &&
                     // Filter by category
-                    (category?.let {
+                    (filterParams.category?.let {
                         product.category.name == it.name
                     } ?: true) &&
                         // Filter by base price
-                    (product.price in priceFrom..(priceTo ?: BigDecimal(Int.MAX_VALUE)))
+                    (product.price in
+                            (filterParams.priceFrom ?: BigDecimal.ZERO)..
+                            (filterParams.priceTo ?: BigDecimal(Int.MAX_VALUE)))
 
             }
             .sortedWith(
-                when (sortingType) {
+                when (filterParams.sortingType) {
                     ProductsViewModel.SortingType.ASCENDING_NAME -> compareBy { it.name }
                     ProductsViewModel.SortingType.DESCENDING_NAME -> compareByDescending { it.name }
                     ProductsViewModel.SortingType.ASCENDING_PRICE -> compareBy { it.price }
@@ -46,10 +42,9 @@ class ProductListFilter {
     fun filterProductVariants(
         variants: List<ProductVariantSummary>,
         searchQuery: String,
+        filterParams: ProductsViewModel.FilterParams,
 //        selectedTemplate: ProductSummary?,
-        sortingType: ProductsViewModel.SortingType,
-        priceFrom: BigDecimal,
-        priceTo: BigDecimal?
+
     ): List<ProductVariantSummary> {
         return variants
             .filter { variant ->
@@ -59,10 +54,12 @@ class ProductListFilter {
                         // Filter by selected template
 //                        (selectedTemplate?.let { variant.productVariantId == it.productId } ?: true) &&
                         // Filter by price range
-                        (variant.variantPrice in priceFrom..(priceTo ?: BigDecimal(Int.MAX_VALUE)))
+                        (variant.variantPrice in
+                                (filterParams.priceFrom ?: BigDecimal.ZERO)..
+                                (filterParams.priceTo ?: BigDecimal(Int.MAX_VALUE)))
             }
             .sortedWith(
-                when (sortingType) {
+                when (filterParams.sortingType) {
                     ProductsViewModel.SortingType.ASCENDING_NAME -> compareBy { it.variantName }
                     ProductsViewModel.SortingType.DESCENDING_NAME -> compareByDescending { it.variantName }
                     ProductsViewModel.SortingType.ASCENDING_PRICE -> compareBy { it.variantPrice }

@@ -57,12 +57,6 @@ fun AttributeItem(
     val defaultAttributeNameText = stringResource(R.string.product_attributes_choose_name)
     val defaultAttributeValueText = stringResource(R.string.product_attributes_choose_value)
 
-    val attributeNameState by remember {
-        mutableStateOf(
-            attributeName.takeIf { it.isNotBlank() } ?: defaultAttributeNameText
-        )
-    }
-
 
     val listItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -115,7 +109,7 @@ fun AttributeItem(
                 modifier = Modifier
                     .fillMaxWidth(),
                 placeholder = { Text(defaultAttributeNameText) },
-                value = attributeNameState,
+                value = attributeName,
                 onValueChange = { onNameChange(it) },
                 leadingIcon = {
                     Icon(

@@ -82,9 +82,11 @@ fun FilteredProductsList(
                     onProductTemplateChipClick = {
                         productsViewModel.showProductVariants(null)
                     },
-                    priceFrom = productsListUiState.filterPriceFrom,
+                    category = productsListUiState.filterParams.category,
+                    onCategoryClick = productsViewModel::clearCategoryFilter,
+                    priceFrom = productsListUiState.filterParams.priceFrom,
                     onPriceFromClick = { productsViewModel.clearPriceFilter(true) },
-                    priceTo = productsListUiState.filterPriceTo,
+                    priceTo = productsListUiState.filterParams.priceTo,
                     onPriceToClick = { productsViewModel.clearPriceFilter(false) }
                 )
             }

@@ -36,7 +36,7 @@
     // --------------------- Products screen ---------------------
     <string name="products_add_simple_product">Add simple product</string>
     <string name="products_add_product_variant">Add product variant</string>
-    <string name="products_add_product_template">Add product template</string>
+    <string name="products_add_product_template">Add product</string>
     <string name="products_delete_product_template_confirm">Do you really want to delete:\n%1$s?</string>
     <string name="products_categories_screen">Categories</string>
     <string name="products_attributes_screen">Attributes</string>

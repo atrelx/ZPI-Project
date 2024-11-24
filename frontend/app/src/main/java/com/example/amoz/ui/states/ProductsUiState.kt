@@ -4,11 +4,13 @@ import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.CategorySummary
+import com.example.amoz.models.CategoryTree
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.view_models.ProductsViewModel.SortingType
 import com.example.amoz.test_data.products.summary.testProductSummaryList
 import com.example.amoz.test_data.products.summary.testProductVariantSummariesList
+import com.example.amoz.view_models.ProductsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.math.BigDecimal
 import java.util.UUID
@@ -27,10 +29,8 @@ data class ProductsUiState(
     val showProductsList: Boolean = true,
     val showProductVariantsList: Boolean = false,
 
-    val sortingType: SortingType = SortingType.NONE,
-    val filterPriceFrom: BigDecimal = BigDecimal.ZERO,
-    val filterPriceTo: BigDecimal? = null,
-    val filterCategory: CategorySummary? = null,
+    val filterParams: ProductsViewModel.FilterParams = ProductsViewModel.FilterParams(),
+    val filterParamsInEdit: ProductsViewModel.FilterParams = ProductsViewModel.FilterParams(),
 
     val currentAddEditProductId: UUID? = null,
     val currentAddEditProductState: MutableStateFlow<ResultState<ProductCreateRequest>> = MutableStateFlow(ResultState.Idle),

@@ -53,7 +53,6 @@ fun <T> ResultStateView(
     if (onPullToRefresh != null) {
         PullToRefreshBox (
             modifier = modifier,
-            contentAlignment = Alignment.Center,
             state = pullToRefreshState,
             isRefreshing = isRefreshing,
             onRefresh = onRefresh
@@ -64,7 +63,6 @@ fun <T> ResultStateView(
     else {
         Box(
             modifier = modifier,
-            contentAlignment = Alignment.Center
         ) {
             ContentStateView(state, loadingView, failureView, successView)
         }

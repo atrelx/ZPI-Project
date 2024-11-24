@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.example.amoz.R
+import com.example.amoz.ui.components.PriceTextField
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -87,33 +88,10 @@ fun ProductNameDescriptionPrice(
         }
 
         // -------------------- Product's price --------------------
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth(),
-            value = productPrice?.toPlainString() ?: "",
-            onValueChange = {
-                val priceRegex = "^\\d*(\\.\\d{0,2})?\$".toRegex()
-                if (it.matches(priceRegex)) {
-                    onPriceChange(it.toBigDecimalOrNull() ?: BigDecimal.ZERO)
-                }
-            },
-            placeholder = { Text("0.00") },
-            label = { Text(stringResource(R.string.product_price)) },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Decimal,
-                imeAction = ImeAction.Done
-            ),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Filled.CreditCard,
-                    contentDescription = null,
-                )
-            },
-            trailingIcon = {
-                Text(text = stringResource(R.string.currency))
-            },
-            maxLines = 1,
-            singleLine = true
+        PriceTextField(
+            label = stringResource(R.string.product_price),
+            price = productPrice,
+            onPriceChange = { onPriceChange(it) }
         )
     }
 }

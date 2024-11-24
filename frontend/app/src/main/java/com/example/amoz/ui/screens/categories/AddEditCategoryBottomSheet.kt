@@ -20,8 +20,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.api.requests.CategoryCreateRequest
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.HorizontalDividerWithText
 import com.example.amoz.ui.components.CloseOutlinedButton
@@ -43,30 +42,20 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCategoryBottomSheet(
-    category: CategoryTree? = null,
+    categoryTree: CategoryTree? = null,
+    categoryCreateRequest: CategoryCreateRequest,
     onDismissRequest: () -> Unit,
-    onComplete: (String, List<String>) -> Unit,
+    onComplete: (CategoryCreateRequest, List<String>) -> Unit,
     onSubcategoryEdit: (CategoryTree) -> Unit
 ) {
-    var categoryName by remember { mutableStateOf(category?.name ?: "") }
-    var categoryChildren = category?.childCategories?.toMutableList() ?: mutableListOf()
+    var categoryState by remember { mutableStateOf(categoryCreateRequest) }
+    val categoryChildren = categoryTree?.childCategories?.toMutableList() ?: mutableListOf()
     val newCategoryChildren = remember { mutableStateListOf<String>() }
 
-    LaunchedEffect(category) {
-        categoryName = category?.name ?: ""
-        categoryChildren = category?.childCategories?.toMutableList() ?: mutableListOf()
-    }
-
-    val isFormValid by remember {
-        derivedStateOf {
-            (categoryName.isNotBlank() && category?.name != categoryName) ||
-                    newCategoryChildren.isNotEmpty()
-        }
-    }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val bottomSheetTitle =
-        if (category == null) stringResource(R.string.add_category_title)
+        if (categoryTree == null) stringResource(R.string.add_category_title)
         else stringResource(R.string.edit_category_title)
 
     ModalBottomSheet(
@@ -90,8 +79,8 @@ fun AddEditCategoryBottomSheet(
             // -------------------- CategoryTree name --------------------
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = categoryName,
-                onValueChange = { categoryName = it },
+                value = categoryState.name ?: "",
+                onValueChange = { categoryState = categoryState.copy(name = it) },
                 label = { Text(stringResource(id = R.string.category_name)) },
                 leadingIcon = {
                     Icon(
@@ -110,8 +99,7 @@ fun AddEditCategoryBottomSheet(
                 CategoryListItem(
                     category = category,
                     isChild = false,
-                    isEditable = true,
-                    onEdit = onSubcategoryEdit,
+                    onEdit = { onSubcategoryEdit(category) },
                     hasChildren = false
                 )
             }
@@ -149,9 +137,10 @@ fun AddEditCategoryBottomSheet(
             PrimaryFilledButton(
                 text = stringResource(id = R.string.confirm),
                 onClick = {
-                    onComplete(categoryName, newCategoryChildren)
+                    onComplete(categoryState, newCategoryChildren)
+                    onDismissRequest()
                 },
-                enabled = isFormValid,
+//                enabled = isFormValid,
             )
             // -------------------- Close bottom sheet --------------------
             val scope = rememberCoroutineScope()

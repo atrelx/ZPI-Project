@@ -20,44 +20,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.models.CategorySummary
+import com.example.amoz.ui.components.CategoryPicker
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
-import com.example.amoz.ui.screens.bottom_screens.products.CategoryPicker
 import com.example.amoz.view_models.ProductsViewModel
-import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreFiltersBottomSheet(
+    navController: NavController,
     onDismissRequest: () -> Unit,
     onCancelFilters: () -> Unit,
+    filterParams: ProductsViewModel.FilterParams,
+    onSaveFilterParams: (ProductsViewModel.FilterParams) -> Unit,
     onApplyFilters: (ProductsViewModel.FilterParams) -> Unit,
-    priceFrom: BigDecimal?,
-    priceTo: BigDecimal?,
-    sortingType: ProductsViewModel.SortingType,
-    category: CategorySummary?,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    var sortingTypeState by remember { mutableStateOf(sortingType) }
+    var filterParamsState by remember(filterParams) { mutableStateOf(filterParams) }
 
-    var priceFromState by remember {
-        mutableStateOf(
-            if (priceFrom == BigDecimal.ZERO) { "" } else { priceFrom.toString() }
-        )
-    }
-    var priceToState by remember {
-        mutableStateOf(
-            priceTo.toString()
-        )
-    }
-
-    var categoryState by remember { mutableStateOf(category) }
 
     ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            onDismissRequest()
+        },
         sheetState = sheetState
     ) {
         Column(
@@ -71,20 +59,28 @@ fun MoreFiltersBottomSheet(
         ) {
             // -------------------- Sorting --------------------
             ListSorting(
-                sortingType = sortingTypeState,
-                onSortingTypeChange = { sortingTypeState = it }
+                sortingType = filterParamsState.sortingType,
+                onSortingTypeChange = {
+                    filterParamsState = filterParamsState.copy(sortingType = it)
+                }
             )
             // -------------------- Price filter --------------------
             PriceFilter(
-                priceFrom = priceFromState,
-                priceTo = priceToState,
-                onPriceFromChange = { priceFromState = it },
-                onPriceToChange = { priceToState = it },
+                priceFrom = filterParamsState.priceFrom,
+                priceTo = filterParamsState.priceTo,
+                onPriceFromChange = {
+                    filterParamsState = filterParamsState.copy(priceFrom = it)
+                },
+                onPriceToChange = {
+                    filterParamsState = filterParamsState.copy(priceTo = it)
+                },
             )
             // -------------------- Product's category --------------------
             CategoryPicker(
-                category = category,
-                onCategoryChange = { categoryState = it }
+                navController = navController,
+                category = filterParamsState.category,
+                onCategoryChange = { filterParamsState = filterParamsState.copy(category = it) },
+                onSaveState = { onSaveFilterParams(filterParamsState) },
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -100,14 +96,7 @@ fun MoreFiltersBottomSheet(
             PrimaryFilledButton(
                 onClick = {
                     onDismissRequest()
-                    onApplyFilters(
-                        ProductsViewModel.FilterParams(
-                            sortingTypeState,
-                            priceFromState.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                            priceToState.toBigDecimalOrNull(),
-                            categoryState
-                        )
-                    )
+                    onApplyFilters(filterParamsState)
                 },
                 text = stringResource(id = R.string.apply_filters)
             )

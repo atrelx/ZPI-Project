@@ -17,20 +17,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.api.requests.CategoryCreateRequest
+import com.example.amoz.models.CategorySummary
+import com.example.amoz.models.CategoryTree
+import com.example.amoz.ui.components.ConfirmDeleteItemBottomSheet
+import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.screens.categories.filtered_list.CategoriesFilteredList
 import com.example.amoz.view_models.CategoriesViewModel
+import kotlinx.serialization.json.Json
 
 @Composable
 fun CategoriesScreen(
     paddingValues: PaddingValues,
-    categoryViewModel: CategoriesViewModel = viewModel()
+    navController: NavController,
+    categoryViewModel: CategoriesViewModel = hiltViewModel()
 ) {
     val categoryUiState by categoryViewModel.categoriesUiState.collectAsState()
 
+    val isSelectable = navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.get<Boolean>("isSelectable") ?: false
+
     fun closeAddEditCategoryBottomSheet() {
-        categoryViewModel.updateCurrentAddEditCategory(null)
+        categoryViewModel.updateCurrentCategory(null)
         categoryViewModel.expandAddEditCategoryBottomSheet(false)
     }
 
@@ -40,18 +52,43 @@ fun CategoriesScreen(
             .padding(paddingValues)
             .padding(horizontal = 16.dp)
     ) {
-        CategoriesFilteredList(
-            categories = categoryUiState.filteredCategoryList,
-            searchQuery = categoryUiState.searchQuery,
-            onSearchQueryChange = categoryViewModel::updateSearchQuery,
-            onEdit = { category ->
-                categoryViewModel.updateCurrentAddEditCategory(category)
-                categoryViewModel.expandAddEditCategoryBottomSheet(true)
-            },
-            onAdd = {
-                categoryViewModel.expandAddEditCategoryBottomSheet(true)
-            }
-        )
+        ResultStateView(
+            state = categoryUiState.categoriesListFetched,
+            onPullToRefresh = { categoryViewModel.fetchCategories(true) }
+        ) {
+            CategoriesFilteredList(
+                categories = categoryUiState.filteredCategoryList,
+                searchQuery = categoryUiState.searchQuery,
+                onSearchQueryChange = categoryViewModel::updateSearchQuery,
+                onEdit =
+                    if (!isSelectable) {
+                        {
+                            categoryViewModel.updateCurrentCategory(it)
+                            categoryViewModel.expandAddEditCategoryBottomSheet(true)
+                        }
+                    }
+                    else null,
+                onSelect =
+                    if (isSelectable) {
+                        {
+                            val categoryJson = Json.encodeToString(CategoryTree.serializer(), it)
+                            navController.previousBackStackEntry?.savedStateHandle?.set(
+                                "selectedCategoryTree", categoryJson
+                            )
+                            navController.popBackStack()
+                        }
+                    }
+                    else null,
+                onAdd = {
+                    categoryViewModel.updateCurrentCategory(null)
+                    categoryViewModel.expandAddEditCategoryBottomSheet(true)
+                },
+                onDelete = {
+                    categoryViewModel.updateCurrentCategory(it)
+                    categoryViewModel.expandDeleteCategoryConfirmBottomSheet(true)
+                }
+            )
+        }
 
         // -------------------- Bottom sheet title --------------------
         Box(modifier = Modifier
@@ -60,6 +97,7 @@ fun CategoriesScreen(
         ) {
             ExtendedFloatingActionButton(
                 onClick = {
+                    categoryViewModel.updateCurrentCategory(null)
                     categoryViewModel.expandAddEditCategoryBottomSheet(true)
                 },
                 modifier = Modifier
@@ -71,22 +109,38 @@ fun CategoriesScreen(
     }
 
     if (categoryUiState.addEditCategoryBottomSheetExpanded) {
+        categoryUiState.currentCategoryCreateRequest?.let {
             AddEditCategoryBottomSheet(
-                category = categoryUiState.currAddEditCategory,
-                onDismissRequest = {
-                    closeAddEditCategoryBottomSheet()
-                },
+                categoryTree = categoryUiState.currentCategoryTree,
+                categoryCreateRequest = it,
+                onDismissRequest = { closeAddEditCategoryBottomSheet() },
                 onComplete = { name, subcategoriesList ->
-                    categoryUiState.currAddEditCategory?.let { category ->
-                        categoryViewModel.updateCategory(category.categoryId, name)
-                        categoryViewModel.addSubcategoriesToCategory(subcategoriesList)
-                    } ?: run {
-                        categoryViewModel.addCategory(name)
-                        /*TODO: add subcategories*/
+                    if (categoryUiState.currentCategoryTree != null) {
+                        val categoryId = categoryUiState.currentCategoryTree!!.categoryId
+                        categoryViewModel.updateCategory(categoryId, name, subcategoriesList)
+                    }
+                    else {
+                        categoryViewModel.addCategory(name, subcategoriesList)
                     }
                 },
-                onSubcategoryEdit = categoryViewModel::updateCurrentAddEditCategory
+                onSubcategoryEdit = categoryViewModel::updateCurrentCategory
             )
+        }
+    }
+
+    if(categoryUiState.deleteCategoryConfirmBottomSheetExpanded) {
+        categoryUiState.currentCategoryTree?.let { category ->
+            ConfirmDeleteItemBottomSheet(
+                itemNameToDelete = category.name,
+                onDismissRequest = {
+                    categoryViewModel.updateCurrentCategory(null)
+                    categoryViewModel.expandDeleteCategoryConfirmBottomSheet(false)
+                },
+                onDeleteConfirm = {
+                    categoryViewModel.deleteCategory(category.categoryId)
+                }
+            )
+        }
     }
 }
 

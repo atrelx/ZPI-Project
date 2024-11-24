@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,26 +41,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.models.CategoryDetails
-import com.example.amoz.models.ProductAttribute
-import com.example.amoz.models.ProductDetails
-import com.example.amoz.navigation.NavItemType
-import com.example.amoz.navigation.allApplicationScreensMap
-import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
+import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.screens.Screens
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
+import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditProductTemplateBottomSheet(
+fun AddEditProductBottomSheet(
     productDetailsState:  MutableStateFlow<ResultState<ProductCreateRequest>>,
     onSaveProduct: (ProductCreateRequest) -> Unit,
     onComplete: (ProductCreateRequest) -> Unit,
@@ -89,6 +85,12 @@ fun AddEditProductTemplateBottomSheet(
             shape = RoundedCornerShape(5.dp)
         )
 
+    val json = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.get<String>("selectedCategoryTree")
+
+    val categoryTree = json?.let { Json.decodeFromString(CategoryTree.serializer(), it) }
+    var categoryTreeState by remember { mutableStateOf<CategoryTree?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -96,6 +98,13 @@ fun AddEditProductTemplateBottomSheet(
     ) {
         ResultStateView(productDetailsState) { product ->
             var productState by remember { mutableStateOf(product) }
+
+            LaunchedEffect(json) {
+                categoryTree?.let {
+                    categoryTreeState = it
+                    productState = productState.copy(categoryId = it.categoryId)
+                }
+            }
 
             Column(
                 modifier = Modifier
@@ -146,13 +155,13 @@ fun AddEditProductTemplateBottomSheet(
                 )
 
 //             -------------------- Product's category --------------------
+
                 ListItem(
                     modifier = listItemModifier.then(Modifier
                         .clickable {
                             onSaveProduct(productState)
-                            navController.navigate(
-                                allApplicationScreensMap[NavItemType.Categories]!!.screenRoute
-                            )
+                            navController.currentBackStackEntry?.savedStateHandle?.set("isSelectable", true)
+                            navController.navigate(Screens.Categories.route)
                         }),
                     leadingContent = {
                         Icon(
@@ -163,7 +172,7 @@ fun AddEditProductTemplateBottomSheet(
                     overlineContent = { Text(stringResource(R.string.product_category)) },
                     headlineContent = {
                         Text(
-                            text = stringResource(R.string.product_category_choose)
+                            text = categoryTreeState?.name ?: stringResource(R.string.product_category_choose)
                         )
                     },
                     trailingContent = {
