@@ -1,17 +1,43 @@
 package com.example.amoz.interfaces
 
 import android.util.Log
-import com.example.amoz.api.requests.CompanyCreateRequest
-import kotlin.reflect.full.memberProperties
-import javax.validation.ValidationException
+import com.example.validation.Validator
+
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
-abstract class ValidatableRequest<T : ValidatableRequest<T>> {
 
+abstract class ValidatableRequest<T : ValidatableRequest<T>>  {
     fun validate(): String? {
+        cascadeValidate()?.let { validationErrorMessage ->
+            return validationErrorMessage
+        }
+
+        val violations: List<String> = listOfNotNull(Validator.validateDigits(this),
+            Validator.validatePositive(this),
+            Validator.validateEmail(this),
+            Validator.validateSize(this),
+            Validator.validateNotBlank(this),
+            Validator.validateMin(this),
+            Validator.validatePast(this),
+            Validator.validatePastOrPresent(this),
+            Validator.validateNotNullable(this),
+            Validator.validateDecimalMin(this),
+            Validator.validateListSize(this)
+        )
+
+        Log.i("ValidationLogger", "Validating class: ${this::class.simpleName}")
+
+        return if (violations.isNotEmpty()) {
+            violations.first()
+        } else {
+            null
+        }
+    }
+
+    private fun cascadeValidate(): String? {
+        val violations: MutableList<String> = mutableListOf()
         this::class.memberProperties.forEach { property ->
             property.isAccessible = true
 
@@ -20,17 +46,24 @@ abstract class ValidatableRequest<T : ValidatableRequest<T>> {
 
             when (value) {
                 is ValidatableRequest<*> -> {
-                    value.validate()
+                    value.validate()?.let { violation ->
+                        violations.add(violation)
+                    }
                 }
                 is List<*> -> {
                     value.filterIsInstance<ValidatableRequest<*>>()
-                        .forEach { it.validate() }
+                        .forEach {
+                            it.validate()?.let { violation ->
+                                violations.add(violation)
+                            }
+                        }
                 }
             }
         }
-        Log.i("ValidationLogger", "Validating class: ${this::class.simpleName}")
-        val validationErrorMessage: String? = null
-
-        return validationErrorMessage
+        return if (violations.isNotEmpty()) {
+            violations.first()
+        } else {
+            null
+        }
     }
 }

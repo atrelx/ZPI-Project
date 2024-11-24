@@ -14,7 +14,7 @@ public record ProductOrderItemDetailsDTO(
         @Schema(description = "Identyfikator pozycji zamówienia", example = "a2e9f5c4-4d52-40b3-bf3b-ecbb94c79e7b")
         UUID productOrderItemId,
 
-        @ArraySchema(schema = @Schema(description = "Szczegóły wariantu produktu", implementation = ProductVariantDetailsDTO.class))
+        @Schema(description = "Szczegóły wariantu produktu", implementation = ProductVariantDetailsDTO.class)
         ProductVariantDetailsDTO productVariant,
 
         @Schema(description = "Cena jednostkowa produktu", example = "299.99")
@@ -31,7 +31,7 @@ public record ProductOrderItemDetailsDTO(
     public static ProductOrderItemDetailsDTO toProductOrderItemDetailsDTO(ProductOrderItem productOrderItem) {
         return new ProductOrderItemDetailsDTO(
                 productOrderItem.getProductOrderItemId(),
-                productOrderItem.getProductVariant() != null ? ProductVariantDetailsDTO.toProductVariantDetailsDTO(productOrderItem.getProductVariant()) : null,
+                ProductVariantDetailsDTO.toProductVariantDetailsDTO(productOrderItem.getProductVariant()),
                 productOrderItem.getUnitPrice(),
                 productOrderItem.getAmount(),
                 Optional.ofNullable(productOrderItem.getProductName())

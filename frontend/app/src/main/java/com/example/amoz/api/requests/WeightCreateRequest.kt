@@ -2,14 +2,23 @@ package com.example.amoz.api.requests
 
 import com.example.amoz.api.enums.UnitWeight
 import com.example.amoz.interfaces.ValidatableRequest
-import javax.validation.constraints.Positive
+import com.example.amoz.models.Stock
+import com.example.amoz.models.Weight
+import com.example.validation.annotations.NotNullable
+import com.example.validation.annotations.Positive
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class WeightCreateRequest(
-    @field:Positive(message = "Unit weight must be greater than 0")
+    @field:NotNullable(nameOfField = "Unit weight")
     val unitWeight: UnitWeight,
 
-    @field:Positive(message = "Amount must be greater than 0")
+    @field:Positive(nameOfField = "Amount")
+    @field:NotNullable(nameOfField = "Amount")
     val amount: Double
-) : ValidatableRequest<WeightCreateRequest>()
+) : ValidatableRequest<WeightCreateRequest>() {
+    constructor(weight: Weight) : this(
+        unitWeight = weight.unitWeight,
+        amount = weight.amount
+    )
+}

@@ -78,11 +78,11 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json.jvm)
 
-    implementation(libs.kotlin.reflect)
-    implementation(libs.hibernate.validator)
-    implementation(libs.jakarta.validation.api)
-    implementation("org.glassfish:javax.el:3.0.1-b08")
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    runtimeOnly("com.google.firebase:firebase-messaging-ktx:24.0.3")
+    implementation("com.google.firebase:firebase-messaging:24.0.3")
 
+    implementation(libs.kotlin.reflect)
 
     implementation(libs.retrofit)
     implementation(libs.converter.kotlinx.serialization)

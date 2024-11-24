@@ -40,8 +40,8 @@ public record ProductVariantCreateRequest(
         @Schema(description = "Nazwa wariantu produktu (opcjonalna)", example = "Czarny T-shirt, rozmiar M", nullable = true)
         Optional<@Size(max = 100, message = "Variant name cannot exceed 100 characters") String> variantName,
 
-        @Schema(description = "Cena wariantu produktu, musi być liczbą dodatnią", example = "199.99", nullable = true)
-        Optional<@DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
-        @Digits(integer = 10, fraction = 2, message = "Price must be a valid amount with up to 10 digits and 2 decimal places") BigDecimal> variantPrice
+        @Schema(description = "Cena wariantu produktu, musi być liczbą dodatnią", example = "199.99")
+        @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
+        @Digits(integer = 10, fraction = 2, message = "Price must be a valid amount with up to 10 digits and 2 decimal places") BigDecimal variantPrice
 ) {
 }

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Schema(description = "DTO reprezentujące skrócone informacje o wariancie produktu, w tym identyfikator, cenę oraz nazwę wariantu.")
@@ -20,7 +21,7 @@ public record ProductVariantSummaryDTO(
         BigDecimal variantPrice,
 
         @Schema(description = "Nazwa wariantu produktu", example = "Czarny T-shirt, rozmiar M")
-        String variantName
+        Optional<String> variantName
 
 ) {
 
@@ -29,7 +30,7 @@ public record ProductVariantSummaryDTO(
                 productVariant.getProductVariantId(),
                 productVariant.getCode(),
                 productVariant.getVariantPrice(),
-                productVariant.getVariantName()
+                Optional.ofNullable(productVariant.getVariantName())
         );
     }
 }

@@ -1,22 +1,31 @@
 package com.example.amoz.api.requests
 
+import com.example.validation.annotations.NotNullable
+import com.example.validation.annotations.Positive
 import com.example.amoz.api.enums.UnitDimensions
 import com.example.amoz.interfaces.ValidatableRequest
+import com.example.amoz.models.CategoryDetails
+import com.example.amoz.models.Dimensions
 import kotlinx.serialization.Serializable
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Positive
 
 @Serializable
 data class DimensionsCreateRequest(
-    @field:Positive(message = "Unit weight must be greater than 0")
+    @field:NotNullable(nameOfField = "Unit dimensions")
     val unitDimensions: UnitDimensions,
 
-    @field:Positive(message = "Height must be greater than 0")
+    @field:Positive(nameOfField = "Height")
     val height: Double,
 
-    @field:Positive(message = "Length must be greater than 0")
+    @field:Positive(nameOfField = "Lenght")
     val length: Double,
 
-    @field:Positive(message = "Width must be greater than 0")
+    @field:Positive(nameOfField = "Width")
     val width: Double
-) : ValidatableRequest<DimensionsCreateRequest>()
+) : ValidatableRequest<DimensionsCreateRequest>() {
+    constructor(dimensions: Dimensions) : this(
+        unitDimensions = dimensions.unitDimensions,
+        height = dimensions.height,
+        length = dimensions.length,
+        width = dimensions.width
+    )
+}

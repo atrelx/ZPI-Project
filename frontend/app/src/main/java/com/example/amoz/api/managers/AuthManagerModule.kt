@@ -21,6 +21,12 @@ object AuthManagerModule {
 
     @Singleton
     @Provides
+    fun provideFirebaseManager(): FirebaseManager {
+        return FirebaseManager()
+    }
+
+    @Singleton
+    @Provides
     fun provideGoogleAuthManager(@ApplicationContext context: Context, tokenManager: TokenManager): GoogleAuthManager {
         return GoogleAuthManager(context, tokenManager)
     }

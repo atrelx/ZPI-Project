@@ -114,7 +114,7 @@ fun AddB2CCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_first_name))
                 },
-                value = customerState.person.name,
+                value = customerState.person.name ?: "",
                 onValueChange = {
                     customerState = customerState.copy(person = customerState.person.copy(name = it))
                 },

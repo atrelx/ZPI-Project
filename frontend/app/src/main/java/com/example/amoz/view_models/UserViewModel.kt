@@ -21,8 +21,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.validation.Validation
-import javax.validation.Validator
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -67,10 +65,18 @@ class UserViewModel @Inject constructor(
                 action = {
                     userRepository.registerUser(data)
                 }, onSuccess = {
+                    updatePushToken()
                     uploadProfilePicture()
                 }
             )
         }
+    }
+
+    private fun updatePushToken() {
+        performRepositoryAction(null,
+            action =  {
+                userRepository.updatePushToken()
+            })
     }
 
     fun updateUser() {
@@ -106,6 +112,8 @@ class UserViewModel @Inject constructor(
         performRepositoryAction(_isRegisteredState,
             action = {
                 userRepository.isUserRegistered()
+            }, onSuccess = {
+                updatePushToken()
             }
         )
     }

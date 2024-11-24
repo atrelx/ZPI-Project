@@ -1,27 +1,27 @@
 package com.example.amoz.api.requests
 
 import android.provider.Telephony.Mms.Addr
+import com.example.validation.annotations.NotBlank
+import com.example.validation.annotations.NotNullable
+import com.example.validation.annotations.Size
 import com.example.amoz.interfaces.ValidatableRequest
 import com.example.amoz.models.CustomerB2B
 import kotlinx.serialization.Serializable
-import org.hibernate.validator.internal.metadata.facets.Validatable
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
 
 @Serializable
 data class CustomerB2BCreateRequest(
-
+    @field:NotNullable(nameOfField = "Customer")
     val customer: CustomerCreateRequest = CustomerCreateRequest(),
 
-    @field:NotEmpty(message = "Company number must not be empty")
-    @field:Size(max = 30, message = "Company number cannot exceed 30 characters")
+    @field:NotBlank(nameOfField = "Company number")
+    @field:Size(max = 30, nameOfField = "Company number")
     val companyNumber: String = "",
 
-    @field:NotEmpty(message = "Name on invoice must not be empty")
-    @field:Size(max = 255, message = "Name on invoice cannot exceed 255 characters")
+    @field:NotBlank(nameOfField = "Name on invoice")
+    @field:Size(max = 255, nameOfField = "Name on invoice")
     val nameOnInvoice: String = "",
 
+    @field:NotNullable(nameOfField = "Address")
     val address: AddressCreateRequest = AddressCreateRequest()
 ) : ValidatableRequest<CustomerB2BCreateRequest>() {
     constructor(customerB2B: CustomerB2B): this(

@@ -5,6 +5,7 @@ import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.UserRepository;
 import com.zpi.amoz.requests.UserRegisterRequest;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class UserService {
     @Transactional
     public User registerUser(String sub, UserRegisterRequest request) {
         if (findById(sub).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new EntityNotFoundException("User already exists");
         }
 
         User user = this.createUser(sub, SystemRole.USER);
@@ -62,7 +63,7 @@ public class UserService {
     @Transactional
     public User updateUser(String sub, UserRegisterRequest request) {
         User user = findById(sub)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         UUID personId = user.getEmployee().getPerson().getPersonId();
         personService.updatePerson(personId, request.person());
@@ -71,6 +72,15 @@ public class UserService {
         contactPersonService.updateContactPerson(contactPersonId, request.contactPerson());
 
         return user;
+    }
+
+    @Transactional
+    public void updatePushToken(String sub, String pushToken) {
+        User user = findById(sub)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setPushToken(pushToken);
+        this.save(user);
     }
 
     public User createUser(String sub, SystemRole systemRole) {
