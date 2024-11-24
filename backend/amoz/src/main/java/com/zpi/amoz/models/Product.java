@@ -18,7 +18,7 @@ public class Product {
     private UUID productId;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "categoryId")
     private Category category;
 
     @ManyToOne
@@ -130,7 +130,6 @@ public class Product {
     public void setProductAttributes(List<ProductAttribute> productAttributes) {
         this.productAttributes = productAttributes;
     }
-
 
     public boolean isActive() {
         return isActive;

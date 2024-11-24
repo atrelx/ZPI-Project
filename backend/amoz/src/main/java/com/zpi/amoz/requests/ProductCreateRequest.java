@@ -25,8 +25,7 @@ public record ProductCreateRequest(
         BigDecimal price,
 
         @Schema(description = "Identyfikator kategorii, do której należy produkt", example = "e7e7d0ff-64a4-45f1-929b-e7e0d6e8e4b5")
-        @NotNull(message = "Category ID is required")
-        UUID categoryId,
+        Optional<UUID> categoryId,
 
         @Schema(description = "Opis produktu", example = "Wygodny czarny t-shirt wykonany z wysokiej jakości bawełny.", nullable = true)
         Optional<@Size(max = 1000, message = "Description cannot exceed 1000 characters") String> description,
@@ -45,7 +44,7 @@ public record ProductCreateRequest(
     public ProductCreateRequest(
             String name,
             BigDecimal price,
-            UUID categoryId,
+            Optional<UUID> categoryId,
             Optional<String> description,
             Optional<String> brand,
             List<UUID> productVariantIds,

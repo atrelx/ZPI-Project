@@ -21,8 +21,8 @@ public record ProductDetailsDTO(
         @Schema(description = "Cena produktu", example = "1999.99")
         BigDecimal price,
 
-        @Schema(description = "Kategoria produktu", implementation = CategoryDetailsDTO.class)
-        CategoryDetailsDTO category,
+        @Schema(description = "Kategoria produktu", implementation = CategoryDetailsDTO.class, nullable = true)
+        Optional<CategoryDetailsDTO> category,
 
         @Schema(description = "Główny wariant produktu", nullable = true, implementation = ProductVariantDetailsDTO.class)
         Optional<ProductVariantDetailsDTO> mainProductVariant,
@@ -43,7 +43,7 @@ public record ProductDetailsDTO(
                 product.getProductId(),
                 product.getName(),
                 product.getPrice(),
-                CategoryDetailsDTO.toCategoryDTO(product.getCategory()),
+                Optional.ofNullable(product.getCategory() != null ? CategoryDetailsDTO.toCategoryDTO(product.getCategory()) : null),
                 Optional.ofNullable(product.getMainProductVariant() != null ? ProductVariantDetailsDTO.toProductVariantDetailsDTO(product.getMainProductVariant()) : null),
                 product.getProductAttributes() != null ? product.getProductAttributes().stream()
                         .map(ProductAttributeDTO::toProductAttributeDTO).toList() : List.of(),
