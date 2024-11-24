@@ -64,7 +64,7 @@ fun AddEditProductBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
 
-    var categoryTreeState by remember { mutableStateOf<CategoryTree?>(
+    var categoryTreeState by remember { mutableStateOf(
         productCategory?.let { CategoryTree(productCategory) }
     ) }
 

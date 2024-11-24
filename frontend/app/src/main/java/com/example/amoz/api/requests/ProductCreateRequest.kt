@@ -29,7 +29,7 @@ data class ProductCreateRequest(
     val price: BigDecimal? = null,
 
     @Serializable(with = UUIDSerializer::class)
-    @field:NotNullable(nameOfField = "Category ID")
+    @field:NotNullable(nameOfField = "Category")
     val categoryId: UUID? = null,
 
     @field:Size(max = 1000, nameOfField = "Description")

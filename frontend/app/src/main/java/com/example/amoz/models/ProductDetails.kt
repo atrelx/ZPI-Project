@@ -13,7 +13,7 @@ data class ProductDetails(
     val name: String,
     @Serializable(with = BigDecimalSerializer::class)
     val price: BigDecimal,
-    val category: CategoryDetails,
+    val category: CategoryDetails?,
     val mainProductVariant: ProductVariantDetails? = null,
     val productAttributes: List<ProductAttribute>,
     val description: String? = null,

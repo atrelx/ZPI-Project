@@ -20,7 +20,7 @@ class ProductListFilter {
                 } ?: true) &&
                     // Filter by category
                     (filterParams.category?.let {
-                        product.category.name == it.name
+                        product.category?.name == it.name
                     } ?: true) &&
                         // Filter by base price
                     (product.price in
