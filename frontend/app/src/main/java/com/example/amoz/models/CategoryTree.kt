@@ -12,4 +12,10 @@ data class CategoryTree(
     val name: String,
     val categoryLevel: Short,
     val childCategories: List<CategoryTree> = listOf()
-)
+) {
+    constructor(categoryDetails: CategoryDetails) :this(
+        categoryId = categoryDetails.categoryId,
+        name = categoryDetails.name,
+        categoryLevel = categoryDetails.categoryLevel,
+    )
+}

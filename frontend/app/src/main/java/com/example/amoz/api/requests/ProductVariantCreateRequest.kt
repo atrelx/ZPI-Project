@@ -9,7 +9,6 @@ import com.example.validation.annotations.DecimalMin
 import com.example.validation.annotations.NotNullable
 import com.example.validation.annotations.Positive
 import com.example.validation.annotations.Size
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
 import java.util.*

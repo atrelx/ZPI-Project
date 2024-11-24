@@ -62,24 +62,6 @@ val bottomNavigationBarNavItemsMap = mapOf(
 
 // ------------------- Products Screen Bottom Sheet Menu -------------------
 val productScreenBottomSheetMenu = mapOf(
-//    NavItemType.AddSimpleProduct to
-//            NavItem(
-//                title = R.string.products_add_simple_product_screen,
-//                screenRoute = Screens.AddEditProduct.route,
-//                icon = Icons.Filled.ViewInAr,
-//            ),
-//    NavItemType.AddProductVariant to
-//            NavItem(
-//                title = R.string.products_add_product_variant_screen,
-//                screenRoute = Screens.AddEditProduct.route,
-//                icon = Icons.Filled.Layers,
-//            ),
-//    NavItemType.AddProductTemplate to
-//            NavItem(
-//                title = R.string.products_add_product_template_screen,
-//                screenRoute = Screens.AddEditProduct.route,
-//                icon = Icons.Filled.Description,
-//            ),
     NavItemType.Categories to
             NavItem(
                 title = R.string.products_categories_screen,

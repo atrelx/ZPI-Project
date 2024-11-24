@@ -1,6 +1,5 @@
 package com.example.amoz.ui.screens.bottom_screens.products
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -144,9 +143,50 @@ fun ProductScreen(
                         productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, false)
                     },
                     onDeleteConfirm = {
-                        productsViewModel.removeProductFromList(it)
+                        productsViewModel.deleteProduct(it.productId)
                     },
                     itemNameToDelete = it.name
+                )
+            }
+        }
+
+
+
+        // -------------------- Add/Edit Product --------------------
+        if (productsUiState.addEditProductBottomSheetExpanded) {
+            AddEditProductBottomSheet(
+                productCreateRequestState = productsUiState.currentAddEditProductState,
+                productCategory = productsUiState.currentAddEditProductDetails?.category,
+                navController = navController,
+                onSaveProduct = productsViewModel::saveCurrentAddEditProduct,
+                onComplete = { productState ->
+                    productsUiState.currentAddEditProductDetails?.let {
+                        productsViewModel.updateProduct(it.productId, productState)
+                    }
+                        ?: run {
+                            productsViewModel.addProduct(productState)
+                        }
+                },
+                onDismissRequest = {
+                    productsViewModel.updateCurrentAddEditProduct(null)
+                    productsViewModel.expandBottomSheet(
+                        BottomSheetType.ADD_EDIT_PRODUCT,
+                        false
+                    )
+                },
+            )
+        }
+
+        // -------------------- Add/Edit Product Variant --------------------
+        if (productsUiState.addEditProductVariantBottomSheetExpanded) {
+            productsUiState.currentAddEditProductVariant?.let {
+                AddEditProductVariantBottomSheet(
+                    onDismissRequest = {
+                        productsViewModel.updateCurrentAddEditProductVariant(null, null)
+                        productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
+                    },
+                    productVariant = it,
+                    onComplete = { }
                 )
             }
         }
@@ -165,43 +205,6 @@ fun ProductScreen(
             }
         }
 
-        // -------------------- Add/Edit Product Variant --------------------
-        if (productsUiState.addEditProductVariantBottomSheetExpanded) {
-            productsUiState.currentAddEditProductVariant?.let {
-                AddEditProductVariantBottomSheet(
-                    onDismissRequest = {
-                        productsViewModel.updateCurrentAddEditProductVariant(null, null)
-                        productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
-                    },
-                    productVariant = it,
-                    onComplete = { }
-                )
-            }
-        }
-
-        // -------------------- Add/Edit Product Template --------------------
-        if (productsUiState.addEditProductBottomSheetExpanded) {
-            AddEditProductBottomSheet(
-                productDetailsState = productsUiState.currentAddEditProductState,
-                navController = navController,
-                onSaveProduct = productsViewModel::saveCurrentAddEditProduct,
-                onComplete = { productState ->
-                    productsUiState.currentAddEditProductId?.let {
-                        productsViewModel.updateProduct(it, productState)
-                    }
-                    ?: run {
-                        productsViewModel.addProduct(productState)
-                    }
-                },
-                onDismissRequest = {
-                    productsViewModel.updateCurrentAddEditProduct(null)
-                    productsViewModel.expandBottomSheet(
-                        BottomSheetType.ADD_EDIT_PRODUCT,
-                        false
-                    )
-                },
-            )
-        }
     }
 }
 

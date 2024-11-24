@@ -26,17 +26,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.models.CategoryDetails
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.screens.Screens
 import kotlinx.serialization.json.Json
+import java.util.UUID
 
 @Composable
-fun CategoryPicker(
+fun <T> CategoryPicker(
     modifier: Modifier = Modifier,
-    category: CategoryTree?,
+    category: T?,
     navController: NavController,
     onSaveState: () -> Unit,
     onCategoryChange: (CategoryTree?) -> Unit,
+    getCategoryId: (T?) -> UUID?,
+    getCategoryName: (T?) -> String?,
 ) {
     val selectedCategory = remember(category) {
         navController.currentBackStackEntry
@@ -46,7 +50,7 @@ fun CategoryPicker(
     }
 
     LaunchedEffect(selectedCategory) {
-        if (selectedCategory != null && selectedCategory != category) {
+        if (selectedCategory != null && selectedCategory.categoryId != getCategoryId(category)) {
             onCategoryChange(selectedCategory)
             navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedCategoryTree")
         }
@@ -75,12 +79,12 @@ fun CategoryPicker(
         overlineContent = { Text(stringResource(R.string.product_category)) },
         headlineContent = {
             Text(
-                text = category?.name ?: stringResource(R.string.product_category_choose)
+                text = getCategoryName(category) ?: stringResource(R.string.product_category_choose)
             )
         },
         trailingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                category?.let{
+                category?.let {
                     IconButton(
                         onClick = {
                             onCategoryChange(null)
@@ -103,3 +107,4 @@ fun CategoryPicker(
         )
     )
 }
+

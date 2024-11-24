@@ -89,9 +89,10 @@ class ProductsViewModel @Inject constructor(
             binding = _productUiState.value.currentAddEditProductState,
             failureMessage = "Could not fetch product details, try again",
             action = {
-                ProductCreateRequest(productRepository.getProductDetails(productId))
+                val productDetails = productRepository.getProductDetails(productId)
+                _productUiState.update { it.copy(currentAddEditProductDetails = productDetails) }
+                ProductCreateRequest(productDetails)
             },
-            onSuccess = { _productUiState.update { it.copy(currentAddEditProductId = productId) } }
         )
     }
 
@@ -124,6 +125,19 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
+    fun deleteProduct(productId: UUID) {
+        performRepositoryAction(
+            binding = null,
+            failureMessage = "Failed to delete product",
+            action = {
+                productRepository.deactivateProduct(productId)
+            },
+            onSuccess = {
+                fetchProductsList(true)
+            }
+        )
+    }
+
 
     fun getProductVariantDetails(productVariantId: UUID?): ProductVariantDetails? {
         /*TODO*/
@@ -140,6 +154,7 @@ class ProductsViewModel @Inject constructor(
 
     fun updateCurrentAddEditProduct(productId: UUID?) {
         if (productId == null) {
+            _productUiState.update {it.copy(currentAddEditProductDetails = null)}
             saveCurrentAddEditProduct(ProductCreateRequest())
         }
         else {
@@ -190,21 +205,21 @@ class ProductsViewModel @Inject constructor(
         _productUiState.update { it.copy(currentProductVariantToDelete = productVariantSummary) }
     }
 
-    fun removeProductFromList(product: ProductSummary) {
-        /*TODO*/
-        _productUiState.update { currState ->
-            val productIndexToDelete = currState.productsList.indexOf(currState.productsList.find { it.productId == product.productId })
-            val productIndexToDeleteFiltered = currState.filteredSortedProductTemplatesList.indexOf(currState.filteredSortedProductTemplatesList.find { it.productId == product.productId })
-            currState.copy(
-                productsList = currState.productsList.toMutableList().apply {
-                    removeAt(productIndexToDelete)
-                },
-                filteredSortedProductTemplatesList = currState.filteredSortedProductTemplatesList.toMutableList().apply {
-                    removeAt(productIndexToDeleteFiltered)
-                }
-            )
-        }
-    }
+//    fun removeProductFromList(product: ProductSummary) {
+//        /*TODO*/
+//        _productUiState.update { currState ->
+//            val productIndexToDelete = currState.productsList.indexOf(currState.productsList.find { it.productId == product.productId })
+//            val productIndexToDeleteFiltered = currState.filteredSortedProductTemplatesList.indexOf(currState.filteredSortedProductTemplatesList.find { it.productId == product.productId })
+//            currState.copy(
+//                productsList = currState.productsList.toMutableList().apply {
+//                    removeAt(productIndexToDelete)
+//                },
+//                filteredSortedProductTemplatesList = currState.filteredSortedProductTemplatesList.toMutableList().apply {
+//                    removeAt(productIndexToDeleteFiltered)
+//                }
+//            )
+//        }
+//    }
 
     // Helper method for updating state with filters applied
     private fun applyFilters() {

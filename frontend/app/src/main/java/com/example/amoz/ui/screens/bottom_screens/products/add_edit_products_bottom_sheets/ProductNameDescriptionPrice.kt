@@ -72,12 +72,11 @@ fun ProductNameDescriptionPrice(
         )
 
         // -------------------- Product's description --------------------
-        productDescription?.let { description ->
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
-                value = description,
+                value = productDescription ?: "",
                 onValueChange = { onDescriptionChange(it) },
                 label = { Text(stringResource(R.string.product_description)) },
                 keyboardOptions = KeyboardOptions(
@@ -85,7 +84,6 @@ fun ProductNameDescriptionPrice(
                     imeAction = ImeAction.Done
                 )
             )
-        }
 
         // -------------------- Product's price --------------------
         PriceTextField(

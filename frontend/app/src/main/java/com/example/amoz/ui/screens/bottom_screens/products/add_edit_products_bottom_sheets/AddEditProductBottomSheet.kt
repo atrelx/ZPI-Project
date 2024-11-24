@@ -1,7 +1,7 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
+import android.util.Log
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,12 +13,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -41,16 +38,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.models.CategoryDetails
 import com.example.amoz.models.CategoryTree
+import com.example.amoz.ui.components.CategoryPicker
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
-import com.example.amoz.ui.screens.Screens
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -58,7 +55,8 @@ import kotlinx.serialization.json.Json
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductBottomSheet(
-    productDetailsState:  MutableStateFlow<ResultState<ProductCreateRequest>>,
+    productCreateRequestState:  MutableStateFlow<ResultState<ProductCreateRequest>>,
+    productCategory: CategoryDetails?,
     onSaveProduct: (ProductCreateRequest) -> Unit,
     onComplete: (ProductCreateRequest) -> Unit,
     navController: NavController,
@@ -66,44 +64,31 @@ fun AddEditProductBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
 
-    val sheetState =
-        rememberModalBottomSheetState( skipPartiallyExpanded = true,
-            confirmValueChange = { newState ->
-                newState != SheetValue.Hidden
-            }
-        )
+    var categoryTreeState by remember { mutableStateOf<CategoryTree?>(
+        productCategory?.let { CategoryTree(productCategory) }
+    ) }
 
-    val listItemColors = ListItemDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    var validationMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(productCategory) {
+        categoryTreeState = productCategory?.let { CategoryTree(productCategory) }
+    }
+
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newState ->
+            newState != SheetValue.Hidden
+        }
     )
-    val listItemModifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(5.dp))
-        .border(
-            width = 1.dp,
-            brush = SolidColor(MaterialTheme.colorScheme.outline),
-            shape = RoundedCornerShape(5.dp)
-        )
-
-    val json = navController.currentBackStackEntry
-        ?.savedStateHandle
-        ?.get<String>("selectedCategoryTree")
-
-    val categoryTree = json?.let { Json.decodeFromString(CategoryTree.serializer(), it) }
-    var categoryTreeState by remember { mutableStateOf<CategoryTree?>(null) }
-
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        ResultStateView(productDetailsState) { product ->
+        ResultStateView(productCreateRequestState) { product ->
             var productState by remember { mutableStateOf(product) }
 
-            LaunchedEffect(json) {
-                categoryTree?.let {
-                    categoryTreeState = it
-                    productState = productState.copy(categoryId = it.categoryId)
-                }
+            LaunchedEffect(productState) {
+                validationMessage = null
             }
 
             Column(
@@ -155,34 +140,18 @@ fun AddEditProductBottomSheet(
                 )
 
 //             -------------------- Product's category --------------------
-
-                ListItem(
-                    modifier = listItemModifier.then(Modifier
-                        .clickable {
-                            onSaveProduct(productState)
-                            navController.currentBackStackEntry?.savedStateHandle?.set("isSelectable", true)
-                            navController.navigate(Screens.Categories.route)
-                        }),
-                    leadingContent = {
-                        Icon(
-                            imageVector = Icons.Outlined.Category,
-                            contentDescription = null
-                        )
+                CategoryPicker(
+                    category = categoryTreeState,
+                    navController = navController,
+                    onSaveState = { onSaveProduct(productState) },
+                    onCategoryChange = {
+                        categoryTreeState = it
+                        productState = productState.copy(categoryId = categoryTreeState?.categoryId)
                     },
-                    overlineContent = { Text(stringResource(R.string.product_category)) },
-                    headlineContent = {
-                        Text(
-                            text = categoryTreeState?.name ?: stringResource(R.string.product_category_choose)
-                        )
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = Icons.Outlined.KeyboardArrowDown,
-                            contentDescription = null
-                        )
-                    },
-                    colors = listItemColors
+                    getCategoryId = { it?.categoryId },
+                    getCategoryName = { it?.name }
                 )
+
 
                 // -------------------- Product attributes --------------------
                 AttributesList(
@@ -195,10 +164,24 @@ fun AddEditProductBottomSheet(
                 // -------------------- Complete adding --------------------
                 Spacer(modifier = Modifier.height(15.dp))
 
+                validationMessage?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
                 PrimaryFilledButton(
                     onClick = {
-                        onComplete(productState)
-                        onDismissRequest()
+                        val violation = productState.validate()
+                        if (violation != null) {
+                            validationMessage = violation
+                        }
+                        else {
+                            onComplete(productState)
+                            onDismissRequest()
+                        }
                     },
                     text = stringResource(id = R.string.done),
 //                enabled = isFormValid

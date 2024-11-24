@@ -20,17 +20,17 @@ data class ProductCreateRequest(
 
     @field:NotBlank(nameOfField = "Name")
     @field:Size(max = 100, nameOfField = "Name")
-    val name: String,
+    val name: String? = null,
 
     @field:DecimalMin(value = "0.0", inclusive = false, nameOfField = "Price")
     @field:Digits(integer = 10, fraction = 2, nameOfField = "Price")
     @field:NotNullable(nameOfField = "Price")
     @Serializable(with = BigDecimalSerializer::class)
-    val price: BigDecimal,
+    val price: BigDecimal? = null,
 
     @Serializable(with = UUIDSerializer::class)
     @field:NotNullable(nameOfField = "Category ID")
-    val categoryId: UUID,
+    val categoryId: UUID? = null,
 
     @field:Size(max = 1000, nameOfField = "Description")
     val description: String? = null,
@@ -42,13 +42,13 @@ data class ProductCreateRequest(
 
     val productAttributes: List<AttributeCreateRequest> = listOf()
 ) : ValidatableRequest<ProductCreateRequest>() {
-    constructor(productDetails: ProductDetails, productVariantIds: List<UUID>) : this(
-        name = productDetails.name,
-        price = productDetails.price,
-        categoryId = productDetails.category.categoryId,
-        description = productDetails.description,
-        brand = productDetails.brand,
+    constructor(productDetails: ProductDetails?, productVariantIds: List<UUID> = emptyList()) : this(
+        name = productDetails?.name,
+        price = productDetails?.price,
+        categoryId = productDetails?.category?.categoryId,
+        description = productDetails?.description,
+        brand = productDetails?.brand,
         productVariantIds = productVariantIds,
-        productAttributes = productDetails.productAttributes.map { AttributeCreateRequest(it) }
+        productAttributes = productDetails?.productAttributes?.map { AttributeCreateRequest(it) } ?: emptyList()
     )
 }

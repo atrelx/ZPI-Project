@@ -77,12 +77,13 @@ fun MoreFiltersBottomSheet(
             )
             // -------------------- Product's category --------------------
             CategoryPicker(
-                navController = navController,
                 category = filterParamsState.category,
-                onCategoryChange = { filterParamsState = filterParamsState.copy(category = it) },
+                navController = navController,
                 onSaveState = { onSaveFilterParams(filterParamsState) },
+                onCategoryChange = { filterParamsState = filterParamsState.copy(category = it) },
+                getCategoryId = { it?.categoryId },
+                getCategoryName = { it?.name }
             )
-
             Spacer(modifier = Modifier.height(10.dp))
 
             // -------------------- Cancel and apply --------------------

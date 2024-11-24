@@ -91,7 +91,7 @@ class CategoriesViewModel @Inject constructor(
             currState.copy(
                 currentCategoryTree = category,
                 currentCategoryCreateRequest = CategoryCreateRequest(
-                    name = category?.name,
+                    name = category?.name ?: "",
                     parentCategoryId = category?.categoryId?.let {
                         categoryListFilter.findParentId(
                             roots = currState.categoryList,
