@@ -11,11 +11,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class WeightCreateRequest(
     @field:NotNullable(nameOfField = "Unit weight")
-    val unitWeight: UnitWeight,
+    val unitWeight: UnitWeight? = null,
 
     @field:Positive(nameOfField = "Amount")
     @field:NotNullable(nameOfField = "Amount")
-    val amount: Double
+    val amount: Double? = null
 ) : ValidatableRequest<WeightCreateRequest>() {
     constructor(weight: Weight) : this(
         unitWeight = weight.unitWeight,

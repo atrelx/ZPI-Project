@@ -1,8 +1,11 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -17,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,8 +61,6 @@ fun ProductListItem(
         positionalThreshold = { it * positionalThreshold }
     )
 
-
-
     SwipeToDismissBox(
         state = swipeState,
         backgroundContent = {
@@ -73,10 +75,6 @@ fun ProductListItem(
                     onClick = onClick,
                 ),
             leadingContent = {
-                Icon(
-                    imageVector = Icons.Outlined.FilterList,
-                    contentDescription = null
-                )
                 product.mainProductVariant?.let {
 //                            Image(
 //                                painter = rememberAsyncImagePainter(productTemplate.imageUrl),
@@ -106,9 +104,18 @@ fun ProductListItem(
 
             },
             trailingContent = {
-                Text(
-                    text = "${product.price} $currency"
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = "${product.price} $currency"
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.ArrowCircleRight,
+                        contentDescription = null
+                    )
+                }
             },
             colors = ListItemDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer

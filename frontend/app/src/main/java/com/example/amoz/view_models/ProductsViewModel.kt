@@ -1,20 +1,15 @@
 package com.example.amoz.view_models
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.repositories.ProductRepository
 import com.example.amoz.api.repositories.ProductVariantRepository
-import com.example.amoz.api.requests.AttributeCreateRequest
-import com.example.amoz.api.requests.DimensionsCreateRequest
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
-import com.example.amoz.api.requests.StockCreateRequest
-import com.example.amoz.api.requests.WeightCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.models.ProductSummary
-import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.models.ProductVariantSummary
-import com.example.amoz.test_data.products.details.testProductVariantDetailsList
 import com.example.amoz.ui.states.ProductsUiState
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.ProductListFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,6 +53,7 @@ class ProductsViewModel @Inject constructor(
 //    }
 
 
+    // -------------------- Fetch products --------------------
     fun fetchProductsList(skipLoading: Boolean = false) {
         performRepositoryAction(
             binding = _productUiState.value.productsListFetched,
@@ -84,6 +80,7 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
+    // -------------------- PRODUCT --------------------
     fun fetchProductDetails(productId: UUID) {
         performRepositoryAction(
             binding = _productUiState.value.currentAddEditProductState,
@@ -138,10 +135,8 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
-
-    fun getProductVariantDetails(productVariantId: UUID?): ProductVariantDetails? {
-        /*TODO*/
-        return productVariantId?.let { testProductVariantDetailsList.find { it.productVariantId == productVariantId } }
+    fun updateCurrentProductToDelete(productSummary: ProductSummary?) {
+        _productUiState.update { it.copy(currentProductToDelete = productSummary) }
     }
 
     fun saveCurrentAddEditProduct(productCreateRequest: ProductCreateRequest) {
@@ -162,83 +157,96 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    fun updateCurrentAddEditProductVariant(productId: UUID?, productVariantId: UUID?) {
-        val productVariant = getProductVariantDetails(productVariantId)
-        val addEditProduct = ProductVariantCreateRequest(
-            productID = productId ?: _productUiState.value.productsList.first().productId,
-            productVariantCode = productVariant?.code ?: 0,
-            stock = StockCreateRequest(
-                amountAvailable = productVariant?.stock?.amountAvailable ?: 0,
-                alarmingAmount = productVariant?.stock?.alarmingAmount ?: 5
-            ),
-            weight = productVariant?.weight?.let {
-                WeightCreateRequest(
-                    unitWeight = it.unitWeight,
-                    amount = it.amount
-                )
-            } ,
-            dimensions = productVariant?.dimensions?.let {
-                DimensionsCreateRequest(
-                    unitDimensions = it.unitDimensions,
-                    height = it.height,
-                    length = it.length,
-                    width = it.width
-                )
+    // -------------------- PRODUCT VARIANT--------------------
+
+    fun createProductVariant(productVariantCreateRequest: ProductVariantCreateRequest) {
+        performRepositoryAction(
+            binding = null,
+            failureMessage = "Failed to create product variant",
+            action = {
+                productVariantRepository.createProductVariant(productVariantCreateRequest)
             },
-            variantAttributes = productVariant?.variantAttributes?.map {
-                AttributeCreateRequest(
-                    attributeName = it.attribute.attributeName,
-                    value = it.value
-                )
-            } ?: emptyList(),
-            variantName = productVariant?.variantName,
-            variantPrice = productVariant?.variantPrice ?: BigDecimal.ZERO
+            onSuccess = productVariantCreateRequest.productID?.let {
+                productId -> {fetchProductVariantsList(productId, true)}
+            }
         )
-        _productUiState.update { it.copy(currentAddEditProductVariant = addEditProduct) }
     }
 
-    fun updateCurrentProductToDelete(productSummary: ProductSummary?) {
-        _productUiState.update { it.copy(currentProductToDelete = productSummary) }
+    fun updateProductVariant(productVariantId: UUID, productVariantCreateRequest: ProductVariantCreateRequest) {
+        performRepositoryAction(
+            binding = null,
+            failureMessage = "Failed to update product variant",
+            action = {
+                productVariantRepository.updateProductVariant(productVariantId, productVariantCreateRequest)
+            },
+            onSuccess = productVariantCreateRequest.productID?.let {
+                    productId -> {fetchProductVariantsList(productId, true)}
+            }
+        )
     }
+
+    fun fetchProductVariantDetails(productVariantId: UUID, productId: UUID) {
+        performRepositoryAction(
+            binding = _productUiState.value.currentAddEditProductVariantState,
+            failureMessage = "Failed to fetch product variant",
+            action = {
+                val productVariantDetails = productVariantRepository.getProductVariant(productVariantId)
+                _productUiState.update {
+                    it.copy(currentAddEditProductVariantDetails = productVariantDetails)
+                }
+                ProductVariantCreateRequest(productVariantDetails, productId)
+            },
+            onSuccess = {
+                fetchProductVariantsList(productId)
+            }
+        )
+    }
+
+    fun saveCurrentAddEditProductVariant(productVariantCreateRequest: ProductVariantCreateRequest) {
+        _productUiState.update {
+            it.copy(
+                currentAddEditProductVariantState =
+                MutableStateFlow(ResultState.Success(productVariantCreateRequest))
+            )
+        }
+    }
+
+    fun updateCurrentAddEditProductVariant(productVariantId: UUID?, productId: UUID?) {
+        if (productVariantId == null || productId == null) {
+            Log.d("PRODUCT VARIANT", "was created")
+            _productUiState.update {it.copy(currentAddEditProductVariantDetails = null)}
+            saveCurrentAddEditProductVariant(ProductVariantCreateRequest(productId))
+        }
+        else {
+            Log.d("PRODUCT VARIANT", "was fetched")
+            fetchProductVariantDetails(productVariantId, productId)
+        }
+    }
+
+
 
     fun updateCurrentProductVariantToDelete(productVariantSummary: ProductVariantSummary?) {
         _productUiState.update { it.copy(currentProductVariantToDelete = productVariantSummary) }
     }
 
-//    fun removeProductFromList(product: ProductSummary) {
-//        /*TODO*/
-//        _productUiState.update { currState ->
-//            val productIndexToDelete = currState.productsList.indexOf(currState.productsList.find { it.productId == product.productId })
-//            val productIndexToDeleteFiltered = currState.filteredSortedProductTemplatesList.indexOf(currState.filteredSortedProductTemplatesList.find { it.productId == product.productId })
-//            currState.copy(
-//                productsList = currState.productsList.toMutableList().apply {
-//                    removeAt(productIndexToDelete)
-//                },
-//                filteredSortedProductTemplatesList = currState.filteredSortedProductTemplatesList.toMutableList().apply {
-//                    removeAt(productIndexToDeleteFiltered)
-//                }
-//            )
-//        }
-//    }
 
-    // Helper method for updating state with filters applied
+    // -------------------- FILTERS--------------------
     private fun applyFilters() {
         _productUiState.update { currState ->
             currState.copy(
-                filteredSortedProductTemplatesList = if (currState.showProductsList) {
+                filteredSortedProductsList = if (currState.showProductsList) {
                     productFilter.filterProducts(
                         templates = currState.productsList,
                         searchQuery = currState.searchQuery,
                         filterParams = currState.filterParams
                     )
-                } else currState.filteredSortedProductTemplatesList,
+                } else currState.filteredSortedProductsList,
 
                 filteredSortedProductVariantsList = if (currState.showProductVariantsList) {
                     productFilter.filterProductVariants(
-                        variants = currState.productVariantsList,
+                        variants = currState.productVariantsList ?: emptyList(),
                         searchQuery = currState.searchQuery,
                         filterParams = currState.filterParams
-//                        selectedTemplate = currState.filteredByProduct,
                     ) } else currState.filteredSortedProductVariantsList
             )
         }
@@ -259,6 +267,7 @@ class ProductsViewModel @Inject constructor(
     fun showProductVariants(selectedProduct: ProductSummary?) {
         _productUiState.update { currState ->
             currState.copy(
+                filteredSortedProductVariantsList = null,
                 showProductsList = selectedProduct == null,
                 showProductVariantsList = selectedProduct != null,
                 filteredByProduct = selectedProduct

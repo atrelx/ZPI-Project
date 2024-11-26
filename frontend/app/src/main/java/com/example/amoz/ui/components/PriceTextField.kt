@@ -26,7 +26,7 @@ fun PriceTextField(
     leadingIcon: ImageVector? = null,
     currency: String? = null,
     price: BigDecimal?,
-    onPriceChange: (BigDecimal) -> Unit,
+    onPriceChange: (BigDecimal?) -> Unit,
 ) {
     var priceText by remember { mutableStateOf(price?.toString() ?: "") }
     var priceValue by remember { mutableStateOf(BigDecimal.ZERO) }
@@ -35,10 +35,9 @@ fun PriceTextField(
             .fillMaxWidth(),
         value = priceText,
         onValueChange = { input ->
-            if (input.matches(Regex("^\\d*(\\.\\d*)?$"))) {
+            if (input.matches(Regex("^\\d*(\\.\\d{0,2})?$"))) {
                 priceText = input
-                priceValue = input.toBigDecimalOrNull() ?: BigDecimal.ZERO
-                onPriceChange(priceValue)
+                onPriceChange(input.toBigDecimalOrNull())
             }
         },
         placeholder = { Text("0.00") },

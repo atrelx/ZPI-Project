@@ -5,19 +5,19 @@ import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.ProductDetails
 import com.example.amoz.models.ProductSummary
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.view_models.ProductsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.UUID
 
 data class ProductsUiState(
     val productsListFetched: MutableStateFlow<ResultState<List<ProductSummary>>> = MutableStateFlow(ResultState.Idle),
     val productVariantsListFetched: MutableStateFlow<ResultState<List<ProductVariantSummary>>> = MutableStateFlow(ResultState.Idle),
 
     val productsList: List<ProductSummary> = emptyList(),
-    val productVariantsList: List<ProductVariantSummary> = emptyList(),
-    val filteredSortedProductTemplatesList: List<ProductSummary> = productsList,
-    val filteredSortedProductVariantsList: List<ProductVariantSummary> = productVariantsList,
+    val productVariantsList: List<ProductVariantSummary>? = null,
+    val filteredSortedProductsList: List<ProductSummary> = productsList,
+    val filteredSortedProductVariantsList: List<ProductVariantSummary>? = productVariantsList,
 
     val searchQuery: String = "",
     val filteredByProduct: ProductSummary? = null,
@@ -29,8 +29,9 @@ data class ProductsUiState(
 
     val currentAddEditProductDetails: ProductDetails? = null,
     val currentAddEditProductState: MutableStateFlow<ResultState<ProductCreateRequest>> = MutableStateFlow(ResultState.Idle),
-    val currentAddEditProduct: ProductCreateRequest? = null,
-    val currentAddEditProductVariant: ProductVariantCreateRequest? = null,
+
+    val currentAddEditProductVariantDetails: ProductVariantDetails? = null,
+    val currentAddEditProductVariantState: MutableStateFlow<ResultState<ProductVariantCreateRequest>> = MutableStateFlow(ResultState.Idle),
 
     val currentProductToDelete: ProductSummary? = null,
     val currentProductVariantToDelete: ProductVariantSummary? = null,

@@ -109,6 +109,7 @@ fun AddEditProductBottomSheet(
                 // -------------------- Product basic info --------------------
                 ProductNameDescriptionPrice(
                     productName = productState.name,
+                    showProductDescription = true,
                     productDescription = productState.description,
                     productPrice = productState.price,
                     onNameChange = { productState = productState.copy(name = it) },

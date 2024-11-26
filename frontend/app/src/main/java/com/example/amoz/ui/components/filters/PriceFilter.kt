@@ -21,8 +21,8 @@ import java.math.BigDecimal
 fun PriceFilter(
     priceFrom: BigDecimal?,
     priceTo: BigDecimal?,
-    onPriceFromChange: (BigDecimal) -> Unit,
-    onPriceToChange: (BigDecimal) -> Unit,
+    onPriceFromChange: (BigDecimal?) -> Unit,
+    onPriceToChange: (BigDecimal?) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth()

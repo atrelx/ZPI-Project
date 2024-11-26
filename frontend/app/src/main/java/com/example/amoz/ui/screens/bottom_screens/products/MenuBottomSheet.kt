@@ -36,11 +36,11 @@ fun MenuBottomSheet(
         ) {
             // -------------------- Add/Edit Product --------------------
             BottomSheetNavigationRaw(
-                leadingIcon = Icons.Filled.ViewInAr,
-                text = stringResource(id = R.string.products_add_simple_product),
+                leadingIcon = Icons.Filled.Description,
+                text = stringResource(id = R.string.products_add_product_template),
                 onClick = {
                     onDismissRequest()
-                    onClick(NavItemType.AddSimpleProduct)
+                    onClick(NavItemType.AddProduct)
                 }
             )
             BottomSheetNavigationRaw(
@@ -52,14 +52,13 @@ fun MenuBottomSheet(
                 }
             )
             BottomSheetNavigationRaw(
-                leadingIcon = Icons.Filled.Description,
-                text = stringResource(id = R.string.products_add_product_template),
+                leadingIcon = Icons.Filled.ViewInAr,
+                text = stringResource(id = R.string.products_add_simple_product),
                 onClick = {
                     onDismissRequest()
-                    onClick(NavItemType.AddProductTemplate)
+                    onClick(NavItemType.AddSimpleProduct)
                 }
             )
-
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             // -------------------- Category, Attributes, Stock delivery --------------------

@@ -35,7 +35,6 @@
 
     // --------------------- Products screen ---------------------
     <string name="products_add_simple_product">Add simple product</string>
-    <string name="products_add_product_variant">Add product variant</string>
     <string name="products_add_product_template">Add product</string>
     <string name="products_delete_product_template_confirm">Do you really want to delete:\n%1$s?</string>
     <string name="products_categories_screen">Categories</string>
@@ -65,6 +64,17 @@
 
     <string name="product_template_delete">Delete product template</string>
 
+    // --------------------- Product Variants screen ---------------------
+    <string name="products_add_product_variant">Add product variant</string>
+    <string name="variant_stock">Stock</string>
+    <string name="variant_stock_amount">Amount available</string>
+    <string name="variant_stock_alarming_state">Alarming state</string>
+
+    <string name="variant_weight">Weight</string>
+    <string name="variant_weight_select_unit">Select unit</string>
+    <string name="variant_weight_enter_amount">Enter amount</string>
+
+
     // --------------------- Category Screen ---------------------
     <string name="subcategories">Subcategories</string>
 
@@ -74,7 +84,6 @@
     <string name="add_subcategory">Add subcategory</string>
     <string name="add_category_title">Add category</string>
     <string name="edit_category_title">Edit category</string>
-<!--    <string name="google_sign_in_client_id">Edit category</string>-->
 
     <string name="select_category">Select</string>
 

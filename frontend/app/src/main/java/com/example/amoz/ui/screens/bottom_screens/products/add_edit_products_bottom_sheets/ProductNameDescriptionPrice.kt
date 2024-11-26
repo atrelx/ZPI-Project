@@ -36,11 +36,12 @@ import java.util.Locale
 @Composable
 fun ProductNameDescriptionPrice(
     productName: String?,
+    showProductDescription: Boolean = false,
     productDescription: String? = null,
     productPrice: BigDecimal?,
     onNameChange: (String) -> Unit,
-    onDescriptionChange: (String) -> Unit = {},
-    onPriceChange: (BigDecimal) -> Unit,
+    onDescriptionChange: ((String) -> Unit)? = null,
+    onPriceChange: (BigDecimal?) -> Unit,
 ) {
 
     Column(
@@ -72,18 +73,20 @@ fun ProductNameDescriptionPrice(
         )
 
         // -------------------- Product's description --------------------
+        if(showProductDescription) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
                 value = productDescription ?: "",
-                onValueChange = { onDescriptionChange(it) },
+                onValueChange = { onDescriptionChange?.invoke(it) },
                 label = { Text(stringResource(R.string.product_description)) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
                 )
             )
+        }
 
         // -------------------- Product's price --------------------
         PriceTextField(

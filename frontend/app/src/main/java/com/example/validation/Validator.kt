@@ -1,5 +1,6 @@
 package com.example.validation
 
+import android.util.Log
 import android.util.Patterns
 import com.example.validation.annotations.DecimalMin
 import com.example.validation.annotations.Digits
@@ -163,6 +164,7 @@ class Validator {
         fun validateNotNullable(obj: Any): String? {
             return validateTemplate(obj, NotNullable::class.java) { field, annotation ->
                 val value = field.get(obj)
+                Log.i("ValidationLogger", "Validating field: ${field.name}, value: ${value}")
                 if (value == null) {
                     val fieldName = if (annotation.nameOfField.isBlank()) {
                         field.name

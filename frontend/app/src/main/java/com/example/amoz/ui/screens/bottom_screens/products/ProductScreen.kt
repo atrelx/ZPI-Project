@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.products
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,7 +28,6 @@ import com.example.amoz.ui.components.filters.MoreFiltersBottomSheet
 import com.example.amoz.view_models.ProductsViewModel.BottomSheetType
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductVariantBottomSheet
-import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditSimpleProductBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.FilteredProductsList
 import com.example.amoz.view_models.ProductsViewModel
 
@@ -44,16 +44,16 @@ fun ProductScreen(
         navItemType: NavItemType
     ) {
         when (navItemType) {
-            NavItemType.AddSimpleProduct -> {
-                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, true)
+            NavItemType.AddProduct -> {
+                productsViewModel.updateCurrentAddEditProduct(null)
+                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
             }
             NavItemType.AddProductVariant -> {
                 productsViewModel.updateCurrentAddEditProductVariant(null, null)
                 productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
             }
-            NavItemType.AddProductTemplate -> {
-                productsViewModel.updateCurrentAddEditProduct(null)
-                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
+            NavItemType.AddSimpleProduct -> {
+                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, true)
             }
             else -> {
                 navController.currentBackStackEntry?.savedStateHandle?.set("isSelectable", false)
@@ -74,6 +74,7 @@ fun ProductScreen(
         ) {
             // -------------------- Products --------------------
             FilteredProductsList(
+                onProductClick = { productsViewModel.showProductVariants(it) },
                 onProductEdit = {
                     productsViewModel.updateCurrentAddEditProduct(it)
                     productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
@@ -82,8 +83,12 @@ fun ProductScreen(
                     productsViewModel.updateCurrentProductToDelete(it)
                     productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, true)
                 },
-                onProductVariantEdit = {
-                    productsViewModel.updateCurrentAddEditProductVariant(null /*TODO*/, it)
+                onProductVariantEdit = { variantId, productId ->
+                    productsViewModel.updateCurrentAddEditProductVariant(variantId, productId)
+                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
+                },
+                onProductVariantAdd = {
+                    productsViewModel.updateCurrentAddEditProductVariant(null, it)
                     productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
                 },
                 onMoreFiltersClick = {
@@ -163,9 +168,9 @@ fun ProductScreen(
                     productsUiState.currentAddEditProductDetails?.let {
                         productsViewModel.updateProduct(it.productId, productState)
                     }
-                        ?: run {
-                            productsViewModel.addProduct(productState)
-                        }
+                    ?: run {
+                        productsViewModel.addProduct(productState)
+                    }
                 },
                 onDismissRequest = {
                     productsViewModel.updateCurrentAddEditProduct(null)
@@ -179,32 +184,35 @@ fun ProductScreen(
 
         // -------------------- Add/Edit Product Variant --------------------
         if (productsUiState.addEditProductVariantBottomSheetExpanded) {
-            productsUiState.currentAddEditProductVariant?.let {
-                AddEditProductVariantBottomSheet(
-                    onDismissRequest = {
-                        productsViewModel.updateCurrentAddEditProductVariant(null, null)
-                        productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
-                    },
-                    productVariant = it,
-                    onComplete = { }
-                )
-            }
+            AddEditProductVariantBottomSheet(
+                productVariantCreateRequestState = productsUiState.currentAddEditProductVariantState,
+                onComplete = { productVariantCreateRequest ->
+                    Log.d("PRODUCT VARIANT REQUEST", productVariantCreateRequest.toString())
+                    productsUiState.currentAddEditProductVariantDetails?.let {
+                        productsViewModel.updateProductVariant(it.productVariantId, productVariantCreateRequest)
+                    }
+                    ?: run {
+                        productsViewModel.createProductVariant(productVariantCreateRequest)
+                    }
+                },
+                onSaveProductVariant = productsViewModel::saveCurrentAddEditProductVariant,
+                onDismissRequest = {
+                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
+                },
+            )
         }
 
         // -------------------- Add/Edit Simple Product --------------------
         if (productsUiState.addEditSimpleProductBottomSheetExpanded) {
-            productsUiState.currentAddEditProduct?.let {
-                AddEditSimpleProductBottomSheet(
-                    onDismissRequest = {
-                        productsViewModel.updateCurrentAddEditProduct(null)
-                        productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
-                    },
-                    productVariant = it,
-                    onComplete = {},
-                )
-            }
+//            AddEditSimpleProductBottomSheet(
+//                onDismissRequest = {
+//                    productsViewModel.updateCurrentAddEditProduct(null)
+//                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
+//                },
+//                productVariant = it,
+//                onComplete = {},
+//            )
         }
-
     }
 }
 

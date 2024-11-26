@@ -153,7 +153,7 @@ val allApplicationScreensMap =
 enum class NavItemType {
     // Each item within special list writes on new line
     Home, Products, Orders, Company, More,
-    AddSimpleProduct, AddProductVariant, AddProductTemplate, Categories, Attributes, StockDelivery,
+    AddSimpleProduct, AddProductVariant, AddProduct, Categories, Attributes, StockDelivery,
     CompanyAddress, CompanyWorkers, CompanyCustomers,
     Settings, FAQ, AboutApp, Support,
     Profile,

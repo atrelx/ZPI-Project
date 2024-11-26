@@ -43,7 +43,6 @@ class ProductListFilter {
         variants: List<ProductVariantSummary>,
         searchQuery: String,
         filterParams: ProductsViewModel.FilterParams,
-//        selectedTemplate: ProductSummary?,
 
     ): List<ProductVariantSummary> {
         return variants
@@ -51,8 +50,6 @@ class ProductListFilter {
                 // Filter by search query
                 (searchQuery.takeIf { it.isNotBlank() }
                     ?.let { variant.variantName.contains(it, ignoreCase = true) } ?: true) &&
-                        // Filter by selected template
-//                        (selectedTemplate?.let { variant.productVariantId == it.productId } ?: true) &&
                         // Filter by price range
                         (variant.variantPrice in
                                 (filterParams.priceFrom ?: BigDecimal.ZERO)..

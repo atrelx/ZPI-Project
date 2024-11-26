@@ -13,13 +13,13 @@ data class StockCreateRequest(
 
     @field:Min(value = 0, nameOfField = "Amount available")
     @field:NotNullable(nameOfField = "Amount available")
-    val amountAvailable: Int,
+    val amountAvailable: Int? = null,
 
     @field:Min(value = 0, nameOfField = "Alarming amount")
     val alarmingAmount: Int? = null
 ) : ValidatableRequest<StockCreateRequest>() {
-    constructor(stock: Stock) : this(
-        amountAvailable = stock.amountAvailable,
-        alarmingAmount = stock.alarmingAmount
+    constructor(stock: Stock?) : this(
+        amountAvailable = stock?.amountAvailable,
+        alarmingAmount = stock?.alarmingAmount
     )
 }
