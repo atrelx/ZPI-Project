@@ -164,7 +164,6 @@ class Validator {
         fun validateNotNullable(obj: Any): String? {
             return validateTemplate(obj, NotNullable::class.java) { field, annotation ->
                 val value = field.get(obj)
-                Log.i("ValidationLogger", "Validating field: ${field.name}, value: ${value}")
                 if (value == null) {
                     val fieldName = if (annotation.nameOfField.isBlank()) {
                         field.name
@@ -239,15 +238,22 @@ class Validator {
             annotationClass: Class<T>,
             validateField: (Field, T) -> (String?)
         ): String? {
+            val validatedFields: MutableList<String?> = mutableListOf()
             val fields = obj::class.java.declaredFields
             for (field in fields) {
                 val annotation = field.getAnnotation(annotationClass)
                 if (annotation != null) {
                     field.isAccessible = true
-                    return validateField(field, annotation)
+                    Log.i("ValidationLogger", "Validating field: ${field.name}, annotation: ${annotation}")
+                    validatedFields.add(validateField(field, annotation))
                 }
             }
-            return null
+            val violations = validatedFields.filterNotNull()
+            return if (violations.isEmpty()) {
+                null
+            } else {
+                violations.first()
+            }
         }
     }
 }

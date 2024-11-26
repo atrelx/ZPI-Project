@@ -9,7 +9,6 @@ public record WeightCreateRequest(
 
         @Schema(description = "Jednostka wagi, która jest wymagana")
         @NotNull(message = "Unit weight is required")
-        @Positive(message = "Unit weight must be greater than 0")
         UnitWeight unitWeight,
 
         @Schema(description = "Ilość wagi, która musi być większa niż 0")

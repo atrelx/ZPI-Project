@@ -24,9 +24,9 @@ data class ProductVariantCreateRequest(
     @field:Size(max = 100, nameOfField = "Variant name")
     val variantName: String? = null,
 
-    @field:NotNullable(nameOfField = "Variant price")
-    @field:DecimalMin(value = "0.0", inclusive = false, nameOfField = "Variant price")
     @Serializable(with = BigDecimalSerializer::class)
+    @field:DecimalMin(value = "0.0", inclusive = false, nameOfField = "Variant price")
+    @field:NotNullable(nameOfField = "Variant price")
     val variantPrice: BigDecimal? = null,
 
     @field:NotNullable(nameOfField = "Product variant code")
