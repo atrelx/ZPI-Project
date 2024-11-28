@@ -17,4 +17,14 @@ data class ProductSummary(
     val mainProductVariant: ProductVariantDetails? = null,
     val description: String? = null,
     val brand: String? = null
-)
+) {
+    constructor(productDetails: ProductDetails) :this (
+        productId = productDetails.productId,
+        name = productDetails.name,
+        price = productDetails.price,
+        category = productDetails.category?.let {CategorySummary(it)},
+        mainProductVariant = productDetails.mainProductVariant,
+        description = productDetails.description,
+        brand = productDetails.brand
+    )
+}

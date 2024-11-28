@@ -1,24 +1,15 @@
-package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
+package com.example.amoz.ui.screens.bottom_screens.products.attributes
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckBox
 import androidx.compose.material.icons.outlined.CheckBoxOutlineBlank
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SwipeToDismissBox
@@ -33,34 +24,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.DismissBackground
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AttributeItem(
+fun AttributeNameValueItem(
     indexInList: Int,
     attributeName: String,
-    attributeValue: String,
+    attributeValue: String?,
     onDelete: (Int) -> Unit,
     onNameChange: (String) -> Unit,
     onValueChange: (String) -> Unit,
     positionalThreshold: Float = .45f
 ) {
-    val defaultAttributeNameText = stringResource(R.string.product_attributes_choose_name)
+    val defaultAttributeNameText = stringResource(R.string.product_attributes_enter_name)
     val defaultAttributeValueText = stringResource(R.string.product_attributes_choose_value)
-
-
-    val listItemColors = ListItemDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-    )
 
     val textFieldColors = TextFieldDefaults.colors(
         focusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -130,28 +111,30 @@ fun AttributeItem(
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
             // -------------------- Product attribute value --------------------
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                placeholder = { Text(defaultAttributeValueText) },
-                value = attributeValue,
-                onValueChange = { onValueChange(it) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.CheckBox,
-                        contentDescription = null
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = null
-                    )
-                },
-                maxLines = 1,
-                singleLine = true,
-                colors = textFieldColors
-            )
+            attributeValue?.let {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    placeholder = { Text(defaultAttributeValueText) },
+                    value = attributeValue,
+                    onValueChange = { onValueChange(it) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.CheckBox,
+                            contentDescription = null
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = null
+                        )
+                    },
+                    maxLines = 1,
+                    singleLine = true,
+                    colors = textFieldColors
+                )
+            }
         }
     }
 }

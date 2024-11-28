@@ -1,4 +1,4 @@
-package com.example.amoz.app
+package com.example.amoz.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -49,9 +49,10 @@ fun AppMainScaffold(
     val navigationController = rememberNavController()
 
     val currentRoute = navigationController.currentBackStackEntryAsState().value?.destination?.route
+    val showNavElements = navigationController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("showNavElements")
     val currentNavigationItem = allApplicationScreensMap.values.find { it.screenRoute == currentRoute }
     if (currentNavigationItem != null) {
-        appViewModel.updateCurrentNavItem(currentNavigationItem)
+        appViewModel.updateCurrentNavItem(currentNavigationItem, showNavElements)
     }
 
     fun navigateToScreen(navigationItem: NavItem) {

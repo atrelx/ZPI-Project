@@ -14,13 +14,12 @@ class AppViewModel: ViewModel() {
     private val _appUiState = MutableStateFlow(AppUiState())
     val appUiState: StateFlow<AppUiState> = _appUiState.asStateFlow()
 
-    init {
-
-    }
-
     fun updateCurrentNavItem(
-        navigationItem: NavItem? = bottomNavigationBarNavItemsMap[NavItemType.Home]) {
-        val isNavElementsVisible = bottomNavigationBarNavItemsMap.values.contains(navigationItem)
+        navigationItem: NavItem? = bottomNavigationBarNavItemsMap[NavItemType.Home],
+        isNavVisible: Boolean? = null
+    ) {
+        var isNavElementsVisible = bottomNavigationBarNavItemsMap.values.contains(navigationItem)
+        isNavVisible?.let { isNavElementsVisible = it }
         _appUiState.update { currState ->
             currState.copy(
                 currentNavigationItem = navigationItem,

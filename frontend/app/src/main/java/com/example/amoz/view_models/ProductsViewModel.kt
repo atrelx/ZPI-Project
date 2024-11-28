@@ -190,9 +190,13 @@ class ProductsViewModel @Inject constructor(
             binding = _productUiState.value.currentAddEditProductVariantState,
             failureMessage = "Failed to fetch product variant",
             action = {
+                val productDetails = productRepository.getProductDetails(productId)
                 val productVariantDetails = productVariantRepository.getProductVariant(productVariantId)
                 _productUiState.update {
-                    it.copy(currentAddEditProductVariantDetails = productVariantDetails)
+                    it.copy(
+                        currentAddEditProductVariantDetails = productVariantDetails,
+                        currentAddEditProductDetails = productDetails
+                    )
                 }
                 ProductVariantCreateRequest(productVariantDetails, productId)
             },
@@ -244,10 +248,11 @@ class ProductsViewModel @Inject constructor(
 
                 filteredSortedProductVariantsList = if (currState.showProductVariantsList) {
                     productFilter.filterProductVariants(
-                        variants = currState.productVariantsList ?: emptyList(),
+                        variants = currState.productVariantsList,
                         searchQuery = currState.searchQuery,
                         filterParams = currState.filterParams
-                    ) } else currState.filteredSortedProductVariantsList
+                    )
+                } else currState.filteredSortedProductVariantsList
             )
         }
     }
@@ -258,7 +263,6 @@ class ProductsViewModel @Inject constructor(
         _productUiState.update { currState ->
             currState.copy(
                 searchQuery = query,
-                showProductVariantsList = query.isNotBlank()
             )
         }
         applyFilters()
@@ -267,7 +271,7 @@ class ProductsViewModel @Inject constructor(
     fun showProductVariants(selectedProduct: ProductSummary?) {
         _productUiState.update { currState ->
             currState.copy(
-                filteredSortedProductVariantsList = null,
+//                filteredSortedProductVariantsList = null,
                 showProductsList = selectedProduct == null,
                 showProductVariantsList = selectedProduct != null,
                 filteredByProduct = selectedProduct
@@ -299,11 +303,11 @@ class ProductsViewModel @Inject constructor(
         applyFilters()
     }
 
-    fun clearPriceFilter(from: Boolean = true) {
+    fun clearPriceFilter(from: Boolean) {
         _productUiState.update { currState ->
             currState.copy(
                 filterParams = currState.filterParams.copy(
-                    priceFrom = if (from) BigDecimal.ZERO else currState.filterParams.priceFrom,
+                    priceFrom = if (from) null else currState.filterParams.priceFrom,
                     priceTo = if (!from) null else currState.filterParams.priceTo
                 ),
             )

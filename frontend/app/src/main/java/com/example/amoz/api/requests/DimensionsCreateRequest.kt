@@ -11,16 +11,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DimensionsCreateRequest(
     @field:NotNullable(nameOfField = "Unit dimensions")
-    val unitDimensions: UnitDimensions,
+    val unitDimensions: UnitDimensions? = null,
 
     @field:Positive(nameOfField = "Height")
-    val height: Double,
+    val height: Double? = null,
 
     @field:Positive(nameOfField = "Lenght")
-    val length: Double,
+    val length: Double? = null,
 
     @field:Positive(nameOfField = "Width")
-    val width: Double
+    val width: Double? = null
 ) : ValidatableRequest<DimensionsCreateRequest>() {
     constructor(dimensions: Dimensions) : this(
         unitDimensions = dimensions.unitDimensions,

@@ -1,4 +1,4 @@
-package com.example.amoz.ui.components
+package com.example.amoz.ui.components.text_fields
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween

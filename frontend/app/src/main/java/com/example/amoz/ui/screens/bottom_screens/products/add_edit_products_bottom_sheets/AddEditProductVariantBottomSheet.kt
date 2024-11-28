@@ -1,7 +1,5 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,25 +33,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.requests.StockCreateRequest
-import com.example.amoz.api.requests.WeightCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.components.pickers.ProductPicker
+import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductVariantBottomSheet(
+    product: ProductSummary?,
     productVariantCreateRequestState: MutableStateFlow<ResultState<ProductVariantCreateRequest>>,
     onSaveProductVariant: (ProductVariantCreateRequest) -> Unit,
     onComplete: (ProductVariantCreateRequest) -> Unit,
     onDismissRequest: () -> Unit,
+    navController: NavController
 ) {
     val scope = rememberCoroutineScope()
 
@@ -69,11 +72,8 @@ fun AddEditProductVariantBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        ResultStateView(
-            state = productVariantCreateRequestState,
-        ) {
+        ResultStateView(state = productVariantCreateRequestState) {
             var productVariantState by remember { mutableStateOf(it) }
-            Log.d("PRODUCT VARIANT", productVariantState.toString())
 
             LaunchedEffect(productVariantState) {
                 validationMessage = null
@@ -133,6 +133,19 @@ fun AddEditProductVariantBottomSheet(
                     maxLines = 1,
                     singleLine = true
                 )
+
+                // -------------------- Product variant of --------------------
+                if (productVariantState.productID == null) {
+                    ProductPicker(
+                        product = product,
+                        onProductChange = {
+                            productVariantState = productVariantState.copy(productID = it.productId)
+                        },
+                        onSaveState = { onSaveProductVariant(productVariantState) },
+                        navController = navController,
+                    )
+                }
+
                 // -------------------- Stock --------------------
                 ProductVariantStock(
                     stockCreateRequest = productVariantState.stock ?: StockCreateRequest()) {
@@ -143,8 +156,14 @@ fun AddEditProductVariantBottomSheet(
                 ProductVariantWeight(productVariantState.weight) {
                     productVariantState = productVariantState.copy(weight = it)
                 }
+
+                // -------------------- Dimensions --------------------
+                ProductVariantDimensions(productVariantState.dimensions) {
+                    productVariantState = productVariantState.copy(dimensions = it)
+                }
+
                 // -------------------- Attributes --------------------
-                AttributesList(
+                ProductAttributes(
                     productAttributes = productVariantState.variantAttributes,
                     onAttributesChange = {
                         productVariantState = productVariantState.copy(variantAttributes = it)
@@ -189,6 +208,4 @@ fun AddEditProductVariantBottomSheet(
         }
     }
 }
-
-
 

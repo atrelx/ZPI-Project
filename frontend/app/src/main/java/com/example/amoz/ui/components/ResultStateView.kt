@@ -35,7 +35,7 @@ fun <T> ResultStateView(
     onPullToRefresh: (() -> Unit)? = null,
     loadingView: (@Composable () -> Unit)? = null,
     failureView: @Composable ((String) -> Unit)? = null,
-    successView: @Composable (T) -> Unit
+    successView: (@Composable (T) -> Unit)? = null
 ) {
 
     var isRefreshing by remember { mutableStateOf(false) }
@@ -74,7 +74,7 @@ fun <T> ContentStateView(
     state: MutableStateFlow<ResultState<T>>,
     loadingView: (@Composable () -> Unit)? = null,
     failureView: @Composable ((String) -> Unit)? = null,
-    successView: @Composable (T) -> Unit,
+    successView: (@Composable (T) -> Unit)? = null
 ) {
     val context = LocalContext.current
 
@@ -97,7 +97,7 @@ fun <T> ContentStateView(
         }
 
         is ResultState.Success -> {
-            successView(resultState.data)
+            successView?.invoke(resultState.data)
         }
     }
 }

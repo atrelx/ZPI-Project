@@ -20,10 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.api.requests.CategoryCreateRequest
-import com.example.amoz.models.CategorySummary
 import com.example.amoz.models.CategoryTree
-import com.example.amoz.ui.components.ConfirmDeleteItemBottomSheet
+import com.example.amoz.ui.components.bottom_sheets.ConfirmDeleteItemBottomSheet
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.screens.categories.filtered_list.CategoriesFilteredList
 import com.example.amoz.view_models.CategoriesViewModel

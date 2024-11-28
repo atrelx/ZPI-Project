@@ -18,22 +18,23 @@ import java.util.*
 data class ProductVariantCreateRequest(
 
     @Serializable(with = UUIDSerializer::class)
-    @field:NotNullable(nameOfField = "Product ID")
+    @field:NotNullable(nameOfField = "Product variant of product")
     val productID: UUID? = null,
 
-    @field:Size(max = 100, nameOfField = "Variant name")
+    @field:Size(max = 100, nameOfField = "Product variant name")
+    @field:NotNullable(nameOfField = "Product variant name")
     val variantName: String? = null,
 
     @Serializable(with = BigDecimalSerializer::class)
-    @field:DecimalMin(value = "0.0", inclusive = false, nameOfField = "Variant price")
-    @field:NotNullable(nameOfField = "Variant price")
+    @field:DecimalMin(value = "0.0", inclusive = false, nameOfField = "Price")
+    @field:NotNullable(nameOfField = "Price")
     val variantPrice: BigDecimal? = null,
 
-    @field:NotNullable(nameOfField = "Product variant code")
-    @field:Positive(nameOfField = "Product variant code")
+    @field:NotNullable(nameOfField = "Product variant barcode")
+    @field:Positive(nameOfField = "Product variant barcode")
     val productVariantCode: Int? = null,
 
-    @field:NotNullable(nameOfField = "Stock")
+    @field:NotNullable(nameOfField = "Amount available in stock")
     val stock: StockCreateRequest? = null,
 
     val weight: WeightCreateRequest? = null,
