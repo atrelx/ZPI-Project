@@ -11,4 +11,10 @@ data class CategorySummary(
     val categoryId: UUID,
     val name: String,
     val categoryLevel: Short
-)
+) {
+    constructor(categoryDetails: CategoryDetails) :this(
+        categoryId = categoryDetails.categoryId,
+        name = categoryDetails.name,
+        categoryLevel = categoryDetails.categoryLevel
+    )
+}

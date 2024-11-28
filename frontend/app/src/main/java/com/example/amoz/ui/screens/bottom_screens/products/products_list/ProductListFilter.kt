@@ -26,7 +26,6 @@ class ProductListFilter {
                     (product.price in
                             (filterParams.priceFrom ?: BigDecimal.ZERO)..
                             (filterParams.priceTo ?: BigDecimal(Int.MAX_VALUE)))
-
             }
             .sortedWith(
                 when (filterParams.sortingType) {
@@ -43,7 +42,6 @@ class ProductListFilter {
         variants: List<ProductVariantSummary>,
         searchQuery: String,
         filterParams: ProductsViewModel.FilterParams,
-
     ): List<ProductVariantSummary> {
         return variants
             .filter { variant ->

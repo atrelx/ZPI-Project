@@ -37,7 +37,7 @@ fun MenuBottomSheet(
             // -------------------- Add/Edit Product --------------------
             BottomSheetNavigationRaw(
                 leadingIcon = Icons.Filled.Description,
-                text = stringResource(id = R.string.products_add_product_template),
+                text = stringResource(id = R.string.products_add_product),
                 onClick = {
                     onDismissRequest()
                     onClick(NavItemType.AddProduct)

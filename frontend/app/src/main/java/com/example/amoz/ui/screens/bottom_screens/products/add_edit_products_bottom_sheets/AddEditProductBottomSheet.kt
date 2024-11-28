@@ -1,7 +1,5 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
-import android.util.Log
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,14 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -32,8 +28,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,13 +38,13 @@ import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.CategoryDetails
 import com.example.amoz.models.CategoryTree
-import com.example.amoz.ui.components.CategoryPicker
+import com.example.amoz.ui.components.pickers.CategoryPicker
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +95,7 @@ fun AddEditProductBottomSheet(
             ) {
                 // -------------------- Bottom sheet title --------------------
                 Text(
-                    text = stringResource(R.string.products_add_product_template),
+                    text = stringResource(R.string.products_add_product),
                     style = MaterialTheme.typography.headlineSmall
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -117,11 +111,11 @@ fun AddEditProductBottomSheet(
                     onPriceChange = { productState = productState.copy(price = it) },
                 )
 
-                // -------------------- Product vendor --------------------
+                // -------------------- Product brand --------------------
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    label = { Text(stringResource(R.string.product_vendor)) },
+                    label = { Text(stringResource(R.string.product_brand)) },
                     value = productState.brand ?: "",
                     onValueChange = {
                         productState = productState.copy(brand = it.takeIf { it.isNotBlank() })
@@ -155,7 +149,7 @@ fun AddEditProductBottomSheet(
 
 
                 // -------------------- Product attributes --------------------
-                AttributesList(
+                ProductAttributes(
                     productAttributes = productState.productAttributes,
                     onAttributesChange = {
                         productState = productState.copy(productAttributes = it)

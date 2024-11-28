@@ -36,18 +36,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.api.enums.UnitWeight
-import com.example.amoz.api.requests.WeightCreateRequest
+import com.example.amoz.api.enums.UnitDimensions
+import com.example.amoz.api.requests.DimensionsCreateRequest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductVariantWeight(
-    weight: WeightCreateRequest?,
-    onChange: (WeightCreateRequest?) -> Unit,
+fun ProductVariantDimensions(
+    dimensions: DimensionsCreateRequest?,
+    onChange: (DimensionsCreateRequest?) -> Unit,
 ) {
-    var weightEnabled by remember { mutableStateOf(weight != null) }
-    var weightExpanded by remember { mutableStateOf(false) }
-    var selectedUnit by remember { mutableStateOf(UnitWeight.G) }
+    var dimensionsEnabled by remember { mutableStateOf(dimensions != null) }
+    var dimensionsExpanded by remember { mutableStateOf(false) }
+    var selectedUnit by remember { mutableStateOf(UnitDimensions.CM) }
+
+    var height by remember { mutableStateOf(dimensions?.height?.toString() ?: "") }
+    var width by remember { mutableStateOf(dimensions?.width?.toString() ?: "") }
+    var length by remember { mutableStateOf(dimensions?.length?.toString() ?: "") }
+
 
     Column(
         modifier = Modifier
@@ -57,51 +62,51 @@ fun ProductVariantWeight(
     ) {
         ListItem(
             modifier = Modifier
-                .clickable { weightExpanded = !weightExpanded },
+                .clickable { dimensionsExpanded = !dimensionsExpanded },
             headlineContent = {
                 Box(modifier = Modifier.fillMaxWidth(),) {
                     Text(
                         modifier = Modifier.align(Alignment.Center),
-                        text = stringResource(R.string.variant_weight),
+                        text = stringResource(R.string.variant_dimensions),
                         textAlign = TextAlign.Center,
                     )
                     Icon(
                         modifier = Modifier.align(Alignment.CenterEnd),
                         imageVector =
-                        if (weightExpanded) Icons.Default.KeyboardArrowUp
+                        if (dimensionsExpanded) Icons.Default.KeyboardArrowUp
                         else Icons.Default.KeyboardArrowDown,
-                        contentDescription = "show product weight",
+                        contentDescription = "show product dimensions",
                     )
                 }
             },
             colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
         )
 
-        if (weightExpanded) {
+        if (dimensionsExpanded) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp)
             ) {
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.variant_weight_enable)) },
+                    headlineContent = { Text(stringResource(R.string.variant_dimensions_enable)) },
                     trailingContent = {
                         Switch(
-                            checked = weightEnabled,
+                            checked = dimensionsEnabled,
                             onCheckedChange = {
-                                weightEnabled = it
-                                if (!weightEnabled) {
+                                dimensionsEnabled = it
+                                if (!dimensionsEnabled) {
                                     onChange(null)
-                                }
-                                else {
-                                    onChange(WeightCreateRequest(selectedUnit))
+                                } else {
+                                    onChange(DimensionsCreateRequest(unitDimensions = selectedUnit))
                                 }
                             }
                         )
                     },
                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
                 )
-                if (weightEnabled) {
+
+                if (dimensionsEnabled) {
                     var dropdownExpanded by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         expanded = dropdownExpanded,
@@ -127,34 +132,62 @@ fun ProductVariantWeight(
                             expanded = dropdownExpanded,
                             onDismissRequest = { dropdownExpanded = false }
                         ) {
-                            UnitWeight.entries.forEach { unit ->
+                            UnitDimensions.entries.forEach { unit ->
                                 DropdownMenuItem(
                                     text = { Text(unit.name) },
                                     onClick = {
                                         selectedUnit = unit
                                         dropdownExpanded = false
-                                        onChange(weight?.copy(unitWeight = unit))
+                                        onChange(dimensions?.copy(unitDimensions = unit))
                                     }
                                 )
                             }
                         }
                     }
 
-                    var textValue by remember { mutableStateOf(weight?.amount?.toString() ?: "") }
-
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = textValue,
+                        value = height,
                         onValueChange = { newValue ->
-                            textValue = newValue
+                            height = newValue
                             val parsedValue = newValue.toDoubleOrNull()
-                            onChange(weight?.copy(amount = parsedValue))
+                            onChange(dimensions?.copy(height = parsedValue))
                         },
-                        label = { Text(stringResource(R.string.variant_weight_enter_amount)) },
+                        label = { Text(stringResource(R.string.variant_dimensions_height)) },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Done
-                        ),
+                        )
+                    )
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = width,
+                        onValueChange = { newValue ->
+                            width = newValue
+                            val parsedValue = newValue.toDoubleOrNull()
+                            onChange(dimensions?.copy(width = parsedValue))
+                        },
+                        label = { Text(stringResource(R.string.variant_dimensions_width)) },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Decimal,
+                            imeAction = ImeAction.Done
+                        )
+                    )
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = length,
+                        onValueChange = { newValue ->
+                            length = newValue
+                            val parsedValue = newValue.toDoubleOrNull()
+                            onChange(dimensions?.copy(length = parsedValue))
+                        },
+                        label = { Text(stringResource(R.string.variant_dimensions_length)) },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Decimal,
+                            imeAction = ImeAction.Done
+                        )
                     )
 
                 }

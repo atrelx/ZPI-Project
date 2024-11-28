@@ -1,4 +1,4 @@
-package com.example.amoz.ui.components
+package com.example.amoz.ui.components.pickers
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,9 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -26,33 +24,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.models.CategoryDetails
-import com.example.amoz.models.CategoryTree
+import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.screens.Screens
 import kotlinx.serialization.json.Json
-import java.util.UUID
 
 @Composable
-fun <T> CategoryPicker(
+fun ProductPicker(
     modifier: Modifier = Modifier,
-    category: T?,
-    navController: NavController,
+    product: ProductSummary?,
+    onProductChange: (ProductSummary) -> Unit,
     onSaveState: () -> Unit,
-    onCategoryChange: (CategoryTree?) -> Unit,
-    getCategoryId: (T?) -> UUID?,
-    getCategoryName: (T?) -> String?,
+    navController: NavController
 ) {
-    val selectedCategory = remember(category) {
+
+    val selectedProduct = remember(product) {
         navController.currentBackStackEntry
             ?.savedStateHandle
-            ?.get<String>("selectedCategoryTree")
-            ?.let { Json.decodeFromString(CategoryTree.serializer(), it) }
+            ?.get<String>("selectedProductSummary")
+            ?.let { Json.decodeFromString(ProductSummary.serializer(), it) }
     }
 
-    LaunchedEffect(selectedCategory) {
-        if (selectedCategory != null && selectedCategory.categoryId != getCategoryId(category)) {
-            onCategoryChange(selectedCategory)
-            navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedCategoryTree")
+    LaunchedEffect(selectedProduct) {
+        if (selectedProduct != null && selectedProduct.productId != product?.productId) {
+            onProductChange(selectedProduct)
+            navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedProductSummary")
         }
     }
 
@@ -67,8 +62,12 @@ fun <T> CategoryPicker(
             )
             .clickable {
                 onSaveState()
-                navController.currentBackStackEntry?.savedStateHandle?.set("isSelectable", true)
-                navController.navigate(Screens.Categories.route)
+                navController.currentBackStackEntry?.savedStateHandle?.set("showNavElements", false)
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    "productPickerMode",
+                    true
+                )
+                navController.navigate(Screens.Products.route)
             },
         leadingContent = {
             Icon(
@@ -76,26 +75,14 @@ fun <T> CategoryPicker(
                 contentDescription = null
             )
         },
-        overlineContent = { Text(stringResource(R.string.product_category)) },
+        overlineContent = { Text(stringResource(R.string.products_variant_of)) },
         headlineContent = {
             Text(
-                text = getCategoryName(category) ?: stringResource(R.string.product_category_choose)
+                text = selectedProduct?.name ?: stringResource(R.string.products_choose_product)
             )
         },
         trailingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                category?.let {
-                    IconButton(
-                        onClick = {
-                            onCategoryChange(null)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = null
-                        )
-                    }
-                }
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
                     contentDescription = null
@@ -107,4 +94,3 @@ fun <T> CategoryPicker(
         )
     )
 }
-

@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.ui.components.CategoryPicker
+import com.example.amoz.ui.components.pickers.CategoryPicker
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.view_models.ProductsViewModel

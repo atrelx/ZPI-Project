@@ -35,7 +35,8 @@
 
     // --------------------- Products screen ---------------------
     <string name="products_add_simple_product">Add simple product</string>
-    <string name="products_add_product_template">Add product</string>
+    <string name="products_add_product">Add product</string>
+    <string name="products_choose_product">Choose product</string>
     <string name="products_delete_product_template_confirm">Do you really want to delete:\n%1$s?</string>
     <string name="products_categories_screen">Categories</string>
     <string name="products_attributes_screen">Attributes</string>
@@ -44,7 +45,7 @@
     <string name="product_name">Product name</string>
     <string name="product_description">Product description</string>
     <string name="product_price">Price</string>
-    <string name="product_vendor">Product vendor</string>
+    <string name="product_brand">Product brand</string>
     <string name="product_barcode">Product barcode</string>
 
     <string name="product_unit">Product unit</string>
@@ -58,21 +59,32 @@
     <string name="product_template_choose">Choose product template</string>
 
     <string name="product_attributes">Product attributes</string>
-    <string name="product_attributes_choose_name">Attribute value</string>
+    <string name="product_attributes_enter_name">Attribute name</string>
     <string name="product_attributes_choose_value">Enter your value</string>
-    <string name="product_attributes_add_attributes">Add new attribute</string>
+
+    <string name="product_attributes_add_attributes_name">Add name attribute</string>
+    <string name="product_attributes_add_attributes_name_value">Add name-value attribute</string>
 
     <string name="product_template_delete">Delete product template</string>
 
     // --------------------- Product Variants screen ---------------------
     <string name="products_add_product_variant">Add product variant</string>
+    <string name="products_variant_of">Product variant of product:</string>
+
     <string name="variant_stock">Stock</string>
     <string name="variant_stock_amount">Amount available</string>
     <string name="variant_stock_alarming_state">Alarming state</string>
 
     <string name="variant_weight">Weight</string>
+    <string name="variant_weight_enable">Enable weight</string>
     <string name="variant_weight_select_unit">Select unit</string>
     <string name="variant_weight_enter_amount">Enter amount</string>
+
+    <string name="variant_dimensions">Dimensions</string>
+    <string name="variant_dimensions_enable">Enable dimensions</string>
+    <string name="variant_dimensions_height">Height</string>
+    <string name="variant_dimensions_width">Width</string>
+    <string name="variant_dimensions_length">Length</string>
 
 
     // --------------------- Category Screen ---------------------

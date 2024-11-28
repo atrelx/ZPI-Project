@@ -17,23 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CloseOutlinedButton(onClick: () -> Unit, text: String) {
-    OutlinedButton(
-        onClick = onClick,
-        shape = RoundedCornerShape(10.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-    ) {
-        Text(
-            text = text,
-            color = MaterialTheme.colorScheme.error
-        )
-    }
-}
-
-@Composable
 fun PrimaryFilledButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
     leadingIcon: ImageVector? = null,
@@ -41,7 +26,7 @@ fun PrimaryFilledButton(
     enabled: Boolean = true,
 ) {
     Button(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(50.dp),
         shape = RoundedCornerShape(10.dp),
@@ -59,6 +44,58 @@ fun PrimaryFilledButton(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun PrimaryOutlinedButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String,
+    leadingIcon: ImageVector? = null,
+    leadingIconDescription: String? = null,
+    enabled: Boolean = true,
+) {
+    OutlinedButton(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        shape = RoundedCornerShape(10.dp),
+        onClick = onClick,
+        enabled = enabled
+    ) {
+        leadingIcon?.let {
+            Icon(
+                imageVector = leadingIcon,
+                contentDescription = leadingIconDescription
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CloseOutlinedButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String
+) {
+    OutlinedButton(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(10.dp),
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.error
         )
     }
 }

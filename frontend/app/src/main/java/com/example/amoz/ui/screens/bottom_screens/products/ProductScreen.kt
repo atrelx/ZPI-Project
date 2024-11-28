@@ -21,15 +21,17 @@ import androidx.navigation.NavController
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.amoz.models.ProductSummary
 import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.productScreenBottomSheetMenu
-import com.example.amoz.ui.components.ConfirmDeleteItemBottomSheet
+import com.example.amoz.ui.components.bottom_sheets.ConfirmDeleteItemBottomSheet
 import com.example.amoz.ui.components.filters.MoreFiltersBottomSheet
 import com.example.amoz.view_models.ProductsViewModel.BottomSheetType
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductVariantBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.FilteredProductsList
 import com.example.amoz.view_models.ProductsViewModel
+import kotlinx.serialization.json.Json
 
 
 @Composable
@@ -39,6 +41,10 @@ fun ProductScreen(
     productsViewModel: ProductsViewModel = hiltViewModel()
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
+
+    val productPickerMode = navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.get<Boolean>("productPickerMode") ?: false
 
     fun onMenuItemClick(
         navItemType: NavItemType
@@ -74,7 +80,16 @@ fun ProductScreen(
         ) {
             // -------------------- Products --------------------
             FilteredProductsList(
-                onProductClick = { productsViewModel.showProductVariants(it) },
+                onProductClick = {
+                    if (productPickerMode) {
+                        val productSummaryJson = Json.encodeToString(ProductSummary.serializer(), it)
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "selectedProductSummary", productSummaryJson
+                        )
+                        navController.popBackStack()
+                    }
+                    else { productsViewModel.showProductVariants(it) }
+                },
                 onProductEdit = {
                     productsViewModel.updateCurrentAddEditProduct(it)
                     productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
@@ -185,6 +200,7 @@ fun ProductScreen(
         // -------------------- Add/Edit Product Variant --------------------
         if (productsUiState.addEditProductVariantBottomSheetExpanded) {
             AddEditProductVariantBottomSheet(
+                product = productsUiState.currentAddEditProductDetails?.let{ ProductSummary(it)},
                 productVariantCreateRequestState = productsUiState.currentAddEditProductVariantState,
                 onComplete = { productVariantCreateRequest ->
                     Log.d("PRODUCT VARIANT REQUEST", productVariantCreateRequest.toString())
@@ -199,6 +215,7 @@ fun ProductScreen(
                 onDismissRequest = {
                     productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
                 },
+                navController = navController
             )
         }
 

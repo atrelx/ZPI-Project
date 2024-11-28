@@ -15,9 +15,9 @@ data class ProductsUiState(
     val productVariantsListFetched: MutableStateFlow<ResultState<List<ProductVariantSummary>>> = MutableStateFlow(ResultState.Idle),
 
     val productsList: List<ProductSummary> = emptyList(),
-    val productVariantsList: List<ProductVariantSummary>? = null,
+    val productVariantsList: List<ProductVariantSummary> = emptyList(),
     val filteredSortedProductsList: List<ProductSummary> = productsList,
-    val filteredSortedProductVariantsList: List<ProductVariantSummary>? = productVariantsList,
+    val filteredSortedProductVariantsList: List<ProductVariantSummary> = productVariantsList,
 
     val searchQuery: String = "",
     val filteredByProduct: ProductSummary? = null,

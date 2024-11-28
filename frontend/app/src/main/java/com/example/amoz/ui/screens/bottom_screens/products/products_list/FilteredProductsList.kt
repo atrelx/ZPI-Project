@@ -1,6 +1,5 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,7 @@ import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
-import com.example.amoz.ui.components.SearchTextField
+import com.example.amoz.ui.components.text_fields.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductVariantListItem
@@ -76,6 +75,11 @@ fun FilteredProductsList(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
+            val showProducts = productsUiState.showProductsList
+            val showProductVariants = productsUiState.showProductVariantsList
+
+            val productsList = productsUiState.filteredSortedProductsList
+            val variantsList = productsUiState.filteredSortedProductVariantsList
             // -------------------- Search text field, filter chips --------------------
             item {
                 SearchTextField(
@@ -98,12 +102,11 @@ fun FilteredProductsList(
                 )
             }
 
+
             // -------------------- Products list --------------------
-            if (productsUiState.showProductsList) {
-                items(
-                    productsUiState.filteredSortedProductsList,
-                    key = { it.productId }
-                ) { product ->
+            if (showProducts) {
+
+                items(productsList, key = { it.productId }) { product ->
                     Box(
                         modifier = Modifier.animateItem()
                     ) {
@@ -116,44 +119,39 @@ fun FilteredProductsList(
                         )
                     }
                 }
+                if(productsList.isEmpty()) { item {EmptyLayout {}} }
             }
 
             // -------------------- ProductVariant list --------------------
-            if(productsUiState.showProductVariantsList) {
-                productsUiState.filteredSortedProductVariantsList?.let { filteredProductVariants ->
-                    if (filteredProductVariants.isNotEmpty()) {
-                        items(
-                            filteredProductVariants,
-                            key = { it.productVariantId }
-                        ) { productVariant ->
-                            Box(modifier = Modifier.animateItem()) {
-                                ProductVariantListItem(
-                                    productVariant = productVariant,
-                                    currency = currency!!,
-                                    onClick = {
-                                        productsUiState.filteredByProduct?.let {
-                                            onProductVariantEdit(productVariant.productVariantId, it.productId)
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    else { item { EmptyLayout {} } }
-                    item {
-                        PrimaryFilledButton(
+            if (showProductVariants) {
+                items(variantsList, key = { it.productVariantId }) { productVariant ->
+                    Box(modifier = Modifier.animateItem()) {
+                        ProductVariantListItem(
+                            productVariant = productVariant,
+                            currency = currency!!,
                             onClick = {
                                 productsUiState.filteredByProduct?.let {
-                                    onProductVariantAdd(it.productId)
+                                    onProductVariantEdit(productVariant.productVariantId, it.productId)
                                 }
-                            },
-                            text = stringResource(R.string.add_product_variant),
-                            leadingIcon = Icons.Default.Add
+                            }
                         )
                     }
                 }
+                if(variantsList.isEmpty()) { item {EmptyLayout {} } }
             }
-
+            item {
+                PrimaryFilledButton(
+                    onClick = {
+                        productsUiState.filteredByProduct?.let {
+                            onProductVariantAdd(it.productId)
+                        }
+                    },
+                    text =
+                    if (showProductVariants) stringResource(R.string.add_product_variant)
+                    else stringResource(R.string.products_add_product),
+                    leadingIcon = Icons.Default.Add
+                )
+            }
         }
     }
 }
