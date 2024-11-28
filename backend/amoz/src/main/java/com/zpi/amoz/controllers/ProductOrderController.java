@@ -4,7 +4,6 @@ import com.zpi.amoz.dtos.InvoiceB2BDTO;
 import com.zpi.amoz.dtos.InvoiceB2CDTO;
 import com.zpi.amoz.dtos.ProductOrderDetailsDTO;
 import com.zpi.amoz.dtos.ProductOrderSummaryDTO;
-import com.zpi.amoz.interfaces.InvoiceDTO;
 import com.zpi.amoz.models.Invoice;
 import com.zpi.amoz.models.ProductOrder;
 import com.zpi.amoz.requests.ProductOrderCreateRequest;
@@ -24,7 +23,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -161,13 +162,10 @@ public class ProductOrderController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Product order is not in your company"));
             }
             Invoice invoice = invoiceService.generateInvoice(productOrderId);
-            InvoiceDTO invoiceDTO;
             if (invoice.getProductOrder().getCustomer().getCustomerB2B() != null) {
-                invoiceDTO = InvoiceB2BDTO.toInvoiceDTO(invoice);
-                return ResponseEntity.ok(invoiceDTO);
+                return ResponseEntity.ok(InvoiceB2BDTO.toInvoiceB2BDTO(invoice));
             } else {
-                invoiceDTO = InvoiceB2CDTO.toInvoiceDTO(invoice);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceDTO);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(InvoiceB2CDTO.toInvoiceB2CDTO(invoice));
             }
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -178,12 +176,9 @@ public class ProductOrderController {
         }
     }
 
-    @Operation(summary = "Pobierz istniejącą fakturę", description = "Pobiera szczegóły istniejącej faktury.")
-    @ApiResponse(responseCode = "200", description = "Faktura B2B została pomyślnie pobrana",
+    @Operation(summary = "Pobierz istniejącą fakturę", description = "Pobiera graficzną reprezenacje faktury w postaci PDF.")
+    @ApiResponse(responseCode = "200", description = "Faktura została pomyślnie pobrana",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2BDTO.class))
-    )
-    @ApiResponse(responseCode = "202", description = "Faktura B2C została pomyślnie pobrana",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2CDTO.class))
     )
     @ApiResponse(responseCode = "404", description = "Nie znaleziono faktury",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -192,7 +187,7 @@ public class ProductOrderController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
     )
     @GetMapping("/invoice/{invoiceId}")
-    public ResponseEntity<?> getExistingInvoice(
+    public ResponseEntity<?> downloadInvoice(
             @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
             @PathVariable UUID invoiceId
     ) {
@@ -203,17 +198,60 @@ public class ProductOrderController {
             }
             Invoice invoice = invoiceService.findById(invoiceId)
                     .orElseThrow(() -> new EntityNotFoundException("Could not find invoice for given id: " + invoiceId));
-            InvoiceDTO invoiceDTO;
             if (invoice.getProductOrder().getCustomer() == null) {
                 throw new EntityNotFoundException("Customer is required to fetch an invoice");
             }
+            byte[] invoicePDFBytes;
             if (invoice.getProductOrder().getCustomer().getCustomerB2B() != null) {
-                invoiceDTO = InvoiceB2BDTO.toInvoiceDTO(invoice);
-                return ResponseEntity.ok(invoiceDTO);
+                invoicePDFBytes = invoiceService.generatePDFFromInvoiceB2B(InvoiceB2BDTO.toInvoiceB2BDTO(invoice));
             } else {
-                invoiceDTO = InvoiceB2CDTO.toInvoiceDTO(invoice);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(invoiceDTO);
+                invoicePDFBytes = invoiceService.generatePDFFromInvoiceB2C(InvoiceB2CDTO.toInvoiceB2CDTO(invoice));
             }
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "invoice_no." + invoice.getInvoiceNumber() + ".pdf");
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .body(invoicePDFBytes);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse(e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("An error occurred while fetching product details: " + e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "Wyślij fakturę klientowi", description = "Wysyła emailowo (jeśli podany) graficzną reprezenacje faktury w postaci PDF.")
+    @ApiResponse(responseCode = "200", description = "Faktura została pomyślnie wysłana",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2BDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono faktury",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "401", description = "Brak uprawnień do pobrania faktury",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @PostMapping("/invoice/{invoiceId}")
+    public ResponseEntity<?> sendInvoiceToCustomer(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @PathVariable UUID invoiceId
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            if (!authorizationService.hasPermissionToManageInvoice(userPrincipal, invoiceId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Invoice is not in your company"));
+            }
+            Invoice invoice = invoiceService.findById(invoiceId)
+                    .orElseThrow(() -> new EntityNotFoundException("Could not find invoice for given id: " + invoiceId));
+            if (invoice.getProductOrder().getCustomer() == null) {
+                throw new EntityNotFoundException("Customer is required to fetch an invoice");
+            }
+
+            invoiceService.sendInvoiceToCustomer(invoice, userPrincipal.getSub());
+
+            return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new MessageResponse(e.getMessage()));

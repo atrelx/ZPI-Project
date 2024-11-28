@@ -1,7 +1,6 @@
 package com.zpi.amoz.dtos;
 
 import com.zpi.amoz.enums.Status;
-import com.zpi.amoz.interfaces.InvoiceDTO;
 import com.zpi.amoz.models.ProductOrder;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;

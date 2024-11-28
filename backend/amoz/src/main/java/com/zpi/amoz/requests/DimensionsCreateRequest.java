@@ -10,7 +10,6 @@ public record DimensionsCreateRequest(
 
         @Schema(description = "Jednostka wagi produktu", example = "KG")
         @NotNull(message = "Unit weight is required")
-        @Positive(message = "Unit weight must be greater than 0")
         UnitDimensions unitDimensions,
 
         @Schema(description = "Wysokość produktu", example = "20.5")

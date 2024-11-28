@@ -93,7 +93,7 @@ public class ProductOrderItemService {
             PushRequest pushRequest = new PushRequest(
                     "Alert: Stan produktu na magazynie osiągnął stan krytyczny",
                     "Zostały tylko " + stock.getAmountAvailable() + " sztuki produktu: " + productOrderItem.getProductName(),
-                    null);
+                    Optional.empty());
 
             pushService.sendBulkPushMessages(pushTokens, pushRequest);
         }

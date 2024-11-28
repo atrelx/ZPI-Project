@@ -1,6 +1,8 @@
 package com.zpi.amoz.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,7 +17,8 @@ public class Invoice {
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID invoiceId;
 
-    @Column(nullable = false, unique = true)
+    @Generated(GenerationTime.INSERT)
+    @Column(nullable = false, unique = true, insertable = false)
     private int invoiceNumber;
 
     @Column(nullable = false, precision = 10, scale = 2)
@@ -31,16 +34,8 @@ public class Invoice {
         return invoiceId;
     }
 
-    public void setInvoiceId(UUID invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
     public int getInvoiceNumber() {
         return invoiceNumber;
-    }
-
-    public void setInvoiceNumber(int invoiceNumber) {
-        this.invoiceNumber = invoiceNumber;
     }
 
     public BigDecimal getAmountOnInvoice() {
