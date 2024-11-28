@@ -15,5 +15,5 @@ data class ProductOrderItemSummary(
     @Serializable(with = BigDecimalSerializer::class)
     val unitPrice: BigDecimal,
     val amount: Int,
-    val productName: String? = null
+    val productName: String
 )

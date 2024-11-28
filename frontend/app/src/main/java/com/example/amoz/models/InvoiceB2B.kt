@@ -19,6 +19,7 @@ data class InvoiceB2B(
     val customerB2B: CustomerB2B,
     @Serializable(with = BigDecimalSerializer::class)
     val amountOnInvoice: BigDecimal,
+    val orderItems: List<ProductOrderItemSummary>,
     @Serializable(with = LocalDateSerializer::class)
     val issueDate: LocalDate
 ) : InvoiceDTO

@@ -23,7 +23,7 @@ public record ProductOrderItemDetailsDTO(
         @Schema(description = "Ilość zamówionych produktów", example = "2")
         int amount,
 
-        @Schema(description = "Nazwa produktu (opcjonalnie)", nullable = true, example = "\"Koszulka, Czerwona\"")
+        @Schema(description = "Nazwa produktu", example = "\"Koszulka, Czerwona\"")
         String productName
 
 ) {

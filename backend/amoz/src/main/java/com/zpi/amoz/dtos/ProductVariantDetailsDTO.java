@@ -24,10 +24,10 @@ public record ProductVariantDetailsDTO(
         StockDTO stock,
 
         @Schema(description = "Wymiary wariantu produktu", implementation = DimensionsDTO.class)
-        DimensionsDTO dimensions,
+        Optional<DimensionsDTO> dimensions,
 
         @Schema(description = "Waga wariantu produktu", implementation = WeightDTO.class)
-        WeightDTO weight,
+        Optional<WeightDTO> weight,
 
         @Schema(description = "Cena wariantu produktu", example = "199.99")
         BigDecimal variantPrice,
@@ -44,9 +44,9 @@ public record ProductVariantDetailsDTO(
         return new ProductVariantDetailsDTO(
                 productVariant.getProductVariantId(),
                 productVariant.getCode(),
-                productVariant.getStock() != null ? StockDTO.toStockDTO(productVariant.getStock()) : null,
-                productVariant.getDimensions() != null ? DimensionsDTO.toDimensionsDTO(productVariant.getDimensions()) : null,
-                productVariant.getWeight() != null ? WeightDTO.toWeightDTO(productVariant.getWeight()) : null,
+                StockDTO.toStockDTO(productVariant.getStock()),
+                Optional.ofNullable(productVariant.getDimensions() != null ? DimensionsDTO.toDimensionsDTO(productVariant.getDimensions()) : null),
+                Optional.ofNullable(productVariant.getWeight() != null ? WeightDTO.toWeightDTO(productVariant.getWeight()) : null),
                 productVariant.getVariantPrice(),
                 Optional.ofNullable(productVariant.getVariantName()),
                 productVariant.getVariantAttributes() != null ? productVariant.getVariantAttributes().stream()

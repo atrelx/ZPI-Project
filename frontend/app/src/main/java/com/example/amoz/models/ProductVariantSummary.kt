@@ -14,5 +14,5 @@ data class ProductVariantSummary(
     val code: Int,
     @Serializable(with = BigDecimalSerializer::class)
     val variantPrice: BigDecimal,
-    val variantName: String
+    val variantName: String? = null
 )
