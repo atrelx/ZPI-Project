@@ -39,7 +39,7 @@ public class PushService {
             }
 
             try {
-                BatchResponse response = firebaseMessaging.sendMulticast(builder.build());
+                BatchResponse response = firebaseMessaging.sendEachForMulticast(builder.build());
                 System.out.println("Sent message to " + response.getSuccessCount() + " recipients.");
             } catch (FirebaseMessagingException e) {
                 throw new RuntimeException("Push sending failed", e);

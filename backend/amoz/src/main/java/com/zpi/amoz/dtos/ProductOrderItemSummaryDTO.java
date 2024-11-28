@@ -22,8 +22,8 @@ public record ProductOrderItemSummaryDTO(
         @Schema(description = "Ilość zamówionych produktów", example = "2")
         int amount,
 
-        @Schema(description = "Nazwa produktu (opcjonalnie)", nullable = true, example = "\"Koszulka Czerwona\"")
-        Optional<String> productName
+        @Schema(description = "Nazwa produktu", nullable = true, example = "\"Koszulka, Czerwona\"")
+        String productName
 
 ) {
 
@@ -33,7 +33,7 @@ public record ProductOrderItemSummaryDTO(
                 ProductVariantSummaryDTO.toProductVariantSummaryDTO(productOrderItem.getProductVariant()),
                 productOrderItem.getUnitPrice(),
                 productOrderItem.getAmount(),
-                Optional.ofNullable(productOrderItem.getProductName())
+                productOrderItem.getProductName()
         );
     }
 }

@@ -3,15 +3,18 @@ package com.zpi.amoz.services;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.AddressRepository;
 import com.zpi.amoz.repository.CustomerRepository;
+import com.zpi.amoz.repository.EmployeeRepository;
 import com.zpi.amoz.repository.ProductOrderRepository;
 import com.zpi.amoz.requests.ProductOrderCreateRequest;
 import com.zpi.amoz.requests.ProductVariantCreateRequest;
+import com.zpi.amoz.requests.PushRequest;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,7 +35,13 @@ public class ProductOrderService {
     private CustomerRepository customerRepository;
 
     @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
     private ProductOrderItemService productOrderItemService;
+
+    @Autowired
+    private PushService pushService;
 
     public List<ProductOrder> findAll() {
         return productOrderRepository.findAll();
@@ -81,6 +90,28 @@ public class ProductOrderService {
                 .collect(Collectors.toList());
 
         productOrder.setOrderItems(productOrderItems);
+
+        List<Employee> employees = employeeRepository.findAllByCompany(productOrder
+                .getOrderItems().get(0)
+                .getProductVariant()
+                .getProduct()
+                .getCompany());
+
+        List<String> pushTokens = employees.stream()
+                .map(Employee::getUser)
+                .map(User::getPushToken)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        PushRequest pushRequest = new PushRequest(
+                "New Order Received! \uD83D\uDE80",
+                "A new order has arrived: " + productOrderItems.stream()
+                        .map(item -> item.getAmount() + "x " + item.getProductName())
+                        .collect(Collectors.joining(", ")) + ". Check the details!",
+                Optional.empty()
+        );
+
+        pushService.sendBulkPushMessages(pushTokens, pushRequest);
 
         return productOrderRepository.save(productOrder);
     }

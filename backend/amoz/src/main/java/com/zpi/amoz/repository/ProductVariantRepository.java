@@ -22,7 +22,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     @Query("SELECT pv FROM ProductVariant pv WHERE pv.product.productId = :productId")
     List<ProductVariant> findAllByProductId(@Param("productId") UUID productId);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM ProductVariant p WHERE p.productVariantId = :productVariantId")
     Optional<ProductVariant> findByProductVariantIdWithLock(@Param("productVariantId") UUID productVariantId);
 }
