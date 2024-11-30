@@ -98,9 +98,11 @@ fun AddEditCategoryBottomSheet(
             categoryChildren.forEach { category ->
                 CategoryListItem(
                     category = category,
+                    isSelectable = false,
+                    isSelectableLeavesOnly = false,
                     isChild = false,
-                    onEdit = { onSubcategoryEdit(category) },
-                    hasChildren = false
+                    onClick = { onSubcategoryEdit(category) },
+                    hasChildren = false,
                 )
             }
             // -------------------- New subcategories --------------------

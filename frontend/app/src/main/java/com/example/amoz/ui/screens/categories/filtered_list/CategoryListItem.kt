@@ -1,15 +1,21 @@
 package com.example.amoz.ui.screens.categories.filtered_list
 
-import android.widget.BaseExpandableListAdapter
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowCircleDown
+import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.ArrowCircleUp
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
@@ -19,36 +25,39 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.amoz.R
 import com.example.amoz.models.CategoryTree
+import com.example.amoz.test_data.categories.testCategoriesList
 import com.example.amoz.ui.theme.extendedColors
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryListItem(
     category: CategoryTree,
-    onEdit: ((CategoryTree) -> Unit)? = null,
-    onSelect: ((CategoryTree) -> Unit)? = null,
+    onClick: ((CategoryTree) -> Unit)? = null,
     onDelete: ((CategoryTree) -> Unit)? = null,
     onExpand: (() -> Unit)? = null,
+    isSelectable: Boolean,
+    isSelectableLeavesOnly: Boolean,
     isChild: Boolean = false,
     isExpanded: Boolean = false,
     hasChildren: Boolean = true,
-
 ) {
     val childrenListExpandedIcon =
-        if(isExpanded) {
-            Icons.Default.ArrowCircleUp}
-        else {
-            Icons.Default.ArrowCircleDown}
+        if(isExpanded) { Icons.Default.ArrowCircleUp}
+        else { Icons.Default.ArrowCircleDown}
+
+    val actionIcon =
+        if(isSelectable) { Icons.AutoMirrored.Filled.ArrowForward }
+        else { Icons.Default.Edit }
 
     val childrenListExpandedIconTint =
         if(isExpanded) {
@@ -69,7 +78,12 @@ fun CategoryListItem(
                 shape = RoundedCornerShape(5.dp)
             )
             .combinedClickable(
-                onClick = { onExpand?.invoke() },
+                onClick = {
+                    if(!hasChildren) {
+                        onClick?.invoke(category)
+                    }
+                    else { onExpand?.invoke() }
+                },
                 onLongClick = { onDelete?.invoke(category) }
             ),
         leadingContent = {
@@ -85,23 +99,22 @@ fun CategoryListItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (onEdit != null) {
-                    IconButton(onClick = { onEdit(category) }) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "edit category"
-                        )
-                    }
-                }
-                if (onSelect != null && !hasChildren) {
-                    IconButton(onClick = { onSelect(category) }) {
-                        Icon(
-                            imageVector = Icons.Filled.CheckCircle,
-                            contentDescription = "select category"
-                        )
-                    }
-                }
+                if(!hasChildren) { Icon(imageVector = actionIcon, null) }
                 if (hasChildren) {
+                    if(!isSelectableLeavesOnly) {
+                        IconButton(
+                            onClick = { onClick?.invoke(category) }) {
+                            Icon(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(50.dp))
+                                    .background(MaterialTheme.colorScheme.outlineVariant)
+                                    .padding(5.dp),
+                                imageVector = actionIcon,
+                                contentDescription = "edit category",
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(5.dp))
                     Icon(
                         imageVector = childrenListExpandedIcon,
                         contentDescription = null,

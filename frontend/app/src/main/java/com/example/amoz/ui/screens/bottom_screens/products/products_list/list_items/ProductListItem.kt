@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowCircleRight
-import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -26,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.amoz.models.ProductSummary
+import com.example.amoz.ui.components.DismissBackground
 import java.util.UUID
 
 @Composable
@@ -65,7 +65,7 @@ fun ProductListItem(
         state = swipeState,
         backgroundContent = {
             currentFraction = swipeState.progress
-            DismissBackground(swipeState)
+            DismissBackground(swipeState, true)
         }
     ) {
         ListItem(

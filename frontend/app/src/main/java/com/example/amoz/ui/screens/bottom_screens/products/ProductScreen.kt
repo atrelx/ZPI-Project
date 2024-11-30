@@ -2,6 +2,7 @@ package com.example.amoz.ui.screens.bottom_screens.products
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,17 +21,24 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.amoz.R
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.productScreenBottomSheetMenu
 import com.example.amoz.ui.components.bottom_sheets.ConfirmDeleteItemBottomSheet
 import com.example.amoz.ui.components.filters.MoreFiltersBottomSheet
+import com.example.amoz.ui.components.text_fields.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel.BottomSheetType
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductBottomSheet
 import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditProductVariantBottomSheet
+import com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets.AddEditSimpleProductBottomSheet
+import com.example.amoz.ui.screens.bottom_screens.products.products_list.FilterChips
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.FilteredProductsList
 import com.example.amoz.view_models.ProductsViewModel
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.Json
 
 
@@ -41,6 +49,7 @@ fun ProductScreen(
     productsViewModel: ProductsViewModel = hiltViewModel()
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
+    val currency by productsViewModel.getCurrency().collectAsState(initial = "USD")
 
     val productPickerMode = navController.previousBackStackEntry
         ?.savedStateHandle
@@ -78,37 +87,11 @@ fun ProductScreen(
                 .padding(bottom = 5.dp),
             color = MaterialTheme.colorScheme.background
         ) {
-            // -------------------- Products --------------------
+
             FilteredProductsList(
-                onProductClick = {
-                    if (productPickerMode) {
-                        val productSummaryJson = Json.encodeToString(ProductSummary.serializer(), it)
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "selectedProductSummary", productSummaryJson
-                        )
-                        navController.popBackStack()
-                    }
-                    else { productsViewModel.showProductVariants(it) }
-                },
-                onProductEdit = {
-                    productsViewModel.updateCurrentAddEditProduct(it)
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
-                },
-                onProductDelete = {
-                    productsViewModel.updateCurrentProductToDelete(it)
-                    productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, true)
-                },
-                onProductVariantEdit = { variantId, productId ->
-                    productsViewModel.updateCurrentAddEditProductVariant(variantId, productId)
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
-                },
-                onProductVariantAdd = {
-                    productsViewModel.updateCurrentAddEditProductVariant(null, it)
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
-                },
-                onMoreFiltersClick = {
-                    productsViewModel.expandBottomSheet(BottomSheetType.MORE_FILTERS, true)
-                }
+                productPickerMode = productPickerMode,
+                navController = navController,
+                currency = currency!!
             )
 
             // -------------------- Menu FAB --------------------
@@ -168,6 +151,18 @@ fun ProductScreen(
                     itemNameToDelete = it.name
                 )
             }
+            productsUiState.currentProductVariantToDelete?.let { productVariantToDelete ->
+                ConfirmDeleteItemBottomSheet(
+                    onDismissRequest = {
+                        productsViewModel.updateCurrentProductToDelete(null)
+                        productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, false)
+                    },
+                    onDeleteConfirm = {
+                        productsViewModel.deleteProductVariant(productVariantToDelete.productVariantId)
+                    },
+                    itemNameToDelete = productVariantToDelete.variantName ?: ""
+                )
+            }
         }
 
 
@@ -200,7 +195,6 @@ fun ProductScreen(
         // -------------------- Add/Edit Product Variant --------------------
         if (productsUiState.addEditProductVariantBottomSheetExpanded) {
             AddEditProductVariantBottomSheet(
-                product = productsUiState.currentAddEditProductDetails?.let{ ProductSummary(it)},
                 productVariantCreateRequestState = productsUiState.currentAddEditProductVariantState,
                 onComplete = { productVariantCreateRequest ->
                     Log.d("PRODUCT VARIANT REQUEST", productVariantCreateRequest.toString())
@@ -221,14 +215,19 @@ fun ProductScreen(
 
         // -------------------- Add/Edit Simple Product --------------------
         if (productsUiState.addEditSimpleProductBottomSheetExpanded) {
-//            AddEditSimpleProductBottomSheet(
-//                onDismissRequest = {
-//                    productsViewModel.updateCurrentAddEditProduct(null)
-//                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
-//                },
-//                productVariant = it,
-//                onComplete = {},
-//            )
+            val productState = productsUiState.currentAddEditSimpleProduct.first
+            val productVariantState = productsUiState.currentAddEditSimpleProduct.second
+            AddEditSimpleProductBottomSheet(
+                navController = navController,
+                productCreateRequest = productState,
+                productVariantCreateRequest = productVariantState,
+                onComplete = productsViewModel::createSimpleProduct,
+                onSaveState = productsViewModel::saveSimpleProduct,
+                onDismissRequest = {
+                    productsViewModel.updateCurrentAddEditProduct(null)
+                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
+                }
+            )
         }
     }
 }

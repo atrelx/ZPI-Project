@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,9 +18,10 @@ fun CategoryWithChildren(
     category: CategoryTree,
     allCategories: List<CategoryTree>,
     level: Int = 0,
+    isSelectable: Boolean,
+    isSelectableLeavesOnly: Boolean,
     isChild: Boolean = false,
-    onEdit: ((CategoryTree) -> Unit)? = null,
-    onSelect: ((CategoryTree) -> Unit)? = null,
+    onClick: ((CategoryTree) -> Unit)? = null,
     onDelete: ((CategoryTree) -> Unit)? = null,
 ) {
     val children = category.childCategories
@@ -36,9 +36,10 @@ fun CategoryWithChildren(
             isExpanded = childrenListExpanded,
             hasChildren = children.isNotEmpty(),
             onExpand = { childrenListExpanded = !childrenListExpanded },
-            onEdit = onEdit,
-            onSelect = onSelect,
+            onClick = onClick,
             onDelete = onDelete,
+            isSelectable = isSelectable,
+            isSelectableLeavesOnly = isSelectableLeavesOnly,
         )
 
         if (childrenListExpanded) {
@@ -51,9 +52,10 @@ fun CategoryWithChildren(
                         allCategories = allCategories,
                         level = level + 1,
                         isChild = true,
-                        onEdit = onEdit,
-                        onSelect = onSelect,
+                        onClick = onClick,
                         onDelete = onDelete,
+                        isSelectable = isSelectable,
+                        isSelectableLeavesOnly = isSelectableLeavesOnly,
                     )
                 }
             }

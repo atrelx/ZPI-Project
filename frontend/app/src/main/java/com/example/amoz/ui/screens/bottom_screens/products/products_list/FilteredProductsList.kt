@@ -1,25 +1,28 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.data.AppPreferences
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.PrimaryFilledButton
@@ -28,24 +31,18 @@ import com.example.amoz.ui.components.text_fields.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductVariantListItem
+import com.example.amoz.view_models.ProductsViewModel.BottomSheetType
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.UUID
+import kotlinx.serialization.json.Json
 
 @Composable
 fun FilteredProductsList(
-    onMoreFiltersClick: () -> Unit,
-    onProductEdit: (UUID) -> Unit,
-    onProductClick: (ProductSummary) -> Unit,
-    onProductDelete: (ProductSummary) -> Unit,
-    onProductVariantEdit: (UUID, UUID) -> Unit,
-    onProductVariantAdd: (UUID) -> Unit,
+    productPickerMode: Boolean,
+    navController: NavController,
+    currency: String,
     productsViewModel: ProductsViewModel = hiltViewModel()
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
-    val currContext = LocalContext.current
-    val appPreferences = remember { AppPreferences(currContext) }
-
-    val currency by appPreferences.currency.collectAsState(initial = "USD")
 
     val stateView: MutableStateFlow<ResultState<List<Any>>> =
         if (productsUiState.filteredByProduct == null) {
@@ -54,7 +51,7 @@ fun FilteredProductsList(
             productsUiState.productVariantsListFetched as MutableStateFlow<ResultState<List<Any>>>
         }
 
-
+    val listState = rememberLazyListState()
     ResultStateView(
         state = stateView,
         onPullToRefresh = {
@@ -73,24 +70,28 @@ fun FilteredProductsList(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+            verticalArrangement = Arrangement.spacedBy(15.dp),
+            state = listState
         ) {
             val showProducts = productsUiState.showProductsList
             val showProductVariants = productsUiState.showProductVariantsList
 
             val productsList = productsUiState.filteredSortedProductsList
             val variantsList = productsUiState.filteredSortedProductVariantsList
-            // -------------------- Search text field, filter chips --------------------
+
+            // -------------------- Filters --------------------
             item {
                 SearchTextField(
                     searchQuery = productsUiState.searchQuery,
                     placeholder = stringResource(id = R.string.search_products_placeholder),
                     onSearchQueryChange = { productsViewModel.updateSearchQuery(it) },
-                    onMoreFiltersClick = onMoreFiltersClick
+                    onMoreFiltersClick = {
+                        productsViewModel.expandBottomSheet(BottomSheetType.MORE_FILTERS, true)
+                    }
                 )
                 FilterChips(
                     productTemplateChipValue = productsUiState.filteredByProduct?.name,
-                    onProductTemplateChipClick = {
+                    onProductChipClick = {
                         productsViewModel.showProductVariants(null)
                     },
                     category = productsUiState.filterParams.category,
@@ -102,7 +103,6 @@ fun FilteredProductsList(
                 )
             }
 
-
             // -------------------- Products list --------------------
             if (showProducts) {
 
@@ -112,10 +112,25 @@ fun FilteredProductsList(
                     ) {
                         ProductListItem(
                             product = product,
-                            onClick = { onProductClick(product) },
-                            onProductRemove = onProductDelete,
-                            onProductEdit = onProductEdit,
-                            currency = currency!!,
+                            onClick = {
+                                if (productPickerMode) {
+                                    val productSummaryJson = Json.encodeToString(ProductSummary.serializer(), product)
+                                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                                        "selectedProductSummary", productSummaryJson
+                                    )
+                                    navController.popBackStack()
+                                }
+                                else { productsViewModel.showProductVariants(product) }
+                            },
+                            onProductRemove = {
+                                productsViewModel.updateCurrentProductToDelete(it)
+                                productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, true)
+                            },
+                            onProductEdit = {
+                                productsViewModel.updateCurrentAddEditProduct(it)
+                                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
+                            },
+                            currency = currency,
                         )
                     }
                 }
@@ -125,14 +140,26 @@ fun FilteredProductsList(
             // -------------------- ProductVariant list --------------------
             if (showProductVariants) {
                 items(variantsList, key = { it.productVariantId }) { productVariant ->
+                    productsViewModel.getProductVariantPicture(productVariant.productVariantId)
+
+                    val imageState = productsUiState.productVariantImages
+                        .collectAsState().value[productVariant.productVariantId]
+
+
                     Box(modifier = Modifier.animateItem()) {
                         ProductVariantListItem(
                             productVariant = productVariant,
-                            currency = currency!!,
+                            productVariantBitmapImageState = imageState,
+                            currency = currency,
                             onClick = {
                                 productsUiState.filteredByProduct?.let {
-                                    onProductVariantEdit(productVariant.productVariantId, it.productId)
+                                    productsViewModel.updateCurrentAddEditProductVariant(productVariant.productVariantId, it.productId)
+                                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
                                 }
+                            },
+                            onDelete = {
+                                productsViewModel.updateCurrentProductVariantToDelete(productVariant)
+                                productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, true)
                             }
                         )
                     }
@@ -142,8 +169,16 @@ fun FilteredProductsList(
             item {
                 PrimaryFilledButton(
                     onClick = {
-                        productsUiState.filteredByProduct?.let {
-                            onProductVariantAdd(it.productId)
+                        if (showProductVariants) {
+                            productsUiState.filteredByProduct?.let {
+                                productsViewModel.updateCurrentAddEditProductVariant(null, it.productId)
+                                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
+                            }
+                        }
+                        else {
+                            productsViewModel.updateCurrentAddEditProduct(null)
+                            productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_PRODUCT, true)
+
                         }
                     },
                     text =
@@ -153,9 +188,11 @@ fun FilteredProductsList(
                 )
             }
         }
+        BackHandler(enabled = productsUiState.filteredByProduct != null) {
+            productsViewModel.showProductVariants(null)
+        }
     }
 }
-
 
 
 

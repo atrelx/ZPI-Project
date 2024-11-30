@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchTextField(
+    modifier: Modifier = Modifier,
     searchQuery: String,
     placeholder: String,
     isMoreFiltersVisible: Boolean = true,
@@ -27,11 +28,11 @@ fun SearchTextField(
     onMoreFiltersClick: () -> Unit = {},
 ) {
     OutlinedTextField(
+        modifier = modifier.fillMaxWidth(),
         value = searchQuery,
         onValueChange = { onSearchQueryChange(it) },
         placeholder = { Text(text = placeholder) },
-        modifier = Modifier
-            .fillMaxWidth(),
+
         singleLine = true,
         maxLines = 1,
         trailingIcon = {

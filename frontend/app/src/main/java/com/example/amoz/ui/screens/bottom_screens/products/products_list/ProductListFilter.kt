@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
+import com.example.amoz.models.CategoryTree
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.view_models.ProductsViewModel
@@ -20,7 +21,7 @@ class ProductListFilter {
                 } ?: true) &&
                     // Filter by category
                     (filterParams.category?.let {
-                        product.category?.name == it.name
+                        isCategoryMatched(it, product.category?.name)
                     } ?: true) &&
                         // Filter by base price
                     (product.price in
@@ -47,7 +48,7 @@ class ProductListFilter {
             .filter { variant ->
                 // Filter by search query
                 (searchQuery.takeIf { it.isNotBlank() }
-                    ?.let { variant.variantName.contains(it, ignoreCase = true) } ?: true) &&
+                    ?.let { variant.variantName?.contains(it, ignoreCase = true) } ?: true) &&
                         // Filter by price range
                         (variant.variantPrice in
                                 (filterParams.priceFrom ?: BigDecimal.ZERO)..
@@ -63,4 +64,19 @@ class ProductListFilter {
                 }
             )
     }
+
+    private fun isCategoryMatched(filterCategory: CategoryTree?, productCategory: String?): Boolean {
+        if (filterCategory == null) return true
+
+        if (filterCategory.name == productCategory) return true
+
+        for (child in filterCategory.childCategories) {
+            if (isCategoryMatched(child, productCategory)) {
+                return true
+            }
+        }
+
+        return false
+    }
+
 }

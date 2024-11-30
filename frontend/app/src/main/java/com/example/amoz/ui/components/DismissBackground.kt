@@ -1,4 +1,4 @@
-package com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items
+package com.example.amoz.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,12 +25,13 @@ import com.example.amoz.ui.theme.onCustomColor2Dark
 import com.example.amoz.ui.theme.onCustomColor3Dark
 
 @Composable
-fun DismissBackground(dismissState: SwipeToDismissBoxState) {
-    val color = when (dismissState.dismissDirection) {
-        SwipeToDismissBoxValue.StartToEnd -> Color(customColor2Dark.value)
-        SwipeToDismissBoxValue.EndToStart -> Color(customColor3Dark.value)
-        SwipeToDismissBoxValue.Settled -> Color.Transparent
+fun DismissBackground(dismissState: SwipeToDismissBoxState, endToStart: Boolean = false) {
+    val color = when {
+        dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd -> Color(customColor2Dark.value)
+        dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart && endToStart -> Color(customColor3Dark.value)
+        else -> Color.Transparent
     }
+
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -46,10 +47,12 @@ fun DismissBackground(dismissState: SwipeToDismissBoxState) {
             contentDescription = "Remove product template"
         )
         Spacer(modifier = Modifier)
-        Icon(
-            imageVector = Icons.Default.Edit,
-            tint = Color(onCustomColor3Dark.value),
-            contentDescription = "Edit product template"
-        )
+        if (endToStart) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                tint = Color(onCustomColor3Dark.value),
+                contentDescription = "Edit product template"
+            )
+        }
     }
 }

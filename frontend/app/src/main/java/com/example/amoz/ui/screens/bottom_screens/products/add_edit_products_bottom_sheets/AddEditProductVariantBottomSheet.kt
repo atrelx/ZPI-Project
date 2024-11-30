@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -51,7 +52,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductVariantBottomSheet(
-    product: ProductSummary?,
     productVariantCreateRequestState: MutableStateFlow<ResultState<ProductVariantCreateRequest>>,
     onSaveProductVariant: (ProductVariantCreateRequest) -> Unit,
     onComplete: (ProductVariantCreateRequest) -> Unit,
@@ -135,16 +135,19 @@ fun AddEditProductVariantBottomSheet(
                 )
 
                 // -------------------- Product variant of --------------------
-                if (productVariantState.productID == null) {
+                val showPicker = remember(productVariantState.productID) { productVariantState.productID == null }
+
+                if (showPicker) {
                     ProductPicker(
-                        product = product,
                         onProductChange = {
+                            Log.d("NEW PRODUCT ID", it.toString())
                             productVariantState = productVariantState.copy(productID = it.productId)
                         },
                         onSaveState = { onSaveProductVariant(productVariantState) },
                         navController = navController,
                     )
                 }
+
 
                 // -------------------- Stock --------------------
                 ProductVariantStock(

@@ -59,7 +59,7 @@ fun EmployeesLazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
         state = listState
     ) {
-        items(employees) { employee ->
+        items(employees, key = {it.employeeId}) { employee ->
             val isEmployeeVisible = remember {
                 derivedStateOf {
                     val visibleItems = listState.layoutInfo.visibleItemsInfo

@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,14 +36,20 @@ fun CategoriesScreen(
 ) {
     val categoryUiState by categoryViewModel.categoriesUiState.collectAsState()
 
+    val isSelectableLeavesOnly = navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.get<Boolean>("isSelectableLeavesOnly") ?: false
+
     val isSelectable = navController.previousBackStackEntry
         ?.savedStateHandle
-        ?.get<Boolean>("isSelectable") ?: false
+        ?.get<Boolean>("isSelectable") ?: isSelectableLeavesOnly
+
 
     fun closeAddEditCategoryBottomSheet() {
         categoryViewModel.updateCurrentCategory(null)
         categoryViewModel.expandAddEditCategoryBottomSheet(false)
     }
+
 
     Surface(
         modifier = Modifier
@@ -57,26 +64,22 @@ fun CategoriesScreen(
             CategoriesFilteredList(
                 categories = categoryUiState.filteredCategoryList,
                 searchQuery = categoryUiState.searchQuery,
+                isSelectable = isSelectable,
+                isSelectableLeavesOnly = isSelectableLeavesOnly,
                 onSearchQueryChange = categoryViewModel::updateSearchQuery,
-                onEdit =
-                    if (!isSelectable) {
-                        {
-                            categoryViewModel.updateCurrentCategory(it)
-                            categoryViewModel.expandAddEditCategoryBottomSheet(true)
-                        }
-                    }
-                    else null,
-                onSelect =
+                onClick = {
                     if (isSelectable) {
-                        {
-                            val categoryJson = Json.encodeToString(CategoryTree.serializer(), it)
-                            navController.previousBackStackEntry?.savedStateHandle?.set(
-                                "selectedCategoryTree", categoryJson
-                            )
-                            navController.popBackStack()
-                        }
+                        val categoryJson = Json.encodeToString(CategoryTree.serializer(), it)
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "selectedCategoryTree", categoryJson
+                        )
+                        navController.popBackStack()
                     }
-                    else null,
+                    else {
+                        categoryViewModel.updateCurrentCategory(it)
+                        categoryViewModel.expandAddEditCategoryBottomSheet(true)
+                    }
+                },
                 onAdd = {
                     categoryViewModel.updateCurrentCategory(null)
                     categoryViewModel.expandAddEditCategoryBottomSheet(true)

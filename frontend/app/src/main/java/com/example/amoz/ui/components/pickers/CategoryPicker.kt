@@ -35,6 +35,7 @@ import java.util.UUID
 fun <T> CategoryPicker(
     modifier: Modifier = Modifier,
     category: T?,
+    leavesOnly: Boolean = false,
     navController: NavController,
     onSaveState: () -> Unit,
     onCategoryChange: (CategoryTree?) -> Unit,
@@ -55,6 +56,8 @@ fun <T> CategoryPicker(
         }
     }
 
+    val isSelectableCategory = if(leavesOnly) "isSelectableLeavesOnly" else "isSelectable"
+
     ListItem(
         modifier = modifier
             .fillMaxWidth()
@@ -66,7 +69,7 @@ fun <T> CategoryPicker(
             )
             .clickable {
                 onSaveState()
-                navController.currentBackStackEntry?.savedStateHandle?.set("isSelectable", true)
+                navController.currentBackStackEntry?.savedStateHandle?.set(isSelectableCategory, true)
                 navController.navigate(Screens.Categories.route)
             },
         leadingContent = {

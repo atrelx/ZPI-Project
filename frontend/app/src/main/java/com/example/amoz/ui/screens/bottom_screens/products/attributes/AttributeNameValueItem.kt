@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
-import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.DismissBackground
+import com.example.amoz.ui.components.DismissBackground
 
 @Composable
 fun AttributeNameValueItem(

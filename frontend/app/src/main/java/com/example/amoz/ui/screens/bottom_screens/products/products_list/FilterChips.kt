@@ -23,7 +23,7 @@ import java.math.BigDecimal
 fun FilterChips(
     modifier: Modifier = Modifier,
     productTemplateChipValue: String?,
-    onProductTemplateChipClick: () -> Unit,
+    onProductChipClick: () -> Unit,
     category: CategoryTree?,
     onCategoryClick: () -> Unit,
     priceFrom: BigDecimal?,
@@ -53,8 +53,8 @@ fun FilterChips(
         }
         productTemplateChipValue?.let {
             FilterChip(
-                onClick = onProductTemplateChipClick,
-                label = { Text(it) },
+                onClick = onProductChipClick,
+                label = { Text("Product: $it") },
                 selected = true,
                 leadingIcon = {
                     Icon(

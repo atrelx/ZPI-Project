@@ -31,13 +31,12 @@ import kotlinx.serialization.json.Json
 @Composable
 fun ProductPicker(
     modifier: Modifier = Modifier,
-    product: ProductSummary?,
     onProductChange: (ProductSummary) -> Unit,
     onSaveState: () -> Unit,
     navController: NavController
 ) {
 
-    val selectedProduct = remember(product) {
+    val selectedProduct = remember {
         navController.currentBackStackEntry
             ?.savedStateHandle
             ?.get<String>("selectedProductSummary")
@@ -45,7 +44,7 @@ fun ProductPicker(
     }
 
     LaunchedEffect(selectedProduct) {
-        if (selectedProduct != null && selectedProduct.productId != product?.productId) {
+        if (selectedProduct != null) {
             onProductChange(selectedProduct)
             navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedProductSummary")
         }

@@ -70,9 +70,9 @@ fun AddEditProductBottomSheet(
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
-        confirmValueChange = { newState ->
-            newState != SheetValue.Hidden
-        }
+//        confirmValueChange = { newState ->
+//            newState != SheetValue.Hidden
+//        }
     )
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -138,6 +138,7 @@ fun AddEditProductBottomSheet(
                 CategoryPicker(
                     category = categoryTreeState,
                     navController = navController,
+                    leavesOnly = true,
                     onSaveState = { onSaveProduct(productState) },
                     onCategoryChange = {
                         categoryTreeState = it

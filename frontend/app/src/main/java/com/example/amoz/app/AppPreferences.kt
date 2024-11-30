@@ -1,4 +1,4 @@
-package com.example.amoz.data
+package com.example.amoz.app
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -6,8 +6,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Singleton
 
 class AppPreferences(private val context: Context) {
     companion object {
@@ -26,3 +32,15 @@ class AppPreferences(private val context: Context) {
         }
     }
 }
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideAppPreferences(@ApplicationContext context: Context): AppPreferences {
+        return AppPreferences(context)
+    }
+}
+

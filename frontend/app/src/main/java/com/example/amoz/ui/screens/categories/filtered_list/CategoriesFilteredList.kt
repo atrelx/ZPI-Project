@@ -26,10 +26,11 @@ import com.example.amoz.ui.components.text_fields.SearchTextField
 fun CategoriesFilteredList(
     categories: List<CategoryTree>,
     searchQuery: String,
+    isSelectable: Boolean,
+    isSelectableLeavesOnly: Boolean,
     onSearchQueryChange: (String) -> Unit,
     onAdd: () -> Unit,
-    onEdit: ((CategoryTree) -> Unit)? = null,
-    onSelect: ((CategoryTree) -> Unit)? = null,
+    onClick: ((CategoryTree) -> Unit)? = null,
     onDelete: ((CategoryTree) -> Unit)? = null,
 ) {
     LazyColumn(
@@ -49,9 +50,10 @@ fun CategoriesFilteredList(
                 CategoryWithChildren(
                     category = category,
                     allCategories = categories,
-                    onEdit = onEdit,
-                    onSelect = onSelect,
-                    onDelete = onDelete
+                    onClick = onClick,
+                    onDelete = onDelete,
+                    isSelectable = isSelectable,
+                    isSelectableLeavesOnly = isSelectableLeavesOnly,
                 )
             }
         }
