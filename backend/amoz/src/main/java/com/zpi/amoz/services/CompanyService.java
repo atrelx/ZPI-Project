@@ -101,7 +101,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public void deactivateCompanyById(UUID id) throws EntityNotFoundException {
+    public void deactivateCompanyById(UUID id) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find company"));
 
@@ -111,7 +111,9 @@ public class CompanyService {
             employeeRepository.save(employee);
         }
 
-        companyRepository.deactivateCompany(id);
+        company.setActive(false);
+
+        companyRepository.save(company);
     }
 }
 

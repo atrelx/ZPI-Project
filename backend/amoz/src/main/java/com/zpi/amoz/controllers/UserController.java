@@ -88,6 +88,28 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Pobranie danych użytkownika", description = "Zwraca dane użytkownika.")
+    @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano dane użytkownika",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Użytkownik nie znaleziony",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @GetMapping
+    public ResponseEntity<?> getUser(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            User user = userService.findById(userPrincipal.getSub())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            UserDTO userDTO = UserDTO.toUserDTO(user);
+            return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        }
+    }
+
     @Operation(summary = "Przesyłanie zdjęcia profilowego", description = "Przesyła zdjęcie profilowe użytkownika.")
     @ApiResponse(responseCode = "204", description = "Pomyślnie przesłano zdjęcie")
     @ApiResponse(responseCode = "400", description = "Błąd w przesyłaniu pliku",

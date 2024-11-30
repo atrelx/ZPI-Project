@@ -35,10 +35,16 @@ class EmployeeRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchEmployees(): List<com.example.amoz.models.Employee> {
+    suspend fun fetchEmployees(): List<Employee> {
         return performRequest {
             employeeService.fetchEmployees()
         } ?: listOf()
+    }
+
+    suspend fun fetchEmployee(): Employee? {
+        return performRequest {
+            employeeService.fetchEmployee()
+        }
     }
 
     suspend fun getEmployeePicture(employeeId: UUID): ImageBitmap? {

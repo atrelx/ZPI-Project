@@ -252,6 +252,32 @@ public class EmployeeController {
         }
     }
 
+    @Operation(summary = "Pobierz dane pracownika", description = "Zwraca dane pracownika.")
+    @ApiResponse(responseCode = "200",
+            description = "Pomyślnie pobrano dane pracownika",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeDTO.class)))
+    @ApiResponse(responseCode = "404",
+            description = "Nie znaleziono pracownika",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class)))
+    @ApiResponse(responseCode = "500",
+            description = "Błąd serwera",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class)))
+    @GetMapping("/employee")
+    public ResponseEntity<?> fetchEmployeeByUserId(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            Employee employee = employeeService.getEmployeeByUserId(userPrincipal.getSub());
+            EmployeeDTO employeeDTO = EmployeeDTO.toEmployeeDTO(employee);
+            return ResponseEntity.ok(employeeDTO);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse(e.getMessage()));
+        }
+    }
+
     @Operation(summary = "Pobierz zaproszenia", description = "Zwraca listę wszystkich zaproszeń użytkownika do firm.")
     @ApiResponse(responseCode = "200", description = "Pomyślnie pobrano zaproszenia",
             content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = EmployeeDTO.class)))

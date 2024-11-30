@@ -51,24 +51,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-
-    @Transactional
-    public boolean deactivateProduct(UUID productId) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-
-            for (ProductVariant variant : product.getProductVariants()) {
-                productVariantRepository.deactivateProductVariant(variant.getProductVariantId());
-            }
-
-            productRepository.deactivateProduct(productId);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     @Transactional
     public Product createProduct(UUID companyId, ProductCreateRequest productDetails) {
         Product initialProduct = new Product();
@@ -152,12 +134,11 @@ public class ProductService {
     public void deactivateProductById(UUID productId) throws EntityNotFoundException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find product for given id: " + productId));
-
+        product.setActive(false);
         for (ProductVariant productVariant : product.getProductVariants()) {
             productVariant.setActive(false);
             productVariantRepository.save(productVariant);
         }
-
-        productRepository.deactivateProduct(productId);
+        productRepository.save(product);
     }
 }

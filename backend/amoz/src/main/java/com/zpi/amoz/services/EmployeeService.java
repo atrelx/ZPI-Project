@@ -71,6 +71,12 @@ public class EmployeeService {
         }
     }
 
+    public Employee getEmployeeByUserId(String userId) {
+        return employeeRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find employee for given user ID"));
+    }
+
+
     @Transactional
     public CompletableFuture<Void> inviteEmployeeToCompany(UUID companyId, String employeeEmailAddress) {
         Company company = companyRepository.findById(companyId)

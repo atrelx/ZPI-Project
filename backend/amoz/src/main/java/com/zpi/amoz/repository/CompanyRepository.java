@@ -10,11 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
-    @Modifying
-    @Transactional
-    @Query("UPDATE Company c SET c.isActive = false WHERE c.companyId = :companyId")
-    int deactivateCompany(UUID companyId);
-
     @Query("SELECT e.company FROM Employee e WHERE e.user.userId = :userId")
     Optional<Company> getCompanyByUserId(String userId);
 

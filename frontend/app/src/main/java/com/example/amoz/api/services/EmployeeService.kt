@@ -35,6 +35,9 @@ interface EmployeeService {
     @GET("api/employees")
     suspend fun fetchEmployees(): Response<List<Employee>>
 
+    @GET("api/employees/employee")
+    suspend fun fetchEmployee(): Response<Employee>
+
     @GET("api/employees/picture/{employeeId}")
     suspend fun getEmployeePicture(
         @Path("employeeId") employeeId: UUID

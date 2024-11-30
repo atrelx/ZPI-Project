@@ -154,11 +154,12 @@ public class ProductVariantService {
     }
 
     @Transactional
-    public void deactivateProductVariantById(UUID productVariantId) throws EntityNotFoundException {
-        productVariantRepository.findById(productVariantId)
+    public void deactivateProductVariantById(UUID productVariantId) {
+        ProductVariant productVariant = productVariantRepository.findById(productVariantId)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find product for given id: " + productVariantId));
 
-        productVariantRepository.deactivateProductVariant(productVariantId);
+        productVariant.setActive(false);
+        productVariantRepository.save(productVariant);
     }
 
     public String getFullProductName(ProductVariant productVariant) {
