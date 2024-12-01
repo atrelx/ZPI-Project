@@ -67,18 +67,6 @@ val productScreenBottomSheetMenu = mapOf(
                 title = R.string.products_categories_screen,
                 screenRoute = Screens.Categories.route,
                 icon = Icons.Filled.Category,
-            ),
-    NavItemType.Attributes to
-            NavItem(
-                title = R.string.products_attributes_screen,
-                screenRoute = Screens.Attributes.route,
-                icon = Icons.Filled.CheckBox,
-            ),
-    NavItemType.StockDelivery to
-            NavItem(
-                title = R.string.products_stock_delivery_screen,
-                screenRoute = Screens.StockDelivery.route,
-                icon = Icons.Filled.LocalShipping,
             )
 )
 

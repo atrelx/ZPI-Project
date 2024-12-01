@@ -31,6 +31,7 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEmployeesBottomSheet(
+    onInvitationSend: (String) -> Unit,
     onDismissRequest: () -> Unit,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
@@ -81,8 +82,7 @@ fun AddEmployeesBottomSheet(
             // -------------------- Confirm button --------------------
             PrimaryFilledButton(
                 onClick = {
-                    /*TODO*/
-                    /*SEND INVITATION TO PERSON VIA BACKEND*/
+                    onInvitationSend(workerEmail)
                     onDismissRequest()
                     callSnackBar(
                         invSentSuccessful,

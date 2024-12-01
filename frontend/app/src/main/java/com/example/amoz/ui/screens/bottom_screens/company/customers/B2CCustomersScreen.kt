@@ -3,7 +3,6 @@ package com.example.amoz.ui.screens.bottom_screens.company.customers
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,30 +11,27 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.amoz.R
 import com.example.amoz.models.CustomerB2C
-import com.example.amoz.ui.PersonProfileColumn
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
@@ -48,10 +44,12 @@ fun B2CCustomerScreen(
 ) {
     AmozApplicationTheme {
         val companyUiState by companyViewModel.companyUIState.collectAsState()
-        var currentB2cCustomer by remember { mutableStateOf<CustomerB2C?>(null) }
+        val customerAddSuccessful = stringResource(id = R.string.company_add_customer_successful)
+        val customerEditSuccessful = stringResource(id = R.string.company_update_customer_successful)
 
         Surface(
             modifier = Modifier
+
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp)
@@ -69,11 +67,11 @@ fun B2CCustomerScreen(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
-                                currentB2cCustomer = customerB2C
-                                companyViewModel.expandCustomerProfileDataBottomSheet(true)
+                                companyViewModel.updateCustomerB2cCreateRequestState(customerB2C)
+                                companyViewModel.expandAddEditB2CCustomerBottomSheet(true)
                             },
                         headlineContent = { Text(person.name + " " + person.surname) },
-                        supportingContent = { Text(text = contactPerson.emailAddress ?: "") },
+                        supportingContent = { Text(text = contactPerson.emailAddress ?: contactPerson.contactNumber) },
                         colors = ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
@@ -88,7 +86,8 @@ fun B2CCustomerScreen(
             ) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        companyViewModel.expandAddB2CCustomerBottomSheet(true)
+                        companyViewModel.updateCustomerB2cCreateRequestState(null)
+                        companyViewModel.expandAddEditB2CCustomerBottomSheet(true)
                     },
                     modifier = Modifier
                         .padding(16.dp), // Padding for spacing from screen edges
@@ -98,46 +97,25 @@ fun B2CCustomerScreen(
             }
         }
         if (companyUiState.addB2CCustomerBottomSheetExpanded) {
-            AddB2CCustomerBottomSheet(
-                onDismissRequest = {
-                    companyViewModel.expandAddB2CCustomerBottomSheet(false)
-                },
-                customerRequest = companyViewModel.customerB2CCreateRequestState.collectAsState().value,
-                callSnackBar = callSnackBar,
+            AddEditB2CCustomerBottomSheet(
+                customerRequest = companyUiState.customerB2CCreateRequestState,
                 onDone = { request ->
-                    companyViewModel.createB2CCustomer(request)
-                }
-
+                    companyUiState.currentCustomerB2C?.let {
+                        companyViewModel.updateB2CCustomer(it.customer.customerId, request) {
+                            callSnackBar(customerEditSuccessful, Icons.Outlined.Done)
+                        }
+                    }
+                    ?: companyViewModel.createB2CCustomer(request) {
+                        callSnackBar(customerAddSuccessful, Icons.Outlined.Done)
+                    }
+                },
+                onDismissRequest = {
+                    companyViewModel.updateCustomerB2cCreateRequestState(null)
+                    companyViewModel.expandAddEditB2CCustomerBottomSheet(false)
+                },
             )
         }
-        if (companyUiState.customerProfileDataBottomSheetExpanded && currentB2cCustomer != null) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    currentB2cCustomer = null
-                    companyViewModel.expandAddB2CCustomerBottomSheet(false)
-                },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            ) {
-                Column (
-                    modifier = Modifier
-                        .padding(16.dp),
-                ) {
-                    currentB2cCustomer?.let { currentCustomer ->
-                        val person = currentCustomer.person
-                        val contactPerson = currentCustomer.customer.contactPerson
-                        PersonProfileColumn(
-                            personPhoto = null,
-                            personFirstName = person.name,
-                            personLastName = person.surname,
-                            personEmail = contactPerson.emailAddress,
-                            personPhoneNumber = contactPerson.contactNumber,
-                            personSex = person.sex,
-                            personBirthDate = person.dateOfBirth
-                        )
-                    }
-                }
-            }
-        }
+
     }
 }
 

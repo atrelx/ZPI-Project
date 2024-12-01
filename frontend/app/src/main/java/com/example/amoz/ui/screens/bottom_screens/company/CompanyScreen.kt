@@ -1,52 +1,33 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.ModeEdit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.api.enums.RoleInCompany
 import com.example.amoz.data.NavItem
 import com.example.amoz.navigation.companyInfoScreenItemsMap
 import com.example.amoz.ui.components.bottom_sheets.AddressBottomSheet
@@ -65,7 +46,8 @@ fun CompanyScreen(
         val companyUIState by companyViewModel.companyUIState.collectAsState()
         val clipboardManager = LocalClipboardManager.current
 
-        val context = LocalContext.current
+        val currentEmployeeRoleInCompany = companyUIState.currentEmployee?.roleInCompany
+        val readOnly = currentEmployeeRoleInCompany == RoleInCompany.REGULAR
 
         val workersDescription = stringResource(R.string.company_employees_description)
         val customersDescription = stringResource(R.string.company_customers_description)
@@ -79,16 +61,15 @@ fun CompanyScreen(
             }
         }
 
-//        LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-//            companyViewModel.fetchCompanyDetails()
-//        }
-
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            ResultStateView(state = companyUIState.company) { company ->
+            ResultStateView(
+                state = companyUIState.company,
+                onPullToRefresh = { companyViewModel.fetchCompanyDetails() }
+            ) { company ->
                 val address = company.address
                 Column(
                     modifier = Modifier
@@ -98,9 +79,15 @@ fun CompanyScreen(
                 ) {
                     // --------------------- Company banner, logo ---------------------
                     CompanyLogoAndName(
-                        companyLogo = companyUIState.companyLogo,
+                        companyLogoState = companyUIState.companyLogo,
+                        readOnly = readOnly,
                         companyName = company.name,
-                        onClick = { companyViewModel.expandChangeCompanyNameBottomSheet(true) }
+                        onCompanyNameClick = {
+                            companyViewModel.expandChangeCompanyNameBottomSheet(true)
+                        },
+                        onCompanyImageClick = {
+                            companyViewModel.expandChangeCompanyLogoBottomSheet(true)
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -133,7 +120,7 @@ fun CompanyScreen(
                             }
                         )
 
-                        // ------------------- Company Nip, Regon -------------------
+                        // ------------------- Company Number, Regon -------------------
                         CompanyInfoItem(
                             leadingIcon = null,
                             title = stringResource(R.string.company_number_name),
@@ -145,136 +132,63 @@ fun CompanyScreen(
                                 )
                             }
                         )
-                        CompanyInfoItem(
-                            leadingIcon = null,
-                            title = stringResource(R.string.company_number_additional),
-                            itemDescription = company.regon ?: "No REGON",
-                            trailingIcon = null,
-                            onClick = {
-                                if (company.regon != null) {
-                                    clipboardManager.setText(
-                                        AnnotatedString(company.regon)
-                                    )
+                        company.regon?.let{
+                            CompanyInfoItem(
+                                leadingIcon = null,
+                                title = stringResource(R.string.company_number_additional),
+                                itemDescription = company.regon,
+                                trailingIcon = null,
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(company.regon))
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
+
                 if (companyUIState.changeCompanyAddressBottomSheetExpanded) {
                     AddressBottomSheet(
+                        readOnly = readOnly,
                         bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
                         onDismissRequest = {
                             companyViewModel.expandChangeCompanyAddressBottomSheet(false)
                         },
-                        address = companyViewModel.companyCreateRequestState.collectAsState().value.address,
+                        address = companyUIState.companyCreateRequestState.address,
                         onDone = { request ->
-                            companyViewModel.updateCompanyAddress(request)
+                            companyViewModel.updateCompanyAddress(request, currentEmployeeRoleInCompany)
                         }
                     )
                 }
 
                 if (companyUIState.changeCompanyNameBottomSheetExpanded) {
                     ChangeCompanyNameBottomSheet(
-                        company = companyViewModel.companyCreateRequestState.collectAsState().value,
+                        company = companyUIState.companyCreateRequestState,
+                        readOnly = readOnly,
                         onDismissRequest = {
                             companyViewModel.expandChangeCompanyNameBottomSheet(false)
                         },
                         onDone = { request ->
-                            companyViewModel.updateCompany(request)
+                            companyViewModel.updateCompany(request, currentEmployeeRoleInCompany)
                         }
                     )
                 }
-            }
-        }
-    }
-}
 
-@Composable
-fun CompanyLogoAndName(
-    companyLogo: Int,
-    companyName: String,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(companyLogo),
-            contentDescription = null,
-            modifier = Modifier
-                .size(125.dp)
-                .padding(16.dp)
-                .clip(RoundedCornerShape(10.dp)),
-            contentScale = ContentScale.Crop
-        )
-        Column {
-            Row (
-                modifier = Modifier.clickable { onClick() },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = companyName,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Icon(
-                    imageVector = Icons.Outlined.ModeEdit,
-                    contentDescription = null
-                )
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = stringResource(id = R.string.company_screen_description),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
-@Composable
-fun CompanyInfoItem(
-    leadingIcon: ImageVector?,
-    title: String,
-    itemDescription: String,
-    trailingIcon: ImageVector?,
-    onClick: (() -> Unit)?
-) {
-    ListItem(
-        modifier = Modifier
-            .clip(RoundedCornerShape(10.dp))
-            .clickable {
-                if (onClick != null) {
-                    onClick()
+                if (companyUIState.changeCompanyLogoBottomSheetExpanded) {
+                    ChangeCompanyLogoBottomSheet(
+                        companyLogoState = companyUIState.companyLogo,
+                        onImageChange = {
+                            companyViewModel.updateCompanyLogo(it, currentEmployeeRoleInCompany)
+                        },
+                        readOnly = readOnly,
+                        onDismissRequest = {
+                            companyViewModel.expandChangeCompanyLogoBottomSheet(false)
+                        }
+                    )
                 }
-            },
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        ),
-        leadingContent = {
-            if (leadingIcon != null) {
-                Icon(imageVector = leadingIcon, contentDescription = null)
+
+
             }
-        },
-        headlineContent = {
-            Text(text = title)
-        },
-        supportingContent = {
-            Text(
-                text = itemDescription,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        trailingContent = {
-            if (trailingIcon != null) {
-                Icon(
-                    imageVector = trailingIcon,
-                    contentDescription = null
-                )
-            }
-        },
-    )
+        }
+    }
 }
+

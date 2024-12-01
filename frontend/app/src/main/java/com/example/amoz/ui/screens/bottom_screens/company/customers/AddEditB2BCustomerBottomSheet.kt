@@ -1,8 +1,11 @@
 package com.example.amoz.ui.screens.bottom_screens.company.customers
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,7 +15,7 @@ import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Numbers
-import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,38 +37,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.ui.components.PrimaryFilledButton
-import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.api.requests.CustomerB2BCreateRequest
-import com.example.amoz.api.requests.CustomerCreateRequest
-import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.ui.components.pickers.AddressPicker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddB2BCustomerBottomSheet(
+fun AddEditB2BCustomerBottomSheet(
     onDismissRequest: () -> Unit,
-    callSnackBar: (String, ImageVector?) -> Unit,
     customer: CustomerB2BCreateRequest,
     onDone: (CustomerB2BCreateRequest) -> Unit
 ) {
-//    var companyName by remember { mutableStateOf("") }
-//    var companyEmail by remember { mutableStateOf("") }
-//    var companyAddress by remember { mutableStateOf("") }
-//    var companyIdentifier by remember { mutableStateOf("") }
     var customerState by remember {  mutableStateOf(customer) }
+    val contactPerson = customerState.customer.contactPerson
+    var validationMessage by remember { mutableStateOf<String?>(null) }
 
-    val emailPattern = stringResource(id = R.string.email_pattern)
 
-//    val isFormValid by remember {
-//        derivedStateOf {
-//            companyName.isNotBlank() &&
-//            companyAddress.isNotBlank() &&
-//            companyIdentifier.isNotBlank() &&
-//            companyEmail.matches(emailPattern.toRegex())
-//
-//        }
-//    }
-
-    val invSentSuccessful = stringResource(id = R.string.company_add_customer_successful)
+    LaunchedEffect(customerState) { validationMessage = null }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -77,7 +64,7 @@ fun AddB2BCustomerBottomSheet(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // -------------------- Title --------------------
             Text(
@@ -105,6 +92,27 @@ fun AddB2BCustomerBottomSheet(
                 singleLine = true
             )
 
+            // -------------------- Customer's phone number --------------------
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(text = stringResource(id = R.string.profile_phone_number))
+                },
+                value = contactPerson.contactNumber,
+                onValueChange = {
+                    customerState = customerState
+                        .copy(customer = customerState.customer
+                            .copy(contactPerson = customerState.customer.contactPerson
+                                .copy(contactNumber = it)))
+                },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Outlined.Phone, contentDescription = null)
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                maxLines = 1,
+                singleLine = true
+            )
+
             // -------------------- Company email --------------------
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -122,23 +130,6 @@ fun AddB2BCustomerBottomSheet(
                 maxLines = 1,
                 singleLine = true
             )
-
-            // -------------------- Company Address --------------------
-//            OutlinedTextField(
-//                modifier = Modifier.fillMaxWidth(),
-//                label = {
-//                    Text(text = stringResource(id = R.string.company_address))
-//                },
-//                value = companyAddress,
-//                onValueChange = {
-//                    customerState.address = customerState.address.
-//                },
-//                leadingIcon = {
-//                    Icon(imageVector = Icons.Outlined.Place, contentDescription = null)
-//                },
-//                maxLines = 1,
-//                singleLine = true
-//            )
 
             // -------------------- Company number --------------------
             OutlinedTextField(
@@ -158,19 +149,40 @@ fun AddB2BCustomerBottomSheet(
                 singleLine = true
             )
 
+            // -------------------- Company Address --------------------
+            AddressPicker(
+                address = customerState.address,
+                onAddressChange = { newAddress ->
+                    customerState = customerState.copy(
+                        address = newAddress,
+                        customer = customerState.customer.copy(defaultDeliveryAddress = newAddress)
+                    )
+                }
+            )
+
             // -------------------- Confirm button --------------------
+            Spacer(modifier = Modifier.height(15.dp))
+
+            validationMessage?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             PrimaryFilledButton(
                 onClick = {
-                    onDone(
-                        customerState
-                    )
-                    onDismissRequest()
-                    callSnackBar(
-                        invSentSuccessful,
-                        Icons.Outlined.Done
-                    )
+                    val violation = customerState.validate()
+                    if (violation != null) {
+                        Log.d("CUSTOMER STATE", customerState.toString())
+                        validationMessage = violation
+                    }
+                    else {
+                        onDone(customerState)
+                        onDismissRequest()
+                    }
                 },
-//                enabled = isFormValid,
                 enabled = true,
                 text = stringResource(id = R.string.done)
             )

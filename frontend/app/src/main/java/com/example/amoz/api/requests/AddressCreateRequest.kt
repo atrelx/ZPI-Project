@@ -9,6 +9,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AddressCreateRequest(
+    @field:NotBlank(nameOfField = "Country")
+    @field:Size(max = 50)
+    var country: String = "",
     @field:NotBlank(nameOfField = "City")
     @field:Size(max = 50)
     var city: String = "",
@@ -31,6 +34,11 @@ data class AddressCreateRequest(
     @field:Size(max = 255, nameOfField = "Additional information")
     var additionalInformation: String? = null
 ) : ValidatableRequest<AddressCreateRequest>() {
+    val fullAddress: String
+        get() = listOfNotNull(street, streetNumber, apartmentNumber, city, postalCode)
+            .filter { it.isNotBlank() }
+            .joinToString(", ")
+
     constructor(address: Address) : this(
         city = address.city,
         street = address.street,

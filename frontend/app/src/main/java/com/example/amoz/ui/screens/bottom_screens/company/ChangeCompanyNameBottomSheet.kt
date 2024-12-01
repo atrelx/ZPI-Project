@@ -15,11 +15,12 @@ import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,15 +39,15 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 @Composable
 fun ChangeCompanyNameBottomSheet(
     company: CompanyCreateRequest,
+    readOnly: Boolean = false,
     onDismissRequest: () -> Unit,
     onDone: (CompanyCreateRequest) -> Unit
 ) {
-    val companyNameValueLength = 30
     var companyState by remember { mutableStateOf(company)}
 
-//    val isCompanyNameStateValid by remember { derivedStateOf{
-//        companyNameState.isNotBlank() && companyNameState.length < companyNameValueLength }
-//    }
+    var validationMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(companyState) { validationMessage = null }
 
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
         Column(
@@ -64,9 +65,7 @@ fun ChangeCompanyNameBottomSheet(
                 label = { Text(text = stringResource(id = R.string.company_name)) },
                 value = companyState.name,
                 onValueChange = {
-//                    if (it.length <= companyNameValueLength) {
-                        companyState = companyState.copy(name = it)
-//                    }
+                    companyState = companyState.copy(name = it)
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.DriveFileRenameOutline, contentDescription = null)
@@ -77,27 +76,38 @@ fun ChangeCompanyNameBottomSheet(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-//                        if (isCompanyNameStateValid) {
                             onDismissRequest()
                             onDone(companyState)
-//                        }
                     }
                 ),
-//                isError = !isCompanyNameStateValid,
                 maxLines = 1,
-                singleLine = true
+                singleLine = true,
+                readOnly = readOnly
             )
-
-            Spacer(modifier = Modifier.height(5.dp))
-            PrimaryFilledButton(
-                onClick = {
-                    onDone(companyState)
-                    onDismissRequest()
-                },
-//                enabled = isCompanyNameStateValid,
-                text = stringResource(id = R.string.done),
-                leadingIcon = Icons.Outlined.Done
-            )
+            if (!readOnly) {
+                validationMessage?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+                PrimaryFilledButton(
+                    onClick = {
+                        val violation = companyState.validate()
+                        if (violation != null && violation.contains("Company name")) {
+                            validationMessage = violation
+                        }
+                        else {
+                            onDone(companyState)
+                            onDismissRequest()
+                        }
+                    },
+                    text = stringResource(id = R.string.done),
+                    leadingIcon = Icons.Outlined.Done
+                )
+            }
         }
     }
 }

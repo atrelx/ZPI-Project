@@ -101,13 +101,14 @@
 
 
     // --------------------- Company screen ---------------------
+    <string name="company_logo">Company logo</string>
+    <string name="company_logo_change">Update company logo</string>
     <string name="company_name">Company name</string>
-    <string name="company_screen_description">This is your company. Manage your employees, add customers and change all company data if you need.</string>
+    <string name="company_screen_description_owner">This is your company. Manage your employees, add customers and change all company data if you need.</string>
+    <string name="company_screen_description_regular">This is the company you work for. You can add clients, see all the necessary information about the company and its employees, if necessary.</string>
     <string name="company_address">Company address</string>
     <string name="company_number">Company number</string>
-    <string name="company_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        Suspendisse varius facilisis metus, ac placerat erat. Mauris viverra gravida sapien non tempus.
-        Sed malesuada erat lectus, sit amet aliquet tortor pretium eu.</string>
+
 
     <string name="company_number_name">NIP</string>
     <string name="company_number_additional">REGON</string>
@@ -128,8 +129,9 @@
 
     <string name="company_customers_b2b">B2B Customers</string>
     <string name="company_customers_b2c">B2C Customers</string>
-    <string name="company_customers_add_customer">Add new customer!</string>
+    <string name="company_customers_add_customer">Add/Edit customer</string>
     <string name="company_add_customer_successful">Customer successfully added</string>
+    <string name="company_update_customer_successful">Customer successfully updated</string>
 
     // --------------------- Stock update ---------------------
     <string name="empty_list_greeting">Add product variant to manage it\'s stock</string>
@@ -144,6 +146,7 @@
     <string name="apartment_number">Apartment number (optional)</string>
     <string name="city">Town/city</string>
     <string name="postal_code">Postal code</string>
+    <string name="country">Country</string>
     <string name="additional_info">Additional information (optional)</string>
 
     // --------------------- Other ---------------------

@@ -17,13 +17,15 @@ import com.example.amoz.models.Employee
 fun EmployeeActionsRaw(
     employee: Employee,
     onEmployeeProfileClick: () -> Unit,
-    onEmployeeDelete: () -> Unit,
+    onEmployeeDelete: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
     // -------------------- Delete worker from database --------------------
-    IconButton(onClick = onEmployeeDelete) {
-        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete")
+    if (onEmployeeDelete != null) {
+        IconButton(onClick = onEmployeeDelete) {
+            Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Kick employee from company")
+        }
     }
 
     // -------------------- Employee profile --------------------

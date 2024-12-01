@@ -1,5 +1,6 @@
 package com.example.amoz.ui.components.pickers
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -49,14 +50,15 @@ fun <T> CategoryPicker(
             ?.let { Json.decodeFromString(CategoryTree.serializer(), it) }
     }
 
+    val isSelectableCategory = if(leavesOnly) "isSelectableLeavesOnly" else "isSelectable"
+
     LaunchedEffect(selectedCategory) {
         if (selectedCategory != null && selectedCategory.categoryId != getCategoryId(category)) {
             onCategoryChange(selectedCategory)
             navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedCategoryTree")
         }
+        navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>(isSelectableCategory)
     }
-
-    val isSelectableCategory = if(leavesOnly) "isSelectableLeavesOnly" else "isSelectable"
 
     ListItem(
         modifier = modifier

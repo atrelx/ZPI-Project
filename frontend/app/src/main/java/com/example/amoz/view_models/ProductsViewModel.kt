@@ -49,14 +49,6 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-//    fun fetchCategoryDetails(categoryId: UUID) {
-//        performRepositoryAction(
-//            binding = null,
-//            action = { categoryRepository. }
-//        )
-//    }
-
-
     // -------------------- Fetch products lists --------------------
     fun fetchProductsList(skipLoading: Boolean = false) {
         performRepositoryAction(

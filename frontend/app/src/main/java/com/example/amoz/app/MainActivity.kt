@@ -1,4 +1,3 @@
-
 package com.example.amoz.app
 
 import android.annotation.SuppressLint
@@ -47,9 +46,7 @@ class MainActivity : ComponentActivity(), SignInDelegate {
 
         setContent {
             AmozApplicationTheme {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    AppMainScaffold()
-                }
+                AppMainScaffold()
             }
         }
     }

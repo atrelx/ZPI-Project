@@ -1,9 +1,7 @@
 package com.example.amoz.ui.screens.bottom_screens.company.employees
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,27 +22,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.amoz.R
+import com.example.amoz.api.enums.RoleInCompany
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.Employee
-import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.components.person.PersonImage
 import com.example.amoz.ui.components.SwipeableItemWithActions
-import com.example.amoz.ui.components.loadImageBitmapFromResource
 import com.example.amoz.view_models.CompanyViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
 import java.util.UUID
 
 @Composable
 fun EmployeesLazyColumn(
     employees: List<Employee>,
-    companyViewModel: CompanyViewModel,
-    callSnackBar: (String, ImageVector?) -> Unit,
-    changeEmploymentDate: (UUID, LocalDate) -> Unit,
+    employeeImages: MutableMap<UUID, MutableStateFlow<ResultState<ImageBitmap?>>>,
+    currentEmployeeRoleInCompany: RoleInCompany,
     employeeProfileBottomSheetExpanded: Boolean,
+    getProfilePicture: (UUID) -> Unit,
+    changeEmploymentDate: (UUID, LocalDate) -> Unit,
     expandEmployeeProfileBottomSheet: (Boolean) -> Unit,
+    callSnackBar: (String, ImageVector?) -> Unit,
 ) {
+    val isCurrentEmployeeOwner = currentEmployeeRoleInCompany == RoleInCompany.OWNER
+
     var currentEmployee by remember {
         mutableStateOf<Employee?>(null)
     }
@@ -69,7 +75,7 @@ fun EmployeesLazyColumn(
 
             LaunchedEffect(isEmployeeVisible.value) {
                 if (isEmployeeVisible.value) {
-                    companyViewModel.getProfilePicture(employee.employeeId)
+                    getProfilePicture(employee.employeeId)
                 }
             }
 
@@ -81,7 +87,9 @@ fun EmployeesLazyColumn(
                             currentEmployee = employee
                             expandEmployeeProfileBottomSheet(true)
                         },
-                        onEmployeeDelete = {/*TODO*/}
+                        onEmployeeDelete = if (isCurrentEmployeeOwner) {{
+                            /*TODO*/
+                        }} else null
                     )
                 }
             ) {
@@ -89,36 +97,9 @@ fun EmployeesLazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp)),
-                    leadingContent = {
-                        val state = companyViewModel.companyUIState
-                            .collectAsState().value.employeeImages
-                            .collectAsState().value[employee.employeeId]
-                        state?.let {
-                            ResultStateView(state,
-                                modifier = Modifier.size(56.dp),
-                                successView =  { image ->
-                                    Image(
-                                        modifier = Modifier
-                                            .size(56.dp)
-                                            .clip(RoundedCornerShape(10.dp)),
-                                        bitmap = image ?: loadImageBitmapFromResource(R.drawable.human_placeholder),
-                                        contentDescription = null
-                                    )
-                                },
-                                failureView = {
-                                    Image(
-                                        modifier = Modifier
-                                            .size(56.dp)
-                                            .clip(RoundedCornerShape(10.dp)),
-                                        bitmap =  loadImageBitmapFromResource(R.drawable.human_placeholder),
-                                        contentDescription = null
-                                    )
-                                })
-
-                        }
-                    },
+                    leadingContent = { PersonImage(employeeImages[employee.employeeId]) },
                     headlineContent = { Text(text = employee.person.name + " " + employee.person.surname) },
-                    supportingContent = { Text(text = employee.contactPerson.emailAddress ?: "No email address") },
+                    supportingContent = { Text(text = employee.contactPerson.emailAddress ?: employee.contactPerson.contactNumber) },
                     colors = ListItemDefaults.colors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer
                     ),
@@ -128,14 +109,16 @@ fun EmployeesLazyColumn(
     }
     if (employeeProfileBottomSheetExpanded && currentEmployee != null) {
         EmployeeProfileBottomSheet(
-            onDismissRequest = {
-                currentEmployee = null
-                expandEmployeeProfileBottomSheet(false)
-            },
             employee = currentEmployee!!,
+            employeeProfileImage = employeeImages[currentEmployee!!.employeeId],
+            currentEmployeeRoleInCompany = currentEmployeeRoleInCompany,
             onDone = { employeeID, newDate ->
                 changeEmploymentDate(employeeID, newDate)
                 callSnackBar(changeEmploymentDateText, Icons.Outlined.Done)
+            },
+            onDismissRequest = {
+                currentEmployee = null
+                expandEmployeeProfileBottomSheet(false)
             }
         )
     }

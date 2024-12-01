@@ -32,15 +32,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.api.enums.RoleInCompany
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.Employee
-import com.example.amoz.ui.PersonProfileColumn
+import com.example.amoz.ui.components.person.PersonProfileColumn
 import com.example.amoz.ui.components.PrimaryFilledButton
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,14 +56,15 @@ fun EmployeeProfileBottomSheet(
     onDismissRequest: () -> Unit,
     onDone: (UUID, LocalDate) -> Unit,
     employee: Employee,
+    currentEmployeeRoleInCompany: RoleInCompany,
+    employeeProfileImage: MutableStateFlow<ResultState<ImageBitmap?>>?,
 ) {
+    val isCurrentEmployeeOwner = currentEmployeeRoleInCompany == RoleInCompany.OWNER
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
-        var employmentDate by remember { mutableStateOf(employee.employmentDate) }
-        val dateState = rememberDatePickerState()
-        var isDatePickerVisible by remember { mutableStateOf(false)}
 
         val listItemColors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -79,7 +87,8 @@ fun EmployeeProfileBottomSheet(
 
             // -------------------- Person profile data --------------------
             PersonProfileColumn(
-                personPhoto = R.drawable.lukasz_photo,
+                personProfileImage = employeeProfileImage,
+                currentEmployeeRoleInCompany = currentEmployeeRoleInCompany,
                 personFirstName = employee.person.name,
                 personLastName = employee.person.surname,
                 personEmail = employee.contactPerson.emailAddress ?: "No email address",
@@ -92,23 +101,19 @@ fun EmployeeProfileBottomSheet(
 
             // -------------------- Employment date --------------------
             ListItem(
-                modifier = listItemModifier
-//                    .then(Modifier
-//                    .clickable {
-//                        isDatePickerVisible = true
-//                    } )
-                ,
+                modifier = listItemModifier,
                 leadingContent = {
                     Icon(imageVector = Icons.Outlined.CalendarToday, contentDescription = null)
                 },
                 overlineContent = {
                     Text(text = stringResource(id = R.string.profile_employment_date))
                 },
-                headlineContent = { Text(text = employmentDate.format(
+                headlineContent = { Text(text = employee.employmentDate.format(
                     DateTimeFormatter.ofPattern("dd-MM-yyyy")
                 )) },
                 trailingContent = {
-                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+                    if(isCurrentEmployeeOwner)
+                        Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
                 },
                 colors = listItemColors
             )
@@ -120,40 +125,21 @@ fun EmployeeProfileBottomSheet(
                     Icon(imageVector = Icons.Outlined.Business, contentDescription = null)
                 },
                 overlineContent = {Text(text = stringResource(id = R.string.company_employee_role))},
-                headlineContent = { Text(text = "Employee") }, //TODO
+                headlineContent = { Text(text =
+                    employee.roleInCompany.toString().toLowerCase().capitalize()
+                ) },
                 colors = listItemColors
             )
 
             // -------------------- Done button --------------------
-            if (employmentDate != employee.employmentDate) {
-                PrimaryFilledButton(
-                    onClick = {
-                        onDone(employee.employeeId!!, employmentDate)
-                        onDismissRequest()
-                    },
-                    leadingIcon = Icons.Outlined.Done,
-                    text = stringResource(id = R.string.done)
-                )
-            }
-        }
-        if (isDatePickerVisible) {
-            DatePickerDialog(
-                onDismissRequest = { isDatePickerVisible = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            dateState.selectedDateMillis?.let {
-                                employmentDate = LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000))
-                            }
-                            isDatePickerVisible = false
-                        }
-                    ) {
-                        Text(text = stringResource(id = R.string.done))
-                    }
-                }
-            ) {
-                DatePicker(state = dateState)
-            }
+            PrimaryFilledButton(
+                onClick = {
+                    onDone(employee.employeeId, employee.employmentDate)
+                    onDismissRequest()
+                },
+                leadingIcon = Icons.Outlined.Done,
+                text = stringResource(id = R.string.done)
+            )
         }
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,7 @@ fun AddEditCategoryBottomSheet(
     onComplete: (CategoryCreateRequest, List<String>) -> Unit,
     onSubcategoryEdit: (CategoryTree) -> Unit
 ) {
-    var categoryState by remember { mutableStateOf(categoryCreateRequest) }
+    var categoryState by remember(categoryCreateRequest) { mutableStateOf(categoryCreateRequest) }
     val categoryChildren = categoryTree?.childCategories?.toMutableList() ?: mutableListOf()
     val newCategoryChildren = remember { mutableStateListOf<String>() }
 

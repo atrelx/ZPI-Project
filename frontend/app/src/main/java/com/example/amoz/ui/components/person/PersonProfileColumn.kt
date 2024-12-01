@@ -1,15 +1,12 @@
-package com.example.amoz.ui
+package com.example.amoz.ui.components.person
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Man
@@ -22,14 +19,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
+import com.example.amoz.api.enums.RoleInCompany
 import com.example.amoz.api.enums.Sex
+import com.example.amoz.api.sealed.ResultState
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -43,7 +43,8 @@ fun PersonProfileColumn(
             brush = SolidColor(MaterialTheme.colorScheme.outline),
             shape = RoundedCornerShape(5.dp)
         ),
-    personPhoto: Int?,
+    currentEmployeeRoleInCompany: RoleInCompany,
+    personProfileImage: MutableStateFlow<ResultState<ImageBitmap?>>?,
     personFirstName: String,
     personLastName: String,
     personEmail: String?,
@@ -51,6 +52,7 @@ fun PersonProfileColumn(
     personSex: Sex,
     personBirthDate: LocalDate
 ) {
+    val isCurrentEmployeeOwner = currentEmployeeRoleInCompany == RoleInCompany.OWNER
 
     val listItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -68,19 +70,7 @@ fun PersonProfileColumn(
                         AnnotatedString("$personFirstName $personLastName")
                     )
                 }),
-            leadingContent = {
-                personPhoto?.let {
-                    Image(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .clip(RoundedCornerShape(10.dp)),
-                        painter = painterResource(id = personPhoto),
-                        contentDescription = null
-                    )
-                } ?: run {
-                    Icon(imageVector = Icons.Outlined.AccountCircle, contentDescription = null)
-                }
-            },
+            leadingContent = { PersonImage(personProfileImage) },
             overlineContent = { Text(text = stringResource(id = R.string.profile_full_name)) },
             headlineContent = {
                 Text(
@@ -128,40 +118,44 @@ fun PersonProfileColumn(
         }
 
         // -------------------- Sex --------------------
-        ListItem(
-            modifier = modifier,
-            leadingContent = {
-                Icon(imageVector = Icons.Outlined.Man, contentDescription = null)
-            },
-            overlineContent = { Text(text = stringResource(id = R.string.profile_sex)) },
-            headlineContent = { Text(text = personSex.getName()) },
-            colors = listItemColors
-        )
+        if(isCurrentEmployeeOwner) {
+            ListItem(
+                modifier = modifier,
+                leadingContent = {
+                    Icon(imageVector = Icons.Outlined.Man, contentDescription = null)
+                },
+                overlineContent = { Text(text = stringResource(id = R.string.profile_sex)) },
+                headlineContent = { Text(text = personSex.getName()) },
+                colors = listItemColors
+            )
 
-        // -------------------- Birth date --------------------
-        ListItem(
-            modifier = modifier.then(Modifier
-                .clickable {
-                    clipboardManager.setText(
-                        AnnotatedString(
-                            personBirthDate.format(
-                                DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+            // -------------------- Birth date --------------------
+            ListItem(
+                modifier = modifier.then(Modifier
+                    .clickable {
+                        clipboardManager.setText(
+                            AnnotatedString(
+                                personBirthDate.format(
+                                    DateTimeFormatter.ofPattern("dd-MM-yyyy")
+                                )
                             )
                         )
+                    }),
+                leadingContent = {
+                    Icon(imageVector = Icons.Outlined.DateRange, contentDescription = null)
+                },
+                overlineContent = { Text(text = stringResource(id = R.string.profile_birth_date)) },
+                headlineContent = {
+                    Text(
+                        text = personBirthDate.format(
+                            DateTimeFormatter.ofPattern("dd-MM-yyyy")
+                        )
                     )
-                }),
-            leadingContent = {
-                Icon(imageVector = Icons.Outlined.DateRange, contentDescription = null)
-            },
-            overlineContent = { Text(text = stringResource(id = R.string.profile_birth_date)) },
-            headlineContent = {
-                Text(
-                    text = personBirthDate.format(
-                        DateTimeFormatter.ofPattern("dd-MM-yyyy")
-                    )
-                )
-            },
-            colors = listItemColors
-        )
+                },
+                colors = listItemColors
+            )
+        }
     }
 }
+

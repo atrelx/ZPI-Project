@@ -20,9 +20,7 @@ import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmplo
 import com.example.amoz.ui.screens.bottom_screens.home.HomeScreen
 import com.example.amoz.ui.screens.bottom_screens.orders.OrdersScreen
 import com.example.amoz.ui.screens.bottom_screens.products.ProductScreen
-import com.example.amoz.ui.screens.bottom_screens.products.ProductsAttributes
 import com.example.amoz.ui.screens.categories.CategoriesScreen
-import com.example.amoz.ui.screens.stock_update.StockUpdate
 import com.example.amoz.ui.screens.profile.ProfileScreen
 
 @Composable
@@ -65,16 +63,6 @@ fun AppNavigationHost(
             CategoriesScreen(
                 paddingValues = paddingValues,
                 navController = navController,
-            ) }
-
-        composable(Screens.Attributes.route) {
-            ProductsAttributes(
-                paddingValues = paddingValues,
-            ) }
-
-        composable(Screens.StockDelivery.route) {
-            StockUpdate(
-                paddingValues = paddingValues,
             ) }
 
         // -------------------- 'More' bottom sheet screens --------------------

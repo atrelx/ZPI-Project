@@ -9,6 +9,7 @@ import java.util.UUID
 data class Address(
     @Serializable(with = UUIDSerializer::class)
     val addressId: UUID,
+    val country: String,
     val city: String,
     val street: String,
     val streetNumber: String,
@@ -16,7 +17,10 @@ data class Address(
     val postalCode: String,
     val additionalInformation: String? = null
 ) {
-    val fullAddress: String get() = listOfNotNull(street, streetNumber, apartmentNumber, city, postalCode).joinToString(", ")
+    val fullAddress: String
+        get() = listOfNotNull(street, streetNumber, apartmentNumber, city, postalCode)
+            .filter { it.isNotBlank() }
+            .joinToString(", ")
 }
 
 

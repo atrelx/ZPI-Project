@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.categories
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,20 +37,20 @@ fun CategoriesScreen(
 ) {
     val categoryUiState by categoryViewModel.categoriesUiState.collectAsState()
 
-    val isSelectableLeavesOnly = navController.previousBackStackEntry
+    var isSelectableLeavesOnly = navController.previousBackStackEntry
         ?.savedStateHandle
         ?.get<Boolean>("isSelectableLeavesOnly") ?: false
 
-    val isSelectable = navController.previousBackStackEntry
+    var isSelectable = navController.previousBackStackEntry
         ?.savedStateHandle
-        ?.get<Boolean>("isSelectable") ?: isSelectableLeavesOnly
+        ?.get<Boolean>("isSelectable") ?: false
 
+    if(isSelectableLeavesOnly) {isSelectable = true}
 
     fun closeAddEditCategoryBottomSheet() {
         categoryViewModel.updateCurrentCategory(null)
         categoryViewModel.expandAddEditCategoryBottomSheet(false)
     }
-
 
     Surface(
         modifier = Modifier
@@ -74,6 +75,8 @@ fun CategoriesScreen(
                             "selectedCategoryTree", categoryJson
                         )
                         navController.popBackStack()
+                        isSelectable = false
+                        isSelectableLeavesOnly = false
                     }
                     else {
                         categoryViewModel.updateCurrentCategory(it)

@@ -92,9 +92,12 @@ fun CompanyCustomersScreen(
                     when (index) {
                         0 -> {
                             LaunchedEffect(Lifecycle.Event.ON_RESUME) {
-                                companyViewModel.fetchCustomersB2C()
+                                companyViewModel.fetchCustomersB2C(true)
                             }
-                            ResultStateView(companyUiState.companyB2CCustomers) { customers ->
+                            ResultStateView(
+                                state = companyUiState.companyB2CCustomers,
+                                onPullToRefresh = {companyViewModel.fetchCustomersB2B()}
+                            ) { customers ->
                                 B2CCustomerScreen(
                                     b2cCustomersList = customers,
                                     companyViewModel = companyViewModel,
@@ -106,7 +109,10 @@ fun CompanyCustomersScreen(
                             LaunchedEffect(Lifecycle.Event.ON_RESUME) {
                                 companyViewModel.fetchCustomersB2B()
                             }
-                            ResultStateView(companyUiState.companyB2BCustomers) { customers ->
+                            ResultStateView(
+                                state = companyUiState.companyB2BCustomers,
+                                onPullToRefresh = {companyViewModel.fetchCustomersB2C(true)}
+                            ) { customers ->
                                 B2BCustomerScreen(
                                     b2bCustomersList = customers,
                                     companyViewModel = companyViewModel,

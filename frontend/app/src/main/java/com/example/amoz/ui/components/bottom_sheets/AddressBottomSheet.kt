@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.DoorFront
 import androidx.compose.material.icons.outlined.Home
@@ -48,39 +49,18 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 fun AddressBottomSheet(
     bottomSheetTitle: String = stringResource(id = R.string.address_change_title),
     address: AddressCreateRequest,
+    readOnly: Boolean = false,
     onDismissRequest: () -> Unit,
     onDone: (AddressCreateRequest) -> Unit
 ) {
-//    var streetState by remember { mutableStateOf(address.street) }
     var addressState by remember { mutableStateOf(address) }
-//    var houseNumberState by remember { mutableStateOf(address.streetNumber) }
-//    var apartmentNumberState by remember { mutableStateOf(address.apartmentNumber ?: "") }
-//    var cityState by remember { mutableStateOf(address.city) }
-//    var postalCodeState by remember { mutableStateOf(address.postalCode) }
-//    var additionalInfoState by remember { mutableStateOf(address.additionalInformation ?: "") }
+    var validationMessage by remember { mutableStateOf<String?>(null) }
 
     val regularValueLength = 255
     val shortValueLength = 10
     val postalCodeValueLength = 5
 
-//    val isStreetStateValid by remember { derivedStateOf { streetState.isNotBlank() } }
-//    val isHouseNumberStateValid by remember { derivedStateOf { houseNumberState.isNotBlank() } }
-//    val isCityStateValid by remember { derivedStateOf { cityState.isNotBlank() } }
-//    val isPostalCodeStateValid by remember {
-//        derivedStateOf {
-//            postalCodeState.isNotBlank() && postalCodeState.length > 2
-//        }
-//    }
-
-//    val isAddressFormValid by remember {
-//        derivedStateOf {
-//            isStreetStateValid &&
-//                    isHouseNumberStateValid &&
-//                    isCityStateValid && isPostalCodeStateValid
-//        }
-//    }
-
-    val focusRequesters = remember { List(6) { FocusRequester() } }
+    val focusRequesters = remember { List(7) { FocusRequester() } }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -125,7 +105,8 @@ fun AddressBottomSheet(
                 ),
 //                isError = !isStreetStateValid,
                 maxLines = 1,
-                singleLine = true
+                singleLine = true,
+                readOnly = readOnly
             )
 
             // -------------------- House number --------------------
@@ -152,7 +133,8 @@ fun AddressBottomSheet(
                 ),
 //                isError = !isHouseNumberStateValid,
                 maxLines = 1,
-                singleLine = true
+                singleLine = true,
+                readOnly = readOnly
             )
 
             // -------------------- Apartment number --------------------
@@ -178,7 +160,8 @@ fun AddressBottomSheet(
                     onNext = { focusRequesters[3].requestFocus() }
                 ),
                 maxLines = 1,
-                singleLine = true
+                singleLine = true,
+                readOnly = readOnly
             )
 
             // -------------------- City/town --------------------
@@ -203,9 +186,9 @@ fun AddressBottomSheet(
                 keyboardActions = KeyboardActions(
                     onNext = { focusRequesters[4].requestFocus() }
                 ),
-//                isError = !isCityStateValid,
                 maxLines = 1,
-                singleLine = true
+                singleLine = true,
+                readOnly = readOnly
             )
 
             // -------------------- Postal code --------------------
@@ -231,21 +214,44 @@ fun AddressBottomSheet(
                     onNext = { focusRequesters[5].requestFocus() }
                 ),
                 maxLines = 1,
-//                isError = !isPostalCodeStateValid,
-                singleLine = true
+                singleLine = true,
+                readOnly = readOnly
             )
-
-            // -------------------- Additional info --------------------
+            // -------------------- Country --------------------
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequesters[5]),
+                label = { Text(text = stringResource(id = R.string.country)) },
+                value = addressState.country,
+                onValueChange = {
+                    if (it.length <= regularValueLength) {
+                        addressState = addressState.copy(country = it)
+                    }
+                },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Outlined.AccountBalance, contentDescription = null)
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusRequesters[6].requestFocus() }
+                ),
+                maxLines = 1,
+                singleLine = true,
+                readOnly = readOnly
+            )
+            // -------------------- Additional info --------------------
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequesters[6]),
                 label = { Text(text = stringResource(id = R.string.additional_info)) },
                 value = addressState.additionalInformation ?: "",
                 onValueChange = {
-//                    if (additionalInfoState.length < regularValueLength) {
                     addressState = addressState.copy(additionalInformation = it)
-//                    }
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
@@ -255,24 +261,36 @@ fun AddressBottomSheet(
                     imeAction = ImeAction.Done
                 ),
                 maxLines = 1,
-                singleLine = true
+                singleLine = true,
+                readOnly = readOnly
             )
 
+            // -------------------- Validation --------------------
+            validationMessage?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             // -------------------- Done button --------------------
-            Spacer(modifier = Modifier.height(5.dp))
-            PrimaryFilledButton(
-                onClick = {
-                    onDone(
-//                        streetState, houseNumberState, apartmentNumberState, cityState,
-//                        postalCodeState, additionalInfoState
-                        addressState
-                    )
-                    onDismissRequest()
-                },
-//                enabled = isAddressFormValid,
-                text = stringResource(id = R.string.done),
-                leadingIcon = Icons.Outlined.Done
-            )
+            if (!readOnly) {
+                Spacer(modifier = Modifier.height(5.dp))
+                PrimaryFilledButton(
+                    onClick = {
+                        val violation = addressState.validate()
+                        if (violation != null) {
+                            validationMessage = violation
+                        } else {
+                            onDone(addressState)
+                            onDismissRequest()
+                        }
+                    },
+                    text = stringResource(id = R.string.done),
+                    leadingIcon = Icons.Outlined.Done
+                )
+            }
         }
     }
 }

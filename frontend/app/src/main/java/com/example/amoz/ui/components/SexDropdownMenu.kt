@@ -1,4 +1,4 @@
-package com.example.amoz.ui.components.filters
+package com.example.amoz.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -20,40 +20,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.amoz.R
-import com.example.amoz.view_models.ProductsViewModel
+import com.example.amoz.api.enums.Sex
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListSorting(
-    sortingType: ProductsViewModel.SortingType,
-    onSortingTypeChange: (ProductsViewModel.SortingType) -> Unit,
+fun SexDropdownMenu(
+    selectedSex: Sex,
+    onSexChange: (Sex) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var dropDownMenuExpanded by remember { mutableStateOf(false) }
 
-    val sortingOptions = mapOf(
-        ProductsViewModel.SortingType.ASCENDING_NAME to R.string.sorting_type_ascending_name,
-        ProductsViewModel.SortingType.DESCENDING_NAME to R.string.sorting_type_descending_name,
-        ProductsViewModel.SortingType.ASCENDING_PRICE to R.string.sorting_type_ascending_price,
-        ProductsViewModel.SortingType.DESCENDING_PRICE to R.string.sorting_type_descending_price,
-        ProductsViewModel.SortingType.NONE to R.string.sorting_type_none
-    )
+    val sexOptions = Sex.entries.associateWith { it.getName() }
 
     ExposedDropdownMenuBox(
         expanded = dropDownMenuExpanded,
         onExpandedChange = { dropDownMenuExpanded = !dropDownMenuExpanded }
     ) {
         OutlinedTextField(
-            value = stringResource(sortingOptions[sortingType] ?: R.string.sorting_type_none),
+            value = selectedSex.getName(),
             onValueChange = {},
             readOnly = true,
-            label = { Text(stringResource(id = R.string.sorting_type)) },
+            label = { Text(text = stringResource(id = R.string.profile_sex)) },
             trailingIcon = {
                 Icon(
                     imageVector = if (dropDownMenuExpanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
                     contentDescription = null
                 )
             },
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .menuAnchor(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -66,11 +61,11 @@ fun ListSorting(
             expanded = dropDownMenuExpanded,
             onDismissRequest = { dropDownMenuExpanded = false }
         ) {
-            sortingOptions.forEach { (type, labelResId) ->
+            sexOptions.forEach { (sex, name) ->
                 DropdownMenuItem(
-                    text = { Text(text = stringResource(id = labelResId)) },
+                    text = { Text(text = name) },
                     onClick = {
-                        onSortingTypeChange(type)
+                        onSexChange(sex)
                         dropDownMenuExpanded = false
                     }
                 )
@@ -78,4 +73,3 @@ fun ListSorting(
         }
     }
 }
-

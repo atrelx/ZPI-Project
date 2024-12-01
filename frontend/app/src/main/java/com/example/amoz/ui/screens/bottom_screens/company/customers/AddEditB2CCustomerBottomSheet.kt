@@ -4,7 +4,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Man
 import androidx.compose.material.icons.outlined.Phone
@@ -31,7 +34,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,45 +49,25 @@ import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.enums.Sex
+import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.ui.components.SexDropdownMenu
+import com.example.amoz.ui.components.pickers.AddressPicker
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddB2CCustomerBottomSheet(
+fun AddEditB2CCustomerBottomSheet(
     onDismissRequest: () -> Unit,
-    callSnackBar: (String, ImageVector?) -> Unit,
     customerRequest: CustomerB2CCreateRequest,
     onDone: (CustomerB2CCreateRequest) -> Unit
 ) {
-//    var customerFirstName by remember { mutableStateOf("") }
-//    var customerLastName by remember { mutableStateOf("") }
-//    var customerSex by remember { mutableStateOf("") }
-//    var customerEmail by remember { mutableStateOf("") }
-//    var customerPhoneNumber by remember { mutableStateOf("") }
-//    var customerBirthDate by remember { mutableStateOf(LocalDate.now()) }
-
     var customerState by remember { mutableStateOf(customerRequest) }
-
-    val emailPattern = stringResource(id = R.string.email_pattern)
-    val phonePattern = stringResource(id = R.string.phone_pattern)
-
     val person = customerState.person
     val contactPerson = customerState.customer.contactPerson
 
-//    val isFormValid by remember {
-//        derivedStateOf {
-//            customerFirstName.isNotBlank() &&
-//                    customerLastName.isNotBlank() &&
-//                    customerSex.isNotBlank() &&
-//                    customerEmail.matches(emailPattern.toRegex()) &&
-//                    (customerPhoneNumber.isBlank() ||
-//                            customerPhoneNumber.matches(phonePattern.toRegex()))
-//        }
-//    }
-
-    val invSentSuccessful = stringResource(id = R.string.company_add_customer_successful)
+    var validationMessage by remember { mutableStateOf<String?>(null) }
 
     var isDatePickerVisible by remember { mutableStateOf(false)}
     val dateState = rememberDatePickerState()
@@ -114,7 +96,7 @@ fun AddB2CCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_first_name))
                 },
-                value = customerState.person.name ?: "",
+                value = customerState.person.name,
                 onValueChange = {
                     customerState = customerState.copy(person = customerState.person.copy(name = it))
                 },
@@ -143,20 +125,11 @@ fun AddB2CCustomerBottomSheet(
             )
 
             // -------------------- Customer's sex --------------------
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = stringResource(id = R.string.profile_sex))
+            SexDropdownMenu(
+                selectedSex = customerState.person.sex,
+                onSexChange = { newSex ->
+                    customerState = customerState.copy(person = customerState.person.copy(sex = newSex))
                 },
-                value = "M",
-                onValueChange = {
-                    customerState = customerState.copy(person = customerState.person.copy(sex = Sex.valueOf(it)))
-                },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Outlined.Man, contentDescription = null)
-                },
-                maxLines = 1,
-                singleLine = true
             )
 
             // -------------------- Customer's email --------------------
@@ -201,6 +174,7 @@ fun AddB2CCustomerBottomSheet(
                 singleLine = true
             )
 
+            // -------------------- Birth date --------------------
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -224,24 +198,44 @@ fun AddB2CCustomerBottomSheet(
                         )
                     )
                 },
+                trailingContent = { Icon(imageVector = Icons.Outlined.Edit, null) },
                 colors = ListItemDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 )
             )
 
+            // -------------------- Address --------------------
+            AddressPicker(
+                address = customerState.customer.defaultDeliveryAddress ?: AddressCreateRequest(),
+                onAddressChange = { newAddress ->
+                    customerState = customerState.copy(
+                        customer = customerState.customer.copy(defaultDeliveryAddress = newAddress)
+                    )
+                }
+            )
+
             // -------------------- Confirm button --------------------
+            Spacer(modifier = Modifier.height(15.dp))
+
+            validationMessage?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             PrimaryFilledButton(
                 onClick = {
-                    onDone(
-                        customerState
-                    )
-                    onDismissRequest()
-                    callSnackBar(
-                        invSentSuccessful,
-                        Icons.Outlined.Done
-                    )
+                    val violation = customerState.validate()
+                    if (violation != null) {
+                        validationMessage = violation
+                    }
+                    else {
+                        onDone(customerState)
+                        onDismissRequest()
+                    }
                 },
-//                enabled = isFormValid,
                 enabled = true,
                 text = stringResource(id = R.string.done)
             )

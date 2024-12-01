@@ -26,10 +26,11 @@ import com.example.amoz.R
 
 @Composable
 fun EmptyLayout(
-    content: @Composable ColumnScope.() -> Unit
+    modifier: Modifier = Modifier,
+    content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -40,7 +41,7 @@ fun EmptyLayout(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                modifier = Modifier.fillMaxSize(0.8f),
+                modifier = Modifier.fillMaxWidth(0.8f),
                 painter = painterResource(R.drawable.list_empty_image),
                 contentDescription = "empty layout image"
             )
@@ -49,7 +50,7 @@ fun EmptyLayout(
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleLarge
             )
-            content()
+            content?.invoke(this)
         }
     }
 }

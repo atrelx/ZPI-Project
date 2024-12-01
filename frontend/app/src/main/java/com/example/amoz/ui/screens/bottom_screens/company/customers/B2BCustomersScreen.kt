@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -21,15 +22,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.amoz.R
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
@@ -43,7 +43,9 @@ fun B2BCustomerScreen(
     AmozApplicationTheme {
         val companyUiState by companyViewModel.companyUIState.collectAsState()
 
-        var currentB2bCustomer by remember { mutableStateOf<CustomerB2B?>(null) }
+        val customerAddSuccessful = stringResource(id = R.string.company_add_customer_successful)
+        val customerEditSuccessful = stringResource(id = R.string.company_update_customer_successful)
+
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -61,8 +63,8 @@ fun B2BCustomerScreen(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
-                                currentB2bCustomer = customerB2B
-                                companyViewModel.expandCustomerProfileDataBottomSheet(true)
+                                companyViewModel.updateCustomerB2BCreateRequestState(customerB2B)
+                                companyViewModel.expandAddEditB2BCustomerBottomSheet(true)
                             },
                         headlineContent = { Text(customerB2B.nameOnInvoice) },
                         supportingContent = { Text(text = customerB2B.address.fullAddress) },
@@ -80,7 +82,8 @@ fun B2BCustomerScreen(
             ) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        companyViewModel.expandAddB2BCustomerBottomSheet(true)
+                        companyViewModel.updateCustomerB2BCreateRequestState(null)
+                        companyViewModel.expandAddEditB2BCustomerBottomSheet(true)
                     },
                     modifier = Modifier
                         .padding(16.dp),
@@ -90,29 +93,24 @@ fun B2BCustomerScreen(
             }
         }
         if (companyUiState.addB2BCustomerBottomSheetExpanded) {
-            AddB2BCustomerBottomSheet(
-                onDismissRequest = {
-                    companyViewModel.expandAddB2BCustomerBottomSheet(false)
-                },
-                callSnackBar = callSnackBar,
-                customer = companyViewModel.customerB2BCreateRequestState.collectAsState().value,
+            AddEditB2BCustomerBottomSheet(
+                customer = companyUiState.customerB2BCreateRequestState,
                 onDone = { request ->
-                    companyViewModel.createB2BCustomer(request)
-                }
-
+                    companyUiState.currentCustomerB2B?.let {
+                        companyViewModel.updateB2BCustomer(it.customer.customerId, request) {
+                            callSnackBar(customerEditSuccessful, Icons.Outlined.Done)
+                        }
+                    } ?: companyViewModel.createB2BCustomer(request) {
+                        callSnackBar(customerAddSuccessful, Icons.Outlined.Done)
+                    }
+                },
+                onDismissRequest = {
+                    companyViewModel.updateCustomerB2BCreateRequestState(null)
+                    companyViewModel.expandAddEditB2BCustomerBottomSheet(false)
+                },
             )
         }
-        if (companyUiState.customerProfileDataBottomSheetExpanded && currentB2bCustomer != null) {
-            currentB2bCustomer?.let {
-                B2BCustomerProfileDataBottomSheet(
-                    onDismissRequest = {
-                        currentB2bCustomer = null
-                        companyViewModel.expandCustomerProfileDataBottomSheet(false)
-                    },
-                    b2BCustomer = it
-                )
-            }
-        }
+
     }
 }
 

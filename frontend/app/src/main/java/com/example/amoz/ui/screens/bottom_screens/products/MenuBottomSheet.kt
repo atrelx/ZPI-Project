@@ -61,8 +61,8 @@ fun MenuBottomSheet(
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-            // -------------------- Category, Attributes, Stock delivery --------------------
-            menuBottomSheetNavItems.entries.forEachIndexed { index, (navItemType, navItem) ->
+            // -------------------- Category --------------------
+            menuBottomSheetNavItems.entries.forEach { (navItemType, navItem) ->
                 BottomSheetNavigationRaw(
                     leadingIcon = navItem.icon,
                     text = stringResource(id = navItem.title),
@@ -71,10 +71,6 @@ fun MenuBottomSheet(
                         onClick(navItemType)
                     }
                 )
-
-                if (index == 1) {
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                }
             }
         }
     }
