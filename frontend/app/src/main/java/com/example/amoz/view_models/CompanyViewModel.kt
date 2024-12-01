@@ -156,10 +156,20 @@ class CompanyViewModel @Inject constructor(
             performRepositoryAction(
                 binding = null,
                 failureMessage = "Could not invite new employee. Try again later.",
-                action = {
-                    employeeRepository.inviteEmployeeToCompany(employeeEmail)
+                action = { employeeRepository.inviteEmployeeToCompany(employeeEmail) }
+            )
+        } else { Log.e(tag, ownerExceptionMessage) }
+    }
 
-                }
+    fun kickEmployeeFromCompany(
+        employeeId: UUID,
+        roleInCompany: RoleInCompany?,
+    ) {
+        if (roleInCompany == RoleInCompany.OWNER) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Could not kick employee. Try again later.",
+                action = { employeeRepository.kickEmployeeFromCompany(employeeId) }
             )
         } else { Log.e(tag, ownerExceptionMessage) }
     }

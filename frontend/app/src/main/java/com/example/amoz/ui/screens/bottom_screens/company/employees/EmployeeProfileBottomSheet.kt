@@ -54,7 +54,6 @@ import java.util.UUID
 @Composable
 fun EmployeeProfileBottomSheet(
     onDismissRequest: () -> Unit,
-    onDone: (UUID, LocalDate) -> Unit,
     employee: Employee,
     currentEmployeeRoleInCompany: RoleInCompany,
     employeeProfileImage: MutableStateFlow<ResultState<ImageBitmap?>>?,
@@ -131,15 +130,7 @@ fun EmployeeProfileBottomSheet(
                 colors = listItemColors
             )
 
-            // -------------------- Done button --------------------
-            PrimaryFilledButton(
-                onClick = {
-                    onDone(employee.employeeId, employee.employmentDate)
-                    onDismissRequest()
-                },
-                leadingIcon = Icons.Outlined.Done,
-                text = stringResource(id = R.string.done)
-            )
+
         }
     }
 }

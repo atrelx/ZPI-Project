@@ -45,8 +45,8 @@ fun EmployeesLazyColumn(
     currentEmployeeRoleInCompany: RoleInCompany,
     employeeProfileBottomSheetExpanded: Boolean,
     getProfilePicture: (UUID) -> Unit,
-    changeEmploymentDate: (UUID, LocalDate) -> Unit,
     expandEmployeeProfileBottomSheet: (Boolean) -> Unit,
+    onEmployeeDelete: (UUID) -> Unit,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     val isCurrentEmployeeOwner = currentEmployeeRoleInCompany == RoleInCompany.OWNER
@@ -88,7 +88,7 @@ fun EmployeesLazyColumn(
                             expandEmployeeProfileBottomSheet(true)
                         },
                         onEmployeeDelete = if (isCurrentEmployeeOwner) {{
-                            /*TODO*/
+                            onEmployeeDelete(employee.employeeId)
                         }} else null
                     )
                 }
@@ -112,10 +112,6 @@ fun EmployeesLazyColumn(
             employee = currentEmployee!!,
             employeeProfileImage = employeeImages[currentEmployee!!.employeeId],
             currentEmployeeRoleInCompany = currentEmployeeRoleInCompany,
-            onDone = { employeeID, newDate ->
-                changeEmploymentDate(employeeID, newDate)
-                callSnackBar(changeEmploymentDateText, Icons.Outlined.Done)
-            },
             onDismissRequest = {
                 currentEmployee = null
                 expandEmployeeProfileBottomSheet(false)

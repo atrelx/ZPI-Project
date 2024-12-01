@@ -68,8 +68,8 @@ fun CompanyEmployeesScreen(
                         expandEmployeeProfileBottomSheet = {
                             companyViewModel.expandEmployeeProfileBottomSheet(it)
                         },
-                        changeEmploymentDate = { employeeID, newDate ->
-//                            companyViewModel.updateEmploymentDate(employeeID, newDate)
+                        onEmployeeDelete = {
+                            companyViewModel.kickEmployeeFromCompany(it, currentEmployeeRoleInCompany)
                         },
                         callSnackBar = callSnackBar,
                     )
