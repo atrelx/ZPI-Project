@@ -1,6 +1,5 @@
 package com.example.amoz.ui.components.pickers
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -47,7 +46,7 @@ fun <T> CategoryPicker(
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
     val selectedCategory = remember(category) {
-        savedStateHandle?.get<String>(SavedStateHandleKeys.SELECTED_CATEGORY_TREE)?.let {
+        savedStateHandle?.get<String>(SavedStateHandleKeys.PICKED_CATEGORY_TREE)?.let {
             Json.decodeFromString(CategoryTree.serializer(), it)
         }
     }
@@ -59,7 +58,7 @@ fun <T> CategoryPicker(
     LaunchedEffect(selectedCategory) {
         if (selectedCategory != null && selectedCategory.categoryId != getCategoryId(category)) {
             onCategoryChange(selectedCategory)
-            navController.currentBackStackEntry?.savedStateHandle?.remove<String>(SavedStateHandleKeys.SELECTED_CATEGORY_TREE)
+            navController.currentBackStackEntry?.savedStateHandle?.remove<String>(SavedStateHandleKeys.PICKED_CATEGORY_TREE)
         }
         navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>(isSelectableCategory)
     }

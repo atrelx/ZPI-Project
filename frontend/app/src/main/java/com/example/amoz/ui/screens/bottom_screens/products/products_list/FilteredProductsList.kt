@@ -1,6 +1,5 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,11 +21,12 @@ import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.data.SavedStateHandleKeys
-import com.example.amoz.models.ProductSummary
 import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.pickers.ProductPicker
+import com.example.amoz.pickers.ProductVariantPicker
 import com.example.amoz.ui.components.text_fields.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
@@ -38,13 +37,14 @@ import kotlinx.serialization.json.Json
 
 @Composable
 fun FilteredProductsList(
-    productPickerMode: Boolean,
     productVariantPickerMode: Boolean,
-    navController: NavController,
     currency: String,
-    productsViewModel: ProductsViewModel = hiltViewModel()
+    productsViewModel: ProductsViewModel = hiltViewModel(),
+    navController: NavController,
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
+    val productPicker = ProductPicker(navController)
+    val productVariantPicker = ProductVariantPicker(navController)
 
     val stateView: MutableStateFlow<ResultState<List<Any>>> =
         if (productsUiState.filteredByProduct == null) {
@@ -115,14 +115,12 @@ fun FilteredProductsList(
                         ProductListItem(
                             product = product,
                             onClick = {
-                                if (productPickerMode) {
-                                    val productSummaryJson = Json.encodeToString(ProductSummary.serializer(), product)
-                                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                                        SavedStateHandleKeys.SELECTED_PRODUCT_SUMMARY, productSummaryJson
-                                    )
-                                    navController.popBackStack()
+                                if (productPicker.isProductPickerMode()) {
+                                    productPicker.pickProduct(product)
                                 }
-                                else { productsViewModel.showProductVariants(product) }
+                                else {
+                                    productsViewModel.showProductVariants(product)
+                                }
                             },
                             onProductRemove = {
                                 productsViewModel.updateCurrentProductToDelete(it)
@@ -155,19 +153,11 @@ fun FilteredProductsList(
                             currency = currency,
                             onClick = {
                                 productsUiState.filteredByProduct?.let { filteredByProduct ->
-                                    if (productVariantPickerMode) {
+                                    if (productVariantPicker.isProductVariantPickerMode()) {
                                         productsViewModel.fetchProductVariantDetails(
                                             productVariantId = productVariant.productVariantId,
                                             onSuccessCallback = {
-                                                val productVariantDetailsJson = Json.encodeToString(
-                                                    ProductVariantDetails.serializer(), it
-                                                )
-                                                Log.d("PICKED PRODUCT VARIANT", it.toString())
-                                                navController.previousBackStackEntry?.savedStateHandle?.set(
-                                                    SavedStateHandleKeys.SELECTED_PRODUCT_VARIANT_DETAILS,
-                                                    productVariantDetailsJson
-                                                )
-                                                navController.popBackStack()
+                                                productVariantPicker.pickProductVariant(it)
                                             }
                                         )
                                     }

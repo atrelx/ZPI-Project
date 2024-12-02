@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.data.SavedStateHandleKeys
 import com.example.amoz.models.ProductVariantDetails
+import com.example.amoz.pickers.ProductVariantPicker
 import com.example.amoz.ui.screens.Screens
 import kotlinx.serialization.json.Json
 
@@ -36,18 +37,12 @@ fun ProductVariantPickerWithListItem(
     onSaveState: () -> Unit,
     navController: NavController
 ) {
-    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-
-    val selectedProductVariant = remember {
-        savedStateHandle?.get<String>(SavedStateHandleKeys.SELECTED_PRODUCT_VARIANT_DETAILS)?.let {
-            Json.decodeFromString(ProductVariantDetails.serializer(), it)
-        }
-    }
+    val productVariantPicker = ProductVariantPicker(navController)
+    val selectedProductVariant = productVariantPicker.getPickedProductVariant()
 
     LaunchedEffect(selectedProductVariant) {
         if (selectedProductVariant != null) {
             onProductVariantChange(selectedProductVariant)
-            savedStateHandle?.remove<String>(SavedStateHandleKeys.SELECTED_PRODUCT_VARIANT_DETAILS)
         }
     }
 
@@ -56,9 +51,7 @@ fun ProductVariantPickerWithListItem(
         variantName = selectedProductVariant?.variantName,
         onClick = {
             onSaveState()
-            savedStateHandle?.set(SavedStateHandleKeys.SHOW_NAV_ELEMENTS, false)
-            savedStateHandle?.set(SavedStateHandleKeys.PRODUCT_VARIANT_PICKER_MODE, true)
-            navController.navigate(Screens.Products.route)
+            productVariantPicker.navigateToProductScreen()
         }
     )
 

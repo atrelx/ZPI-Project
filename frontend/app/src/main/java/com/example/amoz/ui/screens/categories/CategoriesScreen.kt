@@ -73,7 +73,7 @@ fun CategoriesScreen(
                     if (categoryPickerMode) {
                         val categoryJson = Json.encodeToString(CategoryTree.serializer(), it)
                         navController.previousBackStackEntry?.savedStateHandle?.set(
-                            SavedStateHandleKeys.SELECTED_CATEGORY_TREE, categoryJson
+                            SavedStateHandleKeys.PICKED_CATEGORY_TREE, categoryJson
                         )
                         navController.popBackStack()
                         categoryPickerMode = false

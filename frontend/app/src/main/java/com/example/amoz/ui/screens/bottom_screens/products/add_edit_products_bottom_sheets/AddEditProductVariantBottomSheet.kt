@@ -1,6 +1,5 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,12 +38,11 @@ import com.example.amoz.R
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.requests.StockCreateRequest
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
-import com.example.amoz.ui.components.pickers.ProductPicker
+import com.example.amoz.ui.components.pickers.ProductPickerWithListItem
 import com.example.amoz.ui.components.pickers.ProductVariantPickerWithListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -139,7 +137,7 @@ fun AddEditProductVariantBottomSheet(
                 val showPicker = remember(productVariantState.productID) { productVariantState.productID == null }
 
                 if (showPicker) {
-                    ProductPicker(
+                    ProductPickerWithListItem(
                         onProductChange = {
                             productVariantState = productVariantState.copy(productID = it.productId)
                         },
@@ -147,15 +145,6 @@ fun AddEditProductVariantBottomSheet(
                         navController = navController,
                     )
                 }
-
-                ProductVariantPickerWithListItem(
-                    onProductVariantChange = {
-                        Log.d("PICKED PRODUCT VARIANT", it.toString())
-                    },
-                    onSaveState = { onSaveProductVariant(productVariantState) },
-                    navController = navController,
-                )
-
 
                 // -------------------- Stock --------------------
                 ProductVariantStock(

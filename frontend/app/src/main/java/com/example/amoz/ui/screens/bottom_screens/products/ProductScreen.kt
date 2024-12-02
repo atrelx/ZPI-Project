@@ -43,11 +43,7 @@ fun ProductScreen(
     val currency by productsViewModel.getCurrency().collectAsState(initial = "USD")
 
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
-
-    val productPickerMode = savedStateHandle?.get<Boolean>(
-        SavedStateHandleKeys.PRODUCT_PICKER_MODE
-    ) ?: false
-
+    
     val productVariantPickerMode = savedStateHandle?.get<Boolean>(
         SavedStateHandleKeys.PRODUCT_VARIANT_PICKER_MODE
     ) ?: false
@@ -86,7 +82,6 @@ fun ProductScreen(
         ) {
 
             FilteredProductsList(
-                productPickerMode = productPickerMode,
                 productVariantPickerMode = productVariantPickerMode,
                 navController = navController,
                 currency = currency!!

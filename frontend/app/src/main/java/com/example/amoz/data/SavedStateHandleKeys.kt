@@ -8,7 +8,7 @@ object SavedStateHandleKeys {
     const val PRODUCT_PICKER_MODE = "productPickerMode"
     const val PRODUCT_VARIANT_PICKER_MODE = "productVariantPickerMode"
 
-    const val SELECTED_CATEGORY_TREE = "selectedCategoryTree"
-    const val SELECTED_PRODUCT_SUMMARY = "selectedProductSummary"
-    const val SELECTED_PRODUCT_VARIANT_DETAILS = "selectedProductVariantDetails"
+    const val PICKED_CATEGORY_TREE = "selectedCategoryTree"
+    const val PICKED_PRODUCT_SUMMARY = "selectedProductSummary"
+    const val PICKED_PRODUCT_VARIANT_DETAILS = "selectedProductVariantDetails"
 }
