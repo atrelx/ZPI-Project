@@ -9,7 +9,9 @@ import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
 import com.example.amoz.models.CategoryTree
+import com.example.amoz.models.ProductDetails
 import com.example.amoz.models.ProductSummary
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.ui.states.ProductsUiState
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.ProductListFilter
@@ -212,26 +214,68 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    fun fetchProductVariantDetails(productVariantId: UUID, productId: UUID) {
+    fun fetchProductVariantDetails(
+        productVariantId: UUID,
+        binding: MutableStateFlow<ResultState<ProductVariantDetails>>? = null,
+        onSuccessCallback: ((ProductVariantDetails) -> Unit)? = null,
+    ) {
+        performRepositoryAction(
+            binding = binding,
+            action = {
+                productVariantRepository.getProductVariant(productVariantId)
+            },
+            onSuccess = {
+                onSuccessCallback?.invoke(it)
+            }
+        )
+    }
+
+    fun fetchProductVariantDetailsAndCreateRequest(
+        productVariantId: UUID,
+        productId: UUID,
+        onSuccessCallback: (() -> Unit)? = null,
+    ) {
         performRepositoryAction(
             binding = _productUiState.value.currentAddEditProductVariantState,
             failureMessage = "Failed to fetch product variant",
             action = {
                 val productDetails = productRepository.getProductDetails(productId)
                 val productVariantDetails = productVariantRepository.getProductVariant(productVariantId)
-                _productUiState.update {
-                    it.copy(
-                        currentAddEditProductVariantDetails = productVariantDetails,
-                        currentAddEditProductDetails = productDetails
-                    )
-                }
+                updateProductAndProductVariantDetails(productDetails, productVariantDetails)
                 ProductVariantCreateRequest(productVariantDetails, productId)
             },
             onSuccess = {
-                fetchProductVariantsList(productId)
+                fetchProductVariantsList(productId, true)
+                onSuccessCallback?.invoke()
             }
         )
     }
+
+//    fun fetchProductVariantDetailsAndCreateRequest(
+//        productVariantId: UUID,
+//        productId: UUID,
+//        onSuccessCallback: (() -> Unit)? = null,
+//    ) {
+//        performRepositoryAction(
+//            binding = _productUiState.value.currentAddEditProductVariantState,
+//            failureMessage = "Failed to fetch product variant",
+//            action = {
+//                val productDetails = productRepository.getProductDetails(productId)
+//                val productVariantDetails = productVariantRepository.getProductVariant(productVariantId)
+//                _productUiState.update {
+//                    it.copy(
+//                        currentAddEditProductVariantDetails = productVariantDetails,
+//                        currentAddEditProductDetails = productDetails
+//                    )
+//                }
+//                ProductVariantCreateRequest(productVariantDetails, productId)
+//            },
+//            onSuccess = {
+//                fetchProductVariantsList(productId, true)
+//                onSuccessCallback?.invoke()
+//            }
+//        )
+//    }
 
     fun deleteProductVariant(productVariantId: UUID) {
         performRepositoryAction(
@@ -256,16 +300,16 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    fun updateCurrentAddEditProductVariant(productVariantId: UUID?, productId: UUID?) {
+    fun updateCurrentAddEditProductVariant(
+        productVariantId: UUID?,
+        productId: UUID?,
+        onSuccessCallback: (() -> Unit)? = null,
+    ) {
         if (productVariantId == null || productId == null) {
-            Log.d("PRODUCT VARIANT", "was created")
             _productUiState.update {it.copy(currentAddEditProductVariantDetails = null)}
             saveCurrentAddEditProductVariant(ProductVariantCreateRequest(productId))
         }
-        else {
-            Log.d("PRODUCT VARIANT", "was fetched")
-            fetchProductVariantDetails(productVariantId, productId)
-        }
+        else { fetchProductVariantDetailsAndCreateRequest(productVariantId, productId, onSuccessCallback) }
     }
 
 
@@ -409,6 +453,18 @@ class ProductsViewModel @Inject constructor(
     }
 
     // -------------------- UI STATE --------------------
+
+    fun updateProductAndProductVariantDetails(
+        productDetails: ProductDetails?,
+        productVariantDetails: ProductVariantDetails?
+    ) {
+        _productUiState.update {
+            it.copy(
+                currentAddEditProductDetails = productDetails,
+                currentAddEditProductVariantDetails = productVariantDetails
+            )
+        }
+    }
 
     fun getCurrency(): Flow<String?> {
         return appPreferences.currency

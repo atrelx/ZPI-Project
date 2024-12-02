@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.data.SavedStateHandleKeys
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.screens.Screens
 import kotlinx.serialization.json.Json
@@ -35,18 +36,18 @@ fun ProductPicker(
     onSaveState: () -> Unit,
     navController: NavController
 ) {
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
     val selectedProduct = remember {
-        navController.currentBackStackEntry
-            ?.savedStateHandle
-            ?.get<String>("selectedProductSummary")
-            ?.let { Json.decodeFromString(ProductSummary.serializer(), it) }
+        savedStateHandle?.get<String>(SavedStateHandleKeys.SELECTED_PRODUCT_SUMMARY)?.let {
+            Json.decodeFromString(ProductSummary.serializer(), it)
+        }
     }
 
     LaunchedEffect(selectedProduct) {
         if (selectedProduct != null) {
             onProductChange(selectedProduct)
-            navController.currentBackStackEntry?.savedStateHandle?.remove<String>("selectedProductSummary")
+            savedStateHandle?.remove<String>(SavedStateHandleKeys.SELECTED_PRODUCT_SUMMARY)
         }
     }
 
@@ -61,11 +62,8 @@ fun ProductPicker(
             )
             .clickable {
                 onSaveState()
-                navController.currentBackStackEntry?.savedStateHandle?.set("showNavElements", false)
-                navController.currentBackStackEntry?.savedStateHandle?.set(
-                    "productPickerMode",
-                    true
-                )
+                savedStateHandle?.set(SavedStateHandleKeys.SHOW_NAV_ELEMENTS, false)
+                savedStateHandle?.set(SavedStateHandleKeys.PRODUCT_PICKER_MODE, true)
                 navController.navigate(Screens.Products.route)
             },
         leadingContent = {

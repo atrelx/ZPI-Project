@@ -26,8 +26,8 @@ import com.example.amoz.ui.components.text_fields.SearchTextField
 fun CategoriesFilteredList(
     categories: List<CategoryTree>,
     searchQuery: String,
-    isSelectable: Boolean,
-    isSelectableLeavesOnly: Boolean,
+    categoryPickerMode: Boolean,
+    categoryPickerModeLeavesOnly: Boolean,
     onSearchQueryChange: (String) -> Unit,
     onAdd: () -> Unit,
     onClick: ((CategoryTree) -> Unit)? = null,
@@ -52,8 +52,8 @@ fun CategoriesFilteredList(
                     allCategories = categories,
                     onClick = onClick,
                     onDelete = onDelete,
-                    isSelectable = isSelectable,
-                    isSelectableLeavesOnly = isSelectableLeavesOnly,
+                    isSelectable = categoryPickerMode,
+                    isSelectableLeavesOnly = categoryPickerModeLeavesOnly,
                 )
             }
         }

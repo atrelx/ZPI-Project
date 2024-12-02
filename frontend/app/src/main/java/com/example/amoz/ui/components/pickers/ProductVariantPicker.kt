@@ -1,6 +1,5 @@
 package com.example.amoz.ui.components.pickers
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -9,9 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -28,42 +25,51 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.data.SavedStateHandleKeys
-import com.example.amoz.models.CategoryTree
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.screens.Screens
 import kotlinx.serialization.json.Json
-import java.util.UUID
 
 @Composable
-fun <T> CategoryPicker(
+fun ProductVariantPickerWithListItem(
     modifier: Modifier = Modifier,
-    category: T?,
-    leavesOnly: Boolean = false,
-    navController: NavController,
+    onProductVariantChange: (ProductVariantDetails) -> Unit,
     onSaveState: () -> Unit,
-    onCategoryChange: (CategoryTree?) -> Unit,
-    getCategoryId: (T?) -> UUID?,
-    getCategoryName: (T?) -> String?,
+    navController: NavController
 ) {
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
 
-    val selectedCategory = remember(category) {
-        savedStateHandle?.get<String>(SavedStateHandleKeys.SELECTED_CATEGORY_TREE)?.let {
-            Json.decodeFromString(CategoryTree.serializer(), it)
+    val selectedProductVariant = remember {
+        savedStateHandle?.get<String>(SavedStateHandleKeys.SELECTED_PRODUCT_VARIANT_DETAILS)?.let {
+            Json.decodeFromString(ProductVariantDetails.serializer(), it)
         }
     }
 
-    val isSelectableCategory =
-        if(leavesOnly) SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY
-        else SavedStateHandleKeys.CATEGORY_PICKER_MODE
-
-    LaunchedEffect(selectedCategory) {
-        if (selectedCategory != null && selectedCategory.categoryId != getCategoryId(category)) {
-            onCategoryChange(selectedCategory)
-            navController.currentBackStackEntry?.savedStateHandle?.remove<String>(SavedStateHandleKeys.SELECTED_CATEGORY_TREE)
+    LaunchedEffect(selectedProductVariant) {
+        if (selectedProductVariant != null) {
+            onProductVariantChange(selectedProductVariant)
+            savedStateHandle?.remove<String>(SavedStateHandleKeys.SELECTED_PRODUCT_VARIANT_DETAILS)
         }
-        navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>(isSelectableCategory)
     }
 
+    ProductVariantPickerListItem(
+        modifier = modifier,
+        variantName = selectedProductVariant?.variantName,
+        onClick = {
+            onSaveState()
+            savedStateHandle?.set(SavedStateHandleKeys.SHOW_NAV_ELEMENTS, false)
+            savedStateHandle?.set(SavedStateHandleKeys.PRODUCT_VARIANT_PICKER_MODE, true)
+            navController.navigate(Screens.Products.route)
+        }
+    )
+
+}
+
+@Composable
+fun ProductVariantPickerListItem(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    variantName: String?
+) {
     ListItem(
         modifier = modifier
             .fillMaxWidth()
@@ -73,37 +79,21 @@ fun <T> CategoryPicker(
                 brush = SolidColor(MaterialTheme.colorScheme.outline),
                 shape = RoundedCornerShape(5.dp)
             )
-            .clickable {
-                onSaveState()
-                navController.currentBackStackEntry?.savedStateHandle?.set(isSelectableCategory, true)
-                navController.navigate(Screens.Categories.route)
-            },
+            .clickable { onClick() },
         leadingContent = {
             Icon(
                 imageVector = Icons.Outlined.Category,
                 contentDescription = null
             )
         },
-        overlineContent = { Text(stringResource(R.string.product_category)) },
+        overlineContent = { Text(stringResource(R.string.products_variant)) },
         headlineContent = {
             Text(
-                text = getCategoryName(category) ?: stringResource(R.string.product_category_choose)
+                text = variantName ?: stringResource(R.string.products_choose_product_variant)
             )
         },
         trailingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                category?.let {
-                    IconButton(
-                        onClick = {
-                            onCategoryChange(null)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = null
-                        )
-                    }
-                }
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
                     contentDescription = null
@@ -115,4 +105,3 @@ fun <T> CategoryPicker(
         )
     )
 }
-

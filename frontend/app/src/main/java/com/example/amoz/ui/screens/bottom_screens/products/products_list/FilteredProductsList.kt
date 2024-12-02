@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,9 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,7 +22,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.data.SavedStateHandleKeys
 import com.example.amoz.models.ProductSummary
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
@@ -38,6 +39,7 @@ import kotlinx.serialization.json.Json
 @Composable
 fun FilteredProductsList(
     productPickerMode: Boolean,
+    productVariantPickerMode: Boolean,
     navController: NavController,
     currency: String,
     productsViewModel: ProductsViewModel = hiltViewModel()
@@ -116,7 +118,7 @@ fun FilteredProductsList(
                                 if (productPickerMode) {
                                     val productSummaryJson = Json.encodeToString(ProductSummary.serializer(), product)
                                     navController.previousBackStackEntry?.savedStateHandle?.set(
-                                        "selectedProductSummary", productSummaryJson
+                                        SavedStateHandleKeys.SELECTED_PRODUCT_SUMMARY, productSummaryJson
                                     )
                                     navController.popBackStack()
                                 }
@@ -152,9 +154,31 @@ fun FilteredProductsList(
                             productVariantBitmapImageState = imageState,
                             currency = currency,
                             onClick = {
-                                productsUiState.filteredByProduct?.let {
-                                    productsViewModel.updateCurrentAddEditProductVariant(productVariant.productVariantId, it.productId)
-                                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, true)
+                                productsUiState.filteredByProduct?.let { filteredByProduct ->
+                                    if (productVariantPickerMode) {
+                                        productsViewModel.fetchProductVariantDetails(
+                                            productVariantId = productVariant.productVariantId,
+                                            onSuccessCallback = {
+                                                val productVariantDetailsJson = Json.encodeToString(
+                                                    ProductVariantDetails.serializer(), it
+                                                )
+                                                Log.d("PICKED PRODUCT VARIANT", it.toString())
+                                                navController.previousBackStackEntry?.savedStateHandle?.set(
+                                                    SavedStateHandleKeys.SELECTED_PRODUCT_VARIANT_DETAILS,
+                                                    productVariantDetailsJson
+                                                )
+                                                navController.popBackStack()
+                                            }
+                                        )
+                                    }
+                                    else {
+                                        productsViewModel.updateCurrentAddEditProductVariant(
+                                            productVariant.productVariantId, filteredByProduct.productId
+                                        )
+                                        productsViewModel.expandBottomSheet(
+                                            BottomSheetType.ADD_EDIT_VARIANT, true
+                                        )
+                                    }
                                 }
                             },
                             onDelete = {

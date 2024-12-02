@@ -45,6 +45,7 @@ import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.pickers.ProductPicker
+import com.example.amoz.ui.components.pickers.ProductVariantPickerWithListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -140,13 +141,20 @@ fun AddEditProductVariantBottomSheet(
                 if (showPicker) {
                     ProductPicker(
                         onProductChange = {
-                            Log.d("NEW PRODUCT ID", it.toString())
                             productVariantState = productVariantState.copy(productID = it.productId)
                         },
                         onSaveState = { onSaveProductVariant(productVariantState) },
                         navController = navController,
                     )
                 }
+
+                ProductVariantPickerWithListItem(
+                    onProductVariantChange = {
+                        Log.d("PICKED PRODUCT VARIANT", it.toString())
+                    },
+                    onSaveState = { onSaveProductVariant(productVariantState) },
+                    navController = navController,
+                )
 
 
                 // -------------------- Stock --------------------

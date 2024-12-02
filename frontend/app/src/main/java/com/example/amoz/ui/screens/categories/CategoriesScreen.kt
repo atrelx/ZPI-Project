@@ -1,6 +1,5 @@
 package com.example.amoz.ui.screens.categories
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.data.SavedStateHandleKeys
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.components.bottom_sheets.ConfirmDeleteItemBottomSheet
 import com.example.amoz.ui.components.ResultStateView
@@ -37,15 +36,17 @@ fun CategoriesScreen(
 ) {
     val categoryUiState by categoryViewModel.categoriesUiState.collectAsState()
 
-    var isSelectableLeavesOnly = navController.previousBackStackEntry
-        ?.savedStateHandle
-        ?.get<Boolean>("isSelectableLeavesOnly") ?: false
+    val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
 
-    var isSelectable = navController.previousBackStackEntry
-        ?.savedStateHandle
-        ?.get<Boolean>("isSelectable") ?: false
+    var categoryPickerModeLeavesOnly = savedStateHandle?.get<Boolean>(
+        SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY
+    ) ?: false
 
-    if(isSelectableLeavesOnly) {isSelectable = true}
+    var categoryPickerMode = savedStateHandle?.get<Boolean>(
+        SavedStateHandleKeys.CATEGORY_PICKER_MODE
+    ) ?: false
+
+    if(categoryPickerModeLeavesOnly) {categoryPickerMode = true}
 
     fun closeAddEditCategoryBottomSheet() {
         categoryViewModel.updateCurrentCategory(null)
@@ -65,18 +66,18 @@ fun CategoriesScreen(
             CategoriesFilteredList(
                 categories = categoryUiState.filteredCategoryList,
                 searchQuery = categoryUiState.searchQuery,
-                isSelectable = isSelectable,
-                isSelectableLeavesOnly = isSelectableLeavesOnly,
+                categoryPickerMode = categoryPickerMode,
+                categoryPickerModeLeavesOnly = categoryPickerModeLeavesOnly,
                 onSearchQueryChange = categoryViewModel::updateSearchQuery,
                 onClick = {
-                    if (isSelectable) {
+                    if (categoryPickerMode) {
                         val categoryJson = Json.encodeToString(CategoryTree.serializer(), it)
                         navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "selectedCategoryTree", categoryJson
+                            SavedStateHandleKeys.SELECTED_CATEGORY_TREE, categoryJson
                         )
                         navController.popBackStack()
-                        isSelectable = false
-                        isSelectableLeavesOnly = false
+                        categoryPickerMode = false
+                        categoryPickerModeLeavesOnly = false
                     }
                     else {
                         categoryViewModel.updateCurrentCategory(it)
