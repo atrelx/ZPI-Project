@@ -9,15 +9,11 @@ class ProductPicker(navController: NavController)
     : BasePicker<ProductSummary>(navController, ProductSummary.serializer()) {
 
     fun isProductPickerMode(): Boolean {
-        return previousSavedStateHandle?.get<Boolean>(
-            SavedStateHandleKeys.PRODUCT_PICKER_MODE
-        ) ?: false
+        return getMode(SavedStateHandleKeys.PRODUCT_PICKER_MODE)
     }
 
     fun getPickedProduct(): ProductSummary? {
-        return currentSavedStateHandle?.get<String>(
-            SavedStateHandleKeys.PICKED_PRODUCT_SUMMARY
-        )?.let { decodeFromJson(it) }
+        return getPickedItem(SavedStateHandleKeys.PICKED_PRODUCT_SUMMARY)
     }
 
     fun navigateToProductScreen() {
@@ -27,10 +23,7 @@ class ProductPicker(navController: NavController)
     }
 
     fun pickProduct(productSummary: ProductSummary) {
-        previousSavedStateHandle?.set(
-            SavedStateHandleKeys.PICKED_PRODUCT_SUMMARY,
-            encodeToJson(productSummary)
-        )
+        pickItem(SavedStateHandleKeys.PICKED_PRODUCT_SUMMARY, productSummary)
         navController.popBackStack()
         setProductPickerMode(mode = false)
         setNavElementsVisibleMode(mode = true)

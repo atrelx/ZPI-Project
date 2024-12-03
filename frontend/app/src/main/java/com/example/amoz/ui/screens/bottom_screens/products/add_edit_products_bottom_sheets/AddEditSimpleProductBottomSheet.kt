@@ -1,6 +1,5 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +42,7 @@ import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
-import com.example.amoz.ui.components.pickers.CategoryPicker
+import com.example.amoz.ui.components.pickers.CategoryPickerListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
 import kotlinx.coroutines.launch
 
@@ -165,7 +164,7 @@ fun AddEditSimpleProductBottomSheet(
             )
 
             //  -------------------- Product's category --------------------
-            CategoryPicker(
+            CategoryPickerListItem(
                 category = categoryTreeState,
                 navController = navController,
                 leavesOnly = true,

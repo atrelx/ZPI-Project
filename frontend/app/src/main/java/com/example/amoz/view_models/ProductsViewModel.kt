@@ -1,6 +1,5 @@
 package com.example.amoz.view_models
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.repositories.ProductRepository
 import com.example.amoz.api.repositories.ProductVariantRepository
@@ -79,27 +78,35 @@ class ProductsViewModel @Inject constructor(
     }
 
     // -------------------- PRODUCT --------------------
-    fun fetchProductDetails(productId: UUID) {
+    fun fetchProductDetails(
+        productId: UUID,
+        onSuccessCallback: ((ProductDetails?) -> Unit)? = null
+    ) {
         performRepositoryAction(
-            binding = _productUiState.value.currentAddEditProductState,
+            binding = _productUiState.value.currentAddEditProductDetailsState,
             failureMessage = "Could not fetch product details, try again",
             action = {
-                val productDetails = productRepository.getProductDetails(productId)
-                _productUiState.update { it.copy(currentAddEditProductDetails = productDetails) }
-                ProductCreateRequest(productDetails)
+                productRepository.getProductDetails(productId)
             },
+            onSuccess = { productDetails ->
+                onSuccessCallback?.invoke(productDetails)
+            }
         )
     }
 
-    fun addProduct(productCreateRequest: ProductCreateRequest) {
+    fun createProduct(
+        productCreateRequest: ProductCreateRequest,
+        onSuccessCallback: ((ProductDetails) -> Unit)? = null,
+    ) {
         performRepositoryAction(
             binding = null,
             failureMessage = "Failed to update product",
             action = {
                 productRepository.createProduct(productCreateRequest)
             },
-            onSuccess = {
+            onSuccess = { productDetails ->
                 fetchProductsList(true)
+                onSuccessCallback?.invoke(productDetails)
             }
         )
     }
@@ -133,22 +140,40 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
+    fun setProductMainVariant(
+        productId: UUID, productVariantId: UUID,
+        onSuccessCallback: ((ProductDetails) -> Unit)? = null,
+    ) {
+        performRepositoryAction(
+            binding = null,
+            action = {
+                productRepository.setMainVariant(productId, productVariantId)
+            },
+            onSuccess = {
+                fetchProductsList(true)
+                onSuccessCallback?.invoke(it)
+            }
+        )
+    }
+
     fun updateCurrentProductToDelete(productSummary: ProductSummary?) {
         _productUiState.update { it.copy(currentProductToDelete = productSummary) }
     }
 
-    fun saveCurrentAddEditProduct(productCreateRequest: ProductCreateRequest) {
+    fun saveCurrentProductCreateRequest(productCreateRequest: ProductCreateRequest) {
         _productUiState.update {
             it.copy(
-                currentAddEditProductState = MutableStateFlow(ResultState.Success(productCreateRequest))
+                currentAddEditProductCreateRequest = productCreateRequest
             )
         }
     }
 
     fun updateCurrentAddEditProduct(productId: UUID?) {
         if (productId == null) {
-            _productUiState.update {it.copy(currentAddEditProductDetails = null)}
-            saveCurrentAddEditProduct(ProductCreateRequest())
+            _productUiState.update {it.copy(
+                currentAddEditProductDetailsState = MutableStateFlow(ResultState.Success(null))
+            ) }
+            saveCurrentProductCreateRequest(ProductCreateRequest())
         }
         else {
             fetchProductDetails(productId)
@@ -157,15 +182,42 @@ class ProductsViewModel @Inject constructor(
 
     // -------------------- PRODUCT VARIANT--------------------
 
-    fun createProductVariant(productVariantCreateRequest: ProductVariantCreateRequest) {
+    fun fetchProductVariantDetails(
+        productVariantId: UUID,
+        binding: MutableStateFlow<ResultState<ProductVariantDetails?>>? =
+            _productUiState.value.currentAddEditProductVariantDetailsState,
+        onSuccessCallback: ((ProductVariantDetails?) -> Unit)? = null,
+    ) {
+        performRepositoryAction(
+            binding = binding,
+            failureMessage = "Failed to fetch product variant",
+            action = {
+                productVariantRepository.getProductVariant(productVariantId)
+            },
+            onSuccess = { productVariantDetails ->
+                _productUiState.value.filteredByProduct?.let {
+                    fetchProductVariantsList(it.productId, true)
+                }
+                onSuccessCallback?.invoke(productVariantDetails)
+            }
+        )
+    }
+
+    fun createProductVariant(
+        productVariantCreateRequest: ProductVariantCreateRequest,
+        onSuccessCallback: ((ProductVariantDetails) -> Unit)? = null,
+    ) {
         performRepositoryAction(
             binding = null,
             failureMessage = "Failed to create product variant",
             action = {
                 productVariantRepository.createProductVariant(productVariantCreateRequest)
             },
-            onSuccess = productVariantCreateRequest.productID?.let {
-                productId -> {fetchProductVariantsList(productId, true)}
+            onSuccess = { productVariantDetails ->
+                _productUiState.value.filteredByProduct?.let {
+                    fetchProductVariantsList(it.productId, true)
+                }
+                onSuccessCallback?.invoke(productVariantDetails)
             }
         )
     }
@@ -214,69 +266,6 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    fun fetchProductVariantDetails(
-        productVariantId: UUID,
-        binding: MutableStateFlow<ResultState<ProductVariantDetails>>? = null,
-        onSuccessCallback: ((ProductVariantDetails) -> Unit)? = null,
-    ) {
-        performRepositoryAction(
-            binding = binding,
-            action = {
-                productVariantRepository.getProductVariant(productVariantId)
-            },
-            onSuccess = {
-                onSuccessCallback?.invoke(it)
-            }
-        )
-    }
-
-    fun fetchProductVariantDetailsAndCreateRequest(
-        productVariantId: UUID,
-        productId: UUID,
-        onSuccessCallback: (() -> Unit)? = null,
-    ) {
-        performRepositoryAction(
-            binding = _productUiState.value.currentAddEditProductVariantState,
-            failureMessage = "Failed to fetch product variant",
-            action = {
-                val productDetails = productRepository.getProductDetails(productId)
-                val productVariantDetails = productVariantRepository.getProductVariant(productVariantId)
-                updateProductAndProductVariantDetails(productDetails, productVariantDetails)
-                ProductVariantCreateRequest(productVariantDetails, productId)
-            },
-            onSuccess = {
-                fetchProductVariantsList(productId, true)
-                onSuccessCallback?.invoke()
-            }
-        )
-    }
-
-//    fun fetchProductVariantDetailsAndCreateRequest(
-//        productVariantId: UUID,
-//        productId: UUID,
-//        onSuccessCallback: (() -> Unit)? = null,
-//    ) {
-//        performRepositoryAction(
-//            binding = _productUiState.value.currentAddEditProductVariantState,
-//            failureMessage = "Failed to fetch product variant",
-//            action = {
-//                val productDetails = productRepository.getProductDetails(productId)
-//                val productVariantDetails = productVariantRepository.getProductVariant(productVariantId)
-//                _productUiState.update {
-//                    it.copy(
-//                        currentAddEditProductVariantDetails = productVariantDetails,
-//                        currentAddEditProductDetails = productDetails
-//                    )
-//                }
-//                ProductVariantCreateRequest(productVariantDetails, productId)
-//            },
-//            onSuccess = {
-//                fetchProductVariantsList(productId, true)
-//                onSuccessCallback?.invoke()
-//            }
-//        )
-//    }
-
     fun deleteProductVariant(productVariantId: UUID) {
         performRepositoryAction(
             binding = null,
@@ -294,8 +283,7 @@ class ProductsViewModel @Inject constructor(
     fun saveCurrentAddEditProductVariant(productVariantCreateRequest: ProductVariantCreateRequest) {
         _productUiState.update {
             it.copy(
-                currentAddEditProductVariantState =
-                MutableStateFlow(ResultState.Success(productVariantCreateRequest))
+                currentAddEditProductVariantCreateRequest = productVariantCreateRequest
             )
         }
     }
@@ -303,16 +291,29 @@ class ProductsViewModel @Inject constructor(
     fun updateCurrentAddEditProductVariant(
         productVariantId: UUID?,
         productId: UUID?,
-        onSuccessCallback: (() -> Unit)? = null,
     ) {
-        if (productVariantId == null || productId == null) {
-            _productUiState.update {it.copy(currentAddEditProductVariantDetails = null)}
-            saveCurrentAddEditProductVariant(ProductVariantCreateRequest(productId))
+        if (productId == null) {
+            currentAddEditProductVariantDetailsSetSuccessState(null)
         }
-        else { fetchProductVariantDetailsAndCreateRequest(productVariantId, productId, onSuccessCallback) }
+        if(productVariantId == null) {
+            saveCurrentAddEditProductVariant(ProductVariantCreateRequest(productID = productId))
+        }
+        else {
+            fetchProductVariantDetails(productVariantId) {
+                saveCurrentAddEditProductVariant(
+                    ProductVariantCreateRequest(productVariant = it, productID = productId)
+                )
+            }
+        }
+
     }
 
-
+    fun currentAddEditProductVariantDetailsSetSuccessState(productDetails: ProductVariantDetails?) {
+        _productUiState.update { it.copy(
+            currentAddEditProductVariantDetailsState =
+            MutableStateFlow(ResultState.Success(productDetails))
+        ) }
+    }
 
     fun updateCurrentProductVariantToDelete(productVariantSummary: ProductVariantSummary?) {
         _productUiState.update { it.copy(currentProductVariantToDelete = productVariantSummary) }
@@ -323,38 +324,16 @@ class ProductsViewModel @Inject constructor(
         product: ProductCreateRequest,
         productVariant: ProductVariantCreateRequest
     ) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Cannot create simple product",
-            action = {
-                Log.d("SIMPLE PRODUCT", product.toString())
-                productRepository.createProduct(product)
-            },
-            onSuccess = { productDetails ->
-                performRepositoryAction(
-                    binding = null,
-                    action = {
-                        productVariantRepository.createProductVariant(
-                            productVariant.copy(productID = productDetails.productId)
-                        )
-                    },
-                    onSuccess = { productVariantDetails ->
-                        performRepositoryAction(
-                            binding = null,
-                            action = {
-                                productRepository.setMainVariant(
-                                    productDetails.productId,
-                                    productVariantDetails.productVariantId
-                                )
-                            },
-                            onSuccess = {
-                                fetchProductsList(true)
-                            }
-                        )
-                    }
+        createProduct(product) { productDetails ->
+            createProductVariant(productVariant.copy(
+                productID = productDetails.productId)
+            ) { productVariantDetails ->
+                setProductMainVariant(
+                    productDetails.productId,
+                    productVariantDetails.productVariantId
                 )
             }
-        )
+        }
     }
 
     fun saveSimpleProduct(
@@ -454,17 +433,17 @@ class ProductsViewModel @Inject constructor(
 
     // -------------------- UI STATE --------------------
 
-    fun updateProductAndProductVariantDetails(
-        productDetails: ProductDetails?,
-        productVariantDetails: ProductVariantDetails?
-    ) {
-        _productUiState.update {
-            it.copy(
-                currentAddEditProductDetails = productDetails,
-                currentAddEditProductVariantDetails = productVariantDetails
-            )
-        }
-    }
+//    fun updateProductAndProductVariantDetails(
+//        productDetails: ProductDetails?,
+//        productVariantDetails: ProductVariantDetails?
+//    ) {
+//        _productUiState.update {
+//            it.copy(
+//                currentAddEditProductDetails = productDetails,
+//                currentAddEditProductVariantDetails = productVariantDetails
+//            )
+//        }
+//    }
 
     fun getCurrency(): Flow<String?> {
         return appPreferences.currency

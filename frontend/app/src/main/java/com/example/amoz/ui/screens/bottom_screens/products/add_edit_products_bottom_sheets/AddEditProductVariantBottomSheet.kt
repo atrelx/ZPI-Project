@@ -38,45 +38,47 @@ import com.example.amoz.R
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.requests.StockCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.pickers.ProductPickerWithListItem
-import com.example.amoz.ui.components.pickers.ProductVariantPickerWithListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductVariantBottomSheet(
-    productVariantCreateRequestState: MutableStateFlow<ResultState<ProductVariantCreateRequest>>,
+    productVariantCreateRequest: ProductVariantCreateRequest,
+    productVariantDetailsState: MutableStateFlow<ResultState<ProductVariantDetails?>>,
     onSaveProductVariant: (ProductVariantCreateRequest) -> Unit,
-    onComplete: (ProductVariantCreateRequest) -> Unit,
+    onComplete: (UUID?, ProductVariantCreateRequest) -> Unit,
     onDismissRequest: () -> Unit,
     navController: NavController
 ) {
     val scope = rememberCoroutineScope()
 
+
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
-    val sheetState =
-        rememberModalBottomSheetState(skipPartiallyExpanded = true,
-            confirmValueChange = { newState ->
-                newState != SheetValue.Hidden
-            }
-        )
+    var hasProductId by remember { mutableStateOf(productVariantCreateRequest.productID != null) }
+    var productVariantState by remember { mutableStateOf(productVariantCreateRequest) }
+
+    LaunchedEffect(productVariantState) {
+        validationMessage = null
+    }
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        ResultStateView(state = productVariantCreateRequestState) {
-            var productVariantState by remember { mutableStateOf(it) }
+        ResultStateView(state = productVariantDetailsState) { productVariantDetails ->
 
-            LaunchedEffect(productVariantState) {
-                validationMessage = null
-            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -134,12 +136,11 @@ fun AddEditProductVariantBottomSheet(
                 )
 
                 // -------------------- Product variant of --------------------
-                val showPicker = remember(productVariantState.productID) { productVariantState.productID == null }
-
-                if (showPicker) {
+                if (!hasProductId) {
                     ProductPickerWithListItem(
                         onProductChange = {
                             productVariantState = productVariantState.copy(productID = it.productId)
+                            hasProductId = false
                         },
                         onSaveState = { onSaveProductVariant(productVariantState) },
                         navController = navController,
@@ -188,7 +189,7 @@ fun AddEditProductVariantBottomSheet(
                             validationMessage = violation
                         }
                         else {
-                            onComplete(productVariantState)
+                            onComplete(productVariantDetails?.productVariantId, productVariantState)
                             onDismissRequest()
                         }
                     },

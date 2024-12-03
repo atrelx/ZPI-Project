@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,14 +25,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.data.SavedStateHandleKeys
 import com.example.amoz.models.CategoryTree
-import com.example.amoz.ui.screens.Screens
-import kotlinx.serialization.json.Json
+import com.example.amoz.pickers.CategoryPicker
 import java.util.UUID
 
 @Composable
-fun <T> CategoryPicker(
+fun <T> CategoryPickerListItem(
     modifier: Modifier = Modifier,
     category: T?,
     leavesOnly: Boolean = false,
@@ -43,24 +40,15 @@ fun <T> CategoryPicker(
     getCategoryId: (T?) -> UUID?,
     getCategoryName: (T?) -> String?,
 ) {
-    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    val categoryPicker = CategoryPicker(navController)
 
-    val selectedCategory = remember(category) {
-        savedStateHandle?.get<String>(SavedStateHandleKeys.PICKED_CATEGORY_TREE)?.let {
-            Json.decodeFromString(CategoryTree.serializer(), it)
-        }
-    }
-
-    val isSelectableCategory =
-        if(leavesOnly) SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY
-        else SavedStateHandleKeys.CATEGORY_PICKER_MODE
+    val selectedCategory = categoryPicker.getPickedCategory()
 
     LaunchedEffect(selectedCategory) {
         if (selectedCategory != null && selectedCategory.categoryId != getCategoryId(category)) {
             onCategoryChange(selectedCategory)
-            navController.currentBackStackEntry?.savedStateHandle?.remove<String>(SavedStateHandleKeys.PICKED_CATEGORY_TREE)
+            categoryPicker.removePickedCategory()
         }
-        navController.currentBackStackEntry?.savedStateHandle?.remove<Boolean>(isSelectableCategory)
     }
 
     ListItem(
@@ -74,8 +62,7 @@ fun <T> CategoryPicker(
             )
             .clickable {
                 onSaveState()
-                navController.currentBackStackEntry?.savedStateHandle?.set(isSelectableCategory, true)
-                navController.navigate(Screens.Categories.route)
+                categoryPicker.navigateToCategoryScreen(leavesOnly)
             },
         leadingContent = {
             Icon(

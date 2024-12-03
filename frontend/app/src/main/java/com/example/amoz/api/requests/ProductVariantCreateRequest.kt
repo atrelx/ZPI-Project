@@ -44,7 +44,7 @@ data class ProductVariantCreateRequest(
     val variantAttributes: List<AttributeCreateRequest> = listOf()
 
 ) : ValidatableRequest<ProductVariantCreateRequest>() {
-    constructor(productVariant: ProductVariantDetails?, productID: UUID) : this(
+    constructor(productVariant: ProductVariantDetails?, productID: UUID?) : this(
         productID = productID,
         variantName = productVariant?.variantName,
         variantPrice = productVariant?.variantPrice,

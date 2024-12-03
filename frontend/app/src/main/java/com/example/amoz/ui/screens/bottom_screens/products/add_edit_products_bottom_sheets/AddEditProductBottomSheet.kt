@@ -16,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -36,40 +35,33 @@ import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.models.CategoryDetails
 import com.example.amoz.models.CategoryTree
-import com.example.amoz.ui.components.pickers.CategoryPicker
+import com.example.amoz.models.ProductDetails
+import com.example.amoz.ui.components.pickers.CategoryPickerListItem
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductBottomSheet(
-    productCreateRequestState:  MutableStateFlow<ResultState<ProductCreateRequest>>,
-    productCategory: CategoryDetails?,
+    productDetailsState: MutableStateFlow<ResultState<ProductDetails?>>,
     onSaveProduct: (ProductCreateRequest) -> Unit,
-    onComplete: (ProductCreateRequest) -> Unit,
+    onComplete: (UUID?, ProductCreateRequest) -> Unit,
     navController: NavController,
     onDismissRequest: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
-    var categoryTreeState by remember { mutableStateOf(
-        productCategory?.let { CategoryTree(productCategory) }
-    ) }
-
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(productCategory) {
-        categoryTreeState = productCategory?.let { CategoryTree(productCategory) }
-    }
 
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
+//        skipPartiallyExpanded = true,
 //        confirmValueChange = { newState ->
 //            newState != SheetValue.Hidden
 //        }
@@ -78,8 +70,12 @@ fun AddEditProductBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        ResultStateView(productCreateRequestState) { product ->
-            var productState by remember { mutableStateOf(product) }
+        ResultStateView(productDetailsState) { productDetails ->
+            var productState by remember { mutableStateOf(ProductCreateRequest(productDetails)) }
+
+            var categoryTreeState by remember { mutableStateOf(
+                productDetails?.category?.let {CategoryTree(it) }
+            ) }
 
             LaunchedEffect(productState) {
                 validationMessage = null
@@ -135,7 +131,7 @@ fun AddEditProductBottomSheet(
                 )
 
 //             -------------------- Product's category --------------------
-                CategoryPicker(
+                CategoryPickerListItem(
                     category = categoryTreeState,
                     navController = navController,
                     leavesOnly = true,
@@ -175,7 +171,7 @@ fun AddEditProductBottomSheet(
                             validationMessage = violation
                         }
                         else {
-                            onComplete(productState)
+                            onComplete(productDetails?.productId, productState)
                             onDismissRequest()
                         }
                     },

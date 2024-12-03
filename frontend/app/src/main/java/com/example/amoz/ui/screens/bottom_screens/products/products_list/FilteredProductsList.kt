@@ -27,6 +27,7 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.pickers.ProductPicker
 import com.example.amoz.pickers.ProductVariantPicker
+import com.example.amoz.test_data.products.details.testProductVariantDetailsList
 import com.example.amoz.ui.components.text_fields.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
@@ -37,7 +38,6 @@ import kotlinx.serialization.json.Json
 
 @Composable
 fun FilteredProductsList(
-    productVariantPickerMode: Boolean,
     currency: String,
     productsViewModel: ProductsViewModel = hiltViewModel(),
     navController: NavController,
@@ -118,9 +118,7 @@ fun FilteredProductsList(
                                 if (productPicker.isProductPickerMode()) {
                                     productPicker.pickProduct(product)
                                 }
-                                else {
-                                    productsViewModel.showProductVariants(product)
-                                }
+                                else { productsViewModel.showProductVariants(product) }
                             },
                             onProductRemove = {
                                 productsViewModel.updateCurrentProductToDelete(it)
@@ -156,8 +154,10 @@ fun FilteredProductsList(
                                     if (productVariantPicker.isProductVariantPickerMode()) {
                                         productsViewModel.fetchProductVariantDetails(
                                             productVariantId = productVariant.productVariantId,
-                                            onSuccessCallback = {
-                                                productVariantPicker.pickProductVariant(it)
+                                            onSuccessCallback = { testProductVariantDetailsList ->
+                                                testProductVariantDetailsList?.let {
+                                                    productVariantPicker.pickProductVariant(it)
+                                                }
                                             }
                                         )
                                     }

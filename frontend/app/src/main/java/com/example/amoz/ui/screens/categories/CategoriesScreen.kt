@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.data.SavedStateHandleKeys
 import com.example.amoz.models.CategoryTree
+import com.example.amoz.pickers.CategoryPicker
 import com.example.amoz.ui.components.bottom_sheets.ConfirmDeleteItemBottomSheet
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.screens.categories.filtered_list.CategoriesFilteredList
@@ -36,17 +37,10 @@ fun CategoriesScreen(
 ) {
     val categoryUiState by categoryViewModel.categoriesUiState.collectAsState()
 
-    val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
+    val categoryPicker = CategoryPicker(navController)
 
-    var categoryPickerModeLeavesOnly = savedStateHandle?.get<Boolean>(
-        SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY
-    ) ?: false
-
-    var categoryPickerMode = savedStateHandle?.get<Boolean>(
-        SavedStateHandleKeys.CATEGORY_PICKER_MODE
-    ) ?: false
-
-    if(categoryPickerModeLeavesOnly) {categoryPickerMode = true}
+    val categoryPickerMode = categoryPicker.isCategoryPickerMode()
+    val categoryPickerModeLeavesOnly = categoryPicker.isCategoryLeavesOnlyPickerMode()
 
     fun closeAddEditCategoryBottomSheet() {
         categoryViewModel.updateCurrentCategory(null)
@@ -70,15 +64,7 @@ fun CategoriesScreen(
                 categoryPickerModeLeavesOnly = categoryPickerModeLeavesOnly,
                 onSearchQueryChange = categoryViewModel::updateSearchQuery,
                 onClick = {
-                    if (categoryPickerMode) {
-                        val categoryJson = Json.encodeToString(CategoryTree.serializer(), it)
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            SavedStateHandleKeys.PICKED_CATEGORY_TREE, categoryJson
-                        )
-                        navController.popBackStack()
-                        categoryPickerMode = false
-                        categoryPickerModeLeavesOnly = false
-                    }
+                    if (categoryPickerMode) { categoryPicker.pickCategory(it) }
                     else {
                         categoryViewModel.updateCurrentCategory(it)
                         categoryViewModel.expandAddEditCategoryBottomSheet(true)
