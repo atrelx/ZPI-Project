@@ -7,12 +7,8 @@ import java.util.UUID
 
 @Serializable
 data class Invitation(
-    @Serializable(with = UUIDSerializer::class)
-    val invitationId: UUID,
-    @Serializable(with = UUIDSerializer::class)
-    val companyId: UUID,
-    @Serializable(with = UUIDSerializer::class)
-    val employeeId: UUID,
+    val company: Company,
+    val sender: Employee,
     @Serializable(with = UUIDSerializer::class)
     val token: UUID
 )
