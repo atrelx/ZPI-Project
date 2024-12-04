@@ -1,6 +1,9 @@
 package com.example.amoz.view_models
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.navigation.NavController
 import com.example.amoz.api.enums.RoleInCompany
 import com.example.amoz.api.repositories.CompanyRepository
 import com.example.amoz.api.repositories.CustomerRepository
@@ -10,10 +13,14 @@ import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.requests.CustomerB2BCreateRequest
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.extensions.toMultipartBodyPart
+import com.example.amoz.extensions.updateResultState
+import com.example.amoz.ui.screens.Screens
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
 import com.example.amoz.ui.states.CompanyUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +31,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CompanyViewModel @Inject constructor(
+    @ApplicationContext val context: Context,
     private val employeeRepository: EmployeeRepository,
     private val companyRepository: CompanyRepository,
     private val customerRepository: CustomerRepository
@@ -33,25 +41,58 @@ class CompanyViewModel @Inject constructor(
 
     val ownerExceptionMessage = "Current employee is not owner"
 
+    private val newCompanyImageUri = MutableStateFlow<Uri?>(null)
+
+    private val _companyCreateRequestState = MutableStateFlow(CompanyCreateRequest())
+    val companyCreateRequestState: StateFlow<CompanyCreateRequest> = _companyCreateRequestState.asStateFlow()
+
     init {
         fetchCompanyDetails()
         fetchCompanyImage()
         fetchEmployeeData()
     }
 
-    // -------------------- COMPANY --------------------
-//    fun createCompany() {
-//        val companyCreateRequest = _companyUIState.value.companyCreateRequestState
-//        val validationErrorMessage = companyCreateRequest.validate()
-//        if (validationErrorMessage == null) {
-//            performRepositoryAction(_companyUIState.value.company, "Could not create company",
-//                action = {
-//                    companyRepository.createCompany(companyCreateRequest)
-//                })
-//        } else {
-//            Log.w(tag, validationErrorMessage)
-//        }
-//    }
+    fun createCompany(navController: NavController) {
+        val companyCreateRequest = companyCreateRequestState.value
+        val validationErrorMessage = companyCreateRequest.validate()
+        if (validationErrorMessage == null) {
+            performRepositoryAction(
+                _companyUIState.value.company,
+                "Could not create company",
+                action = {
+                    companyRepository.createCompany(companyCreateRequest)
+                },
+                onSuccess = { company ->
+                    if (newCompanyImageUri.value != null) {
+                        uploadCompanyProfilePicture()
+                        navController.navigate(Screens.Company.route)
+                    }
+                }
+            )
+        } else {
+            Log.w(tag, validationErrorMessage)
+        }
+    }
+
+    fun updateNewCompanyImageUri(uri: Uri) {
+        newCompanyImageUri.value = uri
+    }
+
+    fun updateCompanyCreateRequest(companyCreateRequest: CompanyCreateRequest) {
+        _companyCreateRequestState.value = companyCreateRequest
+    }
+
+    fun uploadCompanyProfilePicture() {
+        performRepositoryAction(
+            binding = null,
+            "Could not upload profile picture. Try again later.",
+            action = {
+                newCompanyImageUri.value?.let {
+                    companyRepository.uploadCompanyProfilePicture(file = it.toMultipartBodyPart(context))
+                }
+            }
+        )
+    }
 
     fun updateCompany(
         companyCreateRequest: CompanyCreateRequest,

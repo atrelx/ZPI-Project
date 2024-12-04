@@ -17,6 +17,12 @@ class EmployeeRepository @Inject constructor(
         }
     }
 
+    suspend fun rejectInvitationToCompany(token: String) {
+        performRequest {
+            employeeService.rejectInvitationToCompany(token)
+        }
+    }
+
     suspend fun inviteEmployeeToCompany(employeeEmail: String) {
         performRequest {
             employeeService.inviteEmployeeToCompany(employeeEmail)

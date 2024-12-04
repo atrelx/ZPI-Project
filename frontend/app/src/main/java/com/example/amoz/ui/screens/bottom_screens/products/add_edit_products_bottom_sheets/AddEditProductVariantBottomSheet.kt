@@ -95,7 +95,6 @@ fun AddEditProductVariantBottomSheet(
                 Spacer(modifier = Modifier.height(10.dp))
                 // -------------------- Product image --------------------
                 ImageWithIcon(
-                    onClick = { /*TODO*/ },
                     shape = RoundedCornerShape(10.dp)
                 )
 

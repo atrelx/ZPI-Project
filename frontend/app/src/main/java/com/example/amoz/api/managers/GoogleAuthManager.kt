@@ -1,5 +1,6 @@
 package com.example.amoz.api.managers
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -63,10 +64,14 @@ class GoogleAuthManager @Inject constructor(
         delegate?.startSignInActivityForResult(completion)
     }
 
-    fun signOut() {
+    fun signOut(activity: Activity, completion: (() -> Unit)?) {
         val googleSignInClient = createSignInClient()
         googleSignInClient.signOut()
-        tokenManager.clearTokens()
+            .addOnCompleteListener(activity) {
+                Log.d("GoogleAuthManager", "signOut: success")
+                tokenManager.clearTokens()
+                completion?.invoke()
+            }
     }
 }
 

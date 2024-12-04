@@ -50,7 +50,6 @@ fun ChangeCompanyLogoBottomSheet(
 
             ImageWithIcon(
                 isEditing = readOnly,
-                onClick = {}
             )
 
             // -------------------- Confirm button --------------------

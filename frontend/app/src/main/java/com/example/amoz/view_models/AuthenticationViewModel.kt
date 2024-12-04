@@ -49,7 +49,13 @@ class AuthenticationViewModel @Inject constructor(
         return googleAuthManager.getSignInIntent()
     }
 
-//    fun signOut(activity: Activity) {
-//        googleAuthManager.signOut(activity)
-//    }
+    fun signOut(activity: Activity, completion: (() -> Unit)?) {
+        googleAuthManager.signOut(activity) {
+            completion?.invoke()
+        }
+    }
+
+    fun isSignedIn(): Boolean {
+        return tokenManager.getRefreshToken() != null
+    }
 }

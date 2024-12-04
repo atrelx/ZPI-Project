@@ -1,10 +1,6 @@
 package com.example.amoz.api.services
 
-import androidx.compose.ui.graphics.ImageBitmap
 import com.example.amoz.models.Employee
-import com.example.amoz.api.responses.MessageResponse
-import com.example.amoz.extensions.toImageBitmap
-import kotlinx.serialization.json.JsonElement
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
@@ -18,6 +14,9 @@ interface EmployeeService {
 
     @POST("api/employees/acceptInvitation")
     suspend fun acceptInvitationToCompany(@Query("token") token: String): Response<Unit>
+
+    @POST("api/employees/rejectInvitation")
+    suspend fun rejectInvitationToCompany(@Query("token") token: String): Response<Unit>
 
     @POST("api/employees/invite")
     suspend fun inviteEmployeeToCompany(

@@ -1,16 +1,15 @@
 package com.example.amoz.ui.screens.bottom_screens.orders
 
+import FilteredOrdersList
+import android.util.Log
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,9 +18,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.amoz.R
+import com.example.amoz.ui.components.filters.OrdersFilterBottomSheet
+import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.OrdersViewModel
 
@@ -29,55 +32,50 @@ import com.example.amoz.view_models.OrdersViewModel
 fun OrdersScreen(
     navController: NavController,
     paddingValues: PaddingValues,
-    salesViewModel: OrdersViewModel = viewModel()
+    ordersViewModel: OrdersViewModel,
 ) {
     AmozApplicationTheme {
+        val ordersUiState by ordersViewModel.orderUiState.collectAsState()
+
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             color = MaterialTheme.colorScheme.background
         ) {
-            val salesUiState by salesViewModel.orderUiState.collectAsState()
+            FilteredOrdersList(
+                onMoreFiltersClick = {ordersViewModel.changeFilterBottomSheetStatus(true)},
+                onOrderEdit = {orderId ->
+                    Log.d("OrdersScreen", "Edit order with id: $orderId")
+                    ordersViewModel.updateCurrentAddEditOrder(orderId)
+                    navController.navigate(Screens.OrdersAddEdit.route)
+                },
+                ordersViewModel = ordersViewModel
+            )
 
-            if (salesUiState.showAddEditSaleDialog)
-//                OrderAddEditVIew(
-//                    saleProduct = salesUiState.currentAddEditSaleProduct,
-//                    productList = salesUiState.productsList,
-//                    onComplete = { salesViewModel.updateSoldProduct(it) },
-//                    closeAddEditDialog = {
-//                        salesViewModel.updateAddEditViewState(false)
-//                    }
-//                )
-
-            if (!salesUiState.salesListIsLoading) {
-//                OrdersLazyColumn(
-//                    paddingValues = paddingValues,
-//                    salesList = salesUiState.salesList,
-//                    onSoldProductClick = { saleProduct ->
-//                        salesViewModel.updateAddEditViewState(true, saleProduct)
-//                    },
-//                    filterBottomSheetShowed = salesUiState.showFilterBottomSheet,
-//                    updateFilterBottomSheetShowState = { salesViewModel.showFilterBottomSheet(it) }
-//                )
-            }
             Box(
                 modifier = Modifier
-                    .padding(paddingValues)
                     .fillMaxSize(),
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Column {
-                    if (salesUiState.salesListIsLoading) {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    }
-                }
                 ExtendedFloatingActionButton(
                     onClick = {
-//                        salesViewModel.updateAddEditViewState(true)
+                        ordersViewModel.updateCurrentAddEditOrder(null)
+                        navController.navigate(Screens.OrdersAddEdit.route)
                     },
                     modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.BottomEnd),
+                        .padding(16.dp),
                     icon = { Icon(Icons.Filled.Add, "Sale add button.") },
-                    text = { Text(text = "Add a Sale") }
+                    text = { Text(text = stringResource(R.string.add_new)) }
+                )
+            }
+
+            if (ordersUiState.isFilterBottomSheetExpanded) {
+                OrdersFilterBottomSheet(
+                    onDismissRequest = { ordersViewModel.changeFilterBottomSheetStatus(false) },
+                    onCancelFilters = { ordersViewModel.cancelFilterParams() },
+                    filterParams = ordersUiState.filterParams,
+                    onApplyFilters = { ordersViewModel.saveFilterParams(it) }
                 )
             }
         }

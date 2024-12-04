@@ -23,3 +23,12 @@ fun ImagePlaceholder.getPlaceholder(context: Context): ImageBitmap {
         placeholderResId
     ).asImageBitmap()
 }
+
+fun ImagePlaceholder.getPlaceholderInt(): Int {
+    val placeholderResId = when (this) {
+        ImagePlaceholder.HUMAN -> com.example.amoz.R.drawable.human_placeholder
+        ImagePlaceholder.PRODUCT -> com.example.amoz.R.drawable.human_placeholder
+        ImagePlaceholder.COMPANY -> com.example.amoz.R.drawable.human_placeholder
+    }
+    return placeholderResId
+}

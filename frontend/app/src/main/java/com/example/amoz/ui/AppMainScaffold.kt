@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.amoz.R
@@ -36,17 +37,19 @@ import com.example.amoz.navigation.otherNavigationItemsMap
 import com.example.amoz.ui.components.CustomSnackBar
 import com.example.amoz.ui.screens.more_button.MoreBottomSheet
 import com.example.amoz.view_models.AppViewModel
+import com.example.amoz.view_models.AuthenticationViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppMainScaffold(
     appViewModel: AppViewModel = viewModel(),
-    bottomNavigationItems: List<NavItem> = bottomNavigationBarNavItemsMap.values.toList()
-) {
+    bottomNavigationItems: List<NavItem> = bottomNavigationBarNavItemsMap.values.toList(),
+    navigationController: NavHostController = rememberNavController(),
+    authenticationViewModel: AuthenticationViewModel = viewModel(),
+)
+{
     val appUiState by appViewModel.appUiState.collectAsState()
-
-    val navigationController = rememberNavController()
 
     val currentRoute = navigationController.currentBackStackEntryAsState().value?.destination?.route
     val showNavElements = navigationController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("showNavElements")
@@ -171,7 +174,8 @@ fun AppMainScaffold(
             navController = navigationController,
             paddingValues = paddingValues,
             callSnackBar = { text, icon -> callSnackBar(text = text, leadingIcon = icon) },
-            navigateToScreen = { navigateToScreen(it) }
+            navigateToScreen = { navigateToScreen(it) },
+            authenticationViewModel = authenticationViewModel
         )
 
         // -------------------- 'More' Bottom Sheet --------------------

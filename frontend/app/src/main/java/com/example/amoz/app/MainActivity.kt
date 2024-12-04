@@ -9,11 +9,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.navigation.compose.rememberNavController
 import com.example.amoz.interfaces.SignInDelegate
 import com.example.amoz.ui.AppMainScaffold
+import com.example.amoz.ui.components.InvitationDialog
+import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.EmployeeViewModel
@@ -34,29 +38,51 @@ class MainActivity : ComponentActivity(), SignInDelegate {
         super.onCreate(savedInstanceState)
 
         val deeplink = intent.data
-
-        deeplink?.let {
-            handleDeepLink(it)
-        }
-
         authenticationViewModel.setSignInDelegate(this)
-        userViewModel.isRegistered()
 
         enableEdgeToEdge()
 
         setContent {
             AmozApplicationTheme {
-                AppMainScaffold()
+                val navController = rememberNavController()
+                var showInvitationDialog by remember { mutableStateOf(false) }
+
+                if (!authenticationViewModel.isSignedIn()) {
+                    Log.d("MainActivity", "User is not signed in.")
+                    navController.navigate(Screens.Entry.route) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
+                } else {
+                    Log.d("MainActivity", "User is signed in.")
+                    userViewModel.isRegistered()
+                }
+
+                AppMainScaffold(
+                    navigationController = navController,
+                    authenticationViewModel = authenticationViewModel,
+                )
+
+                deeplink?.let {
+                    if (showInvitationDialog){
+                        InvitationDialog(
+                            onDismiss = { showInvitationDialog = false },
+                            isAccepted = { isAccepted ->
+                                handleDeepLink(it, isAccepted)
+                                showInvitationDialog = false
+                            }
+                        )
+                    }
+                }
             }
         }
     }
 
-    private fun handleDeepLink(deepLink: Uri) {
+    private fun handleDeepLink(deepLink: Uri, isAccepted: Boolean) {
         val token = deepLink.getQueryParameter("token")
 
         if (token != null) {
             Log.d("DeepLink", "Received token: $token")
-            employeeViewModel.acceptInvitation(token)
+            employeeViewModel.manageInvitation(token, isAccepted)
         } else {
             Log.e("DeepLink", "Token is missing in the deep link.")
         }
