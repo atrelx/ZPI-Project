@@ -138,6 +138,36 @@ public class ProductOrderController {
         }
     }
 
+    @Operation(summary = "Usuwanie zamówienia", description = "Usuwa istniejące zamówienie produktu.")
+    @ApiResponse(responseCode = "200", description = "Zamówienie zostało pomyślnie usunięte",
+            content = @Content(mediaType = "application/json")
+    )
+    @ApiResponse(responseCode = "401", description = "Brak uprawnień do usunięcia zamówienia",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @ApiResponse(responseCode = "404", description = "Nie znaleziono zamówienia",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
+    )
+    @DeleteMapping("/{productOrderId}")
+    public ResponseEntity<?> deleteProductOrder(
+            @AuthenticationPrincipal(expression = "attributes") Map<String, Object> authPrincipal,
+            @PathVariable UUID productOrderId
+    ) {
+        UserPrincipal userPrincipal = new UserPrincipal(authPrincipal);
+        try {
+            if (!authorizationService.hasPermissionToManageProductOrder(userPrincipal, productOrderId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Product order is not in your company"));
+            }
+            productOrderService.deleteProductOrder(productOrderId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("An unexpected error occurred: " + e));
+        }
+    }
+
+
     @Operation(summary = "Generowanie faktury dla zamówienia", description = "Generuje fakturę dla istniejącego zamówienia produktu.")
     @ApiResponse(responseCode = "200", description = "Faktura B2B została pomyślnie wygenerowana",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2BDTO.class))

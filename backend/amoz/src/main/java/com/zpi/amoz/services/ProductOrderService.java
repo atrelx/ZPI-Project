@@ -65,6 +65,15 @@ public class ProductOrderService {
     }
 
     @Transactional
+    public void deleteProductOrder(UUID productOrderId) {
+        ProductOrder existingProductOrder = productOrderRepository.findById(productOrderId)
+                .orElseThrow(() -> new EntityNotFoundException("Product Order not found for given ID: " + productOrderId));
+
+        productOrderItemService.removeAllProductOrderItems(existingProductOrder.getOrderItems());
+        productOrderRepository.deleteById(productOrderId);
+    }
+
+    @Transactional
     public ProductOrder createProductOrder(ProductOrderCreateRequest request) {
         ProductOrder initialProductOrder = new ProductOrder();
 
@@ -137,7 +146,7 @@ public class ProductOrderService {
             existingProductOrder.setCustomer(customer);
         }
 
-        productOrderItemService.removeAllProductOrderItems(existingProductOrder.getOrderItems());
+        productOrderItemService.removeAllProductOrderItemsTransactional(existingProductOrder.getOrderItems());
 
         List<ProductOrderItem> updatedOrderItems = request.productOrderItems().stream()
                 .map(item -> productOrderItemService.createProductOrderItem(existingProductOrder, item))

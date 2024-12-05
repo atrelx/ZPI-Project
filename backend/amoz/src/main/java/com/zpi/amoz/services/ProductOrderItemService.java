@@ -1,13 +1,11 @@
 package com.zpi.amoz.services;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.zpi.amoz.models.*;
 import com.zpi.amoz.repository.ProductOrderItemRepository;
 import com.zpi.amoz.repository.ProductVariantRepository;
 import com.zpi.amoz.requests.ProductOrderItemCreateRequest;
 import com.zpi.amoz.requests.PushRequest;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.LockModeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +61,7 @@ public class ProductOrderItemService {
         ProductOrderItem productOrderItem = new ProductOrderItem();
         productOrderItem.setProductOrder(productOrder);
 
-        ProductVariant productVariant = productVariantRepository.findByProductVariantIdWithLock(request.productVariantId())
+        ProductVariant productVariant = productVariantRepository.findByProductVariantId(request.productVariantId())
                 .orElseThrow(() -> new EntityNotFoundException("Could not find product variant for given id: " + request.productVariantId()));
 
         productOrderItem.setProductVariant(productVariant);
@@ -104,10 +102,22 @@ public class ProductOrderItemService {
         return productOrderItemRepository.save(productOrderItem);
     }
 
-    @Transactional
+
     public void removeAllProductOrderItems(List<ProductOrderItem> productOrderItems) {
         productOrderItems.forEach(item -> {
-            ProductVariant productVariant = productVariantRepository.findByProductVariantIdWithLock(item.getProductVariant().getProductVariantId())
+            ProductVariant productVariant = productVariantRepository.findByProductVariantId(item.getProductVariant().getProductVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID: " + item.getProductVariant().getProductVariantId()));
+            Stock stock = productVariant.getStock();
+            stock.increaseStock(item.getAmount());
+        });
+
+        productOrderItemRepository.deleteAll(productOrderItems);
+    }
+
+    @Transactional
+    public void removeAllProductOrderItemsTransactional(List<ProductOrderItem> productOrderItems) {
+        productOrderItems.forEach(item -> {
+            ProductVariant productVariant = productVariantRepository.findByProductVariantId(item.getProductVariant().getProductVariantId())
                     .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID: " + item.getProductVariant().getProductVariantId()));
             Stock stock = productVariant.getStock();
             stock.increaseStock(item.getAmount());
