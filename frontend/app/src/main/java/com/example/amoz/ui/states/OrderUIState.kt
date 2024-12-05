@@ -1,13 +1,34 @@
 package com.example.amoz.ui.states
-//
-import com.example.amoz.data.ProductVariant
-//import com.example.amoz.firebase.SoldProduct
+import com.example.amoz.api.requests.ProductOrderCreateRequest
+import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.models.ProductOrderDetails
+import com.example.amoz.models.ProductOrderSummary
+import com.example.amoz.models.ProductSummary
+import com.example.amoz.test_data.products.summary.testProductSummaryList
+import com.example.amoz.view_models.OrdersViewModel.OrderFilterParams
+import kotlinx.coroutines.flow.MutableStateFlow
 
 data class OrderUIState (
-//    val salesList: List<SoldProduct> = emptyList(),
-    val productsList: List<ProductVariant> = emptyList(),
-    val salesListIsLoading: Boolean = true,
-    val showAddEditSaleDialog: Boolean = false,
-    val showFilterBottomSheet: Boolean = false,
-//    val currentAddEditSaleProduct: SoldProduct = SoldProduct()
+    val ordersListFetched: MutableStateFlow<ResultState<List<ProductOrderSummary>>> = MutableStateFlow(ResultState.Idle),
+
+    val ordersList: List<ProductOrderSummary> = emptyList(),
+    val productsList: List<ProductSummary> = testProductSummaryList,
+    val selectedTime: Pair<Int,Int>? = null,
+
+    val searchQuery: String = "",
+    val filterParams: OrderFilterParams = OrderFilterParams(),
+    val filteredSortedOrdersList: List<ProductOrderSummary> = ordersList,
+
+    val currentAddEditOrderDetails: ProductOrderDetails? = null,
+    val currentAddEditOrderState: MutableStateFlow<ResultState<ProductOrderCreateRequest>> = MutableStateFlow(ResultState.Idle),
+
+    val ordersListIsLoading: Boolean = true, // TODO: remove this part
+
+    val showOrdersList: Boolean = true,
+    val isFilterBottomSheetExpanded: Boolean = false,
+    val isAddressBottomSheetExpanded: Boolean = false,
+    val isDropdownStatusExpanded: Boolean = false,
+    val isDatePickerVisible: Boolean = false,
+    val isTimePickerVisible: Boolean = false,
+    val isQuantityBottomSheetExpanded: Boolean = false,
 )

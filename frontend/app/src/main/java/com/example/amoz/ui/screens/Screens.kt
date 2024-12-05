@@ -17,10 +17,23 @@ sealed class Screens(val route : String) {
     data object About : Screens("about_route")
     data object Support : Screens("support_route")
 
+    // --------------------- Entry Screens ---------------------
+    data object Entry : Screens("entry_route")
+    data object Register : Screens("register_route")
+    data object RegisterImage : Screens("register_image_route")
+
+    // --------------------- Orders Screens ---------------------
+    data object OrdersAddEdit : Screens("order_add_edit_route")
+
     // --------------------- Other Bar Screens ---------------------
     data object Profile : Screens("profile_route")
+    data object ProfileEditing : Screens("profile_editing_route")
+
     // --------------------- Company Info Screens ---------------------
     data object Employees : Screens("employees_route")
     data object Customers : Screens("customers_route")
+
+    data object NoCompany : Screens("no_company_route")
+    data object CreateCompany : Screens("create_company_route")
 
 }

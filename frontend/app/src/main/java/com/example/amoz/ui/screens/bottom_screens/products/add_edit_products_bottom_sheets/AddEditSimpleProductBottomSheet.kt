@@ -92,7 +92,6 @@ fun AddEditSimpleProductBottomSheet(
 
             // -------------------- Product image --------------------
             ImageWithIcon(
-                onClick = { /*TODO*/ },
                 shape = RoundedCornerShape(10.dp)
             )
 

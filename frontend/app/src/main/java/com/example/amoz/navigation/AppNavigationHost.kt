@@ -14,23 +14,38 @@ import com.example.amoz.ui.screens.bottom_screens.additional_screens.FAQScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.SettingsScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.SupportScreen
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreen
+import com.example.amoz.ui.screens.bottom_screens.company.CreateCompanyScreen
+import com.example.amoz.ui.screens.bottom_screens.company.NoCompanyScreen
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.screens.bottom_screens.company.customers.CompanyCustomersScreen
 import com.example.amoz.ui.screens.bottom_screens.company.employees.CompanyEmployeesScreen
 import com.example.amoz.ui.screens.bottom_screens.home.HomeScreen
+import com.example.amoz.ui.screens.bottom_screens.orders.OrdersAddEditScreen
 import com.example.amoz.ui.screens.bottom_screens.orders.OrdersScreen
 import com.example.amoz.ui.screens.bottom_screens.products.ProductScreen
 import com.example.amoz.ui.screens.categories.CategoriesScreen
+import com.example.amoz.ui.screens.entry.EntryScreen
+import com.example.amoz.ui.screens.entry.RegisterImageScreen
+import com.example.amoz.ui.screens.entry.RegisterScreen
+import com.example.amoz.ui.screens.profile.ProfileEditingScreen
 import com.example.amoz.ui.screens.profile.ProfileScreen
+import com.example.amoz.view_models.AuthenticationViewModel
+import com.example.amoz.view_models.EmployeeViewModel
+import com.example.amoz.view_models.OrdersViewModel
+import com.example.amoz.view_models.UserViewModel
 
 @Composable
 fun AppNavigationHost(
     navController: NavHostController,
     paddingValues: PaddingValues,
     navigateToScreen: (NavItem) -> Unit,
-    callSnackBar: (String, ImageVector?) -> Unit
+    callSnackBar: (String, ImageVector?) -> Unit,
+    authenticationViewModel: AuthenticationViewModel,
 ) {
     val companyViewModel: CompanyViewModel = hiltViewModel()
+    val ordersViewModel: OrdersViewModel = hiltViewModel()
+    val userViewModel: UserViewModel = hiltViewModel()
+    val employeeViewModel: EmployeeViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = Screens.Home.route) {
 
@@ -49,7 +64,8 @@ fun AppNavigationHost(
         composable(Screens.Orders.route) {
             OrdersScreen(
                 navController = navController,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                ordersViewModel = ordersViewModel
             ) }
         composable(Screens.Company.route) {
             CompanyScreen(
@@ -105,11 +121,70 @@ fun AppNavigationHost(
                 callSnackBar = { text, icon -> callSnackBar(text, icon) },
             ) }
 
-        // -------------------- Profile Screen --------------------
+        composable(Screens.NoCompany.route) {
+            NoCompanyScreen(
+                navController = navController,
+                paddingValues = paddingValues,
+                companyViewModel = companyViewModel,
+            )
+        }
+
+        composable(Screens.CreateCompany.route) {
+            CreateCompanyScreen(
+                navController = navController,
+                paddingValues = paddingValues,
+                companyViewModel = companyViewModel,
+            )
+        }
+
+        // -------------------- Profile Screens --------------------
         composable(Screens.Profile.route) {
             ProfileScreen(
                 navController = navController,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                employeeViewModel = employeeViewModel,
+                authenticationViewModel = authenticationViewModel,
+            )
+        }
+
+        composable(Screens.ProfileEditing.route) {
+            ProfileEditingScreen(
+                navController = navController,
+                paddingValues = paddingValues,
+                employeeViewModel = employeeViewModel
+            )
+        }
+
+        // -------------------- Entry Screens --------------------
+        composable(Screens.Entry.route) {
+            EntryScreen(
+                navController = navController,
+                paddingValues = paddingValues,
+                userViewModel = userViewModel
             ) }
+
+        composable(Screens.Register.route) {
+            RegisterScreen(
+                navController = navController,
+                paddingValues = paddingValues,
+                userViewModel = userViewModel
+            ) }
+
+        composable(Screens.RegisterImage.route) {
+            RegisterImageScreen(
+                navController = navController,
+                paddingValues = paddingValues,
+                userViewModel = userViewModel
+            )
+        }
+
+        // -------------------- Orders Screens --------------------
+        composable(Screens.OrdersAddEdit.route) {
+            OrdersAddEditScreen(
+                navController = navController,
+                paddingValues = paddingValues,
+                ordersViewModel = ordersViewModel
+            ) }
+
     }
 }

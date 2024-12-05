@@ -47,4 +47,9 @@ data class ProductOrderCreateRequest(
         trackingNumber = productOrder.trackingNumber,
         timeOfSending = productOrder.timeOfSending
     )
+
+    constructor() : this (
+        status = Status.NEW,
+        productOrderItems = listOf(),
+    )
 }

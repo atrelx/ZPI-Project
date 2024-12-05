@@ -48,7 +48,7 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 @Composable
 fun AddressBottomSheet(
     bottomSheetTitle: String = stringResource(id = R.string.address_change_title),
-    address: AddressCreateRequest,
+    address: AddressCreateRequest = AddressCreateRequest(),
     readOnly: Boolean = false,
     onDismissRequest: () -> Unit,
     onDone: (AddressCreateRequest) -> Unit
