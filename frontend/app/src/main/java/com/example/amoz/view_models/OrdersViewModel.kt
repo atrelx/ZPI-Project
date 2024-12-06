@@ -1,6 +1,11 @@
 package com.example.amoz.view_models
 
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Addchart
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.StackedLineChart
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.amoz.api.enums.Status
 import com.example.amoz.api.repositories.ProductOrderRepository
 import com.example.amoz.api.requests.AddressCreateRequest
@@ -17,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import mockProductOrderSummaries
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
@@ -324,8 +328,55 @@ class OrdersViewModel @Inject constructor (
             action = { orderRepository.getAllProductOrders() },
             onSuccess = { ordersList ->
                 _orderUiState.update { it.copy(ordersList = ordersList) }
+                calculateOrderTotals()
                 applyFilters()
             }
+        )
+    }
+
+    fun calculateOrderTotals() {
+        var totalAmount = 0
+        var totalAmountNew = 0
+        var totalPrice = BigDecimal.ZERO
+
+        _orderUiState.value.ordersList.forEach { order ->
+            totalAmount += order.sampleProductOrderItem.amount
+            totalPrice += order.totalDue
+            if (order.status == Status.NEW) {
+                totalAmountNew += order.sampleProductOrderItem.amount
+            }
+        }
+
+        _orderUiState.update { it.copy(
+            amountOfItems = totalAmount,
+            itemsSumPrice = totalPrice,
+            amountOfItemsNewStatus = totalAmountNew,
+        ) }
+    }
+
+    fun createHomeCardList(): List<HomeCardItem> {
+        return listOf(
+            HomeCardItem(
+                backgroundImageResource = 0,
+                cardTitle = "Revenues",
+                cardTitleIcon = Icons.Filled.Addchart,
+                valueDescription = "Total revenues:",
+                value = _orderUiState.value.itemsSumPrice.toString()
+            ),
+            HomeCardItem(
+                backgroundImageResource = 0,
+                cardTitle = "Sells",
+                cardTitleIcon = Icons.Filled.BarChart,
+                valueDescription = "Total sells:",
+                value = _orderUiState.value.amountOfItems.toString()
+            ),
+            HomeCardItem(
+                backgroundImageResource = 0,
+                cardTitle = "New orders",
+                cardTitleIcon = Icons.Filled.StackedLineChart,
+                valueDescription = "Total new orders:",
+                value = _orderUiState.value.amountOfItemsNewStatus.toString()
+            )
         )
     }
 
@@ -345,6 +396,14 @@ class OrdersViewModel @Inject constructor (
         val timeOfSendingTo: LocalDateTime? = null,
         val timeOfCreationFrom: LocalDateTime? = null,
         val timeOfCreationTo: LocalDateTime? = null
+    )
+
+    data class HomeCardItem(
+        val backgroundImageResource: Int,
+        val cardTitle: String,
+        val cardTitleIcon: ImageVector,
+        val valueDescription: String,
+        val value: String
     )
 
     data class ProductVariantOrderItem(

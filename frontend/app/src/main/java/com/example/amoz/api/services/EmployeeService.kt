@@ -1,6 +1,7 @@
 package com.example.amoz.api.services
 
 import com.example.amoz.models.Employee
+import com.example.amoz.models.Invitation
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
@@ -33,6 +34,9 @@ interface EmployeeService {
 
     @GET("api/employees")
     suspend fun fetchEmployees(): Response<List<Employee>>
+
+    @GET("api/employees/invitations")
+    suspend fun fetchInvitations(): Response<List<Invitation>>
 
     @GET("api/employees/employee")
     suspend fun fetchEmployee(): Response<Employee>

@@ -7,11 +7,16 @@ import com.example.amoz.models.ProductSummary
 import com.example.amoz.test_data.products.summary.testProductSummaryList
 import com.example.amoz.view_models.OrdersViewModel.OrderFilterParams
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.math.BigDecimal
 
 data class OrderUIState (
     val ordersListFetched: MutableStateFlow<ResultState<List<ProductOrderSummary>>> = MutableStateFlow(ResultState.Idle),
 
     val ordersList: List<ProductOrderSummary> = emptyList(),
+    val amountOfItems: Int = 0,
+    val itemsSumPrice: BigDecimal = BigDecimal.ZERO,
+    val amountOfItemsNewStatus: Int = 0,
+
     val productsList: List<ProductSummary> = testProductSummaryList,
     val selectedTime: Pair<Int,Int>? = null,
 

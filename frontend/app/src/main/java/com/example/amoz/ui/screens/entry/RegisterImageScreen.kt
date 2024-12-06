@@ -82,7 +82,7 @@ fun RegisterImageScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 ImageWithIcon(
-                    image = selectedImageUri.toString(),
+                    image = { if (selectedImageUri != null) selectedImageUri.toString() else null },
                     size = 300.dp,
                     iconImage = Icons.Outlined.Edit,
                     onImagePicked = {
@@ -97,6 +97,8 @@ fun RegisterImageScreen(
                     onClick = {
                         if (selectedImageUri != null) {
                             userViewModel.updateCurrentUserImageUri(selectedImageUri!!)
+                            userViewModel.registerUser( navController )
+                        } else {
                             userViewModel.registerUser( navController )
                         }
                     },

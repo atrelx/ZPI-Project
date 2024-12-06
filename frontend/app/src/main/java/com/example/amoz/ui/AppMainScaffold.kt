@@ -1,5 +1,6 @@
 package com.example.amoz.ui
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreHoriz
@@ -14,6 +15,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,9 +37,11 @@ import com.example.amoz.navigation.allApplicationScreensMap
 import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.navigation.otherNavigationItemsMap
 import com.example.amoz.ui.components.CustomSnackBar
+import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.screens.more_button.MoreBottomSheet
 import com.example.amoz.view_models.AppViewModel
 import com.example.amoz.view_models.AuthenticationViewModel
+import com.example.amoz.view_models.UserViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +50,9 @@ fun AppMainScaffold(
     appViewModel: AppViewModel = viewModel(),
     bottomNavigationItems: List<NavItem> = bottomNavigationBarNavItemsMap.values.toList(),
     navigationController: NavHostController = rememberNavController(),
+    userViewModel: UserViewModel = viewModel(),
     authenticationViewModel: AuthenticationViewModel = viewModel(),
+    onUserAuthorizationCheck: () -> Unit,
 )
 {
     val appUiState by appViewModel.appUiState.collectAsState()
@@ -58,7 +64,20 @@ fun AppMainScaffold(
         appViewModel.updateCurrentNavItem(currentNavigationItem, showNavElements)
     }
 
-    fun navigateToScreen(navigationItem: NavItem) {
+    navigationController.addOnDestinationChangedListener { _, destination, _ ->
+        when (destination.route) {
+            Screens.Entry.route -> appViewModel.setNavigationVisibility(false)
+//            else -> appViewModel.setNavigationVisibility(true)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        onUserAuthorizationCheck()
+    }
+
+
+    fun navigateToScreen(navigationItem: NavItem, showBars: Boolean = true) {
+        appViewModel.setNavigationVisibility(showBars)
         if (currentNavigationItem != navigationItem) {
             navigationController.navigate(navigationItem.screenRoute) {
                 popUpTo(navigationController.graph.startDestinationId) {

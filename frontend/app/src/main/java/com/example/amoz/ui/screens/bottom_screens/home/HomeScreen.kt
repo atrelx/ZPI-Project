@@ -24,9 +24,10 @@ import androidx.navigation.NavController
 import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.data.NavItem
+import com.example.amoz.ui.components.MoreOrdersTextButton
 //import com.example.amoz.view_models.OrdersViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
-
+import com.example.amoz.view_models.OrdersViewModel
 
 
 @Composable
@@ -34,7 +35,7 @@ fun HomeScreen(
     navController: NavController,
     navigateToScreen: (NavItem) -> Unit,
     paddingValues: PaddingValues,
-//    salesViewModel: OrdersViewModel = viewModel()
+    ordersViewModel: OrdersViewModel,
 ) {
     AmozApplicationTheme {
         Surface(
@@ -43,39 +44,21 @@ fun HomeScreen(
                     .padding(paddingValues),
                 color = MaterialTheme.colorScheme.background
         ) {
-//            val salesUiState by salesViewModel.orderUiState.collectAsState()
-
             Column {
-                CardsLazyRow(cardsList = homeCardItemsList)
+                CardsLazyRow(cardsList = ordersViewModel.createHomeCardList())
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
                 MoreOrdersTextButton(
-                    navigateToScreen = {
+                    onClick = {
                         val ordersNavItem = bottomNavigationBarNavItemsMap[NavItemType.Orders]
                         navigateToScreen(ordersNavItem!!)
                     } )
-//                LastOrdersLazyList(salesList = salesUiState.salesList, maxListItemsVisible = 10 )
+                LastOrdersList(
+                    ordersViewModel = ordersViewModel,
+                    maxListItemsVisible = 10 )
             }
         }
     }
 }
 
-@Composable
-fun MoreOrdersTextButton(navigateToScreen: () -> Unit) {
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text("Last orders: ")
-        Text("More",
-            modifier = Modifier.clickable {
-                navigateToScreen()
-            },
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold,
-            textDecoration = TextDecoration.Underline
-            )
-    }
-}
+
 

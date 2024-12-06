@@ -54,7 +54,8 @@ fun AppNavigationHost(
             HomeScreen(
                 navigateToScreen = { navigateToScreen(it) },
                 navController = navController,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                ordersViewModel = ordersViewModel
             ) }
         composable(Screens.Products.route) {
             ProductScreen(
@@ -143,7 +144,7 @@ fun AppNavigationHost(
                 navController = navController,
                 paddingValues = paddingValues,
                 employeeViewModel = employeeViewModel,
-                authenticationViewModel = authenticationViewModel,
+//                authenticationViewModel = authenticationViewModel,
             )
         }
 

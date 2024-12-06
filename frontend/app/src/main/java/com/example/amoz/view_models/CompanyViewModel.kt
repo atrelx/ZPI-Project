@@ -18,6 +18,8 @@ import com.example.amoz.extensions.updateResultState
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
+import com.example.amoz.models.Invitation
+import com.example.amoz.test_data.invitations.createMockInvitations
 import com.example.amoz.ui.states.CompanyUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -142,6 +144,19 @@ class CompanyViewModel @Inject constructor(
             action = { companyRepository.getCompanyProfilePicture() },
             onSuccess = {}
         )
+    }
+
+    fun fetchInvitations() {
+        val mockInvitations = createMockInvitations()
+        _companyUIState.update { it.copy(fetchedInvitationListState = MutableStateFlow(ResultState.Success(mockInvitations))) }
+
+//        performRepositoryAction(
+//            binding = _companyUIState.value.fetchedInvitationListState,
+//            failureMessage = "Could not fetch invitations. Try again later.",
+//            action = {
+//                employeeRepository.fetchInvitations()
+//            }
+//        )
     }
 
     fun updateCompanyLogo(

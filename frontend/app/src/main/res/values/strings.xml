@@ -186,7 +186,11 @@
 
     <string name="company_no_company">There is nothing here yet…
         Register your company or join existing one!</string>
+    <string name="accept_invitation_window_title">Accept invitation</string>
+    <string name="accept_invitation_window_text">Do you want to join this company?</string>
     <string name="company_register">Register your company</string>
+    <string name="or_company_register">Or register your own company!</string>
+    <string name="your_company_invites">Your invites to companies:</string>
 
     <string name="company_create_text">Tell us about your company!</string>
     <string name="company_invitation_window_title">Invitation to the company</string>

@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.example.amoz.models.Employee
 import com.example.amoz.api.services.EmployeeService
 import com.example.amoz.extensions.toImageBitmap
+import com.example.amoz.models.Invitation
 import java.util.UUID
 import javax.inject.Inject
 
@@ -44,6 +45,12 @@ class EmployeeRepository @Inject constructor(
     suspend fun fetchEmployees(): List<Employee> {
         return performRequest {
             employeeService.fetchEmployees()
+        } ?: listOf()
+    }
+
+    suspend fun fetchInvitations(): List<Invitation> {
+        return performRequest {
+            employeeService.fetchInvitations()
         } ?: listOf()
     }
 

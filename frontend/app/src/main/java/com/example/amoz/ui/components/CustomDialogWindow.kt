@@ -1,5 +1,6 @@
 package com.example.amoz.ui.components
 
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -7,25 +8,30 @@ import androidx.compose.ui.res.stringResource
 import com.example.amoz.R
 
 @Composable
-fun InvitationDialog(
-   isAccepted: (Boolean) -> Unit,
-   onDismiss: () -> Unit
+fun CustomDialogWindow(
+    title: String,
+    text: String,
+    confirmationText: String = stringResource(id = R.string.yes),
+    declineText: String = stringResource(id = R.string.no),
+    onAccept: () -> Unit,
+    onReject: () -> Unit,
+    onDismiss: () -> Unit
 ) {
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = { onDismiss() },
         title = {
-            Text(text = stringResource(id = R.string.company_invitation_window_title))
+            Text(text = title)
         },
         text = {
-            Text(text = stringResource(id = R.string.company_invitation_window_text))
+            Text(text = text)
         },
         confirmButton = {
-            TextButton(onClick = { isAccepted(true) }) {
+            TextButton(onClick = { onAccept() }) {
                 Text(stringResource(id = R.string.yes))
             }
         },
         dismissButton = {
-            TextButton(onClick = { isAccepted(false) }) {
+            TextButton(onClick = { onReject() }) {
                 Text(stringResource(id = R.string.no))
             }
         }

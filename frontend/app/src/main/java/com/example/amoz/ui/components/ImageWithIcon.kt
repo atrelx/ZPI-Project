@@ -77,6 +77,7 @@ fun ImageWithIcon(
                     modifier = Modifier
                         .size(size)
                         .clip(shape)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, shape)
                         .clickable {
                             if (isEditing) {
                                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))

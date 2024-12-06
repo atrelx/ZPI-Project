@@ -118,22 +118,30 @@ class EmployeeViewModel @Inject constructor(
 
     fun manageInvitation(token: String, isAccepted: Boolean) {
         if (isAccepted) {
-            performRepositoryAction(
-                null,
-                "Could not accept invitation.",
-                action = { employeeRepository.acceptInvitationToCompany(token) },
-                onSuccess = {
-                    fetchEmployee()
-                    fetchEmployeeImage()
-                }
-            )
+            acceptInvitation(token)
         } else {
-            performRepositoryAction(
-                null,
-                "Could not decline invitation.",
-                action = { employeeRepository.rejectInvitationToCompany(token) }
-            )
+            declineInvitation(token)
         }
+    }
+
+    fun acceptInvitation(token: String) {
+        performRepositoryAction(
+            null,
+            "Could not accept invitation.",
+            action = { employeeRepository.acceptInvitationToCompany(token) },
+            onSuccess = {
+                fetchEmployee()
+                fetchEmployeeImage()
+            }
+        )
+    }
+
+    fun declineInvitation(token: String) {
+        performRepositoryAction(
+            null,
+            "Could not decline invitation.",
+            action = { employeeRepository.rejectInvitationToCompany(token) }
+        )
     }
 
     // ----------------------------------------------------

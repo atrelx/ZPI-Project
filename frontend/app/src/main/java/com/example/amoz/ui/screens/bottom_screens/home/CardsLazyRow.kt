@@ -21,12 +21,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.amoz.ui.theme.customColor3Dark
+import com.example.amoz.view_models.OrdersViewModel
 
 @Composable
-fun CardsLazyRow(cardsList: List<HomeCardItem>) {
+fun CardsLazyRow(cardsList: List<OrdersViewModel.HomeCardItem>) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,7 +49,7 @@ fun CardsLazyRow(cardsList: List<HomeCardItem>) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Top text with icon
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -63,7 +65,7 @@ fun CardsLazyRow(cardsList: List<HomeCardItem>) {
                         )
                     }
 
-                    // Bottom section with description and value
+
                     Column {
                         Text(
                             text = cardItem.valueDescription,
@@ -81,4 +83,12 @@ fun CardsLazyRow(cardsList: List<HomeCardItem>) {
             }
         }
     }
+
+    data class HomeCardItem(
+        val backgroundImageResource: Int,
+        val cardTitle: String,
+        val cardTitleIcon: ImageVector,
+        val valueDescription: String,
+        val value: String
+    )
 }

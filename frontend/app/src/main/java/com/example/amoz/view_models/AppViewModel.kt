@@ -28,6 +28,12 @@ class AppViewModel: ViewModel() {
         }
     }
 
+    fun setNavigationVisibility(isVisible: Boolean) {
+        _appUiState.update { currState ->
+            currState.copy(appNavigationVisibility = isVisible)
+        }
+    }
+
     fun updateMoreBottomSheetVisibility(isVisible: Boolean) {
         _appUiState.update { currState ->
             currState.copy(moreBottomSheetIsVisible = isVisible)

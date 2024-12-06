@@ -41,6 +41,7 @@ import com.example.amoz.ui.components.ImageWithText
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.PrimaryOutlinedButton
 import com.example.amoz.ui.components.bottom_sheets.AddressBottomSheet
+import com.example.amoz.ui.components.text_fields.AddressTextField
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.CompanyViewModel
 
@@ -126,34 +127,13 @@ fun CreateCompanyScreen (
                     textStyle = MaterialTheme.typography.bodyLarge
                 )
 
-                ListItem(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .clickable {
-                            companyViewModel.expandChangeCompanyAddressBottomSheet(true)
-                        },
-                    colors = ListItemDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    ),
-                    leadingContent = {
-                        Icons.Outlined.LocationOn
+                AddressTextField (
+                    address = companyCreateRequestState.address,
+                    onClick = {
+                        companyViewModel.expandChangeCompanyAddressBottomSheet(true)
                     },
-                    headlineContent = {
-                        Text(text = stringResource(id = R.string.company_address_screen))
-                    },
-                    supportingContent = {
-                        Text(
-                            text = addressToText(companyCreateRequestState.address),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    trailingContent = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-                            contentDescription = null
-                        )
-                    },
+                    trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward
+
                 )
 
                 PrimaryFilledButton(

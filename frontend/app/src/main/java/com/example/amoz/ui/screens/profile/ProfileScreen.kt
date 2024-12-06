@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.amoz.R
 import com.example.amoz.ui.components.ImageWithIcon
@@ -40,7 +43,7 @@ fun ProfileScreen(
     navController: NavHostController,
     paddingValues: PaddingValues,
     employeeViewModel: EmployeeViewModel,
-    authenticationViewModel: AuthenticationViewModel,
+    authenticationViewModel: AuthenticationViewModel = hiltViewModel(),
 )
 {
     val employeeUiState by employeeViewModel.employeeUiState.collectAsState()
@@ -59,7 +62,8 @@ fun ProfileScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
                 ) {
@@ -148,7 +152,7 @@ fun ProfileScreen(
                             activity?.let { activity ->
                                 authenticationViewModel.signOut(activity) {
                                     navController.navigate(Screens.Entry.route) {
-                                        popUpTo(0) // Clearing backstack (important)
+                                        popUpTo(0)
                                     }
                                 }
                             }

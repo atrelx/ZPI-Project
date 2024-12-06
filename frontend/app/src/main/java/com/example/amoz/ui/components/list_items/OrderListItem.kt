@@ -22,7 +22,6 @@ fun OrderListItem(
     order: ProductOrderSummary,
     onOrderEdit: (UUID) -> Unit,
     currency: String,
-//    positionalThreshold: Float = .45f
 ) {
     ListItem(
         modifier = Modifier

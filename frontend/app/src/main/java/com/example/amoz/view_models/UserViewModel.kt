@@ -71,9 +71,6 @@ class UserViewModel @Inject constructor(
         _userUiState.value = _userUiState.value.copy(isRegisterDropDownExpanded = isExpanded)
     }
 
-    fun changeRegisterDatePickerVisible(isVisible: Boolean) {
-        _userUiState.value = _userUiState.value.copy(isRegisterDatePickerVisible = isVisible)
-    }
 
     // ----------------------------------------------------
 
@@ -162,20 +159,25 @@ class UserViewModel @Inject constructor(
         )
     }
 
-    fun isRegistered() {
+    fun isRegistered(navController: NavHostController) {
         performRepositoryAction(
             binding = _isRegisteredState,
             action = {
                 userRepository.isUserRegistered()
             }, onSuccess = {
                 updatePushToken()
+                if (!it) {
+                    navController.navigate(Screens.Register.route) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
+                }
             }
         )
     }
 
     fun navigateUser(navController: NavHostController) {
         viewModelScope.launch {
-            isRegistered()
+            isRegistered(navController)
 
             val state = _isRegisteredState.first {
                 it !is ResultState.Loading

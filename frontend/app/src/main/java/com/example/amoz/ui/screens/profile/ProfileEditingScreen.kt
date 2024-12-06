@@ -41,6 +41,7 @@ import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.PrimaryOutlinedButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.components.SexDropdownMenu
 import com.example.amoz.ui.components.text_fields.DateTextField
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.EmployeeViewModel
@@ -110,22 +111,30 @@ fun ProfileEditingScreen(
                         ){
                         OutlinedTextField(
                             value = employeeBody.person.name,
-                            onValueChange = { employeeBody = employeeBody.copy(person = employeeBody.person.copy(name = it)) },
+                            onValueChange = {  if (it.length <= 30) {
+                                employeeBody = employeeBody.copy(person = employeeBody.person.copy(name = it))
+                            }},
                             label = { Text(stringResource(R.string.profile_first_name)) },
                             modifier = Modifier
                                 .height(R.dimen.text_field_height.dp)
                                 .fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge
+                            textStyle = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            singleLine = true,
                         )
 
                         OutlinedTextField(
                             value = employeeBody.person.surname,
-                            onValueChange = { employeeBody = employeeBody.copy(person = employeeBody.person.copy(surname = it)) },
+                            onValueChange = { if (it.length <= 30) {
+                                employeeBody = employeeBody.copy(person = employeeBody.person.copy(surname = it))
+                            }},
                             label = { Text(stringResource(R.string.profile_last_name)) },
                             modifier = Modifier
                                 .height(R.dimen.text_field_height.dp)
                                 .fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge
+                            textStyle = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            singleLine = true,
                         )
 
                         OutlinedTextField(
@@ -133,7 +142,9 @@ fun ProfileEditingScreen(
                             onValueChange = { employeeBody = employeeBody.copy(contactPerson = employeeBody.contactPerson.copy(emailAddress = it)) },
                             label = { Text(stringResource(R.string.profile_email)) },
                             modifier = Modifier.fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge
+                            textStyle = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            singleLine = true,
                         )
 
                         OutlinedTextField(
@@ -142,45 +153,15 @@ fun ProfileEditingScreen(
                             label = { Text(stringResource(R.string.profile_phone_number)) },
                             modifier = Modifier.fillMaxWidth(),
                             textStyle = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            singleLine = true,
 
                             )
 
-                        ExposedDropdownMenuBox(
-                            expanded = employeeUiState.isProfileDropdownExpanded,
-                            onExpandedChange = { employeeViewModel.changeProfileDropDownExpanded(it) }
-                        ) {
-                            OutlinedTextField(
-                                value = employeeBody.person.sex.getName(),
-                                onValueChange = { },
-                                label = { Text(stringResource(R.string.profile_sex)) },
-                                readOnly = true,
-                                trailingIcon = {
-                                    Icon(
-                                        imageVector = if (employeeUiState.isProfileDropdownExpanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
-                                        contentDescription = null
-                                    )
-                                },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth(),
-                                textStyle = MaterialTheme.typography.bodyLarge
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = employeeUiState.isProfileDropdownExpanded,
-                                onDismissRequest = { employeeViewModel.changeProfileDropDownExpanded(false) }
-                            ) {
-                                Sex.values().forEach { sex ->
-                                    DropdownMenuItem(
-                                        text = { Text(sex.getName()) },
-                                        onClick = {
-                                            employeeBody = employeeBody.copy(person = employeeBody.person.copy(sex = sex))
-                                            employeeViewModel.changeProfileDropDownExpanded(false)
-                                        }
-                                    )
-                                }
-                            }
-                        }
+                        SexDropdownMenu(
+                            selectedSex = employeeBody.person.sex,
+                            onSexChange = { employeeBody = employeeBody.copy(person = employeeBody.person.copy(sex = it)) }
+                        )
 
                         DateTextField(
                             label = stringResource(R.string.profile_birth_date),
@@ -200,6 +181,14 @@ fun ProfileEditingScreen(
                             .padding(top = 16.dp, bottom = 32.dp)
                     )
 
+                    validateMessage?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+
                     PrimaryFilledButton(
                         onClick = {
                             val userRegisterRequest = UserRegisterRequest(employeeBody)
@@ -216,14 +205,6 @@ fun ProfileEditingScreen(
                         onClick = { navController.popBackStack() },
                         text = stringResource(R.string.cancel),
                     )
-
-                    validateMessage?.let {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
                 }
             }
         }

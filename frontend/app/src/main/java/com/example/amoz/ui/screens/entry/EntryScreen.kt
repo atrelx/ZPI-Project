@@ -85,7 +85,9 @@ fun EntryScreen(
                     color = MaterialTheme.colorScheme.onBackground,
                 )
 
-                GoogleSignInButton { userViewModel.navigateUser(navController) }
+                GoogleSignInButton {
+                    userViewModel.navigateUser(navController)
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import com.example.amoz.models.Company
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
 import com.example.amoz.models.Employee
+import com.example.amoz.models.Invitation
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 
@@ -23,6 +24,11 @@ data class CompanyUIState (
     val employeeImages: MutableStateFlow<MutableMap<UUID, MutableStateFlow<ResultState<ImageBitmap?>>>> = MutableStateFlow(
         HashMap()
     ),
+
+    val fetchedInvitationListState: MutableStateFlow<ResultState<List<Invitation>>> = MutableStateFlow(
+        ResultState.Idle
+    ),
+
     val companyB2BCustomers: MutableStateFlow<ResultState<List<CustomerB2B>>> = MutableStateFlow(
         ResultState.Idle
     ),
