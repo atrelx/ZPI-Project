@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AttributeRepository extends JpaRepository<Attribute, UUID> {
@@ -34,4 +35,7 @@ public interface AttributeRepository extends JpaRepository<Attribute, UUID> {
             "WHERE p.companyId = :companyId", nativeQuery = true
     )
     List<Attribute> fetchAllAttributesByCompanyId(@Param("companyId") String companyId);
+
+    @Query("SELECT a FROM Attribute a WHERE a.attributeName = :attributeName")
+    Optional<Attribute> findAttributeByName(@Param("attributeName") String attributeName);
 }

@@ -99,12 +99,12 @@ public class EmployeeService {
 
         String deeplink = "amoz://acceptinvitation?token=" + confirmationToken.toString();
 
-        String subject = "Zostałeś zaproszony do firmy " + company.getName() + " w aplikacji AMOZ.";
+        String subject = "You have been invited to the company " + company.getName() + " in the AMOZ app.";
         String htmlContent = "<html><body>" +
-                "<h2>Witaj " + employee.getPerson().getName() + "!</h2>" +
-                "<p>Zostałeś zaproszony do firmy <b>" + company.getName() + "</b> w aplikacji AMOZ.</p>" +
-                "<p>Proszę kliknij poniższy link, aby przyjąć zaproszenie:</p>" +
-                "<a href='" + deeplink + "'>Przyjmij zaproszenie</a>" +
+                "<h2>Hello " + employee.getPerson().getName() + "!</h2>" +
+                "<p>You have been invited to the company <b>" + company.getName() + "</b> in the AMOZ app.</p>" +
+                "<p>Please click the link below to accept the invitation:</p>" +
+                "<a href='" + deeplink + "'>Accept the invitation</a>" +
                 "</body></html>";
 
         CompletableFuture<Boolean> emailResult = emailService.sendEmail(Collections.singletonList(employeeEmailAddress), subject, htmlContent);
@@ -115,8 +115,8 @@ public class EmployeeService {
             throw new RuntimeException("Email sending failed.");
         } else {
             User user = employee.getUser();
-            PushRequest request = new PushRequest("Zostałeś zaproszony do firmy " + company.getName(),
-                    "Kliknij w poniższe powiadomienie by odpowiedzieć na zaproszenie w aplikacji AMOZ",
+            PushRequest request = new PushRequest("You have been invited to the company " + company.getName(),
+                    "Click the notification below to respond to the invitation in the AMOZ app",
                     Optional.of(deeplink));
             try {
                 pushService.sendMessage(user.getPushToken(), request);
@@ -125,6 +125,7 @@ public class EmployeeService {
             }
         }
         return CompletableFuture.completedFuture(null);
+
     }
 
     @Transactional

@@ -64,7 +64,7 @@ public class AuthorizationService {
         Employee employee = employeeRepository.findByUser_UserId(userPrincipal.getSub())
                 .orElseThrow(() -> new EntityNotFoundException("Could not find Employee for given user id: " + userPrincipal.getSub()));
 
-        return employee.getCompany().getCompanyId().equals(companyId) && employee.getRoleInCompany() == RoleInCompany.OWNER;
+        return employee.getCompany().getCompanyId().equals(companyId);
     }
 
 

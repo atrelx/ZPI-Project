@@ -52,7 +52,7 @@ public class EmployeeController {
     private FileService fileService;
 
     @Operation(summary = "Zaakceptuj zaproszenie do firmy", description = "Umożliwia pracownikowi zaakceptowanie zaproszenia do firmy.")
-    @ApiResponse(responseCode = "200", description = "Zaproszenie zostało zaakceptowane pomyślnie")
+    @ApiResponse(responseCode = "204", description = "Zaproszenie zostało zaakceptowane pomyślnie")
     @ApiResponse(responseCode = "400", description = "Błąd w przetwarzaniu zaproszenia",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
     )
@@ -62,7 +62,7 @@ public class EmployeeController {
     ) {
         UUID confirmationToken = UUID.fromString(token);
         employeeService.acceptInvitationToCompany(confirmationToken);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Odrzuć zaproszenie do firmy", description = "Umożliwia pracownikowi odrzucenie zaproszenia do firmy.")
@@ -76,7 +76,7 @@ public class EmployeeController {
     ) {
         UUID confirmationToken = UUID.fromString(token);
         employeeService.rejectInvitationToCompany(confirmationToken);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Zaproś pracownika do firmy", description = "Wysyła zaproszenie do pracownika do dołączenia do firmy.")
@@ -200,7 +200,7 @@ public class EmployeeController {
                     .getCompanyId();
 
             if (!authorizationService.hasPermissionToReadCompany(userPrincipal, employeeCompanyId)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("You are not company owner"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("You are not company worker"));
             }
 
             String employeeUserId = employeeService.findById(employeeId)

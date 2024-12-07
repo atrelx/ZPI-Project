@@ -98,9 +98,13 @@ public class AttributeService {
     }
 
     private Attribute createAttribute(AttributeCreateRequest request) {
-        Attribute attribute = new Attribute();
-        attribute.setAttributeName(request.attributeName());
-        return attributeRepository.save(attribute);
+        if (attributeRepository.findAttributeByName(request.attributeName()).isPresent()) {
+            return attributeRepository.findAttributeByName(request.attributeName()).get();
+        } else {
+            Attribute attribute = new Attribute();
+            attribute.setAttributeName(request.attributeName());
+            return attributeRepository.save(attribute);
+        }
     }
 }
 
