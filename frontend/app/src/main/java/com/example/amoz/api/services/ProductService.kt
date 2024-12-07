@@ -1,10 +1,6 @@
 package com.example.amoz.api.services
 
-import com.example.amoz.models.ProductDetails
-import com.example.amoz.models.ProductSummary
 import com.example.amoz.api.requests.ProductCreateRequest
-import com.example.amoz.api.responses.MessageResponse
-import kotlinx.serialization.json.JsonElement
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

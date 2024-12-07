@@ -1,7 +1,6 @@
 package com.example.amoz.pickers
 
 import androidx.navigation.NavController
-import com.example.amoz.data.SavedStateHandleKeys
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.screens.Screens
 
@@ -27,6 +26,10 @@ class ProductPicker(navController: NavController)
         navController.popBackStack()
         setProductPickerMode(mode = false)
         setNavElementsVisibleMode(mode = true)
+    }
+
+    fun removePickedProduct() {
+        removePickedItem(SavedStateHandleKeys.PICKED_PRODUCT_SUMMARY)
     }
 
     private fun setProductPickerMode(mode: Boolean) {

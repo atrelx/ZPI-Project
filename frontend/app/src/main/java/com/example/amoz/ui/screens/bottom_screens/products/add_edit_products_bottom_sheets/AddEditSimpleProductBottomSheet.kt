@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -29,32 +30,37 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.api.enums.ImagePlaceholder
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.requests.StockCreateRequest
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.pickers.CategoryPickerListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditSimpleProductBottomSheet(
-    navController: NavController,
     productCreateRequest: ProductCreateRequest,
     productVariantCreateRequest: ProductVariantCreateRequest,
-    onComplete: (ProductCreateRequest, ProductVariantCreateRequest) -> Unit,
+    onComplete: (ProductCreateRequest, ProductVariantCreateRequest, Uri?) -> Unit,
     onSaveState: (Pair<ProductCreateRequest, ProductVariantCreateRequest>) -> Unit,
     onDismissRequest: () -> Unit,
+    navController: NavController,
 ) {
     var productState by remember { mutableStateOf(productCreateRequest) }
     var productVariantState by remember { mutableStateOf(productVariantCreateRequest) }
@@ -63,6 +69,7 @@ fun AddEditSimpleProductBottomSheet(
 
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
+    var productVariantImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val scope = rememberCoroutineScope()
     val sheetState =
@@ -92,7 +99,12 @@ fun AddEditSimpleProductBottomSheet(
 
             // -------------------- Product image --------------------
             ImageWithIcon(
-                shape = RoundedCornerShape(10.dp)
+                image = productVariantImageUri?.toString(),
+                shape = RoundedCornerShape(10.dp),
+                placeholder = ImagePlaceholder.PRODUCT,
+                onImagePicked = { imageUri ->
+                    productVariantImageUri = imageUri
+                }
             )
 
             // -------------------- Product basic info --------------------
@@ -226,7 +238,7 @@ fun AddEditSimpleProductBottomSheet(
                         validationMessage = "\n" + productViolation
                     }
                     else {
-                        onComplete(productState, productVariantState)
+                        onComplete(productState, productVariantState, productVariantImageUri)
                         onDismissRequest()
                     }
                 },

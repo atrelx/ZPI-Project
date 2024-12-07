@@ -53,8 +53,7 @@ fun AppMainScaffold(
     userViewModel: UserViewModel = viewModel(),
     authenticationViewModel: AuthenticationViewModel = viewModel(),
     onUserAuthorizationCheck: () -> Unit,
-)
-{
+) {
     val appUiState by appViewModel.appUiState.collectAsState()
 
     val currentRoute = navigationController.currentBackStackEntryAsState().value?.destination?.route

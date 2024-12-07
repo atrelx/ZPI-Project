@@ -36,6 +36,7 @@ import com.example.amoz.api.requests.CategoryCreateRequest
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.HorizontalDividerWithText
 import com.example.amoz.ui.components.CloseOutlinedButton
+import com.example.amoz.ui.components.ErrorText
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.screens.categories.filtered_list.CategoryListItem
 import kotlinx.coroutines.launch
@@ -46,13 +47,14 @@ fun AddEditCategoryBottomSheet(
     categoryTree: CategoryTree? = null,
     categoryCreateRequest: CategoryCreateRequest,
     onDismissRequest: () -> Unit,
-    onComplete: (CategoryCreateRequest, List<String>) -> Unit,
+    onComplete: (CategoryCreateRequest, List<String>, (String?) -> Unit) -> Unit,
     onSubcategoryEdit: (CategoryTree) -> Unit
 ) {
     var categoryState by remember(categoryCreateRequest) { mutableStateOf(categoryCreateRequest) }
     val categoryChildren = categoryTree?.childCategories?.toMutableList() ?: mutableListOf()
     val newCategoryChildren = remember { mutableStateListOf<String>() }
 
+    var validationMessage by remember { mutableStateOf<String?>(null) }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val bottomSheetTitle =
@@ -134,14 +136,20 @@ fun AddEditCategoryBottomSheet(
                 )
             }
 
+
+
             // -------------------- Complete adding --------------------
             Spacer(modifier = Modifier.height(10.dp))
+
+            ErrorText(validationMessage)
 
             PrimaryFilledButton(
                 text = stringResource(id = R.string.confirm),
                 onClick = {
-                    onComplete(categoryState, newCategoryChildren)
-                    onDismissRequest()
+                    onComplete(categoryState, newCategoryChildren) {
+                        if (it.isNullOrBlank()) { onDismissRequest() }
+                        else { validationMessage = it }
+                    }
                 },
 //                enabled = isFormValid,
             )

@@ -20,14 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
-import com.example.amoz.data.SavedStateHandleKeys
-import com.example.amoz.models.CategoryTree
 import com.example.amoz.pickers.CategoryPicker
 import com.example.amoz.ui.components.bottom_sheets.ConfirmDeleteItemBottomSheet
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.screens.categories.filtered_list.CategoriesFilteredList
 import com.example.amoz.view_models.CategoriesViewModel
-import kotlinx.serialization.json.Json
 
 @Composable
 fun CategoriesScreen(
@@ -55,7 +52,7 @@ fun CategoriesScreen(
     ) {
         ResultStateView(
             state = categoryUiState.categoriesListFetched,
-            onPullToRefresh = { categoryViewModel.fetchCategories(true) }
+            onPullToRefresh = { categoryViewModel.fetchCategories(skipLoading = true) }
         ) {
             CategoriesFilteredList(
                 categories = categoryUiState.filteredCategoryList,
@@ -105,13 +102,14 @@ fun CategoriesScreen(
                 categoryTree = categoryUiState.currentCategoryTree,
                 categoryCreateRequest = it,
                 onDismissRequest = { closeAddEditCategoryBottomSheet() },
-                onComplete = { name, subcategoriesList ->
+                onComplete = { name, subcategoriesList, onErrorCallback ->
                     if (categoryUiState.currentCategoryTree != null) {
                         val categoryId = categoryUiState.currentCategoryTree!!.categoryId
                         categoryViewModel.updateCategory(categoryId, name, subcategoriesList)
                     }
                     else {
-                        categoryViewModel.addCategory(name, subcategoriesList)
+                        try {categoryViewModel.createCategory(name, subcategoriesList) }
+                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
                     }
                 },
                 onSubcategoryEdit = categoryViewModel::updateCurrentCategory

@@ -283,12 +283,10 @@
 //
 //        addOrUpdateSaleInFirebase(newSale)
 //
-//        // Подождем, чтобы данные успели загрузиться
 //        Thread.sleep(3000)
 //
 //        deleteSaleFromFirebase(saleId)
 //
-//        // Подождем, чтобы данные успели загрузиться
 //        Thread.sleep(3000)
 //
 //        firebaseDatabase.getReference("sales/$saleId").get().addOnSuccessListener { dataSnapshot ->

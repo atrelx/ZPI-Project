@@ -31,11 +31,12 @@ data class ProductsUiState(
     val filterParams: ProductsViewModel.FilterParams = ProductsViewModel.FilterParams(),
     val filterParamsInEdit: ProductsViewModel.FilterParams = ProductsViewModel.FilterParams(),
 
-    val currentAddEditProductCreateRequest: ProductCreateRequest = ProductCreateRequest(),
-    val currentAddEditProductDetailsState: MutableStateFlow<ResultState<ProductDetails?>> = MutableStateFlow(ResultState.Idle),
+    val productCreateRequest: ProductCreateRequest = ProductCreateRequest(),
+    val productDetailsState: MutableStateFlow<ResultState<ProductDetails?>> = MutableStateFlow(ResultState.Idle),
 
-    val currentAddEditProductVariantCreateRequest: ProductVariantCreateRequest = ProductVariantCreateRequest(),
-    val currentAddEditProductVariantDetailsState: MutableStateFlow<ResultState<ProductVariantDetails?>> = MutableStateFlow(ResultState.Idle),
+    val productVariantCreateRequest: ProductVariantCreateRequest = ProductVariantCreateRequest(),
+    val productVariantDetailsState: MutableStateFlow<ResultState<ProductVariantDetails?>> = MutableStateFlow(ResultState.Idle),
+    val productVariantImageState: MutableStateFlow<ResultState<ImageBitmap?>> = MutableStateFlow(ResultState.Idle),
 
     val currentAddEditSimpleProduct: Pair<ProductCreateRequest, ProductVariantCreateRequest> = Pair(ProductCreateRequest(), ProductVariantCreateRequest()),
 

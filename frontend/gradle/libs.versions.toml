@@ -27,6 +27,7 @@ lifecycleViewmodelCompose = "2.8.5"
 material3 = "1.3.0"
 materialIconsExtended = "1.7.1"
 mockitoCore = "5.3.1"
+mockitoAndroid = "5.3.1"
 mockitoKotlin = "5.3.1"
 navigationCompose = "2.7.7"
 navigationTesting = "2.7.7"
@@ -37,6 +38,8 @@ uiTestJunit4Android = "1.6.8"
 espressoIdlingResource = "3.5.1"
 uiTextGoogleFonts = "1.7.4"
 foundationLayoutAndroid = "1.7.0"
+
+hiltTesting = "2.51.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,6 +58,8 @@ converter-kotlinx-serialization = { module = "com.squareup.retrofit2:converter-k
 hibernate-validator = { module = "org.hibernate.validator:hibernate-validator", version.ref = "hibernateValidator" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltVersion" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltVersion" }
+hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hiltVersion" }
+hilt-kotlin-testing = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltVersion" }
 jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakartaValidationApi" }
 javax-el = { module = "org.glassfish:javax.el", version.ref = "javaxEl" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -82,10 +87,12 @@ kotlinx-serialization-json-jvm = { module = "org.jetbrains.kotlinx:kotlinx-seria
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

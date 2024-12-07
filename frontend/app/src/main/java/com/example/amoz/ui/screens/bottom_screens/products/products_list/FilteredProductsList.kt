@@ -20,21 +20,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.sealed.ResultState
-import com.example.amoz.data.SavedStateHandleKeys
-import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.pickers.ProductPicker
 import com.example.amoz.pickers.ProductVariantPicker
-import com.example.amoz.test_data.products.details.testProductVariantDetailsList
 import com.example.amoz.ui.components.text_fields.SearchTextField
 import com.example.amoz.view_models.ProductsViewModel
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductVariantListItem
 import com.example.amoz.view_models.ProductsViewModel.BottomSheetType
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.serialization.json.Json
 
 @Composable
 fun FilteredProductsList(
@@ -109,11 +105,17 @@ fun FilteredProductsList(
             if (showProducts) {
 
                 items(productsList, key = { it.productId }) { product ->
-                    Box(
-                        modifier = Modifier.animateItem()
-                    ) {
+                    val productMainVariantId = product.mainProductVariant?.productVariantId
+                    productMainVariantId?.let {
+                        productsViewModel.fetchProductVariantListItemPicture(productMainVariantId)
+                    }
+                    val imageState = productsUiState.productVariantImages
+                        .collectAsState().value[productMainVariantId]
+
+                    Box(modifier = Modifier.animateItem()) {
                         ProductListItem(
                             product = product,
+                            productMainVariantImageState = imageState,
                             onClick = {
                                 if (productPicker.isProductPickerMode()) {
                                     productPicker.pickProduct(product)
@@ -138,10 +140,11 @@ fun FilteredProductsList(
             // -------------------- ProductVariant list --------------------
             if (showProductVariants) {
                 items(variantsList, key = { it.productVariantId }) { productVariant ->
-                    productsViewModel.getProductVariantPicture(productVariant.productVariantId)
+                    productsViewModel.fetchProductVariantListItemPicture(productVariant.productVariantId)
 
                     val imageState = productsUiState.productVariantImages
                         .collectAsState().value[productVariant.productVariantId]
+
 
 
                     Box(modifier = Modifier.animateItem()) {
@@ -152,14 +155,11 @@ fun FilteredProductsList(
                             onClick = {
                                 productsUiState.filteredByProduct?.let { filteredByProduct ->
                                     if (productVariantPicker.isProductVariantPickerMode()) {
-                                        productsViewModel.fetchProductVariantDetails(
-                                            productVariantId = productVariant.productVariantId,
-                                            onSuccessCallback = { testProductVariantDetailsList ->
-                                                testProductVariantDetailsList?.let {
-                                                    productVariantPicker.pickProductVariant(it)
-                                                }
+                                        productsViewModel.fetchProductVariantDetails(productVariant.productVariantId) { testProductVariantDetailsList ->
+                                            testProductVariantDetailsList?.let {
+                                                productVariantPicker.pickProductVariant(it)
                                             }
-                                        )
+                                        }
                                     }
                                     else {
                                         productsViewModel.updateCurrentAddEditProductVariant(

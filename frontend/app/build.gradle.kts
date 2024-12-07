@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.amoz.CustomTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -52,6 +52,7 @@ android {
 
 dependencies {
     implementation(libs.hilt.android)
+    implementation(libs.hilt.testing)
     implementation(libs.androidx.foundation.layout.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -62,10 +63,6 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.androidx.ui.text.google.fonts)
 
-    testImplementation (libs.mockito.core)
-    testImplementation (libs.mockito.kotlin)
-    testImplementation (libs.junit)
-    testImplementation (libs.robolectric)
 
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
@@ -89,7 +86,6 @@ dependencies {
     implementation(libs.converter.kotlinx.serialization)
     implementation(libs.play.services.auth)
 
-    //  Default dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -101,11 +97,25 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage.ktx)
     implementation(libs.androidx.navigation.testing)
+
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.mockito.kotlin)
+    testImplementation (libs.junit)
+    testImplementation (libs.robolectric)
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(libs.hilt.testing)
+    androidTestImplementation(libs.mockito.android)
+
+    kaptAndroidTest(libs.hilt.kotlin.testing)
+    androidTestAnnotationProcessor(libs.hilt.kotlin.testing)
+
+    debugImplementation("androidx.test:monitor:1.6.1")
 }

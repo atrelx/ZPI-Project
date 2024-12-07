@@ -15,7 +15,7 @@ enum class ImagePlaceholder {
 fun ImagePlaceholder.getPlaceholder(context: Context): ImageBitmap {
     val placeholderResId = when (this) {
         ImagePlaceholder.HUMAN -> com.example.amoz.R.drawable.human_placeholder
-        ImagePlaceholder.PRODUCT -> com.example.amoz.R.drawable.human_placeholder
+        ImagePlaceholder.PRODUCT -> com.example.amoz.R.drawable.product_placeholder
         ImagePlaceholder.COMPANY -> com.example.amoz.R.drawable.human_placeholder
     }
     return BitmapFactory.decodeResource(
@@ -27,7 +27,7 @@ fun ImagePlaceholder.getPlaceholder(context: Context): ImageBitmap {
 fun ImagePlaceholder.getPlaceholderInt(): Int {
     val placeholderResId = when (this) {
         ImagePlaceholder.HUMAN -> com.example.amoz.R.drawable.human_placeholder
-        ImagePlaceholder.PRODUCT -> com.example.amoz.R.drawable.human_placeholder
+        ImagePlaceholder.PRODUCT -> com.example.amoz.R.drawable.product_placeholder
         ImagePlaceholder.COMPANY -> com.example.amoz.R.drawable.human_placeholder
     }
     return placeholderResId

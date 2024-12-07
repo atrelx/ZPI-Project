@@ -1,5 +1,7 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
+import android.net.Uri
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,10 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -29,12 +33,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.api.enums.ImagePlaceholder
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.requests.StockCreateRequest
 import com.example.amoz.api.sealed.ResultState
@@ -45,7 +53,6 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.pickers.ProductPickerWithListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -55,29 +62,50 @@ import java.util.UUID
 fun AddEditProductVariantBottomSheet(
     productVariantCreateRequest: ProductVariantCreateRequest,
     productVariantDetailsState: MutableStateFlow<ResultState<ProductVariantDetails?>>,
+    productVariantImageState: MutableStateFlow<ResultState<ImageBitmap?>>,
+    productMainVariantId: UUID?,
     onSaveProductVariant: (ProductVariantCreateRequest) -> Unit,
-    onComplete: (UUID?, ProductVariantCreateRequest) -> Unit,
+    onComplete: (UUID?, ProductVariantCreateRequest, Uri?, Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     navController: NavController
 ) {
     val scope = rememberCoroutineScope()
 
-
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
     var hasProductId by remember { mutableStateOf(productVariantCreateRequest.productID != null) }
-    var productVariantState by remember { mutableStateOf(productVariantCreateRequest) }
 
-    LaunchedEffect(productVariantState) {
-        validationMessage = null
-    }
+    var productVariantImageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true,
+            confirmValueChange = { newState ->
+                newState != SheetValue.Hidden
+            }
+        )
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
         ResultStateView(state = productVariantDetailsState) { productVariantDetails ->
+            var productVariantState by remember(productVariantDetails, productVariantCreateRequest) {
+                mutableStateOf(
+                    ProductVariantCreateRequest(
+                        productVariant = productVariantDetails,
+                        productID = productVariantCreateRequest.productID
+                    )
+                )
+            }
+
+
+            var isMainVariant by remember { mutableStateOf(
+                productVariantDetails?.productVariantId == productMainVariantId
+            )}
+
+            LaunchedEffect(productVariantState) {
+                validationMessage = null
+            }
 
             Column(
                 modifier = Modifier
@@ -94,9 +122,16 @@ fun AddEditProductVariantBottomSheet(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 // -------------------- Product image --------------------
+                ResultStateView(state = productVariantImageState) { imageBitmap = it }
                 ImageWithIcon(
-                    shape = RoundedCornerShape(10.dp)
+                    image = productVariantImageUri?.toString() ?: imageBitmap,
+                    shape = RoundedCornerShape(10.dp),
+                    placeholder = ImagePlaceholder.PRODUCT,
+                    onImagePicked = { imageUri ->
+                        productVariantImageUri = imageUri
+                    }
                 )
+
 
                 // -------------------- Product basic info --------------------
                 ProductNameDescriptionPrice(
@@ -146,6 +181,24 @@ fun AddEditProductVariantBottomSheet(
                     )
                 }
 
+                ListItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .border(
+                            1.dp,
+                            SolidColor(MaterialTheme.colorScheme.outline),
+                            RoundedCornerShape(10.dp)
+                        ),
+                    headlineContent = {
+                        Text(stringResource(R.string.product_variant_set_as_main))
+                    },
+                    trailingContent = {
+                        Switch(isMainVariant, { isMainVariant = !isMainVariant })
+                    }
+                )
+
+
                 // -------------------- Stock --------------------
                 ProductVariantStock(
                     stockCreateRequest = productVariantState.stock ?: StockCreateRequest()) {
@@ -188,7 +241,12 @@ fun AddEditProductVariantBottomSheet(
                             validationMessage = violation
                         }
                         else {
-                            onComplete(productVariantDetails?.productVariantId, productVariantState)
+                            onComplete(
+                                productVariantDetails?.productVariantId,
+                                productVariantState,
+                                productVariantImageUri,
+                                isMainVariant
+                            )
                             onDismissRequest()
                         }
                     },

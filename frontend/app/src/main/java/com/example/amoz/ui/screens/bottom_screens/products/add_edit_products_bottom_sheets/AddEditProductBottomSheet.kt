@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -60,12 +61,12 @@ fun AddEditProductBottomSheet(
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
 
-    val sheetState = rememberModalBottomSheetState(
-//        skipPartiallyExpanded = true,
-//        confirmValueChange = { newState ->
-//            newState != SheetValue.Hidden
-//        }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true,
+            confirmValueChange = { newState ->
+                newState != SheetValue.Hidden
+            }
+        )
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,

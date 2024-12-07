@@ -1,7 +1,10 @@
 package com.example.amoz.view_models
 
+import android.util.Log
 import com.example.amoz.api.repositories.CategoryRepository
 import com.example.amoz.api.requests.CategoryCreateRequest
+import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.models.CategoryDetails
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.states.CategoriesUiState
 import com.example.amoz.ui.screens.categories.filtered_list.CategoryListFilter
@@ -25,65 +28,96 @@ class CategoriesViewModel @Inject constructor(
         fetchCategories()
     }
 
-    fun fetchCategories(skipLoading: Boolean = false) {
+    fun fetchCategories(
+        binding: MutableStateFlow<ResultState<List<CategoryTree>>>? =
+            _categoriesUiState.value.categoriesListFetched,
+        skipLoading: Boolean = false,
+        onSuccessCallback: ((categoriesList: List<CategoryTree>) -> Unit)? = null
+    ) {
         performRepositoryAction(
-            binding = _categoriesUiState.value.categoriesListFetched,
+            binding = binding,
             failureMessage = "Could not fetch categories, try again",
             skipLoading = skipLoading,
             action = { categoryRepository.getAllCompanyCategories() },
-            onSuccess = { categoriesList ->
-                _categoriesUiState.update { it.copy(categoryList = categoriesList) }
-                applyFilters()
+            onSuccess = {
+                updateCategoryUiStateList(it)
+                onSuccessCallback?.invoke(it)
             }
         )
+    }
+
+    fun createCategory(
+        categoryCreateRequest: CategoryCreateRequest,
+        subcategories: List<String>? = null,
+        onSuccessCallback: ((CategoryDetails) -> Unit)? = null
+    ) {
+        val validatorMessage = categoryCreateRequest.validate()
+        if (validatorMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Could not add category, try later",
+                action = { categoryRepository.createCategory(categoryCreateRequest) },
+                onSuccess = { createdCategory ->
+                    createCategorySubCategories(createdCategory.categoryId, subcategories)
+                    fetchCategories(skipLoading = true)
+                    onSuccessCallback?.invoke(createdCategory)
+                }
+            )
+        }
+        else {
+            Log.e(tag, validatorMessage)
+            throw IllegalArgumentException(validatorMessage)
+        }
     }
 
     fun updateCategory(
         categoryId: UUID,
         categoryCreateRequest: CategoryCreateRequest,
-        subcategories: List<String>? = null
+        subcategories: List<String>? = null,
+        onSuccessCallback: ((CategoryDetails) -> Unit)? = null
         ) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Could not update category, try later",
-            action = { categoryRepository.updateCategory(categoryId, categoryCreateRequest) },
-            onSuccess = { parentCategory ->
-                subcategories?.let { subcategories ->
-                    subcategories.forEach { subcategory ->
-                        addCategory(CategoryCreateRequest(subcategory, parentCategory.categoryId))
-                    }
+        val validatorMessage = categoryCreateRequest.validate()
+        if (validatorMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Could not update category, try later",
+                action = { categoryRepository.updateCategory(categoryId, categoryCreateRequest) },
+                onSuccess = { updatedCategory ->
+                    createCategorySubCategories(updatedCategory.categoryId, subcategories)
+                    fetchCategories(skipLoading = true)
+                    onSuccessCallback?.invoke(updatedCategory)
                 }
-                fetchCategories(true)
-            }
-        )
+            )
+        }
+        else {
+            Log.e(tag, validatorMessage)
+            throw IllegalArgumentException(validatorMessage)
+        }
     }
 
-    fun addCategory(
-        categoryCreateRequest: CategoryCreateRequest,
-        subcategories: List<String>? = null
+    fun deleteCategory(
+        categoryId: UUID,
+        onSuccessCallback: (() -> Unit)? = null
     ) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Could not add category, try later",
-            action = { categoryRepository.createCategory(categoryCreateRequest) },
-            onSuccess = { parentCategory ->
-                subcategories?.let { subcategories ->
-                    subcategories.forEach { subcategory ->
-                        addCategory(CategoryCreateRequest(subcategory, parentCategory.categoryId))
-                    }
-                }
-                fetchCategories(true)
-            }
-        )
-    }
-
-    fun deleteCategory(categoryId: UUID) {
         performRepositoryAction(
             binding = null,
             failureMessage = "Could not delete category, try later",
             action = { categoryRepository.deleteCategory(categoryId) },
-            onSuccess = { fetchCategories(true) }
+            onSuccess = {
+                fetchCategories(skipLoading = true)
+                onSuccessCallback?.invoke()
+            }
         )
+    }
+
+    fun createCategorySubCategories(
+        parentCategoryId: UUID,
+        subcategories: List<String>? = null
+    ) {
+        subcategories?.let { it.forEach { subcategory ->
+                createCategory(CategoryCreateRequest(subcategory, parentCategoryId))
+            }
+        }
     }
 
     fun updateCurrentCategory(category: CategoryTree?) {
@@ -101,6 +135,11 @@ class CategoriesViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun updateCategoryUiStateList(categoriesList: List<CategoryTree>) {
+        _categoriesUiState.update { it.copy(categoryList = categoriesList) }
+        applyFilters()
     }
 
     private fun applyFilters() {

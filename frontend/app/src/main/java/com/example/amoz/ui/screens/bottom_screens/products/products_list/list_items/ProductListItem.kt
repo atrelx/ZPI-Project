@@ -1,10 +1,14 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -22,15 +26,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.ui.components.DismissBackground
+import com.example.amoz.ui.components.ResultStateView
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 
 @Composable
 fun ProductListItem(
     product: ProductSummary,
+    productMainVariantImageState: MutableStateFlow<ResultState<ImageBitmap?>>?,
     onClick: () -> Unit,
     onProductEdit: (UUID) -> Unit,
     onProductRemove: (ProductSummary) -> Unit,
@@ -74,16 +84,28 @@ fun ProductListItem(
                 .clickable(
                     onClick = onClick,
                 ),
-            leadingContent = {
-                product.mainProductVariant?.let {
-//                            Image(
-//                                painter = rememberAsyncImagePainter(productTemplate.imageUrl),
-//                                contentDescription = "Product Image",
-//                                contentScale = ContentScale.Crop,
-//                                modifier = Modifier
-//                                    .size(60.dp)
-//                                    .clip(RoundedCornerShape(10.dp))
-//                            )
+            leadingContent =
+            productMainVariantImageState?.let {
+                {
+                    ResultStateView(
+                        modifier = Modifier.sizeIn(maxWidth = 56.dp, maxHeight = 56.dp),
+                        state = it,
+                        failureView = {
+//                            Icon(imageVector = Icons.Default.AllInbox, null)
+                        }
+                    ) { imageBitmap ->
+                        imageBitmap?.let {
+                            Image(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .size(56.dp),
+                                bitmap = it,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
+                    }
                 }
             },
             headlineContent = {

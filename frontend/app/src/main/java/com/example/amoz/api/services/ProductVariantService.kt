@@ -10,6 +10,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -45,6 +46,7 @@ interface ProductVariantService {
         @Path("productVariantId") productVariantId: UUID
     ): Response<com.example.amoz.models.ProductVariantDetails>
 
+    @Multipart
     @PUT("api/productVariants/picture/{productVariantId}")
     suspend fun uploadProductVariantPicture(
         @Path("productVariantId") productVariantId: UUID,

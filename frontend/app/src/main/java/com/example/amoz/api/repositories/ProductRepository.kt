@@ -1,7 +1,5 @@
 package com.example.amoz.api.repositories
 
-import com.example.amoz.models.ProductDetails
-import com.example.amoz.models.ProductSummary
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.services.ProductService
 import java.util.UUID

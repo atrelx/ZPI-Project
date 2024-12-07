@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
@@ -65,8 +66,6 @@ fun ProductVariantListItem(
         },
         positionalThreshold = { it * positionalThreshold }
     )
-    var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
-
     SwipeToDismissBox(
         state = swipeState,
         enableDismissFromEndToStart = false,
@@ -94,18 +93,17 @@ fun ProductVariantListItem(
                             imageBitmap?.let {
                                 Image(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp)),
-                                    bitmap = imageBitmapState!!,
-                                    contentDescription = null
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .size(56.dp),
+                                    bitmap = it,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop
                                 )
                             }
 
                         }
                     }
-                }
-
-
-            ,
+                },
             headlineContent = {
                 Text(
                     text = productVariant.variantName ?: "",

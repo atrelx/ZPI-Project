@@ -4,7 +4,6 @@ import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.models.ProductSummary
-import com.example.amoz.test_data.products.summary.testProductSummaryList
 import com.example.amoz.view_models.OrdersViewModel.OrderFilterParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.math.BigDecimal
@@ -17,7 +16,7 @@ data class OrderUIState (
     val itemsSumPrice: BigDecimal = BigDecimal.ZERO,
     val amountOfItemsNewStatus: Int = 0,
 
-    val productsList: List<ProductSummary> = testProductSummaryList,
+    val productsList: List<ProductSummary> = listOf(),
     val selectedTime: Pair<Int,Int>? = null,
 
     val searchQuery: String = "",

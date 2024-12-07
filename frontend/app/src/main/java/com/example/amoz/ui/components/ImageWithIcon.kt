@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -39,7 +40,7 @@ import com.example.amoz.api.enums.getPlaceholderInt
 
 @Composable
 fun ImageWithIcon(
-    image: Any? = null, // Accepts String URI or ImageBitmap
+    image: Any? = null, // Accepts URI.toString() or ImageBitmap
     placeholder: ImagePlaceholder = ImagePlaceholder.HUMAN,
     contentDescription: String? = null,
     size: Dp = 160.dp,
@@ -48,7 +49,7 @@ fun ImageWithIcon(
     iconContentDescription: String? = null,
     isEditing: Boolean = true,
     // in order to turn Uri to multipart, use Uri.toMultipartBodyPart(context) function
-    onImagePicked: (Uri?) -> Unit = {}
+    onImagePicked: ((Uri?) -> Unit)? = null
 ) {
     val context = LocalContext.current
 
@@ -57,13 +58,15 @@ fun ImageWithIcon(
         // photo picker.
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
-            onImagePicked(uri)
+            onImagePicked?.invoke(uri)
         } else {
             Log.d("PhotoPicker", "No media selected")
         }
     }
 
-    Box {
+    Box(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer, shape)
+    ) {
         when (image) {
             is String -> {
                 // Display image from URI string
@@ -130,11 +133,12 @@ fun ImageWithIcon(
                     .size(size * 0.3f),
             ) {
                 Icon(
+                    modifier = Modifier.size(size * 0.2f),
                     imageVector = iconImage,
                     contentDescription = iconContentDescription,
-                    modifier = Modifier.size(size * 0.2f),
-                    )
+                )
             }
         }
     }
 }
+

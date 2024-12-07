@@ -1,5 +1,8 @@
 package com.example.amoz.view_models
 
+import android.content.Context
+import android.net.Uri
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.repositories.ProductRepository
 import com.example.amoz.api.repositories.ProductVariantRepository
@@ -7,6 +10,7 @@ import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
+import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.models.ProductDetails
 import com.example.amoz.models.ProductSummary
@@ -15,6 +19,7 @@ import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.ui.states.ProductsUiState
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.ProductListFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductsViewModel @Inject constructor(
+    @ApplicationContext val context: Context,
     private val productRepository: ProductRepository,
     private val productVariantRepository: ProductVariantRepository,
     private val appPreferences: AppPreferences
@@ -50,40 +56,32 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
-    // -------------------- Fetch products lists --------------------
-    fun fetchProductsList(skipLoading: Boolean = false) {
+    // -------------------- PRODUCT --------------------
+
+    fun fetchProductsList(
+        binding: MutableStateFlow<ResultState<List<ProductSummary>>>? =
+            _productUiState.value.productsListFetched,
+        skipLoading: Boolean = false,
+        onSuccessCallback: ((List<ProductSummary>) -> Unit)? = null
+    ) {
         performRepositoryAction(
-            binding = _productUiState.value.productsListFetched,
+            binding = binding,
             failureMessage = "Could not fetch products, try again",
             skipLoading = skipLoading,
             action = { productRepository.getAllProducts() },
             onSuccess = { productsList ->
-                _productUiState.update { it.copy(productsList = productsList) }
-                applyFilters()
+                binding?.let{ updateProductsList(productsList) }
+                onSuccessCallback?.invoke(productsList)
             }
         )
     }
 
-    fun fetchProductVariantsList(productId: UUID, skipLoading: Boolean = false) {
-        performRepositoryAction(
-            binding = _productUiState.value.productVariantsListFetched,
-            failureMessage = "Could not fetch product variants, try again",
-            skipLoading = skipLoading,
-            action = { productVariantRepository.getAllProductVariantsByProductId(productId) },
-            onSuccess = { productVariantsList ->
-                _productUiState.update { it.copy(productVariantsList = productVariantsList) }
-                applyFilters()
-            }
-        )
-    }
-
-    // -------------------- PRODUCT --------------------
     fun fetchProductDetails(
         productId: UUID,
         onSuccessCallback: ((ProductDetails?) -> Unit)? = null
     ) {
         performRepositoryAction(
-            binding = _productUiState.value.currentAddEditProductDetailsState,
+            binding = _productUiState.value.productDetailsState,
             failureMessage = "Could not fetch product details, try again",
             action = {
                 productRepository.getProductDetails(productId)
@@ -105,7 +103,7 @@ class ProductsViewModel @Inject constructor(
                 productRepository.createProduct(productCreateRequest)
             },
             onSuccess = { productDetails ->
-                fetchProductsList(true)
+                fetchProductsList(skipLoading = true)
                 onSuccessCallback?.invoke(productDetails)
             }
         )
@@ -122,7 +120,7 @@ class ProductsViewModel @Inject constructor(
                 )
             },
             onSuccess = {
-                fetchProductsList(true)
+                fetchProductsList(skipLoading = true)
             }
         )
     }
@@ -135,7 +133,7 @@ class ProductsViewModel @Inject constructor(
                 productRepository.deactivateProduct(productId)
             },
             onSuccess = {
-                fetchProductsList(true)
+                fetchProductsList(skipLoading = true)
             }
         )
     }
@@ -150,7 +148,7 @@ class ProductsViewModel @Inject constructor(
                 productRepository.setMainVariant(productId, productVariantId)
             },
             onSuccess = {
-                fetchProductsList(true)
+                fetchProductsList(skipLoading = true)
                 onSuccessCallback?.invoke(it)
             }
         )
@@ -163,7 +161,7 @@ class ProductsViewModel @Inject constructor(
     fun saveCurrentProductCreateRequest(productCreateRequest: ProductCreateRequest) {
         _productUiState.update {
             it.copy(
-                currentAddEditProductCreateRequest = productCreateRequest
+                productCreateRequest = productCreateRequest
             )
         }
     }
@@ -171,7 +169,7 @@ class ProductsViewModel @Inject constructor(
     fun updateCurrentAddEditProduct(productId: UUID?) {
         if (productId == null) {
             _productUiState.update {it.copy(
-                currentAddEditProductDetailsState = MutableStateFlow(ResultState.Success(null))
+                productDetailsState = MutableStateFlow(ResultState.Success(null))
             ) }
             saveCurrentProductCreateRequest(ProductCreateRequest())
         }
@@ -180,12 +178,34 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
+    fun updateProductsList(productsList: List<ProductSummary>) {
+        _productUiState.update { it.copy(productsList = productsList) }
+        applyFilters()
+    }
+
     // -------------------- PRODUCT VARIANT--------------------
+
+    fun fetchProductVariantsList(productId: UUID, skipLoading: Boolean = false) {
+        performRepositoryAction(
+            binding = _productUiState.value.productVariantsListFetched,
+            failureMessage = "Could not fetch product variants, try again",
+            skipLoading = skipLoading,
+            action = { productVariantRepository.getAllProductVariantsByProductId(productId) },
+            onSuccess = { productVariantsList ->
+                updateProductVariantsList(productVariantsList)
+            }
+        )
+    }
+
+    fun updateProductVariantsList(productVariantsList: List<ProductVariantSummary>) {
+        _productUiState.update { it.copy(productVariantsList = productVariantsList) }
+        applyFilters()
+    }
 
     fun fetchProductVariantDetails(
         productVariantId: UUID,
         binding: MutableStateFlow<ResultState<ProductVariantDetails?>>? =
-            _productUiState.value.currentAddEditProductVariantDetailsState,
+            _productUiState.value.productVariantDetailsState,
         onSuccessCallback: ((ProductVariantDetails?) -> Unit)? = null,
     ) {
         performRepositoryAction(
@@ -222,24 +242,59 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
-    fun updateProductVariant(productVariantId: UUID, productVariantCreateRequest: ProductVariantCreateRequest) {
+    fun updateProductVariant(
+        productVariantId: UUID,
+        productVariantCreateRequest: ProductVariantCreateRequest,
+        onSuccessCallback: ((ProductVariantDetails) -> Unit)? = null,
+    ) {
         performRepositoryAction(
             binding = null,
             failureMessage = "Failed to update product variant",
             action = {
                 productVariantRepository.updateProductVariant(productVariantId, productVariantCreateRequest)
             },
-            onSuccess = productVariantCreateRequest.productID?.let {
-                    productId -> {fetchProductVariantsList(productId, true)}
+            onSuccess = { productVariantDetails ->
+                productVariantCreateRequest.productID?.let {
+                    fetchProductVariantsList(it, true)
+                }
+                onSuccessCallback?.invoke(productVariantDetails)
             }
         )
     }
 
-    fun uploadProductVariantImage(productVariantId: UUID, image: MultipartBody.Part) {
+    fun fetchProductVariantPicture(
+        binding: MutableStateFlow<ResultState<ImageBitmap?>>?,
+        productVariantId: UUID,
+        skipLoading: Boolean = false,
+        onSuccessCallback: ((ImageBitmap?) -> Unit)? = null,
+        ) {
+        performRepositoryAction(
+            binding = binding,
+            skipLoading = skipLoading,
+            action = { productVariantRepository.getProductVariantPicture(productVariantId) },
+            onSuccess = { onSuccessCallback?.invoke(it) }
+        )
+    }
+
+    fun fetchProductVariantListItemPicture(productVariantId: UUID) {
+        val productVariantPicturesMap = _productUiState.value.productVariantImages.value
+        if (!productVariantPicturesMap.containsKey(productVariantId)) {
+            productVariantPicturesMap[productVariantId] = MutableStateFlow(ResultState.Idle)
+        }
+        productVariantPicturesMap[productVariantId]?.let {
+            fetchProductVariantPicture(
+                binding = it,
+                productVariantId = productVariantId
+            )
+        }
+    }
+
+    fun uploadProductVariantImage(productVariantId: UUID, image: Uri) {
         performRepositoryAction(
             binding = null,
             action = {
-                productVariantRepository.uploadProductVariantPicture(productVariantId, image)
+                val imageMultiPartBodyPart = image.toMultipartBodyPart(context)
+                productVariantRepository.uploadProductVariantPicture(productVariantId, imageMultiPartBodyPart)
             },
             onSuccess = {
                 _productUiState.value.filteredByProduct?.let {
@@ -247,23 +302,6 @@ class ProductsViewModel @Inject constructor(
                 }
             }
         )
-    }
-
-    fun getProductVariantPicture(productVariantId: UUID, skipLoading: Boolean = false) {
-        val productVariantPicturesMap = _productUiState.value.productVariantImages.value
-        if (!productVariantPicturesMap.containsKey(productVariantId)) {
-            productVariantPicturesMap[productVariantId] = MutableStateFlow(ResultState.Idle)
-        }
-        productVariantPicturesMap[productVariantId]?.let {
-            performRepositoryAction(
-                binding = it,
-                skipLoading = skipLoading,
-                failureMessage = "Could fetch product variant picture. Try again later.",
-                action = {
-                    productVariantRepository.getProductVariantPicture(productVariantId)
-                }
-            )
-        }
     }
 
     fun deleteProductVariant(productVariantId: UUID) {
@@ -283,7 +321,7 @@ class ProductsViewModel @Inject constructor(
     fun saveCurrentAddEditProductVariant(productVariantCreateRequest: ProductVariantCreateRequest) {
         _productUiState.update {
             it.copy(
-                currentAddEditProductVariantCreateRequest = productVariantCreateRequest
+                productVariantCreateRequest = productVariantCreateRequest
             )
         }
     }
@@ -292,7 +330,7 @@ class ProductsViewModel @Inject constructor(
         productVariantId: UUID?,
         productId: UUID?,
     ) {
-        if (productId == null) {
+        if (productId == null || productVariantId == null) {
             currentAddEditProductVariantDetailsSetSuccessState(null)
         }
         if(productVariantId == null) {
@@ -304,13 +342,16 @@ class ProductsViewModel @Inject constructor(
                     ProductVariantCreateRequest(productVariant = it, productID = productId)
                 )
             }
+            fetchProductVariantPicture(
+                binding = _productUiState.value.productVariantImageState,
+                productVariantId = productVariantId,
+            )
         }
-
     }
 
     fun currentAddEditProductVariantDetailsSetSuccessState(productDetails: ProductVariantDetails?) {
         _productUiState.update { it.copy(
-            currentAddEditProductVariantDetailsState =
+            productVariantDetailsState =
             MutableStateFlow(ResultState.Success(productDetails))
         ) }
     }
@@ -322,7 +363,8 @@ class ProductsViewModel @Inject constructor(
     // -------------------- SIMPLE PRODUCT --------------------
     fun createSimpleProduct(
         product: ProductCreateRequest,
-        productVariant: ProductVariantCreateRequest
+        productVariant: ProductVariantCreateRequest,
+        onSuccessCallback: ((ProductDetails, ProductVariantDetails) -> Unit)? = null,
     ) {
         createProduct(product) { productDetails ->
             createProductVariant(productVariant.copy(
@@ -332,6 +374,7 @@ class ProductsViewModel @Inject constructor(
                     productDetails.productId,
                     productVariantDetails.productVariantId
                 )
+                onSuccessCallback?.invoke(productDetails, productVariantDetails)
             }
         }
     }
@@ -373,8 +416,6 @@ class ProductsViewModel @Inject constructor(
             )
         }
     }
-
-
 
     fun updateSearchQuery(query: String) {
         _productUiState.update { currState ->

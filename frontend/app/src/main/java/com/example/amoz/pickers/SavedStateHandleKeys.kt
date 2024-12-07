@@ -1,4 +1,4 @@
-package com.example.amoz.data
+package com.example.amoz.pickers
 
 object SavedStateHandleKeys {
     const val SHOW_NAV_ELEMENTS = "showNavElements"
