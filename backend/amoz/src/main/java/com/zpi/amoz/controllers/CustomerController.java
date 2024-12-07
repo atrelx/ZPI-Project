@@ -74,17 +74,13 @@ public class CustomerController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given customer is not in your company"));
             }
             if (customerService.isCustomerB2B(customerId)) {
-                List<CustomerB2B> customerB2BList = customerService.findAllCustomersB2BBySub(userPrincipal.getSub());
-                List<CustomerB2BDTO> customerB2BDTOs = customerB2BList.stream()
-                        .map(CustomerB2BDTO::toCustomerB2BDTO)
-                        .collect(Collectors.toList());
-                return ResponseEntity.status(HttpStatus.OK).body(customerB2BDTOs);
+                CustomerB2B customerB2B = customerService.findCustomersB2BById(customerId);
+                CustomerB2BDTO customerB2BDTO = CustomerB2BDTO.toCustomerB2BDTO(customerB2B);
+                return ResponseEntity.status(HttpStatus.OK).body(customerB2BDTO);
             } else {
-                List<CustomerB2C> customerB2CList = customerService.findAllCustomersB2CBySub(userPrincipal.getSub());
-                List<CustomerB2CDTO> customerB2CDTOs = customerB2CList.stream()
-                        .map(CustomerB2CDTO::toCustomerB2CDTO)
-                        .collect(Collectors.toList());
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(customerB2CDTOs);
+                CustomerB2C customerB2C = customerService.findCustomersB2CById(customerId);
+                CustomerB2CDTO customerB2CDTO = CustomerB2CDTO.toCustomerB2CDTO(customerB2C);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(customerB2CDTO);
             }
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Resource not found: " + e.getMessage()));

@@ -108,7 +108,6 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException("Could not find company for given sub:" + sub));
 
 
-
         Customer customer = this.createCustomer(company, request.customer());
         CustomerB2C customerB2C = new CustomerB2C();
         CustomerId customerId = new CustomerId(customer);
@@ -188,5 +187,15 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException("Could not find company for given sub: " + sub))
                 .getCompanyId();
         return customerB2CRepository.findAllByCompanyId(companyId);
+    }
+
+    public CustomerB2B findCustomersB2BById(UUID customerId) {
+        return customerB2BRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find customer B2B for given ID: " + customerId));
+    }
+
+    public CustomerB2C findCustomersB2CById(UUID customerId) {
+        return customerB2CRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Could not find customer B2C for given ID: " + customerId));
     }
 }
