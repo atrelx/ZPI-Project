@@ -1,9 +1,6 @@
 package com.zpi.amoz.controllers;
 
-import com.zpi.amoz.dtos.InvoiceB2BDTO;
-import com.zpi.amoz.dtos.InvoiceB2CDTO;
-import com.zpi.amoz.dtos.ProductOrderDetailsDTO;
-import com.zpi.amoz.dtos.ProductOrderSummaryDTO;
+import com.zpi.amoz.dtos.*;
 import com.zpi.amoz.models.Invoice;
 import com.zpi.amoz.models.ProductOrder;
 import com.zpi.amoz.requests.ProductOrderCreateRequest;
@@ -167,13 +164,9 @@ public class ProductOrderController {
         }
     }
 
-
     @Operation(summary = "Generowanie faktury dla zamówienia", description = "Generuje fakturę dla istniejącego zamówienia produktu.")
-    @ApiResponse(responseCode = "200", description = "Faktura B2B została pomyślnie wygenerowana",
+    @ApiResponse(responseCode = "200", description = "Faktura została pomyślnie wygenerowana",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2BDTO.class))
-    )
-    @ApiResponse(responseCode = "202", description = "Faktura B2C została pomyślnie wygenerowana",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceB2CDTO.class))
     )
     @ApiResponse(responseCode = "401", description = "Brak uprawnień do generowania faktury",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))
@@ -192,11 +185,7 @@ public class ProductOrderController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Product order is not in your company"));
             }
             Invoice invoice = invoiceService.generateInvoice(productOrderId);
-            if (invoice.getProductOrder().getCustomer().getCustomerB2B() != null) {
-                return ResponseEntity.ok(InvoiceB2BDTO.toInvoiceB2BDTO(invoice));
-            } else {
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(InvoiceB2CDTO.toInvoiceB2CDTO(invoice));
-            }
+            return ResponseEntity.ok(InvoiceSummaryDTO.toInvoiceSummaryDTO(invoice));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new MessageResponse(e.getMessage()));

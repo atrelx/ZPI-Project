@@ -29,12 +29,14 @@ data class OrderUIState (
 
     // Details of the order being edited
     // currently being set to null at orders screen initialization
+    val currentInvoicePDFByteArray: MutableStateFlow<ResultState<ByteArray>> = MutableStateFlow(ResultState.Idle),
     val currentAddEditOrderDetails: ProductOrderDetails? = null,
     val currentAddEditOrderState: MutableStateFlow<ResultState<ProductOrderCreateRequest>> = MutableStateFlow(ResultState.Idle),
     val currentCustomerDetails: CustomerAnyRepresentation? = null,
     val isCurrentOrderNew: Boolean = true,
     val currentProductVariantDetailsList: List<ProductVariantOrderItem> = emptyList(),
     val currentOrderProductVariantsImagesMap: Map<UUID, ImageBitmap?> = emptyMap(),
+
 
     val showOrdersList: Boolean = true,
     val isFilterBottomSheetExpanded: Boolean = false,

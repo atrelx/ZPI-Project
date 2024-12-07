@@ -4,7 +4,9 @@ import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.api.requests.ProductOrderCreateRequest
 import com.example.amoz.api.responses.MessageResponse
+import com.example.amoz.models.InvoiceSummary
 import kotlinx.serialization.json.JsonElement
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 import java.util.UUID
@@ -25,7 +27,7 @@ interface ProductOrderService {
     @PUT("api/productOrders/{productOrderId}/generateInvoice")
     suspend fun generateInvoice(
         @Path("productOrderId") productOrderId: UUID
-    ): Response<Unit>
+    ): Response<InvoiceSummary>
 
     @DELETE("api/productOrders/{productOrderId}")
     suspend fun removeProductOrder(
@@ -33,9 +35,9 @@ interface ProductOrderService {
     ): Response<Unit>
 
     @GET("api/productOrders/invoice/{invoiceId}")
-    suspend fun getInvoiceDetails(
+    suspend fun downloadInvoicePDF(
         @Path("invoiceId") invoiceId: UUID
-    ): Response<JsonElement>
+    ): Response<ResponseBody>
 
     @GET("api/productOrders/{productOrderId}")
     suspend fun getProductOrderDetails(

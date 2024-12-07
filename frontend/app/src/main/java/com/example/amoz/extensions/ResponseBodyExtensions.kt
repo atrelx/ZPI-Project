@@ -10,3 +10,9 @@ fun ResponseBody?.toImageBitmap(): ImageBitmap? {
         byteArray.toBitmap().asImageBitmap()
     }
 }
+
+fun ResponseBody?.toByteArray(): ByteArray? {
+    return this?.byteStream()?.use { inputStream ->
+        inputStream.readBytes()
+    }
+}

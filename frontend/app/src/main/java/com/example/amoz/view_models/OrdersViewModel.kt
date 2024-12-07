@@ -161,7 +161,16 @@ class OrdersViewModel @Inject constructor (
         performRepositoryAction(
             binding = null,
             failureMessage = "Could not generate invoice, try again",
-            action = { orderRepository.generateInvoice(orderId) }
+            action = { orderRepository.generateInvoice(orderId)  },
+            onSuccess = {
+                performRepositoryAction(
+                    binding = _ordersUiState.value.currentInvoicePDFByteArray,
+                    failureMessage = "Could not download invoice, try again",
+                    action = {
+                        orderRepository.downloadInvoicePDF(it.invoiceId)
+                    }
+                )
+            }
         )
     }
 
@@ -346,10 +355,10 @@ class OrdersViewModel @Inject constructor (
     }
 
     fun fetchOrdersListOnScreenLoad() {
-            if (_ordersUiState.value.ordersListFetched.value is ResultState.Idle) {
-                fetchOrdersList()
-            }
+        if (_ordersUiState.value.ordersListFetched.value is ResultState.Idle) {
+            fetchOrdersList()
         }
+    }
 
     private fun calculateOrderTotals() {
         var totalAmount = 0

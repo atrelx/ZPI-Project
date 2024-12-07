@@ -1,9 +1,12 @@
 package com.example.amoz.api.repositories
 
+import com.example.amoz.R
 import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.api.requests.ProductOrderCreateRequest
 import com.example.amoz.api.services.ProductOrderService
+import com.example.amoz.extensions.toByteArray
+import com.example.amoz.models.InvoiceSummary
 import kotlinx.serialization.json.JsonElement
 import java.util.UUID
 import javax.inject.Inject
@@ -24,8 +27,8 @@ class ProductOrderRepository @Inject constructor(
         }
     }
 
-    suspend fun generateInvoice(productOrderId: UUID) {
-        performRequest {
+    suspend fun generateInvoice(productOrderId: UUID): InvoiceSummary? {
+        return performRequest {
             productOrderService.generateInvoice(productOrderId)
         }
     }
@@ -36,11 +39,11 @@ class ProductOrderRepository @Inject constructor(
         }
     }
 
-//    suspend fun getInvoiceDetails(invoiceId: UUID): JsonElement? {
-//        return performRequest {
-//            productOrderService.getInvoiceDetails(invoiceId)
-//        }
-//    }
+    suspend fun downloadInvoicePDF(invoiceId: UUID): ByteArray? {
+        return performRequest {
+            productOrderService.downloadInvoicePDF(invoiceId)
+        }.toByteArray()
+    }
 
     suspend fun getProductOrderDetails(productOrderId: UUID): com.example.amoz.models.ProductOrderDetails? {
         return performRequest {
