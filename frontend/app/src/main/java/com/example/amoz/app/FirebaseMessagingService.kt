@@ -51,20 +51,26 @@ class FirebaseMessagingService  : FirebaseMessagingService() {
         val channel = NotificationChannel(channelId, channelName, importance)
         notificationManager.createNotificationChannel(channel)
 
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        val notification = NotificationCompat.Builder(this, channelId)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_launcher_round)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
-            .build()
 
+        if (!deeplink.isNullOrEmpty()) {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deeplink))
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            val pendingIntent = PendingIntent.getActivity(
+                this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            notificationBuilder.setContentIntent(pendingIntent)
+        }
+
+        val notification = notificationBuilder.build()
         notificationManager.notify(0, notification)
     }
+
 }
