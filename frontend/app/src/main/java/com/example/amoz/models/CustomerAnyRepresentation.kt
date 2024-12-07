@@ -1,13 +1,11 @@
-package com.example.amoz.pickers
+package com.example.amoz.models
 
 import com.example.amoz.api.serializers.UUIDSerializer
-import com.example.amoz.models.CustomerB2B
-import com.example.amoz.models.CustomerB2C
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
-data class GeneralCustomerInfo(
+data class CustomerAnyRepresentation(
     @Serializable(with = UUIDSerializer::class)
     val customerId: UUID,
     val nameOnInvoice: String,
