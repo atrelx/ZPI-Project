@@ -99,6 +99,7 @@ fun CompanyCustomersScreen(
                                 onPullToRefresh = {companyViewModel.fetchCustomersB2B()}
                             ) { customers ->
                                 B2CCustomerScreen(
+                                    navController = navController,
                                     b2cCustomersList = customers,
                                     companyViewModel = companyViewModel,
                                     callSnackBar = callSnackBar
@@ -114,6 +115,7 @@ fun CompanyCustomersScreen(
                                 onPullToRefresh = {companyViewModel.fetchCustomersB2C(true)}
                             ) { customers ->
                                 B2BCustomerScreen(
+                                    navController = navController,
                                     b2bCustomersList = customers,
                                     companyViewModel = companyViewModel,
                                     callSnackBar = callSnackBar,

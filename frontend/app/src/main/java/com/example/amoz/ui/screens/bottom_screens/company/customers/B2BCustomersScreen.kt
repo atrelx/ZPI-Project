@@ -29,19 +29,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.amoz.R
 import com.example.amoz.models.CustomerB2B
+import com.example.amoz.pickers.CustomerPicker
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun B2BCustomerScreen(
+    navController: NavHostController,
     b2bCustomersList: List<CustomerB2B>,
-    companyViewModel: CompanyViewModel = hiltViewModel(),
+    companyViewModel: CompanyViewModel,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
         val companyUiState by companyViewModel.companyUIState.collectAsState()
+        val customerPicker = CustomerPicker(navController)
 
         val customerAddSuccessful = stringResource(id = R.string.company_add_customer_successful)
         val customerEditSuccessful = stringResource(id = R.string.company_update_customer_successful)
@@ -63,8 +67,13 @@ fun B2BCustomerScreen(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
-                                companyViewModel.updateCustomerB2BCreateRequestState(customerB2B)
-                                companyViewModel.expandAddEditB2BCustomerBottomSheet(true)
+                                if (customerPicker.isCustomerPickerMode()) {
+                                    customerPicker.pickCustomer(customerB2B)
+                                }
+                                else {
+                                    companyViewModel.updateCustomerB2BCreateRequestState(customerB2B)
+                                    companyViewModel.expandAddEditB2BCustomerBottomSheet(true)
+                                }
                             },
                         headlineContent = { Text(customerB2B.nameOnInvoice) },
                         supportingContent = { Text(text = customerB2B.address.fullAddress) },
@@ -75,21 +84,23 @@ fun B2BCustomerScreen(
                 }
             }
             // -------------------- FAB --------------------
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        companyViewModel.updateCustomerB2BCreateRequestState(null)
-                        companyViewModel.expandAddEditB2BCustomerBottomSheet(true)
-                    },
+            if(!customerPicker.isCustomerPickerMode()) {
+                Box(
                     modifier = Modifier
-                        .padding(16.dp),
-                    icon = { Icon(Icons.Filled.Add, null) },
-                    text = { Text(text = "Add customer") }
-                )
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            companyViewModel.updateCustomerB2BCreateRequestState(null)
+                            companyViewModel.expandAddEditB2BCustomerBottomSheet(true)
+                        },
+                        modifier = Modifier
+                            .padding(16.dp),
+                        icon = { Icon(Icons.Filled.Add, null) },
+                        text = { Text(text = "Add customer") }
+                    )
+                }
             }
         }
         if (companyUiState.addB2BCustomerBottomSheetExpanded) {
