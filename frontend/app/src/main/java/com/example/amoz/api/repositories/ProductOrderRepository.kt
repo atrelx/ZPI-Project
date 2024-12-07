@@ -30,6 +30,12 @@ class ProductOrderRepository @Inject constructor(
         }
     }
 
+    suspend fun removeProductOrder(productOrderId: UUID) {
+        performRequest {
+            productOrderService.removeProductOrder(productOrderId)
+        }
+    }
+
 //    suspend fun getInvoiceDetails(invoiceId: UUID): JsonElement? {
 //        return performRequest {
 //            productOrderService.getInvoiceDetails(invoiceId)

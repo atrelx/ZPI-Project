@@ -51,8 +51,6 @@ class MainActivity : ComponentActivity(), SignInDelegate {
 
                 AppMainScaffold(
                     navigationController = navController,
-                    authenticationViewModel = authenticationViewModel,
-                    userViewModel = userViewModel,
                     onUserAuthorizationCheck = {
                         if (!authenticationViewModel.isSignedIn()) {
                             Log.d("MainActivity", "User is not signed in.")

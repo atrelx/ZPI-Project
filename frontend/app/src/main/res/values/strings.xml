@@ -138,13 +138,18 @@
 
     <string name="add_new">Add new</string>
     <string name="add_new_product">Add new product</string>
+    <string name="choose_a_customer">Choose a customer</string>
+    <string name="delete_a_customer">Delete a customer</string>
     <string name="enter_quantity">Enter the amount</string>
     <string name="quantity">Quantity</string>
+    <string name ="increase_quantity">Increase quantity</string>
+    <string name="decrease_quantity">Decrease quantity</string>
+    <string name="invalid_quantity_range">Please enter a quantity between %1$d and %2$d</string>
     <string name="remove_product_from_order_title">Remove product from order</string>
     <string name="remove_product_from_order_text">Are you sure you want to remove this product from the order?</string>
 
     <string name="orders_create_an_order">Create an order</string>
-    <string name="orders_edit_an_order">Edit an order</string>
+    <string name="orders_update_an_order">Update an order</string>
 
     <string name="orders_created_from">Created from</string>
     <string name="orders_created_to">Created to</string>
@@ -230,10 +235,10 @@
 
     <string name="price_from">Price from</string>
     <string name="price_to">Price to</string>
-    <string name="creation_date_from">Creation date from</string>
-    <string name="creation_date_to">Creation date to</string>
-    <string name="sending_date_from">Sending date from</string>
-    <string name="sending_date_to">Sending date to</string>
+    <string name="creation_date_from">Creation from</string>
+    <string name="creation_date_to">Creation to</string>
+    <string name="sending_date_from">Sending from</string>
+    <string name="sending_date_to">Sending to</string>
 
     <string name="sorting_type">Sorting type</string>
     <string name="sorting_type_none">No sorting</string>

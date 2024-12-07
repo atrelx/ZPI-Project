@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import com.example.amoz.api.repositories.EmployeeRepository
 import com.example.amoz.api.repositories.UserRepository
 import com.example.amoz.api.requests.UserRegisterRequest
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.ui.states.EmployeeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,11 +34,6 @@ class EmployeeViewModel @Inject constructor(
 
     var selectedNewImageUri: Uri? by mutableStateOf(null)
     var userImageBitmap: ImageBitmap? by mutableStateOf(null)
-
-    init {
-        fetchEmployee()
-        fetchEmployeeImage()
-    }
 
     private fun fetchEmployee() {
 //        val mockEmployee = Employee(
@@ -83,6 +79,13 @@ class EmployeeViewModel @Inject constructor(
                 imageBitmap
             }
         )
+    }
+
+    fun fetchEmployeeOnScreenLoad() {
+        if (employeeUiState.value.fetchedEmployeeState.value is ResultState.Idle) {
+            fetchEmployee()
+            fetchEmployeeImage()
+        }
     }
 
      fun updateUser(userRegisterRequest: UserRegisterRequest, navController: NavController) {

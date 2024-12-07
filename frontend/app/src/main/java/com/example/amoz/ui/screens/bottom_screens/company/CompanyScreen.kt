@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,6 +44,11 @@ fun CompanyScreen(
     companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList()
 ) {
     AmozApplicationTheme {
+
+        LaunchedEffect (true) {
+            companyViewModel.fetchCompanyDetailsOnScreenLoad()
+        }
+
         val companyUIState by companyViewModel.companyUIState.collectAsState()
         val clipboardManager = LocalClipboardManager.current
 

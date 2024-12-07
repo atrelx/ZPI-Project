@@ -17,7 +17,7 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface CustomerService {
-    @GET("api/customers")
+    @GET("api/customers/{customerId}")
     suspend fun getCustomerDetails(@Path("customerId") customerId: UUID): Response<JsonElement>
 
     @POST("api/customers/b2b")

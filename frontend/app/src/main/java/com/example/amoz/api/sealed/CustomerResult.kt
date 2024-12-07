@@ -1,6 +1,7 @@
 package com.example.amoz.api.sealed
 
 import com.example.amoz.extensions.tryParse
+import com.example.amoz.models.CustomerAnyRepresentation
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
 import kotlinx.serialization.json.Json
@@ -24,6 +25,15 @@ sealed class CustomerResult {
             throw Exception("Invalid customer type")
         }
     }
+
+
+    fun toCustomerAnyRepresentation(): CustomerAnyRepresentation {
+        return when (this) {
+            is B2B -> CustomerAnyRepresentation(this.data)
+            is B2C -> CustomerAnyRepresentation(this.data)
+        }
+    }
 }
+
 
 

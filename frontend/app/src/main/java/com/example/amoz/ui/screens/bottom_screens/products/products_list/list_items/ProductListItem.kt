@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -32,7 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.ProductSummary
-import com.example.amoz.ui.components.DismissBackground
+import com.example.amoz.ui.components.dissmiss_backgrounds.DismissBackground
 import com.example.amoz.ui.components.ResultStateView
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID

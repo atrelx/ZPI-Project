@@ -142,6 +142,7 @@ fun DateTextField(
                     onDateChange(selectedDateTime)
                 }
                 isTimePickerVisible = false
+                isDatePickerVisible = false
             },
             0,
             0,

@@ -27,6 +27,11 @@ interface ProductOrderService {
         @Path("productOrderId") productOrderId: UUID
     ): Response<Unit>
 
+    @DELETE("api/productOrders/{productOrderId}")
+    suspend fun removeProductOrder(
+        @Path("productOrderId") productOrderId: UUID
+    ): Response<Unit>
+
     @GET("api/productOrders/invoice/{invoiceId}")
     suspend fun getInvoiceDetails(
         @Path("invoiceId") invoiceId: UUID

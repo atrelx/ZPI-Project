@@ -29,7 +29,6 @@ import com.example.amoz.ui.screens.entry.RegisterImageScreen
 import com.example.amoz.ui.screens.entry.RegisterScreen
 import com.example.amoz.ui.screens.profile.ProfileEditingScreen
 import com.example.amoz.ui.screens.profile.ProfileScreen
-import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.EmployeeViewModel
 import com.example.amoz.view_models.OrdersViewModel
 import com.example.amoz.view_models.UserViewModel
@@ -40,7 +39,6 @@ fun AppNavigationHost(
     paddingValues: PaddingValues,
     navigateToScreen: (NavItem) -> Unit,
     callSnackBar: (String, ImageVector?) -> Unit,
-    authenticationViewModel: AuthenticationViewModel,
 ) {
     val companyViewModel: CompanyViewModel = hiltViewModel()
     val ordersViewModel: OrdersViewModel = hiltViewModel()

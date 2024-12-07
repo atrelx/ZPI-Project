@@ -48,10 +48,12 @@ class CompanyViewModel @Inject constructor(
     private val _companyCreateRequestState = MutableStateFlow(CompanyCreateRequest())
     val companyCreateRequestState: StateFlow<CompanyCreateRequest> = _companyCreateRequestState.asStateFlow()
 
-    init {
-        fetchCompanyDetails()
-        fetchCompanyImage()
-        fetchEmployeeData()
+    fun fetchCompanyDetailsOnScreenLoad() {
+        if (_companyUIState.value.company.value is ResultState.Idle) {
+            fetchCompanyDetails()
+            fetchCompanyImage()
+            fetchEmployeeData()
+        }
     }
 
     fun createCompany(navController: NavController) {
@@ -64,9 +66,12 @@ class CompanyViewModel @Inject constructor(
                 action = {
                     companyRepository.createCompany(companyCreateRequest)
                 },
-                onSuccess = { company ->
+                onSuccess = {
+                    fetchCompanyDetails()
                     if (newCompanyImageUri.value != null) {
                         uploadCompanyProfilePicture()
+                        navController.navigate(Screens.Company.route)
+                    } else {
                         navController.navigate(Screens.Company.route)
                     }
                 }

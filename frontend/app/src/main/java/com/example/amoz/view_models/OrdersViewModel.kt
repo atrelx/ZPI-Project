@@ -6,14 +6,17 @@ import androidx.compose.material.icons.filled.Addchart
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.enums.Status
+import com.example.amoz.api.repositories.CustomerRepository
 import com.example.amoz.api.repositories.ProductOrderRepository
+import com.example.amoz.api.repositories.ProductVariantRepository
 import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.api.requests.ProductOrderCreateRequest
 import com.example.amoz.api.requests.ProductOrderItemCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.models.CustomerAnyRepresentation
 import com.example.amoz.models.ProductOrderDetails
-import com.example.amoz.models.ProductSummary
 import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.screens.bottom_screens.orders.orders_list.OrderListFilter
 import com.example.amoz.ui.states.OrderUIState
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
@@ -29,68 +33,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrdersViewModel @Inject constructor (
-    private val orderRepository: ProductOrderRepository
+    private val orderRepository: ProductOrderRepository,
+    private val productRepository: ProductVariantRepository,
+    private val customerRepository: CustomerRepository
 ): BaseViewModel() {
 
-    private val _orderUiState = MutableStateFlow(OrderUIState())
-    val orderUiState: StateFlow<OrderUIState> = _orderUiState.asStateFlow()
+    private val _ordersUiState = MutableStateFlow(OrderUIState())
+    val ordersUiState: StateFlow<OrderUIState> = _ordersUiState.asStateFlow()
 
     private val _addressCreateRequestState = MutableStateFlow(
         AddressCreateRequest()
     )
 
-    private val _productOrderItemsState = MutableStateFlow(
-        mutableListOf<ProductOrderItemCreateRequest>()
-    )
-
     private val orderFilter = OrderListFilter()
-
-    var currentProductVariantDetailsList = emptyList<ProductVariantOrderItem>()
-    val currentPickedVariant: ProductVariantDetails? = null
-
-    init {
-        fetchOrdersList()
-    }
 
     // --------------------------------
 
-    fun addProduct(product: ProductSummary) {
-        _orderUiState.update {
-            it.copy(
-                productsList = it.productsList + product
-            )
-        }
-    }
-
     fun changeFilterBottomSheetStatus(state: Boolean) {
-        _orderUiState.update { it.copy(isFilterBottomSheetExpanded = state) }
+        _ordersUiState.update { it.copy(isFilterBottomSheetExpanded = state) }
     }
 
     fun changeAddressBottomSheetStatus(state: Boolean) {
-        _orderUiState.update { it.copy(isAddressBottomSheetExpanded = state) }
-    }
-
-    fun changeDropdownStatus(state: Boolean) {
-        _orderUiState.update { it.copy(isDropdownStatusExpanded = state) }
-    }
-
-    fun changeDatePicker(state: Boolean) {
-        _orderUiState.update {
-            it.copy(isDatePickerVisible = state)
-        }
-    }
-
-    fun changeTimePicker(state: Boolean) {
-        _orderUiState.update { it.copy(isTimePickerVisible = state) }
-    }
-
-    fun changeQuantityBottomSheet(state: Boolean) {
-        _orderUiState.update { it.copy(isQuantityBottomSheetExpanded = state) }
+        _ordersUiState.update { it.copy(isAddressBottomSheetExpanded = state) }
     }
 
     // --------------------------------
 
-    fun createOrderRequestFromVariantItems(
+    private fun createOrderRequestFromVariantItems(
         listVariantOrderItem: List<ProductVariantOrderItem>,
         status: Status = Status.NEW,
         address: AddressCreateRequest? = null,
@@ -116,7 +85,7 @@ class OrdersViewModel @Inject constructor (
     }
 
 
-    fun createProductOrder(orderCreateRequest: ProductOrderCreateRequest, listVariantOrderItem: List<ProductVariantOrderItem>) {
+    private fun createProductOrder(orderCreateRequest: ProductOrderCreateRequest, listVariantOrderItem: List<ProductVariantOrderItem>) {
         val finalOrderRequest = createOrderRequestFromVariantItems(
             listVariantOrderItem = listVariantOrderItem,
             status = orderCreateRequest.status,
@@ -136,7 +105,37 @@ class OrdersViewModel @Inject constructor (
         )
     }
 
-    fun updateProductOrder(uuid: UUID, orderCreateRequest: ProductOrderCreateRequest) {
+    fun saveCurrentAddEditOrderState(orderCreateRequest: ProductOrderCreateRequest,
+                                     listVariantOrderItem: List<ProductVariantOrderItem>,
+                                     currentCustomerDetails: CustomerAnyRepresentation?
+    ) {
+        val finalOrderRequest = createOrderRequestFromVariantItems(
+            listVariantOrderItem = listVariantOrderItem,
+            status = orderCreateRequest.status,
+            address = orderCreateRequest.address,
+            customerId = orderCreateRequest.customerId,
+            trackingNumber = orderCreateRequest.trackingNumber,
+            timeOfSending = orderCreateRequest.timeOfSending
+        )
+
+        _ordersUiState.update { it.copy(
+            currentAddEditOrderState = MutableStateFlow(ResultState.Success(finalOrderRequest)),
+            currentProductVariantDetailsList = listVariantOrderItem,
+            currentCustomerDetails = currentCustomerDetails,
+        ) }
+    }
+
+    fun clearCurrentAddEditOrderState() {
+        _ordersUiState.update { it.copy(
+            currentAddEditOrderState = MutableStateFlow(ResultState.Idle),
+            currentProductVariantDetailsList = emptyList(),
+            currentOrderProductVariantsImagesMap = emptyMap(),
+            currentAddEditOrderDetails = null,
+            isCurrentOrderNew = true,
+        ) }
+    }
+
+    private fun updateProductOrder(uuid: UUID, orderCreateRequest: ProductOrderCreateRequest) {
         performRepositoryAction(
             binding = null,
             failureMessage = "Could not update product order, try again",
@@ -147,17 +146,34 @@ class OrdersViewModel @Inject constructor (
         )
     }
 
+    fun removeProductOrder(orderId: UUID) {
+        performRepositoryAction(
+            binding = null,
+            failureMessage = "Could not remove order, try again",
+            action = { orderRepository.removeProductOrder(orderId) },
+            onSuccess = {
+                fetchOrdersList(skipLoading = false)
+            }
+        )
+    }
+
+    fun generateProductOrderInvoice(orderId: UUID) {
+        performRepositoryAction(
+            binding = null,
+            failureMessage = "Could not generate invoice, try again",
+            action = { orderRepository.generateInvoice(orderId) }
+        )
+    }
+
     fun chooseProductOrderOperation(orderCreateRequest: ProductOrderCreateRequest, currentProductVariantDetailsList: List<ProductVariantOrderItem>) {
-        if (_orderUiState.value.currentAddEditOrderDetails == null) {
+        if (_ordersUiState.value.currentAddEditOrderDetails == null) {
             createProductOrder(orderCreateRequest, currentProductVariantDetailsList)
         }
         else {
-            val uuid = _orderUiState.value.currentAddEditOrderDetails?.productOrderId
+            val uuid = _ordersUiState.value.currentAddEditOrderDetails?.productOrderId
             updateProductOrder(uuid!!, orderCreateRequest)
         }
     }
-
-
 
     fun updateAddress(request: AddressCreateRequest?) {
         request?.let {
@@ -167,18 +183,17 @@ class OrdersViewModel @Inject constructor (
 
     fun updateCurrentAddEditOrder(orderId: UUID?) {
         if (orderId == null) {
-            _orderUiState.update { it.copy(
+            _ordersUiState.update { it.copy(
                 currentAddEditOrderDetails = null,
             ) }
-            _orderUiState.value.currentAddEditOrderState.value = ResultState.Success(ProductOrderCreateRequest())
-            Log.d("OrdersViewModelNullOrder", "State updated to: ${_orderUiState.value.currentAddEditOrderState.value}")
+            _ordersUiState.value.currentAddEditOrderState.value = ResultState.Success(ProductOrderCreateRequest())
         }
         else {
             fetchOrderDetails(orderId)
         }
     }
 
-    fun createProductVariantListFromOrderDetails(orderDetails: ProductOrderDetails?): List<ProductVariantOrderItem> {
+    private fun createProductVariantListFromOrderDetails(orderDetails: ProductOrderDetails?): List<ProductVariantOrderItem> {
         return orderDetails?.productOrderItems?.map { item ->
             ProductVariantOrderItem(
                 productVariant = item.productVariant,
@@ -188,45 +203,48 @@ class OrdersViewModel @Inject constructor (
         } ?: emptyList()
     }
 
-    fun fetchOrderDetails(orderId: UUID) {
-//        val productOrderDetailsMock = ProductOrderDetails(
-//            productOrderId = orderId,
-//            productOrderItems = listOf(),
-//            address = null,
-//            customer = null,
-//            trackingNumber = null,
-//            timeOfSending = null,
-//            timeOfCreation = LocalDateTime.now(),
-//            status = Status.NEW,
-//            totalDue = BigDecimal.ZERO
-//        )
-//        val productOrderRequestMock = ProductOrderCreateRequest(productOrderDetailsMock)
-//
-//        _orderUiState.update { it.copy(
-//            currentAddEditOrderDetails = productOrderDetailsMock,
-//        ) }
-//        _orderUiState.value.currentAddEditOrderState.value = ResultState.Success(productOrderRequestMock)
-//        currentProductVariantDetailsList = createProductVariantListFromOrderDetails(productOrderDetailsMock)
-
+    private fun fetchOrderDetails(orderId: UUID) {
         performRepositoryAction(
-            binding = _orderUiState.value.currentAddEditOrderState,
+            binding = _ordersUiState.value.currentAddEditOrderState,
             failureMessage = "Could not fetch product details, try again",
             action = {
                 val orderDetails = orderRepository.getProductOrderDetails(orderId)
                 orderDetails?.let {
+                    Log.d("orderDetails", "$orderDetails")
                     val productOrderRequest = ProductOrderCreateRequest(orderDetails)
-                    _orderUiState.update { it.copy(currentAddEditOrderDetails = orderDetails) }
-//                    _orderCreateRequestState.update { productOrderRequest }
-
-                    currentProductVariantDetailsList = createProductVariantListFromOrderDetails(orderDetails)
+                    val productVariantList = createProductVariantListFromOrderDetails(orderDetails)
+                    _ordersUiState.update { it.copy(
+                        currentAddEditOrderDetails = orderDetails,
+                        currentProductVariantDetailsList = productVariantList,
+                        isCurrentOrderNew = false,
+                    ) }
+                    Log.d("currentProductVariantDetailsList", "$productVariantList")
                     productOrderRequest
                 }
             },
+            onSuccess = {
+                it.customerId?.let { customerId ->
+                    getCustomerDetails(customerId)
+                }
+            }
+        )
+    }
+
+    private fun getCustomerDetails(customerId: UUID) {
+        performRepositoryAction(
+            binding = null,
+            failureMessage = "Could not fetch customer details, try again",
+            action = {
+                val details = customerRepository.getCustomerDetails(customerId)
+                if (details != null) {
+                    _ordersUiState.update { it.copy(currentCustomerDetails = details) }
+                }
+            }
         )
     }
 
     fun updateSearchQuery(query: String) {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 searchQuery = query,
             )
@@ -235,7 +253,7 @@ class OrdersViewModel @Inject constructor (
     }
 
     private fun applyFilters() {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 filteredSortedOrdersList = if (currState.showOrdersList) {
                     orderFilter.filterOrders(
@@ -249,7 +267,7 @@ class OrdersViewModel @Inject constructor (
     }
 
     fun clearPriceFilter(isFrom: Boolean) {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 filterParams = currState.filterParams.copy(
                     priceFrom = if (isFrom) null else currState.filterParams.priceFrom,
@@ -261,7 +279,7 @@ class OrdersViewModel @Inject constructor (
     }
 
     fun clearTimeOfSendingFilter(isFrom: Boolean) {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 filterParams = currState.filterParams.copy(
                     timeOfSendingFrom = if (isFrom) null else currState.filterParams.timeOfSendingFrom,
@@ -273,7 +291,7 @@ class OrdersViewModel @Inject constructor (
     }
 
     fun clearTimeOfCreationFilter(isFrom: Boolean) {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 filterParams = currState.filterParams.copy(
                     timeOfCreationFrom = if (isFrom) null else currState.filterParams.timeOfCreationFrom,
@@ -285,7 +303,7 @@ class OrdersViewModel @Inject constructor (
     }
 
     fun clearStatusFilter() {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 filterParams = currState.filterParams.copy(
                     status = null
@@ -296,7 +314,7 @@ class OrdersViewModel @Inject constructor (
     }
 
     fun cancelFilterParams() {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 filterParams = OrderFilterParams()
             )
@@ -305,7 +323,7 @@ class OrdersViewModel @Inject constructor (
     }
 
     fun saveFilterParams(filterParams: OrderFilterParams) {
-        _orderUiState.update { currState ->
+        _ordersUiState.update { currState ->
             currState.copy(
                 filterParams = filterParams
             )
@@ -313,33 +331,32 @@ class OrdersViewModel @Inject constructor (
         applyFilters()
     }
 
-    // --------------------------------
-
     fun fetchOrdersList(skipLoading: Boolean = false) {
-//        val ordersList = mockProductOrderSummaries()
-//        _orderUiState.update { it.copy(ordersList = ordersList) }
-//        _orderUiState.update { it.copy(ordersListFetched = MutableStateFlow(ResultState.Success(ordersList))) }
-//        applyFilters()
-
         performRepositoryAction(
-            binding = _orderUiState.value.ordersListFetched,
+            binding = _ordersUiState.value.ordersListFetched,
             failureMessage = "Could not fetch products, try again",
             skipLoading = skipLoading,
             action = { orderRepository.getAllProductOrders() },
             onSuccess = { ordersList ->
-                _orderUiState.update { it.copy(ordersList = ordersList) }
+                _ordersUiState.update { it.copy(ordersList = ordersList) }
                 calculateOrderTotals()
                 applyFilters()
             }
         )
     }
 
-    fun calculateOrderTotals() {
+    fun fetchOrdersListOnScreenLoad() {
+            if (_ordersUiState.value.ordersListFetched.value is ResultState.Idle) {
+                fetchOrdersList()
+            }
+        }
+
+    private fun calculateOrderTotals() {
         var totalAmount = 0
         var totalAmountNew = 0
         var totalPrice = BigDecimal.ZERO
 
-        _orderUiState.value.ordersList.forEach { order ->
+        _ordersUiState.value.ordersList.forEach { order ->
             totalAmount += order.sampleProductOrderItem.amount
             totalPrice += order.totalDue
             if (order.status == Status.NEW) {
@@ -347,35 +364,89 @@ class OrdersViewModel @Inject constructor (
             }
         }
 
-        _orderUiState.update { it.copy(
+        _ordersUiState.update { it.copy(
             amountOfItems = totalAmount,
             itemsSumPrice = totalPrice,
             amountOfItemsNewStatus = totalAmountNew,
         ) }
     }
 
-    fun createHomeCardList(): List<HomeCardItem> {
+    fun addProductVariantToList(productVariantList: List<ProductVariantOrderItem>, productVariantOrderItem: ProductVariantOrderItem): List<ProductVariantOrderItem> {
+        val updatedProductVariantList = productVariantList.toMutableList()
+        if (updatedProductVariantList.none { it.productVariant.productVariantId == productVariantOrderItem.productVariant.productVariantId }) {
+            updatedProductVariantList.add(productVariantOrderItem)
+        }
+        return updatedProductVariantList
+    }
+
+    fun removeProductVariantFromList(productVariantList: List<ProductVariantOrderItem>, productVariantOrderItem: ProductVariantOrderItem): List<ProductVariantOrderItem> {
+        val updatedProductVariantList = productVariantList.toMutableList()
+        updatedProductVariantList.remove(productVariantOrderItem)
+        return updatedProductVariantList
+    }
+
+    fun loadProductVariantImage(productVariantId: UUID) {
+        viewModelScope.launch {
+            _ordersUiState.update { currentState ->
+                currentState.copy(
+                    productVariantsImagesMap = currentState.productVariantsImagesMap + (productVariantId to null)
+                )
+            }
+
+            val image = productRepository.getProductVariantPicture(productVariantId)
+            _ordersUiState.update { currentState ->
+                currentState.copy(
+                    productVariantsImagesMap = currentState.productVariantsImagesMap + (productVariantId to image)
+                )
+            }
+        }
+    }
+
+    fun loadCurrentOrderProductVariantImage(productVariantId: UUID) {
+        viewModelScope.launch {
+            _ordersUiState.update { currentState ->
+                currentState.copy(
+                    currentOrderProductVariantsImagesMap = currentState.currentOrderProductVariantsImagesMap + (productVariantId to null)
+                )
+            }
+
+            val image = productRepository.getProductVariantPicture(productVariantId)
+            _ordersUiState.update { currentState ->
+                currentState.copy(
+                    currentOrderProductVariantsImagesMap = currentState.currentOrderProductVariantsImagesMap + (productVariantId to image)
+                )
+            }
+        }
+    }
+
+    fun calculateTotalPrice(productVariantList: List<ProductVariantOrderItem>): BigDecimal {
+        return productVariantList.fold(BigDecimal.ZERO) { acc, item ->
+            acc + item.totalPrice
+        }
+    }
+
+    fun createHomeCardList(orderUIState: OrderUIState): List<HomeCardItem> {
         return listOf(
             HomeCardItem(
                 backgroundImageResource = 0,
                 cardTitle = "Revenues",
                 cardTitleIcon = Icons.Filled.Addchart,
                 valueDescription = "Total revenues:",
-                value = _orderUiState.value.itemsSumPrice.toString()
+                value = orderUIState.itemsSumPrice.toString()
             ),
             HomeCardItem(
                 backgroundImageResource = 0,
                 cardTitle = "Sells",
                 cardTitleIcon = Icons.Filled.BarChart,
                 valueDescription = "Total sells:",
-                value = _orderUiState.value.amountOfItems.toString()
+                value = orderUIState.amountOfItems.toString()
             ),
             HomeCardItem(
                 backgroundImageResource = 0,
                 cardTitle = "New orders",
                 cardTitleIcon = Icons.Filled.StackedLineChart,
                 valueDescription = "Total new orders:",
-                value = _orderUiState.value.amountOfItemsNewStatus.toString()
+                value = orderUIState.amountOfItemsNewStatus.toString()
             )
         )
     }

@@ -2,7 +2,6 @@ package com.example.amoz.ui.screens.entry
 
 import android.app.Activity
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,24 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,17 +34,14 @@ import com.example.amoz.api.requests.ContactPersonCreateRequest
 import com.example.amoz.api.requests.PersonCreateRequest
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.PrimaryOutlinedButton
-import com.example.amoz.ui.components.SexDropdownMenu
+import com.example.amoz.ui.components.dropdown_menus.SexDropdownMenu
 import com.example.amoz.ui.components.text_fields.DateTextField
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.UserViewModel
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen (
     navController: NavHostController,
@@ -65,7 +49,6 @@ fun RegisterScreen (
     userViewModel: UserViewModel = hiltViewModel(),
     authenticationViewModel: AuthenticationViewModel = hiltViewModel(),
 ){
-    val userUiState by userViewModel.userUiState.collectAsState()
     val context = LocalContext.current
 
     var personData by remember {

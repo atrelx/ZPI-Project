@@ -1,5 +1,4 @@
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,22 +12,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.amoz.R
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.text_fields.SearchTextField
 import com.example.amoz.ui.screens.bottom_screens.orders.orders_list.FilterChipsOrders
-import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductListItem
-import com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items.ProductVariantListItem
 import com.example.amoz.view_models.OrdersViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.graphics.Color
+import com.example.amoz.ui.components.list_items.OrderGroupHeader
+import com.example.amoz.ui.components.list_items.SwipeOrderListItem
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -37,9 +35,11 @@ import java.util.Locale
 fun FilteredOrdersList(
     onMoreFiltersClick: () -> Unit,
     onOrderEdit: (UUID) -> Unit,
+    onOrderRemove: (UUID) -> Unit,
+    onGenerateInvoice: (UUID) -> Unit,
     ordersViewModel: OrdersViewModel,
 ) {
-    val orderListUiState by ordersViewModel.orderUiState.collectAsState()
+    val orderListUiState by ordersViewModel.ordersUiState.collectAsState()
     val currContext = LocalContext.current
     val appPreferences = remember { AppPreferences(currContext) }
 
@@ -53,7 +53,7 @@ fun FilteredOrdersList(
             ordersViewModel.fetchOrdersList(skipLoading = true)
         }
     ) {
-        val dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault())
+        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
 
         val groupedOrders = orderListUiState.filteredSortedOrdersList
             .groupBy {
@@ -95,24 +95,21 @@ fun FilteredOrdersList(
                 )
             }
 
-            // Header for order group
             groupedOrders.forEach { (date, orders) ->
                 item {
-                    Text(
-                        text = date,
-                        style = MaterialTheme.typography.displaySmall,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                    OrderGroupHeader(date = date)
                 }
-            //Items inside order group
                 items(orders) { orderTemplate ->
                     Box(
                         modifier = Modifier.animateItem()
                     ) {
-                        OrderListItem(
+                        SwipeOrderListItem(
                             order = orderTemplate,
                             onOrderEdit = onOrderEdit,
-                            currency = currency!!
+                            onOrderRemove = onOrderRemove,
+                            onGenerateInvoice = onGenerateInvoice,
+                            currency = currency!!,
+                            ordersViewModel = ordersViewModel,
                         )
                     }
                 }

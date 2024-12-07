@@ -14,13 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.ui.components.filters.OrdersFilterBottomSheet
@@ -34,8 +34,13 @@ fun OrdersScreen(
     paddingValues: PaddingValues,
     ordersViewModel: OrdersViewModel,
 ) {
+
+    LaunchedEffect(true) {
+        ordersViewModel.clearCurrentAddEditOrderState()
+    }
+
     AmozApplicationTheme {
-        val ordersUiState by ordersViewModel.orderUiState.collectAsState()
+        val ordersUiState by ordersViewModel.ordersUiState.collectAsState()
 
         Surface(
             modifier = Modifier
@@ -46,11 +51,16 @@ fun OrdersScreen(
             FilteredOrdersList(
                 onMoreFiltersClick = {ordersViewModel.changeFilterBottomSheetStatus(true)},
                 onOrderEdit = {orderId ->
-                    Log.d("OrdersScreen", "Edit order with id: $orderId")
                     ordersViewModel.updateCurrentAddEditOrder(orderId)
                     navController.navigate(Screens.OrdersAddEdit.route)
                 },
-                ordersViewModel = ordersViewModel
+                onOrderRemove = {orderId ->
+                    ordersViewModel.removeProductOrder(orderId)
+                },
+                onGenerateInvoice = {orderId ->
+                    ordersViewModel.generateProductOrderInvoice(orderId)
+                },
+                ordersViewModel = ordersViewModel,
             )
 
             Box(

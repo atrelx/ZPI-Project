@@ -15,6 +15,10 @@ class ProductVariantPicker(navController: NavController)
         return getPickedItem(SavedStateHandleKeys.PICKED_PRODUCT_VARIANT_DETAILS)
     }
 
+    fun removePickedProductVariant() {
+        removePickedItem(SavedStateHandleKeys.PICKED_PRODUCT_VARIANT_DETAILS)
+    }
+
     fun navigateToProductScreen() {
         setNavElementsVisibleMode(false)
         setProductVariantPickerMode(true)
@@ -26,10 +30,6 @@ class ProductVariantPicker(navController: NavController)
         navController.popBackStack()
         setProductVariantPickerMode(mode = false)
         setNavElementsVisibleMode(mode = true)
-    }
-
-    fun removePickedProductVariant(){
-        removePickedItem(SavedStateHandleKeys.PICKED_PRODUCT_VARIANT_DETAILS)
     }
 
     private fun setProductVariantPickerMode(mode: Boolean) {

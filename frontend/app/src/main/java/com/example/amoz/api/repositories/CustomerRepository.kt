@@ -8,6 +8,7 @@ import com.example.amoz.models.CustomerB2C
 import com.example.amoz.api.requests.CustomerB2BCreateRequest
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.CustomerResult
+import com.example.amoz.models.CustomerAnyRepresentation
 import kotlinx.serialization.json.JsonElement
 import java.util.UUID
 import javax.inject.Inject
@@ -16,12 +17,13 @@ class CustomerRepository @Inject constructor(
     private val customerService: CustomerService
 ) : BaseRepository() {
 
-    suspend fun getCustomerDetails(customerId: UUID): CustomerResult? {
+    suspend fun getCustomerDetails(customerId: UUID): CustomerAnyRepresentation? {
         val customerJson = performRequest {
             customerService.getCustomerDetails(customerId)
         }
         if (customerJson != null) {
-            return CustomerResult.createCustomerDetails(customerJson)
+            val customerResult = CustomerResult.createCustomerDetails(customerJson)
+            return customerResult.toCustomerAnyRepresentation()
         }
         return null
     }

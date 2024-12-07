@@ -50,8 +50,6 @@ fun AppMainScaffold(
     appViewModel: AppViewModel = viewModel(),
     bottomNavigationItems: List<NavItem> = bottomNavigationBarNavItemsMap.values.toList(),
     navigationController: NavHostController = rememberNavController(),
-    userViewModel: UserViewModel = viewModel(),
-    authenticationViewModel: AuthenticationViewModel = viewModel(),
     onUserAuthorizationCheck: () -> Unit,
 ) {
     val appUiState by appViewModel.appUiState.collectAsState()
@@ -193,7 +191,6 @@ fun AppMainScaffold(
             paddingValues = paddingValues,
             callSnackBar = { text, icon -> callSnackBar(text = text, leadingIcon = icon) },
             navigateToScreen = { navigateToScreen(it) },
-            authenticationViewModel = authenticationViewModel
         )
 
         // -------------------- 'More' Bottom Sheet --------------------

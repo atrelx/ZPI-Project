@@ -1,13 +1,10 @@
 package com.example.amoz.ui.screens.bottom_screens.products.products_list.list_items
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AllInbox
@@ -30,15 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.amoz.R
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.ProductVariantSummary
-import com.example.amoz.ui.components.DismissBackground
+import com.example.amoz.ui.components.dissmiss_backgrounds.DismissBackground
 import com.example.amoz.ui.components.ResultStateView
-import com.example.amoz.ui.components.loadImageBitmapFromResource
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -66,6 +60,8 @@ fun ProductVariantListItem(
         },
         positionalThreshold = { it * positionalThreshold }
     )
+    var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
+
     SwipeToDismissBox(
         state = swipeState,
         enableDismissFromEndToStart = false,
@@ -93,17 +89,18 @@ fun ProductVariantListItem(
                             imageBitmap?.let {
                                 Image(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .size(56.dp),
-                                    bitmap = it,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop
+                                        .clip(RoundedCornerShape(10.dp)),
+                                    bitmap = imageBitmap,
+                                    contentDescription = null
                                 )
                             }
 
                         }
                     }
-                },
+                }
+
+
+            ,
             headlineContent = {
                 Text(
                     text = productVariant.variantName ?: "",

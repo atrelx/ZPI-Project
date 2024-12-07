@@ -129,24 +129,6 @@ class UserViewModel @Inject constructor(
             })
     }
 
-    fun updateUser() {
-        assertModelIsValid(createUserRegisterRequestState) { data ->
-            performRepositoryAction(_updateUserState, "Could not update user. Try again later.",
-                action = {
-                    userRepository.updateUser(data)
-                }
-            )
-        }
-    }
-
-    fun getProfilePicture() {
-        performRepositoryAction(_getProfilePictureState, "Could fetch profile picture. Try again later.",
-            action = {
-                userRepository.getProfilePicture()
-            }
-        )
-    }
-
     fun uploadProfilePicture() {
         performRepositoryAction(
             _uploadProfilePictureState,
@@ -168,7 +150,7 @@ class UserViewModel @Inject constructor(
                 updatePushToken()
                 if (!it) {
                     navController.navigate(Screens.Register.route) {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        popUpTo(0)
                     }
                 }
             }

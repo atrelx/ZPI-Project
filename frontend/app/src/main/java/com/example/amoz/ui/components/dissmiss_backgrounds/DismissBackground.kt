@@ -1,4 +1,4 @@
-package com.example.amoz.ui.components
+package com.example.amoz.ui.components.dissmiss_backgrounds
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
