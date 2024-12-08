@@ -1,19 +1,12 @@
 package com.example.amoz.api.repositories
 
-import android.media.Image
-import com.example.amoz.models.User
 import com.example.amoz.api.requests.UserRegisterRequest
 import com.example.amoz.api.services.UserService
-import retrofit2.Response
 import javax.inject.Inject
-
-import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import com.example.amoz.api.managers.FirebaseManager
 import com.example.amoz.extensions.toImageBitmap
-import kotlinx.coroutines.coroutineScope
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
 
 class UserRepository @Inject constructor(
     private val firebaseManager: FirebaseManager,

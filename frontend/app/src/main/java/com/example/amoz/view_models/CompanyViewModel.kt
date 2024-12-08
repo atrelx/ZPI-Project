@@ -3,7 +3,9 @@ package com.example.amoz.view_models
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.amoz.api.enums.RoleInCompany
 import com.example.amoz.api.repositories.CompanyRepository
 import com.example.amoz.api.repositories.CustomerRepository
@@ -14,12 +16,9 @@ import com.example.amoz.api.requests.CustomerB2BCreateRequest
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.extensions.toMultipartBodyPart
-import com.example.amoz.extensions.updateResultState
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
-import com.example.amoz.models.Invitation
-import com.example.amoz.test_data.invitations.createMockInvitations
 import com.example.amoz.ui.states.CompanyUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import java.util.UUID
 import javax.inject.Inject
@@ -50,10 +50,50 @@ class CompanyViewModel @Inject constructor(
 
     fun fetchCompanyDetailsOnScreenLoad() {
         if (_companyUIState.value.company.value is ResultState.Idle) {
-            fetchCompanyDetails()
-            fetchCompanyImage()
-            fetchEmployeeData()
+            fetchCompanyDetails{
+                fetchCompanyImage()
+                fetchEmployeeData()
+            }
+
         }
+    }
+
+     fun isUserInCompany(onSuccess: (Boolean) -> Unit) {
+         if (_companyUIState.value.company.value is ResultState.Idle) {
+             fetchCompanyDetails {
+                 val companyState = _companyUIState.value.company.value
+                 if (companyState is ResultState.Failure) {
+                     onSuccess(false)
+                 } else if (companyState is ResultState.Success) {
+                     onSuccess(true)
+                 }
+             }
+         } else {
+             val companyState = _companyUIState.value.company.value
+             if (companyState is ResultState.Failure) {
+                 onSuccess(false)
+             } else if (companyState is ResultState.Success) {
+                 onSuccess(true)
+             }
+         }
+    }
+
+    //hardcoded function to check company
+    private fun fetchCompanyDetails(onFinished: () -> Unit){
+        performRepositoryAction(
+            binding = _companyUIState.value.company,
+            failureMessage = "Could not fetch company details. Try again later.",
+            skipLoading = true,
+            action = {
+                companyRepository.getUserCompany()
+            }, onSuccess = { company ->
+                _companyUIState.update { it.copy(companyCreateRequestState = CompanyCreateRequest(company))}
+                onFinished()
+            },
+            onFailure = {
+                onFinished()
+            }
+        )
     }
 
     fun createCompany(navController: NavController) {
@@ -78,6 +118,7 @@ class CompanyViewModel @Inject constructor(
             )
         } else {
             Log.w(tag, validationErrorMessage)
+            throw IllegalArgumentException(validationErrorMessage)
         }
     }
 
@@ -152,16 +193,13 @@ class CompanyViewModel @Inject constructor(
     }
 
     fun fetchInvitations() {
-        val mockInvitations = createMockInvitations()
-        _companyUIState.update { it.copy(fetchedInvitationListState = MutableStateFlow(ResultState.Success(mockInvitations))) }
-
-//        performRepositoryAction(
-//            binding = _companyUIState.value.fetchedInvitationListState,
-//            failureMessage = "Could not fetch invitations. Try again later.",
-//            action = {
-//                employeeRepository.fetchInvitations()
-//            }
-//        )
+        performRepositoryAction(
+            binding = _companyUIState.value.fetchedInvitationListState,
+            failureMessage = "Could not fetch invitations. Try again later.",
+            action = {
+                employeeRepository.fetchInvitations()
+            }
+        )
     }
 
     fun updateCompanyLogo(

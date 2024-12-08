@@ -33,9 +33,10 @@ data class OrderUIState (
     val currentAddEditOrderDetails: ProductOrderDetails? = null,
     val currentAddEditOrderState: MutableStateFlow<ResultState<ProductOrderCreateRequest>> = MutableStateFlow(ResultState.Idle),
     val currentCustomerDetails: CustomerAnyRepresentation? = null,
-    val isCurrentOrderNew: Boolean = true,
     val currentProductVariantDetailsList: List<ProductVariantOrderItem> = emptyList(),
+    val isCurrentOrderNew: Boolean = true,
     val currentOrderProductVariantsImagesMap: Map<UUID, ImageBitmap?> = emptyMap(),
+    val currentOrderTotalPrice: BigDecimal = BigDecimal.ZERO,
 
 
     val showOrdersList: Boolean = true,

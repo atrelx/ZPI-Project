@@ -4,13 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.amoz.api.enums.Sex
-import com.example.amoz.api.managers.GoogleAuthManager
 import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.models.User
 import com.example.amoz.api.repositories.UserRepository
@@ -21,16 +16,13 @@ import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.api.sealed.SyncResultState
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.states.UserUiState
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.math.log
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
@@ -67,59 +59,31 @@ class UserViewModel @Inject constructor(
 
     // ----------------------------------------------------
 
-    fun changeRegisterDropDownExpanded(isExpanded: Boolean) {
-        _userUiState.value = _userUiState.value.copy(isRegisterDropDownExpanded = isExpanded)
-    }
-
-
-    // ----------------------------------------------------
-
     private val imagePickerUri = MutableStateFlow<Uri?>(null)
     private val currentUserRegisterRequest = MutableStateFlow<UserRegisterRequest?>(null)
 
     fun registerUser(navController: NavHostController) {
-//        val userRegisterRequest = UserRegisterRequest(
-//            person = PersonCreateRequest(
-//                name = "Oleksii",
-//                surname = "Adamenko",
-//                dateOfBirth = LocalDate.of(2000, 6, 11),
-//                sex = Sex.M,
-//                ),
-//            contactPerson = ContactPersonCreateRequest(
-//                contactNumber = "4899999999",
-//                emailAddress = "oleada@gmail.com",
-//
-//            )
-//        )
-//
-//        performRepositoryAction(
-//            _registerUserState,
-//            "Could not sign up. Try again later.",
-//            action = {
-//                userRepository.registerUser(userRegisterRequest)
-//            }, onSuccess = {
-//                updatePushToken()
-//                uploadProfilePicture()
-//                Log.d("UserViewModel", "User registered")
-////                navController.navigate(Screens.NoCompany.route)
-//            }
-//        )
-
-
-        performRepositoryAction(
-            _registerUserState,
-            "Could not sign up. Try again later.",
-            action = {
-                currentUserRegisterRequest.value?.let {
-                    userRepository.registerUser(it)
+       val validationMessage = currentUserRegisterRequest.value?.validate()
+        if (validationMessage == null){
+            performRepositoryAction(
+                _registerUserState,
+                "Could not sign up. Try again later.",
+                action = {
+                    currentUserRegisterRequest.value?.let {
+                        userRepository.registerUser(it)
+                    }
+                }, onSuccess = {
+                    updatePushToken()
+                    uploadProfilePicture()
+                    navController.navigate(Screens.NoCompany.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
-            }, onSuccess = {
-                updatePushToken()
-                uploadProfilePicture()
-                Log.d("UserViewModel", "User registered")
-                navController.navigate(Screens.NoCompany.route)
-            }
-        )
+            )
+        } else {
+            Log.e("UserViewModel", "Validation error: $validationMessage")
+            throw IllegalArgumentException(validationMessage)
+        }
     }
 
     private fun updatePushToken() {
@@ -141,7 +105,7 @@ class UserViewModel @Inject constructor(
         )
     }
 
-    fun isRegistered(navController: NavHostController) {
+    fun isUserRegisteredRedirect(navController: NavHostController, onSuccess: (Boolean) -> Unit) {
         performRepositoryAction(
             binding = _isRegisteredState,
             action = {
@@ -149,17 +113,20 @@ class UserViewModel @Inject constructor(
             }, onSuccess = {
                 updatePushToken()
                 if (!it) {
-                    navController.navigate(Screens.Register.route) {
-                        popUpTo(0)
-                    }
+                  navController.navigate(Screens.Register.route){
+                      popUpTo(0){inclusive = true}
+                  }
+                } else {
+                    onSuccess(true)
                 }
             }
         )
     }
 
+
     fun navigateUser(navController: NavHostController) {
         viewModelScope.launch {
-            isRegistered(navController)
+            isUserRegisteredRedirect(navController) {}
 
             val state = _isRegisteredState.first {
                 it !is ResultState.Loading
@@ -168,9 +135,11 @@ class UserViewModel @Inject constructor(
             when (state) {
                 is ResultState.Success -> {
                     if (state.data) {
-                        navController.navigate(Screens.Company.route)
+                        navController.navigate(Screens.NoCompany.route){
+                            popUpTo(0){inclusive = true}
+                        }
                     } else {
-                        navController.navigate(Screens.Register.route)
+                        navController.navigate(Screens.Register.route) {}
                     }
                 }
                 is ResultState.Failure -> {
@@ -188,8 +157,15 @@ class UserViewModel @Inject constructor(
             person = personCreateRequest,
             contactPerson = contactPersonCreateRequest
         )
-        _createUserRegisterRequestState.value = SyncResultState.Success(user)
-        currentUserRegisterRequest.value = user
+
+        val validationErrorMessage = user.validate()
+        if (validationErrorMessage == null) {
+            _createUserRegisterRequestState.value = SyncResultState.Success(user)
+            currentUserRegisterRequest.value = user
+        } else {
+            Log.e("UserViewModel", "Validation error: $validationErrorMessage")
+            throw IllegalArgumentException(validationErrorMessage)
+        }
     }
 
     fun updateCurrentUserImageUri(uri: Uri) {

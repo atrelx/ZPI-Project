@@ -13,10 +13,10 @@ import retrofit2.http.*
 
 interface UserService {
     @POST("api/users")
-    suspend fun registerUser(@Body request: UserRegisterRequest): Response<com.example.amoz.models.User>
+    suspend fun registerUser(@Body request: UserRegisterRequest): Response<User>
 
     @PUT("api/users")
-    suspend fun updateUser(@Body request: UserRegisterRequest): Response<com.example.amoz.models.User>
+    suspend fun updateUser(@Body request: UserRegisterRequest): Response<User>
 
     @Multipart
     @PUT("api/users/picture")

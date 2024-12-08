@@ -2,7 +2,6 @@ package com.example.amoz.ui.screens.profile
 
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -146,7 +145,7 @@ fun ProfileScreen(
                     )
 
                     PrimaryFilledButton(
-                        onClick = { navController.navigate(Screens.ProfileEditing.route) },
+                        onClick = { navController.navigate(Screens.ProfileEdit.route) },
                         text = stringResource(R.string.profile_edit_profile),
                     )
 

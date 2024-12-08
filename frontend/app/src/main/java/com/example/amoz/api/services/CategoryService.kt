@@ -18,17 +18,17 @@ import java.util.UUID
 interface CategoryService {
 
     @POST("api/categories")
-    suspend fun createCategory(@Body categoryCreateRequest: CategoryCreateRequest): Response<com.example.amoz.models.CategoryDetails>
+    suspend fun createCategory(@Body categoryCreateRequest: CategoryCreateRequest): Response<CategoryDetails>
 
     @PUT("api/categories/{categoryId}")
     suspend fun updateCategory(
         @Path("categoryId") categoryId: UUID,
         @Body categoryCreateRequest: CategoryCreateRequest
-    ): Response<com.example.amoz.models.CategoryDetails>
+    ): Response<CategoryDetails>
 
     @DELETE("api/categories/{categoryId}")
     suspend fun deleteCategory(@Path("categoryId") categoryId: UUID): Response<Unit>
 
     @GET("api/categories")
-    suspend fun getAllCompanyCategories(): Response<List<com.example.amoz.models.CategoryTree>>
+    suspend fun getAllCompanyCategories(): Response<List<CategoryTree>>
 }

@@ -1,5 +1,6 @@
 package com.example.amoz.api.repositories
 
+import android.util.Log
 import com.example.amoz.R
 import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductOrderSummary
@@ -15,13 +16,15 @@ class ProductOrderRepository @Inject constructor(
     private val productOrderService: ProductOrderService
 ) : BaseRepository() {
 
-    suspend fun createProductOrder(request: ProductOrderCreateRequest): com.example.amoz.models.ProductOrderDetails? {
+    suspend fun createProductOrder(request: ProductOrderCreateRequest): ProductOrderDetails? {
         return performRequest {
             productOrderService.createProductOrder(request)
         }
     }
 
-    suspend fun updateProductOrder(productOrderId: UUID, request: ProductOrderCreateRequest): com.example.amoz.models.ProductOrderDetails? {
+    suspend fun updateProductOrder(productOrderId: UUID, request: ProductOrderCreateRequest): ProductOrderDetails? {
+        Log.d("ProductOrderRepository", "updateProductOrder: $productOrderId")
+        Log.d("ProductOrderRepository", "updateProductOrder: $request")
         return performRequest {
             productOrderService.updateProductOrder(productOrderId, request)
         }
@@ -45,13 +48,13 @@ class ProductOrderRepository @Inject constructor(
         }.toByteArray()
     }
 
-    suspend fun getProductOrderDetails(productOrderId: UUID): com.example.amoz.models.ProductOrderDetails? {
+    suspend fun getProductOrderDetails(productOrderId: UUID): ProductOrderDetails? {
         return performRequest {
             productOrderService.getProductOrderDetails(productOrderId)
         }
     }
 
-    suspend fun getAllProductOrders(): List<com.example.amoz.models.ProductOrderSummary> {
+    suspend fun getAllProductOrders(): List<ProductOrderSummary> {
         return performRequest {
             productOrderService.getAllProductOrders()
         } ?: listOf()

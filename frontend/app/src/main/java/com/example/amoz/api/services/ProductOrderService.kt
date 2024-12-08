@@ -16,13 +16,13 @@ interface ProductOrderService {
     @POST("api/productOrders")
     suspend fun createProductOrder(
         @Body request: ProductOrderCreateRequest
-    ): Response<com.example.amoz.models.ProductOrderDetails>
+    ): Response<ProductOrderDetails>
 
     @PUT("api/productOrders/{productOrderId}")
     suspend fun updateProductOrder(
         @Path("productOrderId") productOrderId: UUID,
         @Body request: ProductOrderCreateRequest
-    ): Response<com.example.amoz.models.ProductOrderDetails>
+    ): Response<ProductOrderDetails>
 
     @PUT("api/productOrders/{productOrderId}/generateInvoice")
     suspend fun generateInvoice(
@@ -42,8 +42,8 @@ interface ProductOrderService {
     @GET("api/productOrders/{productOrderId}")
     suspend fun getProductOrderDetails(
         @Path("productOrderId") productOrderId: UUID
-    ): Response<com.example.amoz.models.ProductOrderDetails>
+    ): Response<ProductOrderDetails>
 
     @GET("api/productOrders")
-    suspend fun getAllProductOrders(): Response<List<com.example.amoz.models.ProductOrderSummary>>
+    suspend fun getAllProductOrders(): Response<List<ProductOrderSummary>>
 }

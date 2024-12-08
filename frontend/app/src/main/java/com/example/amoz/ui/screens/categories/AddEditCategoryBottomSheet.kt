@@ -82,7 +82,7 @@ fun AddEditCategoryBottomSheet(
             // -------------------- CategoryTree name --------------------
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = categoryState.name ?: "",
+                value = categoryState.name,
                 onValueChange = { categoryState = categoryState.copy(name = it) },
                 label = { Text(stringResource(id = R.string.category_name)) },
                 leadingIcon = {

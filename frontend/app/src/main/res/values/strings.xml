@@ -18,10 +18,16 @@
     <string name="support_contact_screen">Support and Contact</string>
 
     <string name="profile_screen">Profile</string>
-    <string name="profile_editing_screen">Edit Profile</string>
+    <string name="profile_edit_screen">Edit Profile</string>
+
+    <string name="orders_add_edit_screen">Manage order</string>
 
     <string name="entry_screen">Entry</string>
     <string name="register_screen">Register</string>
+    <string name="register_image_screen">Add an image</string>
+
+    <string name="company_create_screen">Create a company</string>
+    <string name="no_company_screen">Company invites</string>
 
     <string name="company_address_screen">Address</string>
     <string name="company_workers_screen">Employees</string>

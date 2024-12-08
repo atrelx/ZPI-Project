@@ -146,7 +146,7 @@ fun AppNavigationHost(
             )
         }
 
-        composable(Screens.ProfileEditing.route) {
+        composable(Screens.ProfileEdit.route) {
             ProfileEditingScreen(
                 navController = navController,
                 paddingValues = paddingValues,

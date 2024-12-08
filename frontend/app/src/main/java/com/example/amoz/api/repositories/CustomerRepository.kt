@@ -21,6 +21,7 @@ class CustomerRepository @Inject constructor(
         val customerJson = performRequest {
             customerService.getCustomerDetails(customerId)
         }
+        Log.d("CustomerRepository", "getCustomerDetails: $customerJson")
         if (customerJson != null) {
             val customerResult = CustomerResult.createCustomerDetails(customerJson)
             return customerResult.toCustomerAnyRepresentation()

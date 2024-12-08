@@ -5,10 +5,12 @@ import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.example.amoz.interfaces.SignInDelegate
 import com.example.amoz.api.managers.GoogleAuthManager
 import com.example.amoz.api.managers.TokenManager
 import com.example.amoz.api.repositories.AuthenticationRepository
+import com.example.amoz.ui.screens.Screens
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -57,5 +59,15 @@ class AuthenticationViewModel @Inject constructor(
 
     fun isSignedIn(): Boolean {
         return tokenManager.getRefreshToken() != null
+    }
+
+    fun isSignedInRedirect(navController: NavHostController, onSuccess: (Boolean) -> Unit) {
+        if (!isSignedIn()) {
+            navController.navigate(Screens.Entry.route){
+                popUpTo(0){inclusive = true}
+            }
+        } else {
+            onSuccess(true)
+        }
     }
 }

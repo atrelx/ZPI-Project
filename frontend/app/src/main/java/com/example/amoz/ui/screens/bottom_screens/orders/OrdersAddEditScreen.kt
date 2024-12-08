@@ -34,12 +34,14 @@ import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.app.AppPreferences
+import com.example.amoz.ui.components.ErrorText
 import com.example.amoz.ui.components.dropdown_menus.StatusDropdownMenu
 import com.example.amoz.ui.components.bottom_sheets.AddressBottomSheet
 import com.example.amoz.ui.components.HorizontalDividerWithTextBefore
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.PrimaryOutlinedButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.components.list_items.CurrentOrderCustomerListItem
 import com.example.amoz.ui.components.pickers.ProductVariantPickerWithListItem
 import com.example.amoz.ui.components.text_fields.AddressTextField
 import com.example.amoz.ui.components.text_fields.DateTextField
@@ -63,11 +65,11 @@ fun OrdersAddEditScreen (
     val currency by appPreferences.currency.collectAsState(initial = "USD")
 
     val isNewOrder = ordersUiState.isCurrentOrderNew
+    var totalPrice = ordersUiState.currentOrderTotalPrice
     var currentCustomerDetails = ordersUiState.currentCustomerDetails
-    Log.d("OrdersAddEditScreen", "currentCustomerDetails: $currentCustomerDetails")
     var productVariantList = ordersUiState.currentProductVariantDetailsList
 
-    var totalPrice by remember { mutableStateOf<BigDecimal>(BigDecimal.ZERO) }
+    var validationErrorMessage by remember { mutableStateOf<String?>(null) }
 
     AmozApplicationTheme {
         Surface(
@@ -113,6 +115,12 @@ fun OrdersAddEditScreen (
                                     product
                                 )
                                 totalPrice = ordersViewModel.calculateTotalPrice(productVariantList)
+                                ordersViewModel.saveCurrentAddEditOrderState(
+                                    orderRequest,
+                                    productVariantList,
+                                    currentCustomerDetails,
+                                    totalPrice,
+                                )
                             },
                             ordersViewModel = ordersViewModel,
                             currency = currency!!
@@ -130,12 +138,19 @@ fun OrdersAddEditScreen (
                                     productVariantOrderItem,
                                 )
                                 totalPrice = ordersViewModel.calculateTotalPrice(productVariantList)
+                                ordersViewModel.saveCurrentAddEditOrderState(
+                                    orderRequest,
+                                    productVariantList,
+                                    currentCustomerDetails,
+                                    totalPrice,
+                                )
                             },
                             onSaveState = {
                                 ordersViewModel.saveCurrentAddEditOrderState(
                                     orderRequest,
                                     productVariantList,
-                                    currentCustomerDetails
+                                    currentCustomerDetails,
+                                    totalPrice,
                                 )
                             },
                             navController = navController,
@@ -145,30 +160,45 @@ fun OrdersAddEditScreen (
                     // ---------------------------- Customer ListItem ----------------------------
                     item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_customer)) }
 
-                    item { CustomerPickerListItem(
-                        currentCustomer = currentCustomerDetails,
-                        onCustomerChange = {
-                            orderRequest = orderRequest.copy(customerId = it.customerId)
-                            currentCustomerDetails = it
-                                           },
-                        onSaveState = {
-                            ordersViewModel.saveCurrentAddEditOrderState(
-                                orderRequest,
-                                productVariantList,
-                                currentCustomerDetails
+                    item {
+                        if (currentCustomerDetails != null) {
+                            CurrentOrderCustomerListItem(
+                                currentCustomer = currentCustomerDetails!!,
+                                onRemoveCustomer = {
+                                    orderRequest = orderRequest.copy(customerId = null)
+                                    currentCustomerDetails = null
+
+                                    ordersViewModel.saveCurrentAddEditOrderState(
+                                        orderRequest,
+                                        productVariantList,
+                                        currentCustomerDetails,
+                                        totalPrice,
+                                    )
+                                },
                             )
-                        },
-                        onRemoveCustomer = {
-                            orderRequest = orderRequest.copy(customerId = null)
-                            currentCustomerDetails = null
-                            ordersViewModel.saveCurrentAddEditOrderState(
-                                orderRequest,
-                                productVariantList,
-                                currentCustomerDetails
-                            )
-                        },
-                        navController = navController
-                    )}
+                        } else {
+                            CustomerPickerListItem(
+                            onCustomerChange = {
+                                orderRequest = orderRequest.copy(customerId = it.customerId)
+                                currentCustomerDetails = it
+                                ordersViewModel.saveCurrentAddEditOrderState(
+                                    orderRequest,
+                                    productVariantList,
+                                    currentCustomerDetails,
+                                    totalPrice,
+                                )
+                                               },
+                            onSaveState = {
+                                ordersViewModel.saveCurrentAddEditOrderState(
+                                    orderRequest,
+                                    productVariantList,
+                                    currentCustomerDetails,
+                                    totalPrice,
+                                )
+                            },
+                            navController = navController
+                        )}
+                    }
 
                     // ---------------------------- Shipping Number, Address, Date ----------------------------
 
@@ -229,17 +259,25 @@ fun OrdersAddEditScreen (
                         }
                     }
 
+                    item {
+                        ErrorText(errorMessage = validationErrorMessage)
+                    }
+
                     // checks whether its a new order or an existing one and performs the appropriate action
                     item {
                         PrimaryFilledButton(
                             text = if (isNewOrder) { stringResource(R.string.orders_create_an_order) }
                             else { stringResource(R.string.orders_update_an_order) },
                             onClick = {
-                                ordersViewModel.chooseProductOrderOperation(
-                                    orderRequest,
-                                    productVariantList
-                                )
-                                navController.popBackStack()
+                                try {
+                                    ordersViewModel.chooseProductOrderOperation(
+                                        orderRequest,
+                                        productVariantList
+                                    )
+                                    navController.popBackStack()
+                                } catch (e: IllegalArgumentException) {
+                                    validationErrorMessage = e.message
+                                }
                             }
                         )
                     }

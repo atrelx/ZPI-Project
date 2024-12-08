@@ -9,19 +9,19 @@ class AttributeRepository @Inject constructor(
     private val attributeService: AttributeService
 ) : BaseRepository() {
 
-    suspend fun getAllAttributes(): List<com.example.amoz.models.Attribute> {
+    suspend fun getAllAttributes(): List<Attribute> {
         return performRequest {
             attributeService.getAllAttributes()
         } ?: listOf()
     }
 
-    suspend fun getProductAttributes(): List<com.example.amoz.models.Attribute> {
+    suspend fun getProductAttributes(): List<Attribute> {
         return performRequest {
             attributeService.getProductAttributes()
         } ?: listOf()
     }
 
-    suspend fun getVariantAttributes(): List<com.example.amoz.models.Attribute> {
+    suspend fun getVariantAttributes(): List<Attribute> {
         return performRequest {
             attributeService.getVariantAttributes()
         } ?: listOf()

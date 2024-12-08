@@ -14,6 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.amoz.R
 import com.example.amoz.interfaces.SignInDelegate
@@ -22,15 +24,18 @@ import com.example.amoz.ui.components.CustomDialogWindow
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AuthenticationViewModel
+import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.view_models.EmployeeViewModel
 import com.example.amoz.view_models.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), SignInDelegate {
     private val authenticationViewModel: AuthenticationViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
+    private val companyViewModel: CompanyViewModel by viewModels()
     private val employeeViewModel: EmployeeViewModel by viewModels()
     private var completion: (() -> Unit)? = null
 
@@ -52,14 +57,8 @@ class MainActivity : ComponentActivity(), SignInDelegate {
                 AppMainScaffold(
                     navigationController = navController,
                     onUserAuthorizationCheck = {
-                        if (!authenticationViewModel.isSignedIn()) {
-                            Log.d("MainActivity", "User is not signed in.")
-                            navController.navigate(Screens.Entry.route) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        } else {
-                            Log.d("MainActivity", "User is signed in.")
-                            userViewModel.isRegistered(navController)
+                        lifecycleScope.launch {
+                            checkUserStatusRedirect(navController)
                         }
                     }
                 )
@@ -104,6 +103,24 @@ class MainActivity : ComponentActivity(), SignInDelegate {
         val signInIntent = authenticationViewModel.getSignInIntent(this)
         this.completion = completion
         startActivityForResult(signInIntent, 9001)
+    }
+
+    private fun checkUserStatusRedirect(navController: NavHostController){
+        authenticationViewModel.isSignedInRedirect(navController) { isSignedIn ->
+            if (isSignedIn) {
+                userViewModel.isUserRegisteredRedirect(navController) { isRegistered ->
+                    if (isRegistered){
+                        companyViewModel.isUserInCompany{ isInCompany ->
+                            if (!isInCompany){
+                                navController.navigate(Screens.NoCompany.route) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

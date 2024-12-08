@@ -23,13 +23,13 @@ interface ProductVariantService {
     @POST("api/productVariants")
     suspend fun createProductVariant(
         @Body request: ProductVariantCreateRequest
-    ): Response<com.example.amoz.models.ProductVariantDetails>
+    ): Response<ProductVariantDetails>
 
     @PUT("api/productVariants/{productVariantId}")
     suspend fun updateProductVariant(
         @Path("productVariantId") productVariantId: UUID,
         @Body request: ProductVariantCreateRequest
-    ): Response<com.example.amoz.models.ProductVariantDetails>
+    ): Response<ProductVariantDetails>
 
     @PATCH("api/productVariants/{productVariantId}")
     suspend fun deactivateProductVariant(
@@ -39,12 +39,12 @@ interface ProductVariantService {
     @GET("api/productVariants/product/{productId}")
     suspend fun getAllProductVariantsByProductId(
         @Path("productId") productId: UUID
-    ): Response<List<com.example.amoz.models.ProductVariantSummary>>
+    ): Response<List<ProductVariantSummary>>
 
     @GET("api/productVariants/{productVariantId}")
     suspend fun getProductVariant(
         @Path("productVariantId") productVariantId: UUID
-    ): Response<com.example.amoz.models.ProductVariantDetails>
+    ): Response<ProductVariantDetails>
 
     @Multipart
     @PUT("api/productVariants/picture/{productVariantId}")

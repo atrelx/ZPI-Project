@@ -40,6 +40,7 @@ data class AddressCreateRequest(
             .joinToString(", ")
 
     constructor(address: Address) : this(
+        country = address.country,
         city = address.city,
         street = address.street,
         streetNumber = address.streetNumber,

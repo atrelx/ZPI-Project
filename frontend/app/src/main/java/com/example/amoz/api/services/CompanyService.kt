@@ -18,13 +18,13 @@ import retrofit2.http.Part
 interface CompanyService {
 
     @POST("api/companies")
-    suspend fun createCompany(@Body request: CompanyCreateRequest): Response<com.example.amoz.models.Company>
+    suspend fun createCompany(@Body request: CompanyCreateRequest): Response<Company>
 
     @GET("api/companies")
-    suspend fun getUserCompany(): Response<com.example.amoz.models.Company>
+    suspend fun getUserCompany(): Response<Company>
 
     @PUT("api/companies")
-    suspend fun updateCompany(@Body request: CompanyCreateRequest): Response<com.example.amoz.models.Company>
+    suspend fun updateCompany(@Body request: CompanyCreateRequest): Response<Company>
 
     @PATCH("api/companies")
     suspend fun deactivateCompany(): Response<Unit>

@@ -19,7 +19,9 @@ abstract class BaseViewModel: ViewModel() {
     fun <T> performRepositoryAction(binding: MutableStateFlow<ResultState<T>>?,
                                     failureMessage: String = "Please try again later",
                                     skipLoading: Boolean = false,
-                                    action: suspend () -> T?, onSuccess: ((T) -> Unit)? = null) {
+                                    action: suspend () -> T?,
+                                    onSuccess: ((T) -> Unit)? = null,
+                                    onFailure: ((String) -> Unit)? = null) {
         if (!skipLoading) {
             binding?.value = ResultState.Loading
         }
@@ -32,6 +34,7 @@ abstract class BaseViewModel: ViewModel() {
                     onSuccess?.invoke(response)
                 } else {
                     binding?.value = ResultState.Failure(failureMessage)
+                    onFailure?.invoke(failureMessage)
                 }
             } catch (e: Exception) {
                 Log.e(tag, "An exception has occurred: ${e.message}", e)

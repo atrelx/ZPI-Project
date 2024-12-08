@@ -15,12 +15,12 @@ import retrofit2.Response
 interface AttributeService {
 
     @GET("api/attributes")
-    suspend fun getAllAttributes(): Response<List<com.example.amoz.models.Attribute>>
+    suspend fun getAllAttributes(): Response<List<Attribute>>
 
     @GET("api/attributes/product")
-    suspend fun getProductAttributes(): Response<List<com.example.amoz.models.Attribute>>
+    suspend fun getProductAttributes(): Response<List<Attribute>>
 
     @GET("api/attributes/variant")
-    suspend fun getVariantAttributes(): Response<List<com.example.amoz.models.Attribute>>
+    suspend fun getVariantAttributes(): Response<List<Attribute>>
 }
 

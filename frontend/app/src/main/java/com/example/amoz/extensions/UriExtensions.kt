@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
@@ -27,10 +28,8 @@ fun Uri.toMultipartBodyPart(context: Context, partName: String = "file"): Multip
         }
     }
 
-    val requestFile = RequestBody.create(
-        context.contentResolver.getType(this)?.toMediaTypeOrNull(),
-        tempFile
-    )
+    val requestFile = tempFile
+        .asRequestBody(context.contentResolver.getType(this)?.toMediaTypeOrNull())
 
     return MultipartBody.Part.createFormData(partName, tempFile.name, requestFile)
 }

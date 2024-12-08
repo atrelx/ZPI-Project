@@ -1,11 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,6 +38,7 @@ import com.example.amoz.ui.components.PrimaryOutlinedButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.theme.AmozApplicationTheme
+import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.view_models.EmployeeViewModel
 
@@ -52,14 +47,24 @@ fun NoCompanyScreen (
     navController: NavHostController,
     paddingValues: PaddingValues,
     companyViewModel: CompanyViewModel,
-    employeeViewModel: EmployeeViewModel = hiltViewModel()
+    employeeViewModel: EmployeeViewModel = hiltViewModel(),
+    authenticationViewModel: AuthenticationViewModel = hiltViewModel(),
 ){
+    val context = LocalContext.current
     val companyUIState by companyViewModel.companyUIState.collectAsState()
     var showAcceptDialogWindow by remember { mutableStateOf(false) }
     var selectedInvitation by remember { mutableStateOf<Invitation?>(null) }
 
     LaunchedEffect(Unit) {
-        companyViewModel.fetchInvitations()
+        companyViewModel.isUserInCompany{ isInCompany ->
+            if (!isInCompany) {
+                companyViewModel.fetchInvitations()
+            } else {
+                navController.navigate(Screens.Home.route){
+                    popUpTo(0) { inclusive = true}
+                }
+            }
+        }
     }
 
     AmozApplicationTheme {
@@ -97,11 +102,21 @@ fun NoCompanyScreen (
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        PrimaryOutlinedButton(
+                        PrimaryFilledButton(
                             text = stringResource(id = R.string.company_register),
                             onClick = {
                                 navController.navigate(Screens.CreateCompany.route)
                             }
+                        )
+                        PrimaryOutlinedButton(
+                            onClick = {
+                                authenticationViewModel.signOut(context as Activity) {
+                                    navController.navigate(Screens.Entry.route){
+                                        popUpTo(0)
+                                    }
+                                }
+                            },
+                            text = stringResource(R.string.profile_sign_out),
                         )
                     }
                 } else {
@@ -143,6 +158,16 @@ fun NoCompanyScreen (
                                     navController.navigate(Screens.CreateCompany.route)
                                 }
                             )
+                            PrimaryOutlinedButton(
+                                onClick = {
+                                    authenticationViewModel.signOut(context as Activity) {
+                                        navController.navigate(Screens.Entry.route){
+                                            popUpTo(0)
+                                        }
+                                    }
+                                },
+                                text = stringResource(R.string.profile_sign_out),
+                            )
                         }
                     }
                 }
@@ -157,7 +182,9 @@ fun NoCompanyScreen (
                 onAccept = {
                     employeeViewModel.acceptInvitation(selectedInvitation?.token.toString())
                     companyViewModel.fetchCompanyDetails()
-                    navController.navigate(Screens.Company.route)
+                    navController.navigate(Screens.Company.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                     showAcceptDialogWindow = false
                     selectedInvitation = null
                 },

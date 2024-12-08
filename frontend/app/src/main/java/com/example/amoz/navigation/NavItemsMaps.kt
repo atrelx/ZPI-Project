@@ -3,10 +3,8 @@ package com.example.amoz.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
@@ -129,12 +127,92 @@ val otherNavigationItemsMap = mapOf(
         )
 )
 
+val entryNavigationItemMap = mapOf(
+    NavItemType.Entry to
+        NavItem(
+            title = R.string.entry_screen,
+            screenRoute = Screens.Entry.route,
+            icon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Filled.AccountCircle,
+        )
+)
+
+val registerNavigationItemMap = mapOf(
+    NavItemType.Register to
+        NavItem(
+            title = R.string.register_screen,
+            screenRoute = Screens.Register.route,
+            icon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Filled.AccountCircle,
+        )
+)
+
+val registerImageNavigationItemMap = mapOf(
+    NavItemType.RegisterImage to
+        NavItem(
+            title = R.string.register_image_screen,
+            screenRoute = Screens.RegisterImage.route,
+            icon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Filled.AccountCircle,
+        )
+)
+
+val companyCreateNavigationItemMap = mapOf(
+    NavItemType.CompanyCreate to
+        NavItem(
+            title = R.string.company_create_screen,
+            screenRoute = Screens.CreateCompany.route,
+            icon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Filled.AccountCircle,
+        )
+)
+
+val noCompanyNavigationItemMap = mapOf(
+    NavItemType.NoCompany to
+        NavItem(
+            title = R.string.no_company_screen,
+            screenRoute = Screens.NoCompany.route,
+            icon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Filled.AccountCircle,
+        )
+)
+
+val addOrderNavigationItemMap = mapOf(
+    NavItemType.AddOrder to
+        NavItem(
+            title = R.string.orders_add_edit_screen,
+            screenRoute = Screens.OrdersAddEdit.route,
+            icon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Filled.AccountCircle,
+        )
+)
+
+val editProfileNavigationItemMap = mapOf(
+    NavItemType.EditProfile to
+        NavItem(
+            title = R.string.profile_edit_screen,
+            screenRoute = Screens.ProfileEdit.route,
+            icon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Filled.AccountCircle,
+        )
+)
+
+
+
+
 val allApplicationScreensMap =
     bottomNavigationBarNavItemsMap +
     productScreenBottomSheetMenu +
     moreBottomSheetItemsMap +
     companyInfoScreenItemsMap +
-    otherNavigationItemsMap
+    otherNavigationItemsMap +
+    entryNavigationItemMap +
+    registerNavigationItemMap +
+    registerImageNavigationItemMap +
+    companyCreateNavigationItemMap +
+    noCompanyNavigationItemMap +
+    addOrderNavigationItemMap +
+    editProfileNavigationItemMap
 
 
 
@@ -144,5 +222,8 @@ enum class NavItemType {
     AddSimpleProduct, AddProductVariant, AddProduct, Categories, Attributes, StockDelivery,
     CompanyAddress, CompanyWorkers, CompanyCustomers,
     Settings, FAQ, AboutApp, Support,
-    Profile,
+    Entry, Register, RegisterImage,
+    CompanyCreate, NoCompany,
+    Profile, EditProfile,
+    AddOrder,
 }

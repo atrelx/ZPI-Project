@@ -2,6 +2,7 @@ package com.example.amoz.ui.screens.entry
 
 import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,6 +33,7 @@ import com.example.amoz.R
 import com.example.amoz.api.enums.Sex
 import com.example.amoz.api.requests.ContactPersonCreateRequest
 import com.example.amoz.api.requests.PersonCreateRequest
+import com.example.amoz.ui.components.ErrorText
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.PrimaryOutlinedButton
 import com.example.amoz.ui.components.dropdown_menus.SexDropdownMenu
@@ -61,7 +63,6 @@ fun RegisterScreen (
             )
         )
     }
-
     var contactPersonData by remember {
         mutableStateOf(
             ContactPersonCreateRequest(
@@ -70,9 +71,15 @@ fun RegisterScreen (
             )
         )
     }
-
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
+    BackHandler {
+        authenticationViewModel.signOut(context as Activity) {
+            navController.navigate(Screens.Entry.route) {
+                popUpTo(0)
+            }
+        }
+    }
 
     AmozApplicationTheme {
         Surface(
@@ -148,31 +155,18 @@ fun RegisterScreen (
                     singleLine = true,
                 )
 
-                validationMessage?.let {
-                    Log.d("ValidationMessageRegisterScreen", it)
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+                ErrorText(errorMessage = validationMessage)
 
                 PrimaryFilledButton(
                     onClick = {
-                        val personViolations = personData.validate()
-                        val contactPersonViolations = contactPersonData.validate()
-
-                        if (personViolations != null) {
-                            validationMessage += "\n" + personViolations
-                        } else if (contactPersonViolations != null) {
-                            validationMessage += "\n" + contactPersonViolations
-                        } else {
+                        try {
                             userViewModel.updateCurrentUserRegisterRequest(
                                 personData,
                                 contactPersonData
                             )
-
                             navController.navigate(Screens.RegisterImage.route)
+                        } catch (e: IllegalArgumentException) {
+                            validationMessage = e.message
                         }
                     },
                     text = stringResource(R.string.entry_continue),

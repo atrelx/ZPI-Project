@@ -1,11 +1,16 @@
 package com.example.amoz.view_models
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Addchart
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.enums.Status
 import com.example.amoz.api.repositories.CustomerRepository
@@ -21,11 +26,14 @@ import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.screens.bottom_screens.orders.orders_list.OrderListFilter
 import com.example.amoz.ui.states.OrderUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
@@ -33,6 +41,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrdersViewModel @Inject constructor (
+    @ApplicationContext val context: Context,
     private val orderRepository: ProductOrderRepository,
     private val productRepository: ProductVariantRepository,
     private val customerRepository: CustomerRepository
@@ -61,67 +70,57 @@ class OrdersViewModel @Inject constructor (
 
     private fun createOrderRequestFromVariantItems(
         listVariantOrderItem: List<ProductVariantOrderItem>,
-        status: Status = Status.NEW,
-        address: AddressCreateRequest? = null,
-        customerId: UUID? = null,
-        trackingNumber: String? = null,
-        timeOfSending: LocalDateTime? = null
+        orderCreateRequest: ProductOrderCreateRequest
     ): ProductOrderCreateRequest {
-        val productOrderItems = listVariantOrderItem.map { variantOrderItem ->
+        val productOrderItems = listVariantOrderItem.map {
             ProductOrderItemCreateRequest(
-                productVariantId = variantOrderItem.productVariant.productVariantId,
-                amount = variantOrderItem.quantity
+                productVariantId = it.productVariant.productVariantId,
+                amount = it.quantity
             )
         }
 
-        return ProductOrderCreateRequest(
-            status = status,
-            productOrderItems = productOrderItems,
-            address = address,
-            customerId = customerId,
-            trackingNumber = trackingNumber,
-            timeOfSending = timeOfSending
-        )
+        return orderCreateRequest.copy(productOrderItems = productOrderItems)
     }
 
 
     private fun createProductOrder(orderCreateRequest: ProductOrderCreateRequest, listVariantOrderItem: List<ProductVariantOrderItem>) {
         val finalOrderRequest = createOrderRequestFromVariantItems(
             listVariantOrderItem = listVariantOrderItem,
-            status = orderCreateRequest.status,
-            address = orderCreateRequest.address,
-            customerId = orderCreateRequest.customerId,
-            trackingNumber = orderCreateRequest.trackingNumber,
-            timeOfSending = orderCreateRequest.timeOfSending
+            orderCreateRequest = orderCreateRequest,
         )
 
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Could not create order, try again",
-            action = { orderRepository.createProductOrder(finalOrderRequest) },
-            onSuccess = {
-                fetchOrdersList(skipLoading = true)
-            }
-        )
+        val validationMessage = finalOrderRequest.validate()
+        if (validationMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Could not create product order, try again",
+                action = { orderRepository.createProductOrder(finalOrderRequest) },
+                onSuccess = {
+                    fetchOrdersList(skipLoading = false)
+                }
+            )
+        }
+        else {
+            Log.e("createProductOrder", validationMessage)
+            throw IllegalArgumentException(validationMessage)
+        }
     }
 
     fun saveCurrentAddEditOrderState(orderCreateRequest: ProductOrderCreateRequest,
                                      listVariantOrderItem: List<ProductVariantOrderItem>,
-                                     currentCustomerDetails: CustomerAnyRepresentation?
+                                     currentCustomerDetails: CustomerAnyRepresentation?,
+                                     totalPrice: BigDecimal,
     ) {
         val finalOrderRequest = createOrderRequestFromVariantItems(
             listVariantOrderItem = listVariantOrderItem,
-            status = orderCreateRequest.status,
-            address = orderCreateRequest.address,
-            customerId = orderCreateRequest.customerId,
-            trackingNumber = orderCreateRequest.trackingNumber,
-            timeOfSending = orderCreateRequest.timeOfSending
+            orderCreateRequest = orderCreateRequest,
         )
 
         _ordersUiState.update { it.copy(
             currentAddEditOrderState = MutableStateFlow(ResultState.Success(finalOrderRequest)),
             currentProductVariantDetailsList = listVariantOrderItem,
             currentCustomerDetails = currentCustomerDetails,
+            currentOrderTotalPrice = totalPrice,
         ) }
     }
 
@@ -132,18 +131,33 @@ class OrdersViewModel @Inject constructor (
             currentOrderProductVariantsImagesMap = emptyMap(),
             currentAddEditOrderDetails = null,
             isCurrentOrderNew = true,
+            currentOrderTotalPrice = BigDecimal.ZERO,
         ) }
     }
 
-    private fun updateProductOrder(uuid: UUID, orderCreateRequest: ProductOrderCreateRequest) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Could not update product order, try again",
-            action = { orderRepository.updateProductOrder(uuid, orderCreateRequest) },
-            onSuccess = {
-                fetchOrdersList(skipLoading = true)
-            }
+    private fun updateProductOrder(uuid: UUID,
+                                   currentProductVariantDetailsList: List<ProductVariantOrderItem>,
+                                   orderCreateRequest: ProductOrderCreateRequest) {
+        val finalOrderRequest = createOrderRequestFromVariantItems(
+            listVariantOrderItem = currentProductVariantDetailsList,
+            orderCreateRequest = orderCreateRequest,
         )
+
+        val validationMessage = finalOrderRequest.validate()
+        if (validationMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Could not update product order, try again",
+                action = { orderRepository.updateProductOrder(uuid, orderCreateRequest) },
+                onSuccess = {
+                    fetchOrdersList(skipLoading = false)
+                }
+            )
+        }
+        else {
+            Log.e("updateProductOrder", validationMessage)
+            throw IllegalArgumentException(validationMessage)
+        }
     }
 
     fun removeProductOrder(orderId: UUID) {
@@ -163,24 +177,60 @@ class OrdersViewModel @Inject constructor (
             failureMessage = "Could not generate invoice, try again",
             action = { orderRepository.generateInvoice(orderId)  },
             onSuccess = {
-                performRepositoryAction(
-                    binding = _ordersUiState.value.currentInvoicePDFByteArray,
-                    failureMessage = "Could not download invoice, try again",
-                    action = {
-                        orderRepository.downloadInvoicePDF(it.invoiceId)
-                    }
-                )
+                downloadProductOrderInvoicePDF(it.invoiceId)
             }
         )
     }
 
+    private fun downloadProductOrderInvoicePDF(invoiceId: UUID) {
+        performRepositoryAction(
+            binding = _ordersUiState.value.currentInvoicePDFByteArray,
+            failureMessage = "Could not download invoice, try again",
+            action = {
+                orderRepository.downloadInvoicePDF(invoiceId)
+            },
+            onSuccess = {
+                openInvoicePDF(it)
+            }
+        )
+    }
+
+    private fun openInvoicePDF(invoiceByteArray: ByteArray) {
+        val fileName = "invoice.pdf"
+
+        try {
+            val pdfFile = File(context.cacheDir, fileName)
+            FileOutputStream(pdfFile).use { it.write(invoiceByteArray) }
+
+            val pdfUri: Uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.provider",
+                pdfFile
+            )
+
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(pdfUri, "application/pdf")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            if (intent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(intent)
+            } else {
+                Toast.makeText(context, "No application found to open PDF", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "Failed to open PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     fun chooseProductOrderOperation(orderCreateRequest: ProductOrderCreateRequest, currentProductVariantDetailsList: List<ProductVariantOrderItem>) {
-        if (_ordersUiState.value.currentAddEditOrderDetails == null) {
+        if (_ordersUiState.value.isCurrentOrderNew) {
             createProductOrder(orderCreateRequest, currentProductVariantDetailsList)
         }
         else {
             val uuid = _ordersUiState.value.currentAddEditOrderDetails?.productOrderId
-            updateProductOrder(uuid!!, orderCreateRequest)
+            updateProductOrder(uuid!!, currentProductVariantDetailsList, orderCreateRequest)
         }
     }
 
@@ -219,15 +269,15 @@ class OrdersViewModel @Inject constructor (
             action = {
                 val orderDetails = orderRepository.getProductOrderDetails(orderId)
                 orderDetails?.let {
-                    Log.d("orderDetails", "$orderDetails")
                     val productOrderRequest = ProductOrderCreateRequest(orderDetails)
                     val productVariantList = createProductVariantListFromOrderDetails(orderDetails)
+                    val orderTotal = calculateTotalPrice(productVariantList)
                     _ordersUiState.update { it.copy(
                         currentAddEditOrderDetails = orderDetails,
                         currentProductVariantDetailsList = productVariantList,
                         isCurrentOrderNew = false,
+                        currentOrderTotalPrice = orderTotal
                     ) }
-                    Log.d("currentProductVariantDetailsList", "$productVariantList")
                     productOrderRequest
                 }
             },

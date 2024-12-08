@@ -2,6 +2,7 @@ package com.example.amoz.pickers
 
 object SavedStateHandleKeys {
     const val SHOW_NAV_ELEMENTS = "showNavElements"
+    const val SHOW_TOP_BAR = "showTopBar"
 
     const val CATEGORY_PICKER_MODE = "categoryPickerMode"
     const val CATEGORY_PICKER_MODE_LEAVES_ONLY = "categoryPickerModeLeavesOnly"

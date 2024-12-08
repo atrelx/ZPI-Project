@@ -15,13 +15,13 @@ class ProductVariantRepository @Inject constructor(
     private val productVariantService: ProductVariantService
 ) : BaseRepository() {
 
-    suspend fun createProductVariant(request: ProductVariantCreateRequest): com.example.amoz.models.ProductVariantDetails? {
+    suspend fun createProductVariant(request: ProductVariantCreateRequest): ProductVariantDetails? {
         return performRequest {
             productVariantService.createProductVariant(request)
         }
     }
 
-    suspend fun updateProductVariant(productVariantId: UUID, request: ProductVariantCreateRequest): com.example.amoz.models.ProductVariantDetails? {
+    suspend fun updateProductVariant(productVariantId: UUID, request: ProductVariantCreateRequest): ProductVariantDetails? {
         return performRequest {
             productVariantService.updateProductVariant(productVariantId, request)
         }
@@ -33,13 +33,13 @@ class ProductVariantRepository @Inject constructor(
         }
     }
 
-    suspend fun getAllProductVariantsByProductId(productId: UUID): List<com.example.amoz.models.ProductVariantSummary> {
+    suspend fun getAllProductVariantsByProductId(productId: UUID): List<ProductVariantSummary> {
         return performRequest {
             productVariantService.getAllProductVariantsByProductId(productId)
         } ?: listOf()
     }
 
-    suspend fun getProductVariant(productVariantId: UUID): com.example.amoz.models.ProductVariantDetails? {
+    suspend fun getProductVariant(productVariantId: UUID): ProductVariantDetails? {
         return performRequest {
             productVariantService.getProductVariant(productVariantId)
         }

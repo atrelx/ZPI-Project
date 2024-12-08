@@ -57,14 +57,36 @@ fun AppMainScaffold(
     val currentRoute = navigationController.currentBackStackEntryAsState().value?.destination?.route
     val showNavElements = navigationController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("showNavElements")
     val currentNavigationItem = allApplicationScreensMap.values.find { it.screenRoute == currentRoute }
+
     if (currentNavigationItem != null) {
         appViewModel.updateCurrentNavItem(currentNavigationItem, showNavElements)
     }
 
+    //hardcoded state values, implement normal logic for them
+    var showTopBar by remember { mutableStateOf(true) }
+    var showBackArrow by remember { mutableStateOf(false) }
+
     navigationController.addOnDestinationChangedListener { _, destination, _ ->
         when (destination.route) {
-            Screens.Entry.route -> appViewModel.setNavigationVisibility(false)
-//            else -> appViewModel.setNavigationVisibility(true)
+            Screens.Entry.route -> {
+                appViewModel.setNavigationVisibility(false)
+                showTopBar = false
+                showBackArrow = false
+            }
+            Screens.NoCompany.route -> {
+                appViewModel.setNavigationVisibility(false)
+                showTopBar = true
+                showBackArrow = false
+            }
+            Screens.Register.route -> {
+                appViewModel.setNavigationVisibility(false)
+                showTopBar = true
+                showBackArrow = false
+            }
+            else -> {
+                showTopBar = true
+                showBackArrow = true
+            }
         }
     }
 
@@ -101,40 +123,42 @@ fun AppMainScaffold(
     Scaffold(
         // -------------------- TOP BAR --------------------
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = appUiState.currentNavigationItem?.let
-                        { stringResource(it.title) } ?: "",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    if (!appUiState.appNavigationVisibility) {
-                        IconButton(onClick = { navigationController.navigateUp() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    if (appUiState.appNavigationVisibility) {
-                        IconButton(
-                            onClick = {
-                                navigationController.navigate(
-                                    otherNavigationItemsMap[NavItemType.Profile]!!.screenRoute
+            if (showTopBar) {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            text = appUiState.currentNavigationItem?.let
+                            { stringResource(it.title) } ?: "",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    navigationIcon = {
+                        if (!appUiState.appNavigationVisibility && showBackArrow) {
+                            IconButton(onClick = { navigationController.navigateUp() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null
                                 )
-                            }) {
-                            Icon(
-                                imageVector = otherNavigationItemsMap[NavItemType.Profile]!!.icon,
-                                contentDescription = null)
+                            }
                         }
-                    }
-                },
-            )
+                    },
+                    actions = {
+                        if (appUiState.appNavigationVisibility) {
+                            IconButton(
+                                onClick = {
+                                    navigationController.navigate(
+                                        otherNavigationItemsMap[NavItemType.Profile]!!.screenRoute
+                                    )
+                                }) {
+                                Icon(
+                                    imageVector = otherNavigationItemsMap[NavItemType.Profile]!!.icon,
+                                    contentDescription = null)
+                            }
+                        }
+                    },
+                )
+            }
         },
         // -------------------- BOTTOM NAVIGATION BAR --------------------
         bottomBar = {

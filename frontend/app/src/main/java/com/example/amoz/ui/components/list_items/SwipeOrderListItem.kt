@@ -105,7 +105,7 @@ fun SwipeOrderListItem(
             },
             headlineContent = {
                 Text(
-                    text = order.sampleProductOrderItem?.productVariant?.variantName ?: "Empty order",
+                    text = order.sampleProductOrderItem.productVariant?.variantName ?: "Empty order",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

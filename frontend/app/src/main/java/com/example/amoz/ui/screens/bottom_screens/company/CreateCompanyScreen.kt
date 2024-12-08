@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.amoz.R
 import com.example.amoz.api.requests.AddressCreateRequest
+import com.example.amoz.ui.components.ErrorText
 import com.example.amoz.ui.components.ImageWithText
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.PrimaryOutlinedButton
@@ -56,10 +57,6 @@ fun CreateCompanyScreen (
     var companyCreateRequestState by remember { mutableStateOf(companyViewModel.companyCreateRequestState.value) }
     var validationErrorMessage by remember { mutableStateOf<String?>(null) }
     var pickedImageUri by remember { mutableStateOf<Uri?>(null) }
-
-    fun addressToText(address: AddressCreateRequest): String {
-        return "${address.street} ${address.streetNumber} ${address.apartmentNumber ?: ""} ${address.postalCode} ${address.city}"
-    }
 
     AmozApplicationTheme {
         Surface(
@@ -136,11 +133,17 @@ fun CreateCompanyScreen (
 
                 )
 
+                ErrorText(errorMessage = validationErrorMessage)
+
                 PrimaryFilledButton(
                     text = stringResource(id = R.string.company_register),
                     onClick = {
                         companyViewModel.updateCompanyCreateRequest(companyCreateRequestState)
-                        companyViewModel.createCompany(navController)
+                        try {
+                            companyViewModel.createCompany(navController)
+                        } catch (e: Exception) {
+                            validationErrorMessage = e.message
+                        }
                     }
                 )
 

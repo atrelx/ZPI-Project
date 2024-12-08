@@ -1,6 +1,5 @@
 package com.example.amoz.ui.components.pickers
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +38,6 @@ fun ProductVariantPickerWithListItem(
     var currentProductVariant by remember { mutableStateOf<ProductVariantDetails?>(null) }
 
     LaunchedEffect(selectedProductVariant) {
-        Log.d("ProductVariantPicker", "Selected product variant: $selectedProductVariant")
         if (selectedProductVariant != null && !showBottomSheet) {
             productVariantPicker.removePickedProductVariant()
             showBottomSheet = true
@@ -56,7 +54,6 @@ fun ProductVariantPickerWithListItem(
     )
 
     if (showBottomSheet) {
-        Log.d("ProductVariantPicker", "$currentProductVariant")
         currentProductVariant?.let { productVariant ->
             QuantityBottomSheet(
                 stock = productVariant.stock.amountAvailable,

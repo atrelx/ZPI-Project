@@ -36,30 +36,6 @@ class EmployeeViewModel @Inject constructor(
     var userImageBitmap: ImageBitmap? by mutableStateOf(null)
 
     private fun fetchEmployee() {
-//        val mockEmployee = Employee(
-//            employeeId = UUID.fromString("1c0b25d2-d77e-4f85-bd27-2672f72848d1"),
-//            user = User(
-//                userId = "118443418389427414489",
-//                systemRole = SystemRole.USER
-//            ),
-//            contactPerson = ContactPerson(
-//                contactPersonId = UUID.fromString("e4b5fa0f-b8b1-4b60-bb6b-e4b3d91811ed"),
-//                contactNumber = "+48123456789",
-//                emailAddress = "contact@company.com"
-//            ),
-//            person = Person(
-//                personId = UUID.fromString("1f3d4d5e-3c11-4e53-8f82-e2f0d8c94c89"),
-//                name = "Jan",
-//                surname = "Kowalski",
-//                dateOfBirth = LocalDate.parse("1985-04-23"),
-//                sex = Sex.M
-//            ),
-//            roleInCompany = RoleInCompany.OWNER,
-//            employmentDate = LocalDate.parse("2022-05-15")
-//        )
-
-//        _employeeUiState.value.fetchedEmployeeState.value = ResultState.Success(mockEmployee)
-
         performRepositoryAction(
             employeeUiState.value.fetchedEmployeeState,
             "Could not fetch employee.",
@@ -94,7 +70,6 @@ class EmployeeViewModel @Inject constructor(
             "Could not update employee.",
             action = { userRepository.updateUser(userRegisterRequest) },
             onSuccess = {
-                Log.d("EmployeeViewModel", "User updated")
                 updateUserImage(navController)
                 Toast.makeText(context, "User updated", Toast.LENGTH_SHORT).show()
             }
