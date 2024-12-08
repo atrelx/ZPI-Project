@@ -1,6 +1,7 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,11 +57,14 @@ fun NoCompanyScreen (
     var selectedInvitation by remember { mutableStateOf<Invitation?>(null) }
 
     LaunchedEffect(Unit) {
+        Log.d("NoCompanyScreen", "LaunchedEffect")
         companyViewModel.isUserInCompany{ isInCompany ->
             if (!isInCompany) {
+                Log.d("NoCompanyScreen", "Is in company: $isInCompany")
                 companyViewModel.fetchInvitations()
             } else {
-                navController.navigate(Screens.Home.route){
+                Log.d("NoCompanyScreen", "Is in company: $isInCompany")
+                navController.navigate(Screens.Company.route){
                     popUpTo(0) { inclusive = true}
                 }
             }
