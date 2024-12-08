@@ -101,6 +101,8 @@ public class ProductService {
                 throw new IllegalArgumentException("Given category is not at the bottom level");
             }
             product.setCategory(category);
+        } else {
+            product.setCategory(null);
         }
 
         productAttributeRepository.deleteAllByProductId(productId);

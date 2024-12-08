@@ -132,18 +132,22 @@ public class ProductOrderService {
 
         existingProductOrder.setStatus(request.status());
 
-        request.trackingNumber().ifPresent(existingProductOrder::setTrackingNumber);
-        request.timeOfSending().ifPresent(existingProductOrder::setTimeOfSending);
+        request.trackingNumber().ifPresentOrElse(existingProductOrder::setTrackingNumber, () -> existingProductOrder.setTrackingNumber(null));
+        request.timeOfSending().ifPresentOrElse(existingProductOrder::setTimeOfSending, () -> existingProductOrder.setTimeOfSending(null));
 
         if (request.address().isPresent()) {
             Address updatedAddress = addressService.createAddress(request.address().get());
             existingProductOrder.setAddress(updatedAddress);
+        } else {
+            existingProductOrder.setAddress(null);
         }
 
         if (request.customerId().isPresent()) {
             Customer customer = customerRepository.findById(request.customerId().get())
                     .orElseThrow(() -> new EntityNotFoundException("Cannot find customer for given ID: " + request.customerId().get()));
             existingProductOrder.setCustomer(customer);
+        } else {
+            existingProductOrder.setCustomer(null);
         }
 
         productOrderItemService.removeAllProductOrderItemsTransactional(existingProductOrder.getOrderItems());
