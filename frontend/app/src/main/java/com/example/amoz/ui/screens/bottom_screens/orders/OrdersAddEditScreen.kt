@@ -123,38 +123,41 @@ fun OrdersAddEditScreen (
                                 )
                             },
                             ordersViewModel = ordersViewModel,
-                            currency = currency!!
+                            currency = currency!!,
+                            isNewOrder = isNewOrder
                         )
                     }
 
                     item {
-                        ProductVariantPickerWithListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp)),
-                            onProductVariantChange = { productVariantOrderItem ->
-                                productVariantList = ordersViewModel.addProductVariantToList(
-                                    productVariantList,
-                                    productVariantOrderItem,
-                                )
-                                totalPrice = ordersViewModel.calculateTotalPrice(productVariantList)
-                                ordersViewModel.saveCurrentAddEditOrderState(
-                                    orderRequest,
-                                    productVariantList,
-                                    currentCustomerDetails,
-                                    totalPrice,
-                                )
-                            },
-                            onSaveState = {
-                                ordersViewModel.saveCurrentAddEditOrderState(
-                                    orderRequest,
-                                    productVariantList,
-                                    currentCustomerDetails,
-                                    totalPrice,
-                                )
-                            },
-                            navController = navController,
-                        )
+                        if (isNewOrder) {
+                            ProductVariantPickerWithListItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(10.dp)),
+                                onProductVariantChange = { productVariantOrderItem ->
+                                    productVariantList = ordersViewModel.addProductVariantToList(
+                                        productVariantList,
+                                        productVariantOrderItem,
+                                    )
+                                    totalPrice = ordersViewModel.calculateTotalPrice(productVariantList)
+                                    ordersViewModel.saveCurrentAddEditOrderState(
+                                        orderRequest,
+                                        productVariantList,
+                                        currentCustomerDetails,
+                                        totalPrice,
+                                    )
+                                },
+                                onSaveState = {
+                                    ordersViewModel.saveCurrentAddEditOrderState(
+                                        orderRequest,
+                                        productVariantList,
+                                        currentCustomerDetails,
+                                        totalPrice,
+                                    )
+                                },
+                                navController = navController,
+                            )
+                        }
                     }
 
                     // ---------------------------- Customer ListItem ----------------------------
@@ -274,9 +277,10 @@ fun OrdersAddEditScreen (
                                         orderRequest,
                                         productVariantList
                                     )
-                                    navController.popBackStack()
                                 } catch (e: IllegalArgumentException) {
                                     validationErrorMessage = e.message
+                                } finally {
+                                    navController.popBackStack()
                                 }
                             }
                         )

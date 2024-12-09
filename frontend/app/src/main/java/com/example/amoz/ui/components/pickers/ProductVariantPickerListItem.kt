@@ -29,7 +29,7 @@ fun ProductVariantPickerWithListItem(
     modifier: Modifier = Modifier,
     onProductVariantChange: (OrdersViewModel.ProductVariantOrderItem) -> Unit,
     onSaveState: () -> Unit,
-    navController: NavController
+    navController: NavController,
 ) {
     val productVariantPicker = ProductVariantPicker(navController)
     val selectedProductVariant = productVariantPicker.getPickedProductVariant()

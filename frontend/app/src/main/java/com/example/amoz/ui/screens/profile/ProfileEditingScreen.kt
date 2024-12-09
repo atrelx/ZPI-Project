@@ -134,7 +134,7 @@ fun ProfileEditingScreen(
                         OutlinedTextField(
                             value = employeeBody.contactPerson.emailAddress?: "",
                             onValueChange = { employeeBody = employeeBody.copy(contactPerson = employeeBody.contactPerson.copy(emailAddress = it)) },
-                            label = { Text(stringResource(R.string.profile_email)) },
+                            label = { Text(stringResource(R.string.email_optional)) },
                             modifier = Modifier.fillMaxWidth(),
                             textStyle = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,

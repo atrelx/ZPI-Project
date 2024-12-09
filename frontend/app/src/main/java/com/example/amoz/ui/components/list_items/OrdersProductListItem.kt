@@ -35,6 +35,7 @@ fun OrdersProductListItem(
     onProductRemove: (ProductVariantOrderItem) -> Unit,
     currency: String,
     ordersViewModel: OrdersViewModel,
+    isNewOrder: Boolean = true,
     positionalThreshold: Float = .45f
 ) {
     val ordersUiState by ordersViewModel.ordersUiState.collectAsState()
@@ -78,7 +79,13 @@ fun OrdersProductListItem(
                 brush = SolidColor(MaterialTheme.colorScheme.outline),
                 shape = RoundedCornerShape(5.dp)
             )
-            .clickable(onClick = { showDialog = true }),
+            .clickable(
+                onClick = {
+                    if (isNewOrder) {
+                        showDialog = true
+                    }
+                }
+            ),
         leadingContent = {
             ImageWithIcon(
                 image = image,

@@ -101,14 +101,6 @@ fun CreateCompanyScreen (
                 )
 
                 OutlinedTextField(
-                    value = companyCreateRequestState.countryOfRegistration,
-                    onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(countryOfRegistration = it) },
-                    label = { Text(stringResource(R.string.company_address_of_registration)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge
-                )
-
-                OutlinedTextField(
                     value = companyCreateRequestState.companyNumber,
                     onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(companyNumber = it) },
                     label = { Text(stringResource(R.string.company_number)) },
@@ -155,7 +147,9 @@ fun CreateCompanyScreen (
                         },
                         address = companyViewModel.companyCreateRequestState.collectAsState().value.address,
                         onDone = { request ->
-                            companyCreateRequestState = companyCreateRequestState.copy(address = request)
+                            companyCreateRequestState = companyCreateRequestState.copy(
+                                address = request,
+                                countryOfRegistration = request.country)
                         }
                     )
 

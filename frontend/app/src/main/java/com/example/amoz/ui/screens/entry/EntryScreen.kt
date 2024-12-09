@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,10 +37,6 @@ fun EntryScreen(
     paddingValues: PaddingValues,
     userViewModel: UserViewModel,
 ) {
-//    val currentSavedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-//    LaunchedEffect(Unit) {
-//        currentSavedStateHandle?.set(SavedStateHandleKeys.SHOW_NAV_ELEMENTS, false)
-//    }
 
     AmozApplicationTheme {
         Surface(
@@ -60,8 +57,8 @@ fun EntryScreen(
                     contentDescription = "App Logo",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.6f)
+                        .fillMaxWidth(1f)
+                        .aspectRatio(1f)
                         .clip(RoundedCornerShape(10.dp))
                 )
                 Text(

@@ -46,6 +46,7 @@
     <string name="profile_last_name">Last name</string>
     <string name="profile_full_name">Full name</string>
     <string name="profile_email">Email</string>
+    <string name="email_optional">Email (optional)</string>
     <string name="profile_phone_number">Phone number</string>
     <string name="profile_sex">Sex</string>
     <string name="profile_birth_date">Birth Date</string>
@@ -139,12 +140,12 @@
     <string name="orders_change_shipment_address">Change shipping address</string>
 
     <string name="orders_total_price">Total price</string>
-    <string name="orders_tracking_number">Tracking number</string>
-    <string name="orders_shipping_date">Shipping date</string>
+    <string name="orders_tracking_number">Tracking number (optional)</string>
+    <string name="orders_shipping_date">Shipping date (optional)</string>
 
     <string name="add_new">Add new</string>
     <string name="add_new_product">Add new product</string>
-    <string name="choose_a_customer">Choose a customer</string>
+    <string name="choose_a_customer">Choose a customer (optional)</string>
     <string name="delete_a_customer">Delete a customer</string>
     <string name="enter_quantity">Enter the amount</string>
     <string name="quantity">Quantity</string>
@@ -165,7 +166,6 @@
     <string name="company_logo">Company logo</string>
     <string name="company_logo_change">Update company logo</string>
     <string name="company_name">Company name</string>
-    <string name="company_address_of_registration">Company address of registration</string>
     <string name="company_screen_description">This is your company. Manage your employees, add customers and change all company data if you need.</string>
     <string name="company_screen_description_owner">This is your company. Manage your employees, add customers and change all company data if you need.</string>
     <string name="company_screen_description_regular">This is the company you work for. You can add clients, see all the necessary information about the company and its employees, if necessary.</string>
@@ -174,7 +174,7 @@
 
 
     <string name="company_number_name">NIP</string>
-    <string name="company_number_additional">REGON</string>
+    <string name="company_number_additional">REGON (optional)</string>
 
     <string name="company_address_example">ul. Example, 9, New-York, 50–123</string>
     <string name="company_employees_description">People that work with you</string>

@@ -3,7 +3,6 @@ package com.example.amoz.app
 import android.app.Application
 import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.android.testing.CustomTestApplication
 
 @HiltAndroidApp
 class AmozApplication : Application() {

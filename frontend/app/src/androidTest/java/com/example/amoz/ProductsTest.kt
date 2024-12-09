@@ -42,7 +42,7 @@ class ProductsTest {
     fun setup() {
         hiltRule.inject()
         testProductsIdList = mutableListOf()
-        productsViewModel = ProductsViewModel(productRepository, productVariantRepository, appPreferences)
+    //    productsViewModel = ProductsViewModel(productRepository, productVariantRepository, appPreferences)
     }
 
     @Test

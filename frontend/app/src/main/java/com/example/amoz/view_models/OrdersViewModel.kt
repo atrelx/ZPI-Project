@@ -130,6 +130,7 @@ class OrdersViewModel @Inject constructor (
             currentProductVariantDetailsList = emptyList(),
             currentOrderProductVariantsImagesMap = emptyMap(),
             currentAddEditOrderDetails = null,
+            currentCustomerDetails = null,
             isCurrentOrderNew = true,
             currentOrderTotalPrice = BigDecimal.ZERO,
         ) }

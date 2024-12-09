@@ -157,6 +157,7 @@ fun NoCompanyScreen (
 
                         item {
                             PrimaryFilledButton(
+                                modifier = Modifier.padding(top = 15.dp, bottom = 15.dp),
                                 text = stringResource(id = R.string.or_company_register),
                                 onClick = {
                                     navController.navigate(Screens.CreateCompany.route)

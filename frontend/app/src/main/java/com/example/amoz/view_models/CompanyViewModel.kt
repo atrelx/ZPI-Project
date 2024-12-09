@@ -19,6 +19,7 @@ import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
+import com.example.amoz.test_data.invitations.createMockInvitations
 import com.example.amoz.ui.states.CompanyUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -88,6 +89,8 @@ class CompanyViewModel @Inject constructor(
                 companyRepository.getUserCompany()
             }, onSuccess = { company ->
                 _companyUIState.update { it.copy(companyCreateRequestState = CompanyCreateRequest(company))}
+                fetchCompanyImage()
+                fetchEmployeeData()
                 onFinished()
             },
             onFailure = {
