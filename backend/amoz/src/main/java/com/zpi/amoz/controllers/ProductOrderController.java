@@ -80,7 +80,11 @@ public class ProductOrderController {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given product variant ID is not in your company: " + productVariantId));
                 }
             }
-            ProductOrder productOrder = productOrderService.createProductOrder(request);
+            UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
+                    .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
+                    .getCompanyId();
+
+            ProductOrder productOrder = productOrderService.createProductOrder(companyId, request);
             ProductOrderDetailsDTO productOrderDetailsDTO = ProductOrderDetailsDTO.toProductOrderDetailsDTO(productOrder);
             return ResponseEntity.status(HttpStatus.CREATED).body(productOrderDetailsDTO);
         } catch (EntityNotFoundException e) {
@@ -125,7 +129,11 @@ public class ProductOrderController {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Given product variant ID is not in your company: " + productVariantId));
                 }
             }
-            ProductOrder productOrder = productOrderService.updateProductOrder(productOrderId, request);
+            UUID companyId = companyService.getCompanyByUserId(userPrincipal.getSub())
+                    .orElseThrow(() -> new EntityNotFoundException("Could not found company for given user ID"))
+                    .getCompanyId();
+
+            ProductOrder productOrder = productOrderService.updateProductOrder(productOrderId, companyId, request);
             ProductOrderDetailsDTO productOrderDetailsDTO = ProductOrderDetailsDTO.toProductOrderDetailsDTO(productOrder);
             return ResponseEntity.status(HttpStatus.OK).body(productOrderDetailsDTO);
         } catch (EntityNotFoundException e) {

@@ -74,7 +74,7 @@ public class ProductOrderService {
     }
 
     @Transactional
-    public ProductOrder createProductOrder(ProductOrderCreateRequest request) {
+    public ProductOrder createProductOrder(UUID comapnyId, ProductOrderCreateRequest request) {
         ProductOrder initialProductOrder = new ProductOrder();
 
         initialProductOrder.setStatus(request.status());
@@ -95,7 +95,7 @@ public class ProductOrderService {
         ProductOrder productOrder = productOrderRepository.save(initialProductOrder);
 
         List<ProductOrderItem> productOrderItems = request.productOrderItems().stream()
-                .map(item -> productOrderItemService.createProductOrderItem(productOrder, item))
+                .map(item -> productOrderItemService.createProductOrderItem(productOrder, comapnyId, item))
                 .collect(Collectors.toList());
 
         productOrder.setOrderItems(productOrderItems);
@@ -126,7 +126,7 @@ public class ProductOrderService {
     }
 
     @Transactional
-    public ProductOrder updateProductOrder(UUID productOrderId, ProductOrderCreateRequest request) {
+    public ProductOrder updateProductOrder(UUID productOrderId, UUID comapnyId, ProductOrderCreateRequest request) {
         ProductOrder existingProductOrder = productOrderRepository.findById(productOrderId)
                 .orElseThrow(() -> new EntityNotFoundException("Product Order not found for given ID: " + productOrderId));
 
@@ -153,7 +153,7 @@ public class ProductOrderService {
         productOrderItemService.removeAllProductOrderItemsTransactional(existingProductOrder.getOrderItems());
 
         List<ProductOrderItem> updatedOrderItems = request.productOrderItems().stream()
-                .map(item -> productOrderItemService.createProductOrderItem(existingProductOrder, item))
+                .map(item -> productOrderItemService.createProductOrderItem(existingProductOrder, comapnyId, item))
                 .collect(Collectors.toList());
 
         existingProductOrder.setOrderItems(updatedOrderItems);

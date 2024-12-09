@@ -57,7 +57,7 @@ public class ProductOrderItemService {
     }
 
     @Transactional
-    public ProductOrderItem createProductOrderItem(ProductOrder productOrder, ProductOrderItemCreateRequest request) {
+    public ProductOrderItem createProductOrderItem(ProductOrder productOrder, UUID companyId, ProductOrderItemCreateRequest request) {
         ProductOrderItem productOrderItem = new ProductOrderItem();
         productOrderItem.setProductOrder(productOrder);
 
@@ -73,14 +73,10 @@ public class ProductOrderItemService {
         if (stock.getAmountAvailable() < request.amount()) {
             throw new IllegalArgumentException("Requested amount is bigger than amount available in stock");
         }
+        stock.decreaseStock(request.amount());
 
         if (stock.isAlarmTriggered()) {
-            List<Employee> employees = employeeService.getEmployeesByCompanyId(productOrder
-                    .getOrderItems().get(0)
-                    .getProductVariant()
-                    .getProduct()
-                    .getCompany()
-                    .getCompanyId());
+            List<Employee> employees = employeeService.getEmployeesByCompanyId(companyId);
 
             List<String> pushTokens = employees.stream()
                     .map(Employee::getUser)
@@ -96,8 +92,6 @@ public class ProductOrderItemService {
             pushService.sendBulkPushMessages(pushTokens, pushRequest);
         }
 
-
-        stock.decreaseStock(request.amount());
         productOrderItem.setAmount(request.amount());
         return productOrderItemRepository.save(productOrderItem);
     }
