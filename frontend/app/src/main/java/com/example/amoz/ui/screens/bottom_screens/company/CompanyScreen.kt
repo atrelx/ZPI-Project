@@ -48,163 +48,160 @@ fun CompanyScreen(
     companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList(),
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
-    AmozApplicationTheme {
+    LaunchedEffect (Unit) {
+        companyViewModel.fetchCompanyDetailsOnScreenLoad()
+    }
 
-        LaunchedEffect (Unit) {
-            companyViewModel.fetchCompanyDetailsOnScreenLoad()
+    val companyUIState by companyViewModel.companyUIState.collectAsState()
+    val clipboardManager = LocalClipboardManager.current
+
+    val currentEmployeeRoleInCompany = companyUIState.currentEmployee?.roleInCompany ?: RoleInCompany.REGULAR
+    val readOnly = currentEmployeeRoleInCompany == RoleInCompany.REGULAR
+
+    val uploadCompanyImageSuccessText = stringResource(R.string.company_change_image_successful)
+    val workersDescription = stringResource(R.string.company_employees_description)
+    val customersDescription = stringResource(R.string.company_customers_description)
+
+    val itemsDescriptions by remember {
+        derivedStateOf {
+            mutableStateListOf(
+                workersDescription,
+                customersDescription,
+            )
         }
+    }
 
-        val companyUIState by companyViewModel.companyUIState.collectAsState()
-        val clipboardManager = LocalClipboardManager.current
-
-        val currentEmployeeRoleInCompany = companyUIState.currentEmployee?.roleInCompany ?: RoleInCompany.REGULAR
-        val readOnly = currentEmployeeRoleInCompany == RoleInCompany.REGULAR
-
-        val uploadCompanyImageSuccessText = stringResource(R.string.company_change_image_successful)
-        val workersDescription = stringResource(R.string.company_employees_description)
-        val customersDescription = stringResource(R.string.company_customers_description)
-
-        val itemsDescriptions by remember {
-            derivedStateOf {
-                mutableStateListOf(
-                    workersDescription,
-                    customersDescription,
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        ResultStateView(
+            state = companyUIState.company,
+            onPullToRefresh = { companyViewModel.fetchCompanyDetails() }
+        ) { company ->
+            val address = company.address
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+            ) {
+                // --------------------- Company banner, logo ---------------------
+                CompanyLogoAndName(
+                    companyLogoState = companyUIState.companyLogo,
+                    readOnly = readOnly,
+                    companyName = company.name,
+                    onCompanyNameClick = {
+                        companyViewModel.expandChangeCompanyNameBottomSheet(true)
+                    },
+                    onCompanyImageClick = {
+                        companyViewModel.expandChangeCompanyLogoBottomSheet(true)
+                    }
                 )
-            }
-        }
 
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            ResultStateView(
-                state = companyUIState.company,
-                onPullToRefresh = { companyViewModel.fetchCompanyDetails() }
-            ) { company ->
-                val address = company.address
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // --------------------- Company info ---------------------
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    // --------------------- Company banner, logo ---------------------
-                    CompanyLogoAndName(
-                        companyLogoState = companyUIState.companyLogo,
-                        readOnly = readOnly,
-                        companyName = company.name,
-                        onCompanyNameClick = {
-                            companyViewModel.expandChangeCompanyNameBottomSheet(true)
-                        },
-                        onCompanyImageClick = {
-                            companyViewModel.expandChangeCompanyLogoBottomSheet(true)
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // --------------------- Company info ---------------------
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        companyInfoScreenItems.zip(itemsDescriptions)
-                            .forEach { (companyInfoItem, description) ->
-                                CompanyInfoItem(
-                                    leadingIcon = companyInfoItem.icon,
-                                    title = stringResource(companyInfoItem.title),
-                                    itemDescription = description,
-                                    trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                                    onClick = {
-                                        navController.navigate(companyInfoItem.screenRoute)
-                                    }
-                                )
-                            }
-
-                        // ------------------- Company address -------------------
-                        CompanyInfoItem(
-                            leadingIcon = Icons.Outlined.LocationOn,
-                            title = stringResource(R.string.company_address_screen),
-                            itemDescription = address.fullAddress,
-                            trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                            onClick = {
-                                companyViewModel.expandChangeCompanyAddressBottomSheet(true)
-                            }
-                        )
-
-                        // ------------------- Company Number, Regon -------------------
-                        CompanyInfoItem(
-                            leadingIcon = null,
-                            title = stringResource(R.string.company_number_name),
-                            itemDescription = company.companyNumber,
-                            trailingIcon = null,
-                            onClick = {
-                                clipboardManager.setText(
-                                    AnnotatedString(company.companyNumber)
-                                )
-                            }
-                        )
-                        company.regon?.let{
+                    companyInfoScreenItems.zip(itemsDescriptions)
+                        .forEach { (companyInfoItem, description) ->
                             CompanyInfoItem(
-                                leadingIcon = null,
-                                title = stringResource(R.string.company_number_additional),
-                                itemDescription = company.regon,
-                                trailingIcon = null,
+                                leadingIcon = companyInfoItem.icon,
+                                title = stringResource(companyInfoItem.title),
+                                itemDescription = description,
+                                trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
                                 onClick = {
-                                    clipboardManager.setText(AnnotatedString(company.regon))
+                                    navController.navigate(companyInfoItem.screenRoute)
                                 }
                             )
                         }
+
+                    // ------------------- Company address -------------------
+                    CompanyInfoItem(
+                        leadingIcon = Icons.Outlined.LocationOn,
+                        title = stringResource(R.string.company_address_screen),
+                        itemDescription = address.fullAddress,
+                        trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                        onClick = {
+                            companyViewModel.expandChangeCompanyAddressBottomSheet(true)
+                        }
+                    )
+
+                    // ------------------- Company Number, Regon -------------------
+                    CompanyInfoItem(
+                        leadingIcon = null,
+                        title = stringResource(R.string.company_number_name),
+                        itemDescription = company.companyNumber,
+                        trailingIcon = null,
+                        onClick = {
+                            clipboardManager.setText(
+                                AnnotatedString(company.companyNumber)
+                            )
+                        }
+                    )
+                    company.regon?.let{
+                        CompanyInfoItem(
+                            leadingIcon = null,
+                            title = stringResource(R.string.company_number_additional),
+                            itemDescription = company.regon,
+                            trailingIcon = null,
+                            onClick = {
+                                clipboardManager.setText(AnnotatedString(company.regon))
+                            }
+                        )
                     }
                 }
-
-                if (companyUIState.changeCompanyAddressBottomSheetExpanded) {
-                    AddressBottomSheet(
-                        readOnly = readOnly,
-                        bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
-                        onDismissRequest = {
-                            companyViewModel.expandChangeCompanyAddressBottomSheet(false)
-                        },
-                        address = companyUIState.companyCreateRequestState.address,
-                        onDone = { request ->
-                            companyViewModel.updateCompanyAddress(request, currentEmployeeRoleInCompany)
-                        }
-                    )
-                }
-
-                if (companyUIState.changeCompanyNameBottomSheetExpanded) {
-                    ChangeCompanyNameBottomSheet(
-                        company = companyUIState.companyCreateRequestState,
-                        readOnly = readOnly,
-                        onDismissRequest = {
-                            companyViewModel.expandChangeCompanyNameBottomSheet(false)
-                        },
-                        onDone = { request ->
-                            companyViewModel.updateCompany(request, currentEmployeeRoleInCompany)
-                        }
-                    )
-                }
-
-                if (companyUIState.changeCompanyLogoBottomSheetExpanded) {
-                    ChangeCompanyLogoBottomSheet(
-                        companyLogoState = companyUIState.companyLogo,
-                        onImageChange = { imageUri ->
-                            try {
-                                companyViewModel.updateCompanyLogo(imageUri, currentEmployeeRoleInCompany)
-                                callSnackBar(uploadCompanyImageSuccessText, Icons.Default.Done)
-                            } catch (e: IllegalArgumentException) {
-                                e.message?.let { callSnackBar(it, Icons.Default.Close) }
-                            }
-                        },
-                        readOnly = readOnly,
-                        onDismissRequest = {
-                            companyViewModel.expandChangeCompanyLogoBottomSheet(false)
-                        }
-                    )
-                }
-
-
             }
+
+            if (companyUIState.changeCompanyAddressBottomSheetExpanded) {
+                AddressBottomSheet(
+                    readOnly = readOnly,
+                    bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
+                    onDismissRequest = {
+                        companyViewModel.expandChangeCompanyAddressBottomSheet(false)
+                    },
+                    address = companyUIState.companyCreateRequestState.address,
+                    onDone = { request ->
+                        companyViewModel.updateCompanyAddress(request, currentEmployeeRoleInCompany)
+                    }
+                )
+            }
+
+            if (companyUIState.changeCompanyNameBottomSheetExpanded) {
+                ChangeCompanyNameBottomSheet(
+                    company = companyUIState.companyCreateRequestState,
+                    readOnly = readOnly,
+                    onDismissRequest = {
+                        companyViewModel.expandChangeCompanyNameBottomSheet(false)
+                    },
+                    onDone = { request ->
+                        companyViewModel.updateCompany(request, currentEmployeeRoleInCompany)
+                    }
+                )
+            }
+
+            if (companyUIState.changeCompanyLogoBottomSheetExpanded) {
+                ChangeCompanyLogoBottomSheet(
+                    companyLogoState = companyUIState.companyLogo,
+                    onImageChange = { imageUri ->
+                        try {
+                            companyViewModel.updateCompanyLogo(imageUri, currentEmployeeRoleInCompany)
+                            callSnackBar(uploadCompanyImageSuccessText, Icons.Default.Done)
+                        } catch (e: IllegalArgumentException) {
+                            e.message?.let { callSnackBar(it, Icons.Default.Close) }
+                        }
+                    },
+                    readOnly = readOnly,
+                    onDismissRequest = {
+                        companyViewModel.expandChangeCompanyLogoBottomSheet(false)
+                    }
+                )
+            }
+
+
         }
     }
 }

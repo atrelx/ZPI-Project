@@ -1,10 +1,8 @@
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
@@ -31,7 +29,7 @@ import java.util.UUID
 @Composable
 fun OrderListItem(
     order: ProductOrderSummary,
-    onOrderEdit: (UUID) -> Unit,
+    onOrderEdit: ((UUID) -> Unit)? = null,
     currency: String,
     ordersViewModel: OrdersViewModel
 ) {
@@ -48,7 +46,8 @@ fun OrderListItem(
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
             .clickable(
-                onClick = {onOrderEdit(order.productOrderId)},
+                onClick = { onOrderEdit?.invoke(order.productOrderId) },
+                enabled = onOrderEdit != null
             ),
         leadingContent = {
             ImageWithIcon(

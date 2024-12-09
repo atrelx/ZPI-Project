@@ -54,116 +54,114 @@ fun ProfileScreen(
         employeeViewModel.fetchEmployeeOnScreenLoad()
     }
 
-    AmozApplicationTheme {
-        Surface (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            ResultStateView(employeeUiState.fetchedEmployeeState) { employee ->
+    Surface (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        ResultStateView(employeeUiState.fetchedEmployeeState) { employee ->
 
-                Column(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+            ) {
+                ImageWithIcon(
+                    image = employeeViewModel.userImageBitmap,
+                    contentDescription = "Profile Picture",
+                    size = 160.dp,
+                    shape = CircleShape,
+                    isEditing = false
+                )
+
+                HorizontalDivider(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
-                ) {
-                    ImageWithIcon(
-                        image = employeeViewModel.userImageBitmap,
-                        contentDescription = "Profile Picture",
-                        size = 160.dp,
-                        shape = CircleShape,
-                        isEditing = false
-                    )
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                )
 
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
+                Text(
+                    text = "About you",
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+
+                Column (
+                    Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+
+                    )
+                {
+                    Text(
+                        text = "${stringResource(R.string.profile_first_name)}: ${employee.person.name}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
                     Text(
-                        text = "About you",
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
+                        text = "${stringResource(R.string.profile_last_name)}: ${employee.person.surname}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
-                    Column (
-                        Modifier
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
-
-                        )
-                    {
-                        Text(
-                            text = "${stringResource(R.string.profile_first_name)}: ${employee.person.name}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-
-                        Text(
-                            text = "${stringResource(R.string.profile_last_name)}: ${employee.person.surname}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-
-                        Text(
-                            text = "${stringResource(R.string.profile_email)}: ${employee.contactPerson.emailAddress ?: ""}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-
-                        Text(
-                            text = "${stringResource(R.string.profile_phone_number)}: ${employee.contactPerson.contactNumber}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-
-                        Text(
-                            text = "${stringResource(R.string.profile_sex)}: ${employee.person.sex.getName()}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-
-                        Text(
-                            text = "${stringResource(R.string.profile_birth_date)}: ${employee.person.dateOfBirth}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 32.dp)
+                    Text(
+                        text = "${stringResource(R.string.profile_email)}: ${employee.contactPerson.emailAddress ?: ""}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
-                    PrimaryFilledButton(
-                        onClick = { navController.navigate(Screens.ProfileEdit.route) },
-                        text = stringResource(R.string.profile_edit_profile),
+                    Text(
+                        text = "${stringResource(R.string.profile_phone_number)}: ${employee.contactPerson.contactNumber}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "${stringResource(R.string.profile_sex)}: ${employee.person.sex.getName()}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
 
-                    PrimaryOutlinedButton(
-                        onClick = {
-                            activity?.let { activity ->
-                                authenticationViewModel.signOut(activity) {
-                                    navController.navigate(Screens.Entry.route) {
-                                        popUpTo(0)
-                                    }
-                                }
-                            }
-                        },
-                        text = stringResource(R.string.profile_sign_out),
+                    Text(
+                        text = "${stringResource(R.string.profile_birth_date)}: ${employee.person.dateOfBirth}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
+
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 32.dp)
+                )
+
+                PrimaryFilledButton(
+                    onClick = { navController.navigate(Screens.ProfileEdit.route) },
+                    text = stringResource(R.string.profile_edit_profile),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PrimaryOutlinedButton(
+                    onClick = {
+                        activity?.let { activity ->
+                            authenticationViewModel.signOut(activity) {
+                                navController.navigate(Screens.Entry.route) {
+                                    popUpTo(0)
+                                }
+                            }
+                        }
+                    },
+                    text = stringResource(R.string.profile_sign_out),
+                )
             }
         }
     }

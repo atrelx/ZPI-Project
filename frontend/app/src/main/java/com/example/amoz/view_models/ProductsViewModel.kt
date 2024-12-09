@@ -485,18 +485,6 @@ class ProductsViewModel @Inject constructor(
 
     // -------------------- UI STATE --------------------
 
-//    fun updateProductAndProductVariantDetails(
-//        productDetails: ProductDetails?,
-//        productVariantDetails: ProductVariantDetails?
-//    ) {
-//        _productUiState.update {
-//            it.copy(
-//                currentAddEditProductDetails = productDetails,
-//                currentAddEditProductVariantDetails = productVariantDetails
-//            )
-//        }
-//    }
-
     fun getCurrency(): Flow<String?> {
         return appPreferences.currency
     }

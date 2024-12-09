@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -177,8 +178,9 @@ fun AddEditProductBottomSheet(
                 PrimaryFilledButton(
                     onClick = {
                         onComplete(productDetails?.productId, productState) {
-                            if (it == null) { onDismissRequest() }
-                            else { validationMessage = it }
+                            Log.d("ERROR asd", it.toString())
+                            if (it != null) { validationMessage = it  }
+                            else { onDismissRequest() }
                         }
                     },
                     text = stringResource(id = R.string.done),

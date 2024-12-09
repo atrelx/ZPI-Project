@@ -21,29 +21,27 @@ import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun AboutScreen(navController: NavController, paddingValues: PaddingValues) {
-    AmozApplicationTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .height(250.dp)
+                    .padding(horizontal = 15.dp, vertical = 10.dp)
+                    .clip(MaterialTheme.shapes.large)
             ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(250.dp)
-                        .padding(horizontal = 15.dp, vertical = 10.dp)
-                        .clip(MaterialTheme.shapes.large)
-                ) {
-                }
-                Text(
-                    "About Screen",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(vertical = 20.dp)
-                )
             }
+            Text(
+                "About Screen",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(vertical = 20.dp)
+            )
         }
     }
 }

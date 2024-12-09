@@ -45,90 +45,87 @@ fun B2CCustomerScreen(
     companyViewModel: CompanyViewModel = hiltViewModel(),
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
-    AmozApplicationTheme {
-        val companyUiState by companyViewModel.companyUIState.collectAsState()
-        val customerPicker = CustomerPicker(navController)
+    val companyUiState by companyViewModel.companyUIState.collectAsState()
+    val customerPicker = CustomerPicker(navController)
 
-        val customerAddSuccessful = stringResource(id = R.string.company_add_customer_successful)
-        val customerEditSuccessful = stringResource(id = R.string.company_update_customer_successful)
+    val customerAddSuccessful = stringResource(id = R.string.company_add_customer_successful)
+    val customerEditSuccessful = stringResource(id = R.string.company_update_customer_successful)
 
-        Surface(
+    Surface(
+        modifier = Modifier
+
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
+    ) {
+        // -------------------- B2C Customers --------------------
+        LazyColumn(
             modifier = Modifier
-
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // -------------------- B2C Customers --------------------
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(b2cCustomersList.reversed()) { customerB2C ->
-                    val person = customerB2C.person
-                    val contactPerson = customerB2C.customer.contactPerson
-                    ListItem(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .clickable {
-                                if (customerPicker.isCustomerPickerMode()) {
-                                    customerPicker.pickCustomer(customerB2C)
-                                }
-                                else {
-                                    companyViewModel.updateCustomerB2cCreateRequestState(customerB2C)
-                                    companyViewModel.expandAddEditB2CCustomerBottomSheet(true)
-                                }
-                            },
-                        headlineContent = { Text(person.name + " " + person.surname) },
-                        supportingContent = { Text(text = contactPerson.emailAddress ?: contactPerson.contactNumber) },
-                        colors = ListItemDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        )
-                    )
-                }
-            }
-            // -------------------- FAB --------------------
-            if(!customerPicker.isCustomerPickerMode()) {
-                Box(
+            items(b2cCustomersList.reversed()) { customerB2C ->
+                val person = customerB2C.person
+                val contactPerson = customerB2C.customer.contactPerson
+                ListItem(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            companyViewModel.updateCustomerB2cCreateRequestState(null)
-                            companyViewModel.expandAddEditB2CCustomerBottomSheet(true)
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable {
+                            if (customerPicker.isCustomerPickerMode()) {
+                                customerPicker.pickCustomer(customerB2C)
+                            }
+                            else {
+                                companyViewModel.updateCustomerB2cCreateRequestState(customerB2C)
+                                companyViewModel.expandAddEditB2CCustomerBottomSheet(true)
+                            }
                         },
-                        modifier = Modifier
-                            .padding(16.dp), // Padding for spacing from screen edges
-                        icon = { Icon(Icons.Filled.Add, null) },
-                        text = { Text(text = "Add customer") }
+                    headlineContent = { Text(person.name + " " + person.surname) },
+                    supportingContent = { Text(text = contactPerson.emailAddress ?: contactPerson.contactNumber) },
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                     )
-                }
+                )
             }
-
         }
-        if (companyUiState.addB2CCustomerBottomSheetExpanded) {
-            AddEditB2CCustomerBottomSheet(
-                customerRequest = companyUiState.customerB2CCreateRequestState,
-                onDone = { request ->
-                    companyUiState.currentCustomerB2C?.let {
-                        companyViewModel.updateB2CCustomer(it.customer.customerId, request) {
-                            callSnackBar(customerEditSuccessful, Icons.Outlined.Done)
-                        }
-                    }
-                    ?: companyViewModel.createB2CCustomer(request) {
-                        callSnackBar(customerAddSuccessful, Icons.Outlined.Done)
-                    }
-                },
-                onDismissRequest = {
-                    companyViewModel.updateCustomerB2cCreateRequestState(null)
-                    companyViewModel.expandAddEditB2CCustomerBottomSheet(false)
-                },
-            )
+        // -------------------- FAB --------------------
+        if(!customerPicker.isCustomerPickerMode()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        companyViewModel.updateCustomerB2cCreateRequestState(null)
+                        companyViewModel.expandAddEditB2CCustomerBottomSheet(true)
+                    },
+                    modifier = Modifier
+                        .padding(16.dp), // Padding for spacing from screen edges
+                    icon = { Icon(Icons.Filled.Add, null) },
+                    text = { Text(text = "Add customer") }
+                )
+            }
         }
 
+    }
+    if (companyUiState.addB2CCustomerBottomSheetExpanded) {
+        AddEditB2CCustomerBottomSheet(
+            customerRequest = companyUiState.customerB2CCreateRequestState,
+            onDone = { request ->
+                companyUiState.currentCustomerB2C?.let {
+                    companyViewModel.updateB2CCustomer(it.customer.customerId, request) {
+                        callSnackBar(customerEditSuccessful, Icons.Outlined.Done)
+                    }
+                }
+                ?: companyViewModel.createB2CCustomer(request) {
+                    callSnackBar(customerAddSuccessful, Icons.Outlined.Done)
+                }
+            },
+            onDismissRequest = {
+                companyViewModel.updateCustomerB2cCreateRequestState(null)
+                companyViewModel.expandAddEditB2CCustomerBottomSheet(false)
+            },
+        )
     }
 }
 

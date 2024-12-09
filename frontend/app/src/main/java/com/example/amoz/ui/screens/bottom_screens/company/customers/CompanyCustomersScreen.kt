@@ -51,76 +51,74 @@ fun CompanyCustomersScreen(
 
     val scope = rememberCoroutineScope()
 
-    AmozApplicationTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Column {
-                // -------------------- TabRow with Pager Synchronization --------------------
-                TabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            Modifier
-                                .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                                .height(3.dp)
-                        )
-                    }
-                ) {
-                    tabTitles.forEachIndexed { index, title ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.scrollToPage(index)
-                                }
-                            },
-                            text = { Text(text = title) }
-                        )
-                    }
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        Column {
+            // -------------------- TabRow with Pager Synchronization --------------------
+            TabRow(
+                selectedTabIndex = pagerState.currentPage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(
+                        Modifier
+                            .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                            .height(3.dp)
+                    )
                 }
+            ) {
+                tabTitles.forEachIndexed { index, title ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.scrollToPage(index)
+                            }
+                        },
+                        text = { Text(text = title) }
+                    )
+                }
+            }
 
-                // -------------------- HorizontalPager with Content --------------------
-                HorizontalPager(
-                    state = pagerState,
-                ) { index ->
-                    when (index) {
-                        0 -> {
-                            LaunchedEffect(Lifecycle.Event.ON_RESUME) {
-                                companyViewModel.fetchCustomersB2C(true)
-                            }
-                            ResultStateView(
-                                state = companyUiState.companyB2CCustomers,
-                                onPullToRefresh = {companyViewModel.fetchCustomersB2B()}
-                            ) { customers ->
-                                B2CCustomerScreen(
-                                    navController = navController,
-                                    b2cCustomersList = customers,
-                                    companyViewModel = companyViewModel,
-                                    callSnackBar = callSnackBar
-                                )
-                            }
+            // -------------------- HorizontalPager with Content --------------------
+            HorizontalPager(
+                state = pagerState,
+            ) { index ->
+                when (index) {
+                    0 -> {
+                        LaunchedEffect(Lifecycle.Event.ON_RESUME) {
+                            companyViewModel.fetchCustomersB2C(true)
                         }
-                        1 -> {
-                            LaunchedEffect(Lifecycle.Event.ON_RESUME) {
-                                companyViewModel.fetchCustomersB2B()
-                            }
-                            ResultStateView(
-                                state = companyUiState.companyB2BCustomers,
-                                onPullToRefresh = {companyViewModel.fetchCustomersB2C(true)}
-                            ) { customers ->
-                                B2BCustomerScreen(
-                                    navController = navController,
-                                    b2bCustomersList = customers,
-                                    companyViewModel = companyViewModel,
-                                    callSnackBar = callSnackBar,
-                                )
-                            }
+                        ResultStateView(
+                            state = companyUiState.companyB2CCustomers,
+                            onPullToRefresh = {companyViewModel.fetchCustomersB2B()}
+                        ) { customers ->
+                            B2CCustomerScreen(
+                                navController = navController,
+                                b2cCustomersList = customers,
+                                companyViewModel = companyViewModel,
+                                callSnackBar = callSnackBar
+                            )
+                        }
+                    }
+                    1 -> {
+                        LaunchedEffect(Lifecycle.Event.ON_RESUME) {
+                            companyViewModel.fetchCustomersB2B()
+                        }
+                        ResultStateView(
+                            state = companyUiState.companyB2BCustomers,
+                            onPullToRefresh = {companyViewModel.fetchCustomersB2C(true)}
+                        ) { customers ->
+                            B2BCustomerScreen(
+                                navController = navController,
+                                b2bCustomersList = customers,
+                                companyViewModel = companyViewModel,
+                                callSnackBar = callSnackBar,
+                            )
                         }
                     }
                 }

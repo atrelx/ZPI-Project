@@ -74,190 +74,190 @@ fun ProductScreen(
         }
     }
 
-    AmozApplicationTheme {
-        Surface(
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(bottom = 5.dp),
+        color = MaterialTheme.colorScheme.background
+    ) {
+
+        FilteredProductsList(
+            navController = navController,
+            currency = currency!!
+        )
+
+        // -------------------- Menu FAB --------------------
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(bottom = 5.dp),
-            color = MaterialTheme.colorScheme.background
+                .fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd
         ) {
-
-            FilteredProductsList(
-                navController = navController,
-                currency = currency!!
-            )
-
-            // -------------------- Menu FAB --------------------
-            Box(
+            ExtendedFloatingActionButton(
+                onClick = {
+                    productsViewModel.expandBottomSheet(BottomSheetType.MENU, true)
+                },
                 modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        productsViewModel.expandBottomSheet(BottomSheetType.MENU, true)
-                    },
-                    modifier = Modifier
-                        .padding(16.dp),
-                    icon = { Icon(Icons.Filled.Menu, null) },
-                    text = { Text(text = "Menu") }
-                )
-            }
-
-        }
-        // -------------------- Menu Bottom Sheet --------------------
-        if (productsUiState.menuBottomSheetExpanded) {
-            MenuBottomSheet(
-                onDismissRequest = {
-                    productsViewModel.expandBottomSheet(BottomSheetType.MENU, false)
-                },
-                onClick = { onMenuItemClick(it) },
+                    .padding(16.dp),
+                icon = { Icon(Icons.Filled.Menu, null) },
+                text = { Text(text = "Menu") }
             )
         }
 
-        // -------------------- More product filters Bottom Sheet --------------------
-        if (productsUiState.moreFiltersBottomSheetExpanded) {
-            MoreFiltersBottomSheet (
+    }
+    // -------------------- Menu Bottom Sheet --------------------
+    if (productsUiState.menuBottomSheetExpanded) {
+        MenuBottomSheet(
+            onDismissRequest = {
+                productsViewModel.expandBottomSheet(BottomSheetType.MENU, false)
+            },
+            onClick = { onMenuItemClick(it) },
+        )
+    }
+
+    // -------------------- More product filters Bottom Sheet --------------------
+    if (productsUiState.moreFiltersBottomSheetExpanded) {
+        MoreFiltersBottomSheet (
+            onDismissRequest = {
+                productsViewModel.saveFilterParamsInEdit(productsUiState.filterParams)
+                productsViewModel.expandBottomSheet(BottomSheetType.MORE_FILTERS, false)
+            },
+            onApplyFilters = productsViewModel::updateFilterParams,
+            onSaveFilterParams = productsViewModel::saveFilterParamsInEdit,
+            onCancelFilters = productsViewModel::cancelFilters,
+            filterParams = productsUiState.filterParamsInEdit,
+            navController = navController
+        )
+    }
+
+    // -------------------- Confirm product delete --------------------
+    if (productsUiState.deleteProductBottomSheetExpanded) {
+         productsUiState.currentProductToDelete?.let {
+            ConfirmDeleteItemBottomSheet(
                 onDismissRequest = {
-                    productsViewModel.saveFilterParamsInEdit(productsUiState.filterParams)
-                    productsViewModel.expandBottomSheet(BottomSheetType.MORE_FILTERS, false)
+                    productsViewModel.updateCurrentProductToDelete(null)
+                    productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, false)
                 },
-                onApplyFilters = productsViewModel::updateFilterParams,
-                onSaveFilterParams = productsViewModel::saveFilterParamsInEdit,
-                onCancelFilters = productsViewModel::cancelFilters,
-                filterParams = productsUiState.filterParamsInEdit,
-                navController = navController
+                onDeleteConfirm = {
+                    productsViewModel.deleteProduct(it.productId)
+                },
+                itemNameToDelete = it.name
             )
         }
-
-        // -------------------- Confirm product delete --------------------
-        if (productsUiState.deleteProductBottomSheetExpanded) {
-             productsUiState.currentProductToDelete?.let {
-                ConfirmDeleteItemBottomSheet(
-                    onDismissRequest = {
-                        productsViewModel.updateCurrentProductToDelete(null)
-                        productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, false)
-                    },
-                    onDeleteConfirm = {
-                        productsViewModel.deleteProduct(it.productId)
-                    },
-                    itemNameToDelete = it.name
-                )
-            }
-            productsUiState.currentProductVariantToDelete?.let { productVariantToDelete ->
-                ConfirmDeleteItemBottomSheet(
-                    onDismissRequest = {
-                        productsViewModel.updateCurrentProductToDelete(null)
-                        productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, false)
-                    },
-                    onDeleteConfirm = {
-                        productsViewModel.deleteProductVariant(productVariantToDelete.productVariantId)
-                    },
-                    itemNameToDelete = productVariantToDelete.variantName ?: ""
-                )
-            }
-        }
-
-        // -------------------- Add/Edit Product --------------------
-        LaunchedEffect(productsUiState.productCreateRequest) {
-            Log.d("SAVED PRODUCT", productsUiState.productCreateRequest.toString())
-        }
-        if (productsUiState.addEditProductBottomSheetExpanded) {
-            AddEditProductBottomSheet(
-                productDetailsState = productsUiState.productDetailsState,
-                savedProductState = productsUiState.productCreateRequest,
-                onSaveProduct = productsViewModel::saveCurrentProductCreateRequest,
-                onComplete = { productId, productState, onErrorCallback ->
-                    productId?.let {
-                        try { productsViewModel.updateProduct(it, productState) }
-                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
-
-                    }
-                    ?: run {
-                        try{ productsViewModel.createProduct(productState) }
-                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
-                    }
-                },
+        productsUiState.currentProductVariantToDelete?.let { productVariantToDelete ->
+            ConfirmDeleteItemBottomSheet(
                 onDismissRequest = {
-                    productsViewModel.updateCurrentAddEditProduct(null)
-                    productsViewModel.expandBottomSheet(
-                        BottomSheetType.ADD_EDIT_PRODUCT,
-                        false
-                    )
+                    productsViewModel.updateCurrentProductToDelete(null)
+                    productsViewModel.expandBottomSheet(BottomSheetType.DELETE_PRODUCT, false)
                 },
-                navController = navController,
+                onDeleteConfirm = {
+                    productsViewModel.deleteProductVariant(productVariantToDelete.productVariantId)
+                },
+                itemNameToDelete = productVariantToDelete.variantName ?: ""
             )
         }
+    }
 
-        // -------------------- Add/Edit Product Variant --------------------
-        if (productsUiState.addEditProductVariantBottomSheetExpanded) {
-            val productMainVariantId =  productsUiState.filteredByProduct?.mainProductVariant?.productVariantId
-
-            AddEditProductVariantBottomSheet(
-                productVariantCreateRequest = productsUiState.productVariantCreateRequest,
-                productVariantDetailsState = productsUiState.productVariantDetailsState,
-                productVariantImageState = productsUiState.productVariantImageState,
-                productMainVariantId = productMainVariantId,
-
-                onComplete = { productVariantId, productVariantCreateRequest, imageUri, isMainVariant ->
-                    productVariantId?.let {
-                        productsViewModel.updateProductVariant(productVariantId, productVariantCreateRequest) {
-                            imageUri?.let {
-                                productsViewModel.uploadProductVariantImage(productVariantId, imageUri)
-                            }
-                            productsViewModel.setProductMainVariant(
-                                productVariantCreateRequest.productID!!,
-                                productVariantId
-                            )
-                        }
+    // -------------------- Add/Edit Product --------------------
+    if (productsUiState.addEditProductBottomSheetExpanded) {
+        AddEditProductBottomSheet(
+            productDetailsState = productsUiState.productDetailsState,
+            savedProductState = productsUiState.productCreateRequest,
+            onSaveProduct = productsViewModel::saveCurrentProductCreateRequest,
+            onComplete = { productId, productState, onErrorCallback ->
+                productId?.let {
+                    try {
+                        productsViewModel.updateProduct(it, productState)
+                        onErrorCallback(null)
                     }
-                    ?: run {
-                        productsViewModel.createProductVariant(productVariantCreateRequest) { productVariantDetails ->
-                            imageUri?.let {
-                                productsViewModel.uploadProductVariantImage(
-                                    productVariantDetails.productVariantId, imageUri
-                                )
-                            }
-                            productsViewModel.setProductMainVariant(
-                                productVariantCreateRequest.productID!!,
-                                productVariantDetails.productVariantId)
-
-                        }
-                    }
-
-                },
-                onSaveProductVariant = productsViewModel::saveCurrentAddEditProductVariant,
-                onDismissRequest = {
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
-                },
-                navController = navController
-            )
-        }
-
-        // -------------------- Add/Edit Simple Product --------------------
-        if (productsUiState.addEditSimpleProductBottomSheetExpanded) {
-            val productState = productsUiState.currentAddEditSimpleProduct.first
-            val productVariantState = productsUiState.currentAddEditSimpleProduct.second
-            AddEditSimpleProductBottomSheet(
-                navController = navController,
-                productCreateRequest = productState,
-                productVariantCreateRequest = productVariantState,
-                onComplete = { product, productVariant, imageUri ->
-                    productsViewModel.createSimpleProduct(product, productVariant) { _, productVariantDetails ->
-                        imageUri?.let { productsViewModel.uploadProductVariantImage(
-                            productVariantDetails.productVariantId, it
-                            )
-                        }
-                    }
-                },
-                onSaveState = productsViewModel::saveSimpleProduct,
-                onDismissRequest = {
-                    productsViewModel.updateCurrentAddEditProduct(null)
-                    productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
+                    catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
                 }
-            )
-        }
+                ?: run {
+                    try{
+                        productsViewModel.createProduct(productState)
+                        onErrorCallback(null)
+                    }
+                    catch(e: IllegalArgumentException) { onErrorCallback(e.message) }
+                }
+            },
+            onDismissRequest = {
+                productsViewModel.updateCurrentAddEditProduct(null)
+                productsViewModel.expandBottomSheet(
+                    BottomSheetType.ADD_EDIT_PRODUCT,
+                    false
+                )
+            },
+            navController = navController,
+        )
+    }
+
+    // -------------------- Add/Edit Product Variant --------------------
+    if (productsUiState.addEditProductVariantBottomSheetExpanded) {
+        val productMainVariantId =  productsUiState.filteredByProduct?.mainProductVariant?.productVariantId
+
+        AddEditProductVariantBottomSheet(
+            productVariantCreateRequest = productsUiState.productVariantCreateRequest,
+            productVariantDetailsState = productsUiState.productVariantDetailsState,
+            productVariantImageState = productsUiState.productVariantImageState,
+            productMainVariantId = productMainVariantId,
+
+            onComplete = { productVariantId, productVariantCreateRequest, imageUri, isMainVariant ->
+                productVariantId?.let {
+                    productsViewModel.updateProductVariant(productVariantId, productVariantCreateRequest) {
+                        imageUri?.let {
+                            productsViewModel.uploadProductVariantImage(productVariantId, imageUri)
+                        }
+                        productsViewModel.setProductMainVariant(
+                            productVariantCreateRequest.productID!!,
+                            productVariantId
+                        )
+                    }
+                }
+                ?: run {
+                    productsViewModel.createProductVariant(productVariantCreateRequest) { productVariantDetails ->
+                        imageUri?.let {
+                            productsViewModel.uploadProductVariantImage(
+                                productVariantDetails.productVariantId, imageUri
+                            )
+                        }
+                        productsViewModel.setProductMainVariant(
+                            productVariantCreateRequest.productID!!,
+                            productVariantDetails.productVariantId)
+
+                    }
+                }
+
+            },
+            onSaveProductVariant = productsViewModel::saveCurrentAddEditProductVariant,
+            onDismissRequest = {
+                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
+            },
+            navController = navController
+        )
+    }
+
+    // -------------------- Add/Edit Simple Product --------------------
+    if (productsUiState.addEditSimpleProductBottomSheetExpanded) {
+        val productState = productsUiState.currentAddEditSimpleProduct.first
+        val productVariantState = productsUiState.currentAddEditSimpleProduct.second
+        AddEditSimpleProductBottomSheet(
+            navController = navController,
+            productCreateRequest = productState,
+            productVariantCreateRequest = productVariantState,
+            onComplete = { product, productVariant, imageUri ->
+                productsViewModel.createSimpleProduct(product, productVariant) { _, productVariantDetails ->
+                    imageUri?.let { productsViewModel.uploadProductVariantImage(
+                        productVariantDetails.productVariantId, it
+                        )
+                    }
+                }
+            },
+            onSaveState = productsViewModel::saveSimpleProduct,
+            onDismissRequest = {
+                productsViewModel.updateCurrentAddEditProduct(null)
+                productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_SIMPLE, false)
+            }
+        )
     }
 }
 

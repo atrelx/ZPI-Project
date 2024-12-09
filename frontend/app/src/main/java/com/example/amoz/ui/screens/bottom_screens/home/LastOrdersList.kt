@@ -2,6 +2,7 @@ package com.example.amoz.ui.screens.bottom_screens.home
 
 import OrderListItem
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
-import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.view_models.OrdersViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,30 +23,37 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun LastOrdersList(
     ordersViewModel: OrdersViewModel,
-    ordersList: List<ProductOrderSummary>,
-    maxListItemsVisible: Int,
-    currency: String,
+    maxListItemsVisible: Int
 ) {
-    val sortedOrdersList = ordersList
-        .sortedByDescending { it.timeOfCreation }
-        .take(maxListItemsVisible)
+    val orderListUiState by ordersViewModel.ordersUiState.collectAsState()
+    val stateView = orderListUiState.ordersListFetched
+    val currency by ordersViewModel.getCurrency().collectAsState(initial = "USD")
 
-    LazyColumn (
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(15.dp)) {
-        items(
-            sortedOrdersList,
-            key = {it.productOrderId}
-        ) { order ->
-            OrderListItem(
-                order = order,
-                onOrderEdit = {},
-                currency = currency,
-                ordersViewModel = ordersViewModel
-            )
+    ResultStateView(
+        state = stateView,
+        onPullToRefresh = {
+            ordersViewModel.fetchOrdersList(skipLoading = true)
         }
-    }
+    ) {
+        val sortedOrdersList = orderListUiState.ordersList
+            .sortedByDescending { it.timeOfCreation }
+            .take(maxListItemsVisible)
 
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 10.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
+        ) {
+            sortedOrdersList.forEach { order ->
+                OrderListItem(
+                    order = order,
+                    currency = currency!!,
+                    ordersViewModel = ordersViewModel
+                )
+            }
+        }
+
+    }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.example.amoz.api.enums.AppThemeMode
 
 @Immutable
 data class ExtendedColorScheme(
@@ -403,11 +404,16 @@ val MaterialTheme.extendedColors: ExtendedColorScheme
 
 @Composable
 fun AmozApplicationTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    appThemeMode: AppThemeMode,
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
+    val darkTheme = when (appThemeMode) {
+        AppThemeMode.Auto -> isSystemInDarkTheme() // Dynamic color is available on Android 12+
+        AppThemeMode.Dark -> true
+        AppThemeMode.Light -> false
+    }
+
     val extendedColorScheme = if (darkTheme) extendedDark else extendedLight
     val colorScheme = when {
       dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {

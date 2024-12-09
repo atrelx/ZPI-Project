@@ -50,31 +50,29 @@ class MainActivity : ComponentActivity(), SignInDelegate {
         enableEdgeToEdge()
 
         setContent {
-            AmozApplicationTheme {
-                val navController = rememberNavController()
-                var showInvitationDialog by remember { mutableStateOf(false) }
+            val navController = rememberNavController()
+            var showInvitationDialog by remember { mutableStateOf(false) }
 
-                AppMainScaffold(
-                    navigationController = navController,
-                    onUserAuthorizationCheck = {
-                        lifecycleScope.launch {
-                            checkUserStatusRedirect(navController)
-                        }
+            AppMainScaffold(
+                navigationController = navController,
+                onUserAuthorizationCheck = {
+                    lifecycleScope.launch {
+                        checkUserStatusRedirect(navController)
                     }
-                )
+                }
+            )
 
-                deeplink?.let {
-                    if (showInvitationDialog){
-                        CustomDialogWindow(
-                            title = stringResource(id = R.string.company_invitation_window_title),
-                            text = stringResource(id = R.string.company_invitation_window_text),
-                            onDismiss = { showInvitationDialog = false },
-                            onAccept = { handleDeepLink(it, true)
-                                       showInvitationDialog = false },
-                            onReject = { handleDeepLink(it, false)
-                                       showInvitationDialog = false },
-                        )
-                    }
+            deeplink?.let {
+                if (showInvitationDialog){
+                    CustomDialogWindow(
+                        title = stringResource(id = R.string.company_invitation_window_title),
+                        text = stringResource(id = R.string.company_invitation_window_text),
+                        onDismiss = { showInvitationDialog = false },
+                        onAccept = { handleDeepLink(it, true)
+                                   showInvitationDialog = false },
+                        onReject = { handleDeepLink(it, false)
+                                   showInvitationDialog = false },
+                    )
                 }
             }
         }

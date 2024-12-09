@@ -58,54 +58,51 @@ fun RegisterImageScreen(
     userViewModel: UserViewModel = hiltViewModel(),
 ) {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-
-    AmozApplicationTheme {
-        Surface(
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
+                .padding(15.dp),
+            verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(15.dp),
-                verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(R.string.entry_pick_image),
-                    style = MaterialTheme.typography.displaySmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+            Text(
+                text = stringResource(R.string.entry_pick_image),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
 
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-                ImageWithIcon(
-                    image = { if (selectedImageUri != null) selectedImageUri.toString() else null },
-                    size = 300.dp,
-                    iconImage = Icons.Outlined.Edit,
-                    onImagePicked = {
-                        selectedImageUri = it
-                    },
-                    placeholder = ImagePlaceholder.HUMAN,
-                )
+            ImageWithIcon(
+                image = { if (selectedImageUri != null) selectedImageUri.toString() else null },
+                size = 300.dp,
+                iconImage = Icons.Outlined.Edit,
+                onImagePicked = {
+                    selectedImageUri = it
+                },
+                placeholder = ImagePlaceholder.HUMAN,
+            )
 
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-                PrimaryFilledButton(
-                    onClick = {
-                        if (selectedImageUri != null) {
-                            userViewModel.updateCurrentUserImageUri(selectedImageUri!!)
-                            userViewModel.registerUser( navController )
-                        } else {
-                            userViewModel.registerUser( navController )
-                        }
-                    },
-                    text = stringResource(R.string.entry_create_an_account),
-                )
+            PrimaryFilledButton(
+                onClick = {
+                    if (selectedImageUri != null) {
+                        userViewModel.updateCurrentUserImageUri(selectedImageUri!!)
+                        userViewModel.registerUser( navController )
+                    } else {
+                        userViewModel.registerUser( navController )
+                    }
+                },
+                text = stringResource(R.string.entry_create_an_account),
+            )
 
-            }
         }
     }
 }

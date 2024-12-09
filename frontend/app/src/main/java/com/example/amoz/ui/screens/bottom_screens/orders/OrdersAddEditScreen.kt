@@ -71,48 +71,72 @@ fun OrdersAddEditScreen (
 
     var validationErrorMessage by remember { mutableStateOf<String?>(null) }
 
-    AmozApplicationTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            ResultStateView(ordersUiState.currentAddEditOrderState) { request ->
-                var orderRequest by remember { mutableStateOf(request) }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        ResultStateView(ordersUiState.currentAddEditOrderState) { request ->
+            var orderRequest by remember { mutableStateOf(request) }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(15.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
 
-                    // ---------------------------- Status Dropdown ----------------------------
-                    item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_status)) }
+                // ---------------------------- Status Dropdown ----------------------------
+                item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_status)) }
 
-                    item {
-                        StatusDropdownMenu(
-                            selectedStatus = orderRequest.status,
-                            onStatusChange = { orderRequest = orderRequest.copy(status = it) }
-                        )
-                    }
+                item {
+                    StatusDropdownMenu(
+                        selectedStatus = orderRequest.status,
+                        onStatusChange = { orderRequest = orderRequest.copy(status = it) }
+                    )
+                }
 
-                    // ---------------------------- Products List ----------------------------
+                // ---------------------------- Products List ----------------------------
 
-                    item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_products)) }
+                item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_products)) }
 
-                    items(
-                        productVariantList,
-                        key = { it.productVariant.productVariantId }
-                    ) { productVariantItem ->
-                        OrdersProductListItem(
-                            product = productVariantItem,
-                            onProductRemove = { product ->
-                                productVariantList = ordersViewModel.removeProductVariantFromList(
+                items(
+                    productVariantList,
+                    key = { it.productVariant.productVariantId }
+                ) { productVariantItem ->
+                    OrdersProductListItem(
+                        product = productVariantItem,
+                        onProductRemove = { product ->
+                            productVariantList = ordersViewModel.removeProductVariantFromList(
+                                productVariantList,
+                                product
+                            )
+                            totalPrice = ordersViewModel.calculateTotalPrice(productVariantList)
+                            ordersViewModel.saveCurrentAddEditOrderState(
+                                orderRequest,
+                                productVariantList,
+                                currentCustomerDetails,
+                                totalPrice,
+                            )
+                        },
+                        ordersViewModel = ordersViewModel,
+                        currency = currency!!,
+                        isNewOrder = isNewOrder
+                    )
+                }
+
+                item {
+                    if (isNewOrder) {
+                        ProductVariantPickerWithListItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp)),
+                            onProductVariantChange = { productVariantOrderItem ->
+                                productVariantList = ordersViewModel.addProductVariantToList(
                                     productVariantList,
-                                    product
+                                    productVariantOrderItem,
                                 )
                                 totalPrice = ordersViewModel.calculateTotalPrice(productVariantList)
                                 ordersViewModel.saveCurrentAddEditOrderState(
@@ -122,75 +146,6 @@ fun OrdersAddEditScreen (
                                     totalPrice,
                                 )
                             },
-                            ordersViewModel = ordersViewModel,
-                            currency = currency!!,
-                            isNewOrder = isNewOrder
-                        )
-                    }
-
-                    item {
-                        if (isNewOrder) {
-                            ProductVariantPickerWithListItem(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(10.dp)),
-                                onProductVariantChange = { productVariantOrderItem ->
-                                    productVariantList = ordersViewModel.addProductVariantToList(
-                                        productVariantList,
-                                        productVariantOrderItem,
-                                    )
-                                    totalPrice = ordersViewModel.calculateTotalPrice(productVariantList)
-                                    ordersViewModel.saveCurrentAddEditOrderState(
-                                        orderRequest,
-                                        productVariantList,
-                                        currentCustomerDetails,
-                                        totalPrice,
-                                    )
-                                },
-                                onSaveState = {
-                                    ordersViewModel.saveCurrentAddEditOrderState(
-                                        orderRequest,
-                                        productVariantList,
-                                        currentCustomerDetails,
-                                        totalPrice,
-                                    )
-                                },
-                                navController = navController,
-                            )
-                        }
-                    }
-
-                    // ---------------------------- Customer ListItem ----------------------------
-                    item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_customer)) }
-
-                    item {
-                        if (currentCustomerDetails != null) {
-                            CurrentOrderCustomerListItem(
-                                currentCustomer = currentCustomerDetails!!,
-                                onRemoveCustomer = {
-                                    orderRequest = orderRequest.copy(customerId = null)
-                                    currentCustomerDetails = null
-
-                                    ordersViewModel.saveCurrentAddEditOrderState(
-                                        orderRequest,
-                                        productVariantList,
-                                        currentCustomerDetails,
-                                        totalPrice,
-                                    )
-                                },
-                            )
-                        } else {
-                            CustomerPickerListItem(
-                            onCustomerChange = {
-                                orderRequest = orderRequest.copy(customerId = it.customerId)
-                                currentCustomerDetails = it
-                                ordersViewModel.saveCurrentAddEditOrderState(
-                                    orderRequest,
-                                    productVariantList,
-                                    currentCustomerDetails,
-                                    totalPrice,
-                                )
-                                               },
                             onSaveState = {
                                 ordersViewModel.saveCurrentAddEditOrderState(
                                     orderRequest,
@@ -199,116 +154,159 @@ fun OrdersAddEditScreen (
                                     totalPrice,
                                 )
                             },
-                            navController = navController
-                        )}
-                    }
-
-                    // ---------------------------- Shipping Number, Address, Date ----------------------------
-
-                    item {  HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_shipping)) }
-
-                    item {
-                        AddressTextField (
-                            modifier = Modifier.height(R.dimen.text_field_height.dp),
-                            trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                            address = orderRequest.address,
-                            onClick = {
-                                ordersViewModel.changeAddressBottomSheetStatus(true)
-                            }
+                            navController = navController,
                         )
                     }
+                }
 
-                    item {
-                        OutlinedTextField(
-                            value = orderRequest.trackingNumber ?: "",
-                            onValueChange = {
-                                if (it.length <= 10) orderRequest =
-                                    orderRequest.copy(trackingNumber = it)
+                // ---------------------------- Customer ListItem ----------------------------
+                item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_customer)) }
+
+                item {
+                    if (currentCustomerDetails != null) {
+                        CurrentOrderCustomerListItem(
+                            currentCustomer = currentCustomerDetails!!,
+                            onRemoveCustomer = {
+                                orderRequest = orderRequest.copy(customerId = null)
+                                currentCustomerDetails = null
+
+                                ordersViewModel.saveCurrentAddEditOrderState(
+                                    orderRequest,
+                                    productVariantList,
+                                    currentCustomerDetails,
+                                    totalPrice,
+                                )
                             },
-                            label = { Text(stringResource(R.string.orders_tracking_number)) },
-                            modifier = Modifier
-                                .height(R.dimen.text_field_height.dp)
-                                .fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge
                         )
-                    }
-
-                    item {
-                        DateTextField(
-                            label = stringResource(R.string.orders_shipping_date),
-                            date = orderRequest.timeOfSending,
-                            onDateChange = {
-                                orderRequest = orderRequest.copy(timeOfSending = it as? LocalDateTime)
-                            },
-                            trailingIcon = Icons.Default.DateRange,
-                            showTime = true,
-                            formatAsDateOnly = false,
-                        )
-                    }
-
-                    item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_total_price)) }
-
-                    item {
-                        Row {
-                            Text(
-                                text = "${stringResource(R.string.orders_total_price)}:",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(end = 10.dp)
+                    } else {
+                        CustomerPickerListItem(
+                        onCustomerChange = {
+                            orderRequest = orderRequest.copy(customerId = it.customerId)
+                            currentCustomerDetails = it
+                            ordersViewModel.saveCurrentAddEditOrderState(
+                                orderRequest,
+                                productVariantList,
+                                currentCustomerDetails,
+                                totalPrice,
                             )
-                            Text(
-                                text = "$totalPrice $currency",
-                                style = MaterialTheme.typography.bodyLarge,
+                                           },
+                        onSaveState = {
+                            ordersViewModel.saveCurrentAddEditOrderState(
+                                orderRequest,
+                                productVariantList,
+                                currentCustomerDetails,
+                                totalPrice,
                             )
+                        },
+                        navController = navController
+                    )}
+                }
+
+                // ---------------------------- Shipping Number, Address, Date ----------------------------
+
+                item {  HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_shipping)) }
+
+                item {
+                    AddressTextField (
+                        modifier = Modifier.height(R.dimen.text_field_height.dp),
+                        trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                        address = orderRequest.address,
+                        onClick = {
+                            ordersViewModel.changeAddressBottomSheetStatus(true)
                         }
-                    }
+                    )
+                }
 
-                    item {
-                        ErrorText(errorMessage = validationErrorMessage)
-                    }
+                item {
+                    OutlinedTextField(
+                        value = orderRequest.trackingNumber ?: "",
+                        onValueChange = {
+                            if (it.length <= 10) orderRequest =
+                                orderRequest.copy(trackingNumber = it)
+                        },
+                        label = { Text(stringResource(R.string.orders_tracking_number)) },
+                        modifier = Modifier
+                            .height(R.dimen.text_field_height.dp)
+                            .fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.bodyLarge
+                    )
+                }
 
-                    // checks whether its a new order or an existing one and performs the appropriate action
-                    item {
-                        PrimaryFilledButton(
-                            text = if (isNewOrder) { stringResource(R.string.orders_create_an_order) }
-                            else { stringResource(R.string.orders_update_an_order) },
-                            onClick = {
-                                try {
-                                    ordersViewModel.chooseProductOrderOperation(
-                                        orderRequest,
-                                        productVariantList
-                                    )
-                                } catch (e: IllegalArgumentException) {
-                                    validationErrorMessage = e.message
-                                } finally {
-                                    navController.popBackStack()
-                                }
-                            }
+                item {
+                    DateTextField(
+                        label = stringResource(R.string.orders_shipping_date),
+                        date = orderRequest.timeOfSending,
+                        onDateChange = {
+                            orderRequest = orderRequest.copy(timeOfSending = it as? LocalDateTime)
+                        },
+                        trailingIcon = Icons.Default.DateRange,
+                        showTime = true,
+                        formatAsDateOnly = false,
+                    )
+                }
+
+                item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_total_price)) }
+
+                item {
+                    Row {
+                        Text(
+                            text = "${stringResource(R.string.orders_total_price)}:",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+                        Text(
+                            text = "$totalPrice $currency",
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                     }
+                }
 
-                    item {
-                        PrimaryOutlinedButton(
-                            text = stringResource(R.string.cancel),
-                            onClick = {
+                item {
+                    ErrorText(errorMessage = validationErrorMessage)
+                }
+
+                // checks whether its a new order or an existing one and performs the appropriate action
+                item {
+                    PrimaryFilledButton(
+                        text = if (isNewOrder) { stringResource(R.string.orders_create_an_order) }
+                        else { stringResource(R.string.orders_update_an_order) },
+                        onClick = {
+                            try {
+                                ordersViewModel.chooseProductOrderOperation(
+                                    orderRequest,
+                                    productVariantList
+                                )
+                            } catch (e: IllegalArgumentException) {
+                                validationErrorMessage = e.message
+                            } finally {
                                 navController.popBackStack()
                             }
-                        )
-                    }
-
-                    if (ordersUiState.isAddressBottomSheetExpanded) {
-                        item {
-                            AddressBottomSheet(
-                                bottomSheetTitle = stringResource(id = R.string.orders_change_shipment_address),
-                                onDismissRequest = {
-                                    ordersViewModel.changeAddressBottomSheetStatus(false)
-                                },
-                                address = orderRequest.address ?: AddressCreateRequest(),
-                                onDone = { request ->
-                                    ordersViewModel.updateAddress(request)
-                                    orderRequest = orderRequest.copy(address = request)
-                                }
-                            )
                         }
+                    )
+                }
+
+                item {
+                    PrimaryOutlinedButton(
+                        text = stringResource(R.string.cancel),
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+
+                if (ordersUiState.isAddressBottomSheetExpanded) {
+                    item {
+                        AddressBottomSheet(
+                            bottomSheetTitle = stringResource(id = R.string.orders_change_shipment_address),
+                            onDismissRequest = {
+                                ordersViewModel.changeAddressBottomSheetStatus(false)
+                            },
+                            address = orderRequest.address ?: AddressCreateRequest(),
+                            onDone = { request ->
+                                ordersViewModel.updateAddress(request)
+                                orderRequest = orderRequest.copy(address = request)
+                            }
+                        )
                     }
                 }
             }

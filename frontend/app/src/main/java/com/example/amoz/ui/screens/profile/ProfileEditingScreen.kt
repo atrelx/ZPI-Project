@@ -53,153 +53,151 @@ fun ProfileEditingScreen(
     val employeeUiState by employeeViewModel.employeeUiState.collectAsState()
     var validateMessage by remember { mutableStateOf<String?>(null) }
 
-    AmozApplicationTheme {
-        Surface (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            ResultStateView(employeeUiState.fetchedEmployeeState) { employee ->
-                var employeeBody by remember { mutableStateOf(employee) }
+    Surface (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        ResultStateView(employeeUiState.fetchedEmployeeState) { employee ->
+            var employeeBody by remember { mutableStateOf(employee) }
 
-                Column(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+
+            ) {
+                ImageWithIcon(
+                    image = employeeViewModel.userImageBitmap ?: employeeViewModel.selectedNewImageUri?.toString(),
+                    onImagePicked = {
+                        employeeViewModel.selectedNewImageUri = it
+                        employeeViewModel.userImageBitmap = null
+                                    },
+                    size = 160.dp,
+                    isEditing = true,
+                )
+
+                HorizontalDivider(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                )
 
-                ) {
-                    ImageWithIcon(
-                        image = employeeViewModel.userImageBitmap ?: employeeViewModel.selectedNewImageUri?.toString(),
-                        onImagePicked = {
-                            employeeViewModel.selectedNewImageUri = it
-                            employeeViewModel.userImageBitmap = null
-                                        },
-                        size = 160.dp,
-                        isEditing = true,
-                    )
+                Text(
+                    text = "About you",
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
 
-                    HorizontalDivider(
+                Column (
+                    Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+
+                    ){
+                    OutlinedTextField(
+                        value = employeeBody.person.name,
+                        onValueChange = {  if (it.length <= 30) {
+                            employeeBody = employeeBody.copy(person = employeeBody.person.copy(name = it))
+                        }},
+                        label = { Text(stringResource(R.string.profile_first_name)) },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
-                    )
-
-                    Text(
-                        text = "About you",
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
-
-                    Column (
-                        Modifier
+                            .height(R.dimen.text_field_height.dp)
                             .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        singleLine = true,
+                    )
 
-                        ){
-                        OutlinedTextField(
-                            value = employeeBody.person.name,
-                            onValueChange = {  if (it.length <= 30) {
-                                employeeBody = employeeBody.copy(person = employeeBody.person.copy(name = it))
-                            }},
-                            label = { Text(stringResource(R.string.profile_first_name)) },
-                            modifier = Modifier
-                                .height(R.dimen.text_field_height.dp)
-                                .fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            singleLine = true,
-                        )
-
-                        OutlinedTextField(
-                            value = employeeBody.person.surname,
-                            onValueChange = { if (it.length <= 30) {
-                                employeeBody = employeeBody.copy(person = employeeBody.person.copy(surname = it))
-                            }},
-                            label = { Text(stringResource(R.string.profile_last_name)) },
-                            modifier = Modifier
-                                .height(R.dimen.text_field_height.dp)
-                                .fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            singleLine = true,
-                        )
-
-                        OutlinedTextField(
-                            value = employeeBody.contactPerson.emailAddress?: "",
-                            onValueChange = { employeeBody = employeeBody.copy(contactPerson = employeeBody.contactPerson.copy(emailAddress = it)) },
-                            label = { Text(stringResource(R.string.email_optional)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            singleLine = true,
-                        )
-
-                        OutlinedTextField(
-                            value = employeeBody.contactPerson.contactNumber,
-                            onValueChange = { employeeBody = employeeBody.copy(contactPerson = employeeBody.contactPerson.copy(contactNumber = it)) },
-                            label = { Text(stringResource(R.string.profile_phone_number)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            singleLine = true,
-
-                            )
-
-                        SexDropdownMenu(
-                            selectedSex = employeeBody.person.sex,
-                            onSexChange = { employeeBody = employeeBody.copy(person = employeeBody.person.copy(sex = it)) }
-                        )
-
-                        DateTextField(
-                            label = stringResource(R.string.profile_birth_date),
-                            date = employeeBody.person.dateOfBirth,
-                            onDateChange = {
-                                employeeBody = employeeBody.copy(person = employeeBody.person.copy(dateOfBirth = it as LocalDate))
-                            },
-                            trailingIcon = Icons.Default.DateRange,
-                            showTime = false,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-
-                    HorizontalDivider(
+                    OutlinedTextField(
+                        value = employeeBody.person.surname,
+                        onValueChange = { if (it.length <= 30) {
+                            employeeBody = employeeBody.copy(person = employeeBody.person.copy(surname = it))
+                        }},
+                        label = { Text(stringResource(R.string.profile_last_name)) },
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 32.dp)
+                            .height(R.dimen.text_field_height.dp)
+                            .fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        singleLine = true,
                     )
 
-                    validateMessage?.let {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error
+                    OutlinedTextField(
+                        value = employeeBody.contactPerson.emailAddress?: "",
+                        onValueChange = { employeeBody = employeeBody.copy(contactPerson = employeeBody.contactPerson.copy(emailAddress = it)) },
+                        label = { Text(stringResource(R.string.email_optional)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        singleLine = true,
+                    )
+
+                    OutlinedTextField(
+                        value = employeeBody.contactPerson.contactNumber,
+                        onValueChange = { employeeBody = employeeBody.copy(contactPerson = employeeBody.contactPerson.copy(contactNumber = it)) },
+                        label = { Text(stringResource(R.string.profile_phone_number)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        singleLine = true,
+
                         )
-                    }
 
-                    PrimaryFilledButton(
-                        onClick = {
-                            val userRegisterRequest = UserRegisterRequest(employeeBody)
-                            validateMessage = userRegisterRequest.validate()
-
-                            if (validateMessage == null) {
-                                employeeViewModel.updateUser(userRegisterRequest, navController)
-                            }
-                                  },
-                        text = stringResource(R.string.save),
+                    SexDropdownMenu(
+                        selectedSex = employeeBody.person.sex,
+                        onSexChange = { employeeBody = employeeBody.copy(person = employeeBody.person.copy(sex = it)) }
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    PrimaryOutlinedButton(
-                        onClick = { navController.popBackStack() },
-                        text = stringResource(R.string.cancel),
+
+                    DateTextField(
+                        label = stringResource(R.string.profile_birth_date),
+                        date = employeeBody.person.dateOfBirth,
+                        onDateChange = {
+                            employeeBody = employeeBody.copy(person = employeeBody.person.copy(dateOfBirth = it as LocalDate))
+                        },
+                        trailingIcon = Icons.Default.DateRange,
+                        showTime = false,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
+
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 32.dp)
+                )
+
+                validateMessage?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                PrimaryFilledButton(
+                    onClick = {
+                        val userRegisterRequest = UserRegisterRequest(employeeBody)
+                        validateMessage = userRegisterRequest.validate()
+
+                        if (validateMessage == null) {
+                            employeeViewModel.updateUser(userRegisterRequest, navController)
+                        }
+                              },
+                    text = stringResource(R.string.save),
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                PrimaryOutlinedButton(
+                    onClick = { navController.popBackStack() },
+                    text = stringResource(R.string.cancel),
+                )
             }
         }
     }

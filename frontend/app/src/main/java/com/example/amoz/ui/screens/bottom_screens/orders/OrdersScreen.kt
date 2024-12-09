@@ -39,55 +39,53 @@ fun OrdersScreen(
         ordersViewModel.clearCurrentAddEditOrderState()
     }
 
-    AmozApplicationTheme {
-        val ordersUiState by ordersViewModel.ordersUiState.collectAsState()
+    val ordersUiState by ordersViewModel.ordersUiState.collectAsState()
 
-        Surface(
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        FilteredOrdersList(
+            onMoreFiltersClick = {ordersViewModel.changeFilterBottomSheetStatus(true)},
+            onOrderEdit = {orderId ->
+                ordersViewModel.updateCurrentAddEditOrder(orderId)
+                navController.navigate(Screens.OrdersAddEdit.route)
+            },
+            onOrderRemove = {orderId ->
+                ordersViewModel.removeProductOrder(orderId)
+            },
+            onGenerateInvoice = {orderId ->
+                ordersViewModel.generateProductOrderInvoice(orderId)
+            },
+            ordersViewModel = ordersViewModel,
+        )
+
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
+                .fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd
         ) {
-            FilteredOrdersList(
-                onMoreFiltersClick = {ordersViewModel.changeFilterBottomSheetStatus(true)},
-                onOrderEdit = {orderId ->
-                    ordersViewModel.updateCurrentAddEditOrder(orderId)
+            ExtendedFloatingActionButton(
+                onClick = {
+                    ordersViewModel.updateCurrentAddEditOrder(null)
                     navController.navigate(Screens.OrdersAddEdit.route)
                 },
-                onOrderRemove = {orderId ->
-                    ordersViewModel.removeProductOrder(orderId)
-                },
-                onGenerateInvoice = {orderId ->
-                    ordersViewModel.generateProductOrderInvoice(orderId)
-                },
-                ordersViewModel = ordersViewModel,
-            )
-
-            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        ordersViewModel.updateCurrentAddEditOrder(null)
-                        navController.navigate(Screens.OrdersAddEdit.route)
-                    },
-                    modifier = Modifier
-                        .padding(16.dp),
-                    icon = { Icon(Icons.Filled.Add, "Sale add button.") },
-                    text = { Text(text = stringResource(R.string.add_new)) }
-                )
-            }
+                    .padding(16.dp),
+                icon = { Icon(Icons.Filled.Add, "Sale add button.") },
+                text = { Text(text = stringResource(R.string.add_new)) }
+            )
+        }
 
-            if (ordersUiState.isFilterBottomSheetExpanded) {
-                OrdersFilterBottomSheet(
-                    onDismissRequest = { ordersViewModel.changeFilterBottomSheetStatus(false) },
-                    onCancelFilters = { ordersViewModel.cancelFilterParams() },
-                    filterParams = ordersUiState.filterParams,
-                    onApplyFilters = { ordersViewModel.saveFilterParams(it) }
-                )
-            }
+        if (ordersUiState.isFilterBottomSheetExpanded) {
+            OrdersFilterBottomSheet(
+                onDismissRequest = { ordersViewModel.changeFilterBottomSheetStatus(false) },
+                onCancelFilters = { ordersViewModel.cancelFilterParams() },
+                filterParams = ordersUiState.filterParams,
+                onApplyFilters = { ordersViewModel.saveFilterParams(it) }
+            )
         }
     }
 }

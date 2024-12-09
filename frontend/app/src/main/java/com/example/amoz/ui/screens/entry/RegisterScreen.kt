@@ -81,109 +81,107 @@ fun RegisterScreen (
         }
     }
 
-    AmozApplicationTheme {
-        Surface(
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
+                .padding(15.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(15.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(R.string.entry_almost_ready),
-                    style = MaterialTheme.typography.displaySmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+            Text(
+                text = stringResource(R.string.entry_almost_ready),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
 
-                OutlinedTextField(
-                    value = personData.name,
-                    onValueChange = { if (it.length <= 30) { personData = personData.copy(name = it) } },
-                    label = { Text(stringResource(R.string.profile_first_name)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    singleLine = true,
-                )
+            OutlinedTextField(
+                value = personData.name,
+                onValueChange = { if (it.length <= 30) { personData = personData.copy(name = it) } },
+                label = { Text(stringResource(R.string.profile_first_name)) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                singleLine = true,
+            )
 
-                OutlinedTextField(
-                    value = personData.surname,
-                    onValueChange = { if (it.length <= 30 ) {personData = personData.copy(surname = it) } },
-                    label = { Text(stringResource(R.string.profile_last_name)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    singleLine = true,
-                )
+            OutlinedTextField(
+                value = personData.surname,
+                onValueChange = { if (it.length <= 30 ) {personData = personData.copy(surname = it) } },
+                label = { Text(stringResource(R.string.profile_last_name)) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                singleLine = true,
+            )
 
-                SexDropdownMenu(
-                    selectedSex = personData.sex,
-                    onSexChange = { personData = personData.copy(sex = it) },
-                )
+            SexDropdownMenu(
+                selectedSex = personData.sex,
+                onSexChange = { personData = personData.copy(sex = it) },
+            )
 
-                DateTextField(
-                    label = stringResource(id = R.string.profile_birth_date,),
-                    date = personData.dateOfBirth,
-                    onDateChange = { personData = personData.copy( dateOfBirth = it as LocalDate ) },
-                    showTime = false,
-                    trailingIcon = Icons.Default.DateRange,
-                )
+            DateTextField(
+                label = stringResource(id = R.string.profile_birth_date,),
+                date = personData.dateOfBirth,
+                onDateChange = { personData = personData.copy( dateOfBirth = it as LocalDate ) },
+                showTime = false,
+                trailingIcon = Icons.Default.DateRange,
+            )
 
-                OutlinedTextField(
-                    value = contactPersonData.emailAddress ?: "",
-                    onValueChange = { contactPersonData = contactPersonData.copy(emailAddress = it) },
-                    label = { Text(stringResource(R.string.email_optional)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    singleLine = true,
-                )
+            OutlinedTextField(
+                value = contactPersonData.emailAddress ?: "",
+                onValueChange = { contactPersonData = contactPersonData.copy(emailAddress = it) },
+                label = { Text(stringResource(R.string.email_optional)) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                singleLine = true,
+            )
 
-                OutlinedTextField(
-                    value = contactPersonData.contactNumber,
-                    onValueChange = { contactPersonData = contactPersonData.copy(contactNumber = it) },
-                    label = { Text(stringResource(R.string.profile_phone_number)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    singleLine = true,
-                )
+            OutlinedTextField(
+                value = contactPersonData.contactNumber,
+                onValueChange = { contactPersonData = contactPersonData.copy(contactNumber = it) },
+                label = { Text(stringResource(R.string.profile_phone_number)) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                singleLine = true,
+            )
 
-                ErrorText(errorMessage = validationMessage)
+            ErrorText(errorMessage = validationMessage)
 
-                PrimaryFilledButton(
-                    onClick = {
-                        try {
-                            userViewModel.updateCurrentUserRegisterRequest(
-                                personData,
-                                contactPersonData
-                            )
-                            navController.navigate(Screens.RegisterImage.route)
-                        } catch (e: IllegalArgumentException) {
-                            validationMessage = e.message
+            PrimaryFilledButton(
+                onClick = {
+                    try {
+                        userViewModel.updateCurrentUserRegisterRequest(
+                            personData,
+                            contactPersonData
+                        )
+                        navController.navigate(Screens.RegisterImage.route)
+                    } catch (e: IllegalArgumentException) {
+                        validationMessage = e.message
+                    }
+                },
+                text = stringResource(R.string.entry_continue),
+            )
+
+            PrimaryOutlinedButton(
+                onClick = {
+                    authenticationViewModel.signOut(context as Activity) {
+                        navController.navigate(Screens.Entry.route){
+                            popUpTo(0)
                         }
-                    },
-                    text = stringResource(R.string.entry_continue),
-                )
+                    }
+                },
+                text = stringResource(R.string.cancel),
+            )
 
-                PrimaryOutlinedButton(
-                    onClick = {
-                        authenticationViewModel.signOut(context as Activity) {
-                            navController.navigate(Screens.Entry.route){
-                                popUpTo(0)
-                            }
-                        }
-                    },
-                    text = stringResource(R.string.cancel),
-                )
-
-            }
         }
     }
 }

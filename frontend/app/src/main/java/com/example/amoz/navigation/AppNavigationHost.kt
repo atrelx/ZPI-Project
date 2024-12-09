@@ -11,7 +11,7 @@ import com.example.amoz.data.NavItem
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.AboutScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.FAQScreen
-import com.example.amoz.ui.screens.bottom_screens.additional_screens.SettingsScreen
+import com.example.amoz.ui.screens.bottom_screens.additional_screens.settings.SettingsScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.SupportScreen
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreen
 import com.example.amoz.ui.screens.bottom_screens.company.CreateCompanyScreen

@@ -58,102 +58,100 @@ fun CreateCompanyScreen (
     var validationErrorMessage by remember { mutableStateOf<String?>(null) }
     var pickedImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    AmozApplicationTheme {
-        Surface(
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ){
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
-        ){
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(15.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(R.string.company_create_text),
-                    style = MaterialTheme.typography.displaySmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                .padding(15.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.company_create_text),
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
 
-                ImageWithText(
-                    image = pickedImageUri.toString(),
-                    size = 300.dp,
-                    shape = RoundedCornerShape(40.dp),
-                    onImagePicked = { uri ->
-                        uri?.let {
-                            companyViewModel.updateNewCompanyImageUri(uri)                        }
-                    },
-                    onRemoveImage = {
-                        pickedImageUri = null
-                    }
-                )
-
-                OutlinedTextField(
-                    value = companyCreateRequestState.name,
-                    onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(name = it) },
-                    label = { Text(stringResource(R.string.company_name)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge
-                )
-
-                OutlinedTextField(
-                    value = companyCreateRequestState.companyNumber,
-                    onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(companyNumber = it) },
-                    label = { Text(stringResource(R.string.company_number)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge
-                )
-
-                OutlinedTextField(
-                    value = companyCreateRequestState.regon ?: "",
-                    onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(regon = it) },
-                    label = { Text(stringResource(R.string.company_number_additional)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge
-                )
-
-                AddressTextField (
-                    address = companyCreateRequestState.address,
-                    onClick = {
-                        companyViewModel.expandChangeCompanyAddressBottomSheet(true)
-                    },
-                    trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward
-
-                )
-
-                ErrorText(errorMessage = validationErrorMessage)
-
-                PrimaryFilledButton(
-                    text = stringResource(id = R.string.company_register),
-                    onClick = {
-                        companyViewModel.updateCompanyCreateRequest(companyCreateRequestState)
-                        try {
-                            companyViewModel.createCompany(navController)
-                        } catch (e: Exception) {
-                            validationErrorMessage = e.message
-                        }
-                    }
-                )
-
-                if (companyUIState.changeCompanyAddressBottomSheetExpanded) {
-                    AddressBottomSheet(
-                        bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
-                        onDismissRequest = {
-                            companyViewModel.expandChangeCompanyAddressBottomSheet(false)
-                        },
-                        address = companyViewModel.companyCreateRequestState.collectAsState().value.address,
-                        onDone = { request ->
-                            companyCreateRequestState = companyCreateRequestState.copy(
-                                address = request,
-                                countryOfRegistration = request.country)
-                        }
-                    )
-
+            ImageWithText(
+                image = pickedImageUri.toString(),
+                size = 300.dp,
+                shape = RoundedCornerShape(40.dp),
+                onImagePicked = { uri ->
+                    uri?.let {
+                        companyViewModel.updateNewCompanyImageUri(uri)                        }
+                },
+                onRemoveImage = {
+                    pickedImageUri = null
                 }
+            )
+
+            OutlinedTextField(
+                value = companyCreateRequestState.name,
+                onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(name = it) },
+                label = { Text(stringResource(R.string.company_name)) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge
+            )
+
+            OutlinedTextField(
+                value = companyCreateRequestState.companyNumber,
+                onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(companyNumber = it) },
+                label = { Text(stringResource(R.string.company_number)) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge
+            )
+
+            OutlinedTextField(
+                value = companyCreateRequestState.regon ?: "",
+                onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(regon = it) },
+                label = { Text(stringResource(R.string.company_number_additional)) },
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge
+            )
+
+            AddressTextField (
+                address = companyCreateRequestState.address,
+                onClick = {
+                    companyViewModel.expandChangeCompanyAddressBottomSheet(true)
+                },
+                trailingIcon = Icons.AutoMirrored.Outlined.ArrowForward
+
+            )
+
+            ErrorText(errorMessage = validationErrorMessage)
+
+            PrimaryFilledButton(
+                text = stringResource(id = R.string.company_register),
+                onClick = {
+                    companyViewModel.updateCompanyCreateRequest(companyCreateRequestState)
+                    try {
+                        companyViewModel.createCompany(navController)
+                    } catch (e: Exception) {
+                        validationErrorMessage = e.message
+                    }
+                }
+            )
+
+            if (companyUIState.changeCompanyAddressBottomSheetExpanded) {
+                AddressBottomSheet(
+                    bottomSheetTitle = stringResource(id = R.string.address_change_title_company),
+                    onDismissRequest = {
+                        companyViewModel.expandChangeCompanyAddressBottomSheet(false)
+                    },
+                    address = companyViewModel.companyCreateRequestState.collectAsState().value.address,
+                    onDone = { request ->
+                        companyCreateRequestState = companyCreateRequestState.copy(
+                            address = request,
+                            countryOfRegistration = request.country)
+                    }
+                )
+
             }
         }
     }

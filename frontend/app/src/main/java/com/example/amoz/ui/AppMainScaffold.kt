@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,6 +40,7 @@ import com.example.amoz.navigation.otherNavigationItemsMap
 import com.example.amoz.ui.components.CustomSnackBar
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.screens.more_button.MoreBottomSheet
+import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.AppViewModel
 import com.example.amoz.view_models.AuthenticationViewModel
 import com.example.amoz.view_models.UserViewModel
@@ -47,12 +49,14 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppMainScaffold(
-    appViewModel: AppViewModel = viewModel(),
+    appViewModel: AppViewModel = hiltViewModel(),
     bottomNavigationItems: List<NavItem> = bottomNavigationBarNavItemsMap.values.toList(),
     navigationController: NavHostController = rememberNavController(),
     onUserAuthorizationCheck: () -> Unit,
 ) {
     val appUiState by appViewModel.appUiState.collectAsState()
+
+    val appThemeMode by appViewModel.appThemeMode.collectAsState()
 
     val currentRoute = navigationController.currentBackStackEntryAsState().value?.destination?.route
     val showNavElements = navigationController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("showNavElements")
@@ -94,7 +98,6 @@ fun AppMainScaffold(
         onUserAuthorizationCheck()
     }
 
-
     fun navigateToScreen(navigationItem: NavItem, showBars: Boolean = true) {
         appViewModel.setNavigationVisibility(showBars)
         if (currentNavigationItem != navigationItem) {
@@ -119,110 +122,112 @@ fun AppMainScaffold(
             snackBarIcon = null
         }
     }
-
-    Scaffold(
-        // -------------------- TOP BAR --------------------
-        topBar = {
-            if (showTopBar) {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = appUiState.currentNavigationItem?.let
-                            { stringResource(it.title) } ?: "",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    navigationIcon = {
-                        if (!appUiState.appNavigationVisibility && showBackArrow) {
-                            IconButton(onClick = { navigationController.navigateUp() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    },
-                    actions = {
-                        if (appUiState.appNavigationVisibility) {
-                            IconButton(
-                                onClick = {
-                                    navigationController.navigate(
-                                        otherNavigationItemsMap[NavItemType.Profile]!!.screenRoute
+    AmozApplicationTheme(appThemeMode) {
+        Scaffold(
+            // -------------------- TOP BAR --------------------
+            topBar = {
+                if (showTopBar) {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(
+                                text = appUiState.currentNavigationItem?.let
+                                { stringResource(it.title) } ?: "",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        navigationIcon = {
+                            if (!appUiState.appNavigationVisibility && showBackArrow) {
+                                IconButton(onClick = { navigationController.navigateUp() }) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = null
                                     )
-                                }) {
-                                Icon(
-                                    imageVector = otherNavigationItemsMap[NavItemType.Profile]!!.icon,
-                                    contentDescription = null)
+                                }
                             }
-                        }
-                    },
-                )
-            }
-        },
-        // -------------------- BOTTOM NAVIGATION BAR --------------------
-        bottomBar = {
-            if (appUiState.appNavigationVisibility) {
-                NavigationBar {
-                    bottomNavigationItems.forEach { item ->
-                        NavigationBarItem(
-                            selected = appUiState.currentNavigationItem == item,
-                            onClick = { navigateToScreen(item) },
-                            label = { Text(text = stringResource(item.title)) },
-                            alwaysShowLabel = true,
-                            icon = {
-                                Icon(
-                                    imageVector =
+                        },
+                        actions = {
+                            if (appUiState.appNavigationVisibility) {
+                                IconButton(
+                                    onClick = {
+                                        navigationController.navigate(
+                                            otherNavigationItemsMap[NavItemType.Profile]!!.screenRoute
+                                        )
+                                    }) {
+                                    Icon(
+                                        imageVector = otherNavigationItemsMap[NavItemType.Profile]!!.icon,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        },
+                    )
+                }
+            },
+            // -------------------- BOTTOM NAVIGATION BAR --------------------
+            bottomBar = {
+                if (appUiState.appNavigationVisibility) {
+                    NavigationBar {
+                        bottomNavigationItems.forEach { item ->
+                            NavigationBarItem(
+                                selected = appUiState.currentNavigationItem == item,
+                                onClick = { navigateToScreen(item) },
+                                label = { Text(text = stringResource(item.title)) },
+                                alwaysShowLabel = true,
+                                icon = {
+                                    Icon(
+                                        imageVector =
                                         if (appUiState.currentNavigationItem == item) {
                                             item.icon
                                         } else item.unselectedIcon ?: item.icon,
-                                    contentDescription = stringResource(item.title),
+                                        contentDescription = stringResource(item.title),
+                                    )
+                                }
+                            )
+                        }
+
+                        // -------------------- 'More' bottom Sheet --------------------
+                        NavigationBarItem(
+                            selected = false,
+                            onClick = { appViewModel.updateMoreBottomSheetVisibility(true) },
+                            label = { Text(text = stringResource(R.string.more_screen)) },
+                            alwaysShowLabel = true,
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Filled.MoreHoriz,
+                                    contentDescription = null,
                                 )
                             }
                         )
+
                     }
-
-                    // -------------------- 'More' bottom Sheet --------------------
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { appViewModel.updateMoreBottomSheetVisibility(true) },
-                        label = { Text(text = stringResource(R.string.more_screen)) },
-                        alwaysShowLabel = true,
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Filled.MoreHoriz,
-                                contentDescription = null,
-                            )
-                        }
+                }
+            },
+            // -------------------- Custom Snack Bar --------------------
+            snackbarHost = {
+                SnackbarHost(hostState = snackBarHostState) {
+                    CustomSnackBar(
+                        message = it.visuals.message,
+                        leadingIcon = snackBarIcon
                     )
-
                 }
             }
-        },
-        // -------------------- Custom Snack Bar --------------------
-        snackbarHost = {
-            SnackbarHost(hostState = snackBarHostState) {
-                CustomSnackBar(
-                    message = it.visuals.message,
-                    leadingIcon = snackBarIcon
+        ) { paddingValues ->
+            // -------------------- App NavHost --------------------
+            AppNavigationHost(
+                navController = navigationController,
+                paddingValues = paddingValues,
+                callSnackBar = { text, icon -> callSnackBar(text = text, leadingIcon = icon) },
+                navigateToScreen = { navigateToScreen(it) },
+            )
+
+            // -------------------- 'More' Bottom Sheet --------------------
+            if (appUiState.moreBottomSheetIsVisible) {
+                MoreBottomSheet(
+                    hideMoreBottomSheet = { appViewModel.updateMoreBottomSheetVisibility(false) },
+                    navigateToScreen = { navItem -> navigateToScreen(navItem) }
                 )
             }
-        }
-    ) { paddingValues ->
-        // -------------------- App NavHost --------------------
-        AppNavigationHost(
-            navController = navigationController,
-            paddingValues = paddingValues,
-            callSnackBar = { text, icon -> callSnackBar(text = text, leadingIcon = icon) },
-            navigateToScreen = { navigateToScreen(it) },
-        )
-
-        // -------------------- 'More' Bottom Sheet --------------------
-        if (appUiState.moreBottomSheetIsVisible) {
-            MoreBottomSheet(
-                hideMoreBottomSheet = { appViewModel.updateMoreBottomSheetVisibility(false) },
-                navigateToScreen = { navItem -> navigateToScreen(navItem) }
-            )
         }
     }
 }

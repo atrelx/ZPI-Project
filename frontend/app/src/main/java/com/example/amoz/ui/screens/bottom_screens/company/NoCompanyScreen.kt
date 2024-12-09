@@ -71,43 +71,93 @@ fun NoCompanyScreen (
         }
     }
 
-    AmozApplicationTheme {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            ResultStateView(
-                companyUIState.fetchedInvitationListState,
-                onPullToRefresh = { companyViewModel.fetchInvitations()
-                }) { invitationsList ->
-                var mutableInvitationsList by remember { mutableStateOf(invitationsList) }
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        ResultStateView(
+            companyUIState.fetchedInvitationListState,
+            onPullToRefresh = { companyViewModel.fetchInvitations()
+            }) { invitationsList ->
+            var mutableInvitationsList by remember { mutableStateOf(invitationsList) }
 
-                if (invitationsList.isEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(15.dp)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+            if (invitationsList.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(15.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                        Spacer(modifier = Modifier.weight(1f))
-                        Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.weight(1f))
 
+                    Text(
+                        text = stringResource(id = R.string.company_no_company),
+                        style = MaterialTheme.typography.headlineSmall,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    PrimaryFilledButton(
+                        text = stringResource(id = R.string.company_register),
+                        onClick = {
+                            navController.navigate(Screens.CreateCompany.route)
+                        }
+                    )
+                    PrimaryOutlinedButton(
+                        onClick = {
+                            authenticationViewModel.signOut(context as Activity) {
+                                navController.navigate(Screens.Entry.route){
+                                    popUpTo(0)
+                                }
+                            }
+                        },
+                        text = stringResource(R.string.profile_sign_out),
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(15.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(vertical = 15.dp)
+                ) {
+                    item {
                         Text(
-                            text = stringResource(id = R.string.company_no_company),
+                            text = stringResource(id = R.string.your_company_invites),
                             style = MaterialTheme.typography.headlineSmall,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onBackground,
                         )
+                    }
 
-                        Spacer(modifier = Modifier.weight(1f))
+                    items(
+                        mutableInvitationsList,
+                        key = { it.token }
+                    ) { invitation ->
+                        CompanyInvitationListItem (
+                            invitation = invitation,
+                            onAcceptClick = {
+                                selectedInvitation = invitation
+                                showAcceptDialogWindow = true
+                            },
+                            onDeclineClick = {
+                                employeeViewModel.declineInvitation(invitation.token.toString())
+                                mutableInvitationsList = invitationsList.filter { it.token != invitation.token }
+                            }
+                        )
+                    }
 
+                    item {
                         PrimaryFilledButton(
-                            text = stringResource(id = R.string.company_register),
+                            modifier = Modifier.padding(top = 15.dp, bottom = 15.dp),
+                            text = stringResource(id = R.string.or_company_register),
                             onClick = {
                                 navController.navigate(Screens.CreateCompany.route)
                             }
@@ -123,81 +173,29 @@ fun NoCompanyScreen (
                             text = stringResource(R.string.profile_sign_out),
                         )
                     }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        contentPadding = PaddingValues(vertical = 15.dp)
-                    ) {
-                        item {
-                            Text(
-                                text = stringResource(id = R.string.your_company_invites),
-                                style = MaterialTheme.typography.headlineSmall,
-                            )
-                        }
-
-                        items(
-                            mutableInvitationsList,
-                            key = { it.token }
-                        ) { invitation ->
-                            CompanyInvitationListItem (
-                                invitation = invitation,
-                                onAcceptClick = {
-                                    selectedInvitation = invitation
-                                    showAcceptDialogWindow = true
-                                },
-                                onDeclineClick = {
-                                    employeeViewModel.declineInvitation(invitation.token.toString())
-                                    mutableInvitationsList = invitationsList.filter { it.token != invitation.token }
-                                }
-                            )
-                        }
-
-                        item {
-                            PrimaryFilledButton(
-                                modifier = Modifier.padding(top = 15.dp, bottom = 15.dp),
-                                text = stringResource(id = R.string.or_company_register),
-                                onClick = {
-                                    navController.navigate(Screens.CreateCompany.route)
-                                }
-                            )
-                            PrimaryOutlinedButton(
-                                onClick = {
-                                    authenticationViewModel.signOut(context as Activity) {
-                                        navController.navigate(Screens.Entry.route){
-                                            popUpTo(0)
-                                        }
-                                    }
-                                },
-                                text = stringResource(R.string.profile_sign_out),
-                            )
-                        }
-                    }
                 }
             }
         }
+    }
 
-        if (showAcceptDialogWindow) {
-            CustomDialogWindow(
-                title = stringResource(id = R.string.accept_invitation_window_title),
-                text = stringResource(id = R.string.accept_invitation_window_text),
-                onDismiss = { showAcceptDialogWindow = false },
-                onAccept = {
-                    employeeViewModel.acceptInvitation(selectedInvitation?.token.toString())
-                    companyViewModel.fetchCompanyDetails()
-                    navController.navigate(Screens.Company.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                    showAcceptDialogWindow = false
-                    selectedInvitation = null
-                },
-                onReject = {
-                    showAcceptDialogWindow = false
-                    selectedInvitation = null
+    if (showAcceptDialogWindow) {
+        CustomDialogWindow(
+            title = stringResource(id = R.string.accept_invitation_window_title),
+            text = stringResource(id = R.string.accept_invitation_window_text),
+            onDismiss = { showAcceptDialogWindow = false },
+            onAccept = {
+                employeeViewModel.acceptInvitation(selectedInvitation?.token.toString())
+                companyViewModel.fetchCompanyDetails()
+                navController.navigate(Screens.Company.route) {
+                    popUpTo(0) { inclusive = true }
                 }
-            )
-        }
+                showAcceptDialogWindow = false
+                selectedInvitation = null
+            },
+            onReject = {
+                showAcceptDialogWindow = false
+                selectedInvitation = null
+            }
+        )
     }
 }

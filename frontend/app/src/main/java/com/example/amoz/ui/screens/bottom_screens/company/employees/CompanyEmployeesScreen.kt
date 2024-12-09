@@ -35,66 +35,64 @@ fun CompanyEmployeesScreen(
     paddingValues: PaddingValues,
     callSnackBar: (String, ImageVector?) -> Unit,
 ) {
-    AmozApplicationTheme {
-        val companyUIState by companyViewModel.companyUIState.collectAsState()
-        val employeeImages by companyUIState.employeeImages.collectAsState()
-        val currentEmployeeRoleInCompany = companyUIState.currentEmployee!!.roleInCompany
-        val isCurrentEmployeeOwner = currentEmployeeRoleInCompany == RoleInCompany.OWNER
+    val companyUIState by companyViewModel.companyUIState.collectAsState()
+    val employeeImages by companyUIState.employeeImages.collectAsState()
+    val currentEmployeeRoleInCompany = companyUIState.currentEmployee!!.roleInCompany
+    val isCurrentEmployeeOwner = currentEmployeeRoleInCompany == RoleInCompany.OWNER
 
-        val navBackStackEntry = remember { navController.currentBackStackEntryFlow }
-        LaunchedEffect(navBackStackEntry) {
-            companyViewModel.fetchEmployees()
-        }
+    val navBackStackEntry = remember { navController.currentBackStackEntryFlow }
+    LaunchedEffect(navBackStackEntry) {
+        companyViewModel.fetchEmployees()
+    }
 
-        ResultStateView(companyUIState.employees) { employees ->
-            Surface(
+    ResultStateView(companyUIState.employees) { employees ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
-                color = MaterialTheme.colorScheme.background
+                    .padding(16.dp),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                ) {
-                    // -------------------- Employees list --------------------
-                    EmployeesLazyColumn(
-                        employees = employees,
-                        employeeImages = employeeImages,
-                        currentEmployeeRoleInCompany = currentEmployeeRoleInCompany,
-                        employeeProfileBottomSheetExpanded = companyUIState.employeeProfileBottomSheetExpanded,
-                        getProfilePicture = companyViewModel::getProfilePicture,
-                        expandEmployeeProfileBottomSheet = {
-                            companyViewModel.expandEmployeeProfileBottomSheet(it)
-                        },
-                        onEmployeeDelete = {
-                            companyViewModel.kickEmployeeFromCompany(it, currentEmployeeRoleInCompany)
-                        },
-                        callSnackBar = callSnackBar,
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    // -------------------- Add worker button --------------------
-                    if(isCurrentEmployeeOwner) {
-                        PrimaryFilledButton(
-                            onClick = { companyViewModel.expandAddEmployeeBottomSheet(true) },
-                            text = stringResource(id = R.string.company_add_worker_button),
-                            leadingIcon = Icons.Outlined.Add
-                        )
-                    }
-                }
-            }
-
-            // -------------------- Add worker bottom sheet --------------------
-            if (companyUIState.addEmployeeBottomSheetExpanded) {
-                AddEmployeesBottomSheet(
-                    onInvitationSend = { companyViewModel.inviteNewEmployee(it, currentEmployeeRoleInCompany) },
-                    onDismissRequest = {
-                        companyViewModel.expandAddEmployeeBottomSheet(false)
+                // -------------------- Employees list --------------------
+                EmployeesLazyColumn(
+                    employees = employees,
+                    employeeImages = employeeImages,
+                    currentEmployeeRoleInCompany = currentEmployeeRoleInCompany,
+                    employeeProfileBottomSheetExpanded = companyUIState.employeeProfileBottomSheetExpanded,
+                    getProfilePicture = companyViewModel::getProfilePicture,
+                    expandEmployeeProfileBottomSheet = {
+                        companyViewModel.expandEmployeeProfileBottomSheet(it)
+                    },
+                    onEmployeeDelete = {
+                        companyViewModel.kickEmployeeFromCompany(it, currentEmployeeRoleInCompany)
                     },
                     callSnackBar = callSnackBar,
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+                // -------------------- Add worker button --------------------
+                if(isCurrentEmployeeOwner) {
+                    PrimaryFilledButton(
+                        onClick = { companyViewModel.expandAddEmployeeBottomSheet(true) },
+                        text = stringResource(id = R.string.company_add_worker_button),
+                        leadingIcon = Icons.Outlined.Add
+                    )
+                }
             }
+        }
+
+        // -------------------- Add worker bottom sheet --------------------
+        if (companyUIState.addEmployeeBottomSheetExpanded) {
+            AddEmployeesBottomSheet(
+                onInvitationSend = { companyViewModel.inviteNewEmployee(it, currentEmployeeRoleInCompany) },
+                onDismissRequest = {
+                    companyViewModel.expandAddEmployeeBottomSheet(false)
+                },
+                callSnackBar = callSnackBar,
+            )
         }
     }
 }

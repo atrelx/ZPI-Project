@@ -37,49 +37,46 @@ fun EntryScreen(
     paddingValues: PaddingValues,
     userViewModel: UserViewModel,
 ) {
-
-    AmozApplicationTheme {
-        Surface(
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Column (
+                .padding(15.dp),
+            verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Image(
+                painter = rememberAsyncImagePainter(R.drawable.app_logo),
+                contentDescription = "App Logo",
+                contentScale = ContentScale.FillBounds,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(15.dp),
-                verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Image(
-                    painter = rememberAsyncImagePainter(R.drawable.app_logo),
-                    contentDescription = "App Logo",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(10.dp))
-                )
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally),
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
+                    .fillMaxWidth(1f)
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(10.dp))
+            )
+            Text(
+                text = stringResource(id = R.string.app_name),
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally),
+                color = MaterialTheme.colorScheme.onBackground,
+            )
 
-                Text(
-                    text = stringResource(id = R.string.entry_app_description),
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
+            Text(
+                text = stringResource(id = R.string.entry_app_description),
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
 
-                GoogleSignInButton {
-                    userViewModel.navigateUser(navController)
-                }
+            GoogleSignInButton {
+                userViewModel.navigateUser(navController)
             }
         }
     }
