@@ -8,7 +8,9 @@ import com.zpi.amoz.repository.ProductOrderRepository;
 import com.zpi.amoz.requests.ProductOrderCreateRequest;
 import com.zpi.amoz.requests.ProductVariantCreateRequest;
 import com.zpi.amoz.requests.PushRequest;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,10 @@ public class ProductOrderService {
     @Autowired
     private PushService pushService;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+
     public List<ProductOrder> findAll() {
         return productOrderRepository.findAll();
     }
@@ -70,7 +76,8 @@ public class ProductOrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Product Order not found for given ID: " + productOrderId));
 
         productOrderItemService.removeAllProductOrderItems(existingProductOrder.getOrderItems());
-        productOrderRepository.deleteById(productOrderId);
+        productOrderRepository.delete(existingProductOrder);
+        System.out.println("ProductOrder deleted: " + productOrderId);
     }
 
     @Transactional

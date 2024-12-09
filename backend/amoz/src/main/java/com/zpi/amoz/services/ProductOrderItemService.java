@@ -104,7 +104,6 @@ public class ProductOrderItemService {
             Stock stock = productVariant.getStock();
             stock.increaseStock(item.getAmount());
         });
-
         productOrderItemRepository.deleteAll(productOrderItems);
     }
 

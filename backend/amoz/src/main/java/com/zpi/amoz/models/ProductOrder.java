@@ -42,7 +42,7 @@ public class ProductOrder {
     @Column(nullable = false)
     private LocalDateTime timeOfCreation = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "productOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "productOrder", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductOrderItem> orderItems;
 
     public UUID getProductOrderId() {
