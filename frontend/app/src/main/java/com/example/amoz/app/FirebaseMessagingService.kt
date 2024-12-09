@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.invoke
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -70,7 +71,6 @@ class FirebaseMessagingService  : FirebaseMessagingService() {
         }
 
         val notification = notificationBuilder.build()
-        notificationManager.notify(0, notification)
+        notificationManager.notify(UUID.randomUUID().hashCode(), notification)
     }
-
 }
