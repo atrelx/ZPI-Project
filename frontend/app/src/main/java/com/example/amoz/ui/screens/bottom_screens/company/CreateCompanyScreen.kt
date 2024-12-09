@@ -107,13 +107,13 @@ fun CreateCompanyScreen (
                 textStyle = MaterialTheme.typography.bodyLarge
             )
 
-            OutlinedTextField(
-                value = companyCreateRequestState.regon ?: "",
-                onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(regon = it) },
-                label = { Text(stringResource(R.string.company_number_additional)) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.bodyLarge
-            )
+                OutlinedTextField(
+                    value = companyCreateRequestState.regon ?: "",
+                    onValueChange = { companyCreateRequestState = companyCreateRequestState.copy(regon = it) },
+                    label = { Text(stringResource(R.string.company_number_additional_optional)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge
+                )
 
             AddressTextField (
                 address = companyCreateRequestState.address,

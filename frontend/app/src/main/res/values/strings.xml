@@ -45,7 +45,7 @@
     <string name="profile_last_name">Last name</string>
     <string name="profile_full_name">Full name</string>
     <string name="profile_email">Email</string>
-    <string name="email_optional">Email (optional)</string>
+    <string name="email_optional">Email</string>
     <string name="profile_phone_number">Phone number</string>
     <string name="profile_sex">Sex</string>
     <string name="profile_birth_date">Birth Date</string>
@@ -133,6 +133,7 @@
     <string name="orders_shipping">Shipping</string>
 
     <string name="orders_select_status">Select order status</string>
+    <string name="no_status_selected">No status selected</string>
     <string name="orders_add_product">Add product</string>
     <string name="orders_add_customer">Add customer details</string>
     <string name="orders_add_address">Add address</string>
@@ -174,7 +175,8 @@
 
 
     <string name="company_number_name">NIP</string>
-    <string name="company_number_additional">REGON (optional)</string>
+    <string name="company_number_additional">REGON</string>
+    <string name="company_number_additional_optional">REGON (optional)</string>
 
     <string name="company_address_example">ul. Example, 9, New-York, 50–123</string>
     <string name="company_employees_description">People that work with you</string>

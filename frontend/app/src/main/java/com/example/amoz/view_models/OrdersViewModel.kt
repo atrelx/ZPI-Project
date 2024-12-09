@@ -23,6 +23,8 @@ import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
 import com.example.amoz.models.CustomerAnyRepresentation
 import com.example.amoz.models.ProductOrderDetails
+import com.example.amoz.models.ProductOrderItemSummary
+import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.screens.bottom_screens.orders.orders_list.OrderListFilter
 import com.example.amoz.ui.states.OrderUIState
@@ -77,7 +79,7 @@ class OrdersViewModel @Inject constructor (
 
     // --------------------------------
 
-    private fun createOrderRequestFromVariantItems(
+    fun createOrderRequestFromVariantItems(
         listVariantOrderItem: List<ProductVariantOrderItem>,
         orderCreateRequest: ProductOrderCreateRequest
     ): ProductOrderCreateRequest {
@@ -92,7 +94,7 @@ class OrdersViewModel @Inject constructor (
     }
 
 
-    private fun createProductOrder(orderCreateRequest: ProductOrderCreateRequest, listVariantOrderItem: List<ProductVariantOrderItem>) {
+     fun createProductOrder(orderCreateRequest: ProductOrderCreateRequest, listVariantOrderItem: List<ProductVariantOrderItem>) {
         val finalOrderRequest = createOrderRequestFromVariantItems(
             listVariantOrderItem = listVariantOrderItem,
             orderCreateRequest = orderCreateRequest,
@@ -105,7 +107,7 @@ class OrdersViewModel @Inject constructor (
                 failureMessage = "Could not create product order, try again",
                 action = { orderRepository.createProductOrder(finalOrderRequest) },
                 onSuccess = {
-                    fetchOrdersList(skipLoading = false)
+                    fetchOrdersList(skipLoading = false) {}
                 }
             )
         }
@@ -160,7 +162,7 @@ class OrdersViewModel @Inject constructor (
                 failureMessage = "Could not update product order, try again",
                 action = { orderRepository.updateProductOrder(uuid, orderCreateRequest) },
                 onSuccess = {
-                    fetchOrdersList(skipLoading = false)
+                    fetchOrdersList(skipLoading = true){}
                 }
             )
         }
@@ -176,7 +178,7 @@ class OrdersViewModel @Inject constructor (
             failureMessage = "Could not remove order, try again",
             action = { orderRepository.removeProductOrder(orderId) },
             onSuccess = {
-                fetchOrdersList(skipLoading = false)
+                fetchOrdersList(skipLoading = true){}
             }
         )
     }
@@ -205,32 +207,35 @@ class OrdersViewModel @Inject constructor (
         )
     }
 
-    private fun openInvoicePDF(invoiceByteArray: ByteArray) {
+    private fun openInvoicePDF(pdfData: ByteArray) {
+        Log.d("openInvoicePDF", "PDF array: $pdfData")
         val fileName = "invoice.pdf"
+        val file = File(context.cacheDir, fileName)
 
         try {
-            val pdfFile = File(context.cacheDir, fileName)
-            FileOutputStream(pdfFile).use { it.write(invoiceByteArray) }
-
-            val pdfUri: Uri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.provider",
-                pdfFile
-            )
-
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(pdfUri, "application/pdf")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            } else {
-                Toast.makeText(context, "No application found to open PDF", Toast.LENGTH_SHORT).show()
-            }
+            file.outputStream().use { it.write(pdfData) }
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(context, "Failed to open PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Failed to save PDF", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val uri: Uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            Toast.makeText(context, "No app found to open PDF", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -400,7 +405,7 @@ class OrdersViewModel @Inject constructor (
         applyFilters()
     }
 
-    fun fetchOrdersList(skipLoading: Boolean = false) {
+    fun fetchOrdersList(skipLoading: Boolean = false, onSuccessCallback: (List<ProductOrderSummary>) -> Unit) {
         performRepositoryAction(
             binding = _ordersUiState.value.ordersListFetched,
             failureMessage = "Could not fetch products, try again",
@@ -410,13 +415,14 @@ class OrdersViewModel @Inject constructor (
                 _ordersUiState.update { it.copy(ordersList = ordersList) }
                 calculateOrderTotals()
                 applyFilters()
+                onSuccessCallback(ordersList)
             }
         )
     }
 
     fun fetchOrdersListOnScreenLoad() {
         if (_ordersUiState.value.ordersListFetched.value is ResultState.Idle) {
-            fetchOrdersList()
+            fetchOrdersList{}
         }
     }
 

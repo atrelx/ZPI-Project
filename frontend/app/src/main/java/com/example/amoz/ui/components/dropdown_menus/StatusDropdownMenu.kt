@@ -24,9 +24,9 @@ import com.example.amoz.api.enums.Status
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatusDropdownMenu(
-    selectedStatus: Status,
-    onStatusChange: (Status) -> Unit,
-    modifier: Modifier = Modifier
+    selectedStatus: Status?,
+    noStatusSelectedPossible: Boolean = false,
+    onStatusChange: (Status?) -> Unit,
 ) {
     var dropDownMenuExpanded by remember { mutableStateOf(false) }
 
@@ -36,7 +36,7 @@ fun StatusDropdownMenu(
         onExpandedChange = { dropDownMenuExpanded = !dropDownMenuExpanded }
     ) {
         OutlinedTextField(
-            value = selectedStatus.getName(),
+            value = selectedStatus?.getName() ?: stringResource(R.string.no_status_selected),
             onValueChange = { },
             label = { Text(stringResource(R.string.orders_select_status)) },
             readOnly = true,
@@ -56,6 +56,16 @@ fun StatusDropdownMenu(
             expanded = dropDownMenuExpanded,
             onDismissRequest = { dropDownMenuExpanded = false }
         ) {
+            if (noStatusSelectedPossible) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.no_status_selected)) },
+                    onClick = {
+                        onStatusChange(null)
+                        dropDownMenuExpanded = false
+                    }
+                )
+            }
+
             Status.values().forEach { status ->
                 DropdownMenuItem(
                     text = { Text(status.getName()) },

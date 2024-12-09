@@ -79,15 +79,15 @@ fun RegisterImageScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            ImageWithIcon(
-                image = { if (selectedImageUri != null) selectedImageUri.toString() else null },
-                size = 300.dp,
-                iconImage = Icons.Outlined.Edit,
-                onImagePicked = {
-                    selectedImageUri = it
-                },
-                placeholder = ImagePlaceholder.HUMAN,
-            )
+                ImageWithIcon(
+                    image = selectedImageUri?.toString(),
+                    size = 300.dp,
+                    iconImage = Icons.Outlined.Edit,
+                    onImagePicked = {
+                        selectedImageUri = it
+                    },
+                    placeholder = ImagePlaceholder.HUMAN,
+                )
 
             Spacer(modifier = Modifier.weight(1f))
 

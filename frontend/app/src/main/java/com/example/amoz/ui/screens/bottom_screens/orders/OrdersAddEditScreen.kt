@@ -91,12 +91,13 @@ fun OrdersAddEditScreen (
                 // ---------------------------- Status Dropdown ----------------------------
                 item { HorizontalDividerWithTextBefore(text = stringResource(R.string.orders_status)) }
 
-                item {
-                    StatusDropdownMenu(
-                        selectedStatus = orderRequest.status,
-                        onStatusChange = { orderRequest = orderRequest.copy(status = it) }
-                    )
-                }
+                    item {
+                        StatusDropdownMenu(
+                            selectedStatus = orderRequest.status,
+                            onStatusChange = { orderRequest = orderRequest.copy(status = it!!) },
+                            noStatusSelectedPossible = false,
+                        )
+                    }
 
                 // ---------------------------- Products List ----------------------------
 

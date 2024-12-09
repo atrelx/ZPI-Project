@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.api.enums.Status
-import com.example.amoz.models.CategoryTree
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -48,7 +47,7 @@ fun FilterChipsOrders(
         status?.let {
             FilterChip(
                 onClick = onStatusClick,
-                label = { Text("Status: ${it.name}") },
+                label = { Text("Status: ${it.getName()}") },
                 selected = true,
                 leadingIcon = {
                     Icon(

@@ -18,7 +18,7 @@ class OrderListFilter {
                 } ?: true)
                 &&
                 (filterParams.status?.let {
-                    order.status.name == it.name
+                    order.status == it
                 } ?: true)
                 &&
                 (order.totalDue in

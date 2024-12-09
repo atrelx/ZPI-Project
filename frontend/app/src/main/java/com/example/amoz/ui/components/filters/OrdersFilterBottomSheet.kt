@@ -27,8 +27,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
+import com.example.amoz.api.enums.Status
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
+import com.example.amoz.ui.components.dropdown_menus.StatusDropdownMenu
 import com.example.amoz.view_models.OrdersViewModel
 import com.example.amoz.view_models.ProductsViewModel
 import java.time.LocalDate
@@ -56,8 +58,7 @@ fun OrdersFilterBottomSheet (
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 10.dp)
+                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -68,6 +69,14 @@ fun OrdersFilterBottomSheet (
                 onSortingTypeChange = {
                     filterParamsState = filterParamsState.copy(sortingType = it)
                 }
+            )
+            // -------------------- Status filter --------------------
+            StatusDropdownMenu(
+                selectedStatus = filterParamsState.status,
+                onStatusChange = {
+                    filterParamsState = filterParamsState.copy(status = it)
+                },
+                noStatusSelectedPossible = true,
             )
             // -------------------- Price filter --------------------
             PriceFilter(

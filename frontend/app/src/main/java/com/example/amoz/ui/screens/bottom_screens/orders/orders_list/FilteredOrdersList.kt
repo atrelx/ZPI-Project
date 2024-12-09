@@ -50,7 +50,7 @@ fun FilteredOrdersList(
     ResultStateView(
         state = stateView,
         onPullToRefresh = {
-            ordersViewModel.fetchOrdersList(skipLoading = true)
+            ordersViewModel.fetchOrdersList(skipLoading = true){}
         }
     ) {
         val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
@@ -59,7 +59,7 @@ fun FilteredOrdersList(
             .groupBy {
                 it.timeOfCreation.format(dateFormatter)
             }
-            .toSortedMap()
+            .toSortedMap(compareByDescending { it })
 
         LazyColumn(
             modifier = Modifier

@@ -32,7 +32,7 @@ fun LastOrdersList(
     ResultStateView(
         state = stateView,
         onPullToRefresh = {
-            ordersViewModel.fetchOrdersList(skipLoading = true)
+            ordersViewModel.fetchOrdersList(skipLoading = true) {}
         }
     ) {
         val sortedOrdersList = orderListUiState.ordersList
