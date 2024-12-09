@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.bottom_screens.company
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -21,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -41,20 +45,22 @@ fun CompanyScreen(
     navController: NavController,
     paddingValues: PaddingValues,
     companyViewModel: CompanyViewModel = hiltViewModel(),
-    companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList()
+    companyInfoScreenItems: List<NavItem> = companyInfoScreenItemsMap.values.toList(),
+    callSnackBar: (String, ImageVector?) -> Unit,
 ) {
     AmozApplicationTheme {
 
-        LaunchedEffect (true) {
+        LaunchedEffect (Unit) {
             companyViewModel.fetchCompanyDetailsOnScreenLoad()
         }
 
         val companyUIState by companyViewModel.companyUIState.collectAsState()
         val clipboardManager = LocalClipboardManager.current
 
-        val currentEmployeeRoleInCompany = companyUIState.currentEmployee?.roleInCompany
+        val currentEmployeeRoleInCompany = companyUIState.currentEmployee?.roleInCompany ?: RoleInCompany.REGULAR
         val readOnly = currentEmployeeRoleInCompany == RoleInCompany.REGULAR
 
+        val uploadCompanyImageSuccessText = stringResource(R.string.company_change_image_successful)
         val workersDescription = stringResource(R.string.company_employees_description)
         val customersDescription = stringResource(R.string.company_customers_description)
 
@@ -182,8 +188,13 @@ fun CompanyScreen(
                 if (companyUIState.changeCompanyLogoBottomSheetExpanded) {
                     ChangeCompanyLogoBottomSheet(
                         companyLogoState = companyUIState.companyLogo,
-                        onImageChange = {
-                            companyViewModel.updateCompanyLogo(it, currentEmployeeRoleInCompany)
+                        onImageChange = { imageUri ->
+                            try {
+                                companyViewModel.updateCompanyLogo(imageUri, currentEmployeeRoleInCompany)
+                                callSnackBar(uploadCompanyImageSuccessText, Icons.Default.Done)
+                            } catch (e: IllegalArgumentException) {
+                                e.message?.let { callSnackBar(it, Icons.Default.Close) }
+                            }
                         },
                         readOnly = readOnly,
                         onDismissRequest = {

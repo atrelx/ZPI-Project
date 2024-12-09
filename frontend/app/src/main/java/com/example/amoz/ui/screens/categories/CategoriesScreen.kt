@@ -105,7 +105,8 @@ fun CategoriesScreen(
                 onComplete = { name, subcategoriesList, onErrorCallback ->
                     if (categoryUiState.currentCategoryTree != null) {
                         val categoryId = categoryUiState.currentCategoryTree!!.categoryId
-                        categoryViewModel.updateCategory(categoryId, name, subcategoriesList)
+                        try { categoryViewModel.updateCategory(categoryId, name, subcategoriesList) }
+                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
                     }
                     else {
                         try {categoryViewModel.createCategory(name, subcategoriesList) }

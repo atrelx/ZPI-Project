@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
 import java.math.BigDecimal
 import java.util.UUID
 import javax.inject.Inject
@@ -96,33 +95,44 @@ class ProductsViewModel @Inject constructor(
         productCreateRequest: ProductCreateRequest,
         onSuccessCallback: ((ProductDetails) -> Unit)? = null,
     ) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Failed to update product",
-            action = {
-                productRepository.createProduct(productCreateRequest)
-            },
-            onSuccess = { productDetails ->
-                fetchProductsList(skipLoading = true)
-                onSuccessCallback?.invoke(productDetails)
-            }
-        )
+        val validationMessage = productCreateRequest.validate()
+        if (validationMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Failed to update product",
+                action = {
+                    productRepository.createProduct(productCreateRequest)
+                },
+                onSuccess = { productDetails ->
+                    fetchProductsList(skipLoading = true)
+                    onSuccessCallback?.invoke(productDetails)
+                }
+            )
+        } else { throw IllegalArgumentException(validationMessage) }
     }
 
-    fun updateProduct(productId: UUID, productCreateRequest: ProductCreateRequest) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Failed to update product",
-            action = {
-                productRepository.updateProduct(
-                    productId = productId,
-                    request = productCreateRequest
-                )
-            },
-            onSuccess = {
-                fetchProductsList(skipLoading = true)
-            }
-        )
+    fun updateProduct(
+        productId: UUID,
+        productCreateRequest: ProductCreateRequest,
+        onSuccessCallback: ((ProductDetails) -> Unit)? = null,
+    ) {
+        val validationMessage = productCreateRequest.validate()
+        if (validationMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Failed to update product",
+                action = {
+                    productRepository.updateProduct(
+                        productId = productId,
+                        request = productCreateRequest
+                    )
+                },
+                onSuccess = { productDetails ->
+                    fetchProductsList(skipLoading = true)
+                    onSuccessCallback?.invoke(productDetails)
+                }
+            )
+        } else { throw IllegalArgumentException(validationMessage) }
     }
 
     fun deleteProduct(productId: UUID) {
@@ -158,7 +168,8 @@ class ProductsViewModel @Inject constructor(
         _productUiState.update { it.copy(currentProductToDelete = productSummary) }
     }
 
-    fun saveCurrentProductCreateRequest(productCreateRequest: ProductCreateRequest) {
+    fun saveCurrentProductCreateRequest(productCreateRequest: ProductCreateRequest?) {
+
         _productUiState.update {
             it.copy(
                 productCreateRequest = productCreateRequest
@@ -171,7 +182,7 @@ class ProductsViewModel @Inject constructor(
             _productUiState.update {it.copy(
                 productDetailsState = MutableStateFlow(ResultState.Success(null))
             ) }
-            saveCurrentProductCreateRequest(ProductCreateRequest())
+            saveCurrentProductCreateRequest(null)
         }
         else {
             fetchProductDetails(productId)

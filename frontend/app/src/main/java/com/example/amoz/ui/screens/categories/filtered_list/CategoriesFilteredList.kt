@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.amoz.R
 import com.example.amoz.models.CategoryTree
+import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.text_fields.SearchTextField
 
 @Composable
@@ -55,6 +56,11 @@ fun CategoriesFilteredList(
                     isSelectable = categoryPickerMode,
                     isSelectableLeavesOnly = categoryPickerModeLeavesOnly,
                 )
+            }
+        }
+        item {
+            if(categories.isEmpty()) {
+                EmptyLayout()
             }
         }
         item {

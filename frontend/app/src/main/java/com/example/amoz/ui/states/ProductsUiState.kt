@@ -31,7 +31,7 @@ data class ProductsUiState(
     val filterParams: ProductsViewModel.FilterParams = ProductsViewModel.FilterParams(),
     val filterParamsInEdit: ProductsViewModel.FilterParams = ProductsViewModel.FilterParams(),
 
-    val productCreateRequest: ProductCreateRequest = ProductCreateRequest(),
+    val productCreateRequest: ProductCreateRequest? = null,
     val productDetailsState: MutableStateFlow<ResultState<ProductDetails?>> = MutableStateFlow(ResultState.Idle),
 
     val productVariantCreateRequest: ProductVariantCreateRequest = ProductVariantCreateRequest(),

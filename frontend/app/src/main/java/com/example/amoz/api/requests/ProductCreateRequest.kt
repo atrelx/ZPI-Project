@@ -10,6 +10,7 @@ import com.example.amoz.api.serializers.UUIDSerializer
 import com.example.amoz.interfaces.ValidatableRequest
 import com.example.amoz.models.Dimensions
 import com.example.amoz.models.ProductDetails
+import com.example.validation.annotations.NoDublicateAttributes
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Contextual
 import java.math.BigDecimal
@@ -29,7 +30,6 @@ data class ProductCreateRequest(
     val price: BigDecimal? = null,
 
     @Serializable(with = UUIDSerializer::class)
-//    @field:NotNullable(nameOfField = "Category")
     val categoryId: UUID? = null,
 
     @field:Size(max = 1000, nameOfField = "Description")
@@ -40,6 +40,7 @@ data class ProductCreateRequest(
 
     val productVariantIds: List<@Serializable(with = UUIDSerializer::class) UUID> = listOf(),
 
+    @field:NoDublicateAttributes(nameOfField = "Product attributes")
     val productAttributes: List<AttributeCreateRequest> = listOf()
 ) : ValidatableRequest<ProductCreateRequest>() {
     constructor(productDetails: ProductDetails?, productVariantIds: List<UUID> = emptyList()) : this(

@@ -3,16 +3,19 @@ package com.example.validation
 import android.util.Log
 import android.util.Patterns
 import com.example.amoz.R
+import com.example.amoz.api.requests.AttributeCreateRequest
 import com.example.amoz.app.AmozApplication
 import com.example.validation.annotations.DecimalMin
 import com.example.validation.annotations.Digits
 import com.example.validation.annotations.Email
 import com.example.validation.annotations.ListSize
 import com.example.validation.annotations.Min
+import com.example.validation.annotations.NoDublicateAttributes
 import com.example.validation.annotations.NotBlank
 import com.example.validation.annotations.NotNullable
 import com.example.validation.annotations.Past
 import com.example.validation.annotations.PastOrPresent
+import com.example.validation.annotations.Phone
 import com.example.validation.annotations.Positive
 import com.example.validation.annotations.Size
 import java.lang.reflect.Field
@@ -193,13 +196,26 @@ object Validator {
         }
     }
 
+    fun validatePhoneNumber(obj: Any): String? {
+        return validateTemplate(obj, Phone::class.java) { field, annotation ->
+            val value = field.get(obj) as? String?
+            if (value != null) {
+                val fieldName = if (annotation.nameOfField.isBlank()) { field.name }
+                else { annotation.nameOfField }
+
+                if (!Patterns.PHONE.matcher(value).matches()) {
+                    return@validateTemplate "${fieldName} does not match phone pattern"
+                }
+            }
+            return@validateTemplate null
+        }
+    }
+
     fun validateSize(obj: Any): String? {
         return validateTemplate(obj, Size::class.java) { field, annotation ->
             val value = field.get(obj) as? String?
             if (value != null) {
-                val fieldName = annotation.nameOfField.ifBlank {
-                    field.name
-                }
+                val fieldName = annotation.nameOfField.ifBlank { field.name }
 
                 if (value.length > annotation.max) {
                     return@validateTemplate "Pole '${fieldName}' przekracza maksymalną długość: ${annotation.max}"
@@ -210,6 +226,34 @@ object Validator {
             return@validateTemplate null
         }
     }
+
+    fun validateNoDublicateAttributes(obj: Any): String? {
+        return validateTemplate(obj, NoDublicateAttributes::class.java) { field, annotation ->
+            val value = field.get(obj) as? List<*>
+
+            if (value != null) {
+                val fieldName = if (annotation.nameOfField.isBlank()) {
+                    field.name
+                } else {
+                    annotation.nameOfField
+                }
+
+                val attributeRequests = value.filterIsInstance<AttributeCreateRequest>()
+
+                val duplicateAttributeNames = attributeRequests
+                    .groupBy { it.attributeName }
+                    .filter { it.value.size > 1 }
+                    .keys
+
+                if (duplicateAttributeNames.isNotEmpty()) {
+                    return@validateTemplate "Lista '${fieldName}' zawiera powtarzające się atrybuty: ${duplicateAttributeNames.joinToString(", ")}."
+                }
+            }
+
+            return@validateTemplate null
+        }
+    }
+
 
     fun validateNotBlank(obj: Any): String? {
         return validateTemplate(obj, NotBlank::class.java) { field, annotation ->

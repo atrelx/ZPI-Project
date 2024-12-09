@@ -43,11 +43,13 @@ class CompanyViewModel @Inject constructor(
     val companyUIState: StateFlow<CompanyUIState> = _companyUIState.asStateFlow()
 
     val ownerExceptionMessage = "Current employee is not owner"
+    val companyNullImageExceptionMessage = "Cannot upload company image because image is empty"
 
     private val newCompanyImageUri = MutableStateFlow<Uri?>(null)
 
     private val _companyCreateRequestState = MutableStateFlow(CompanyCreateRequest())
     val companyCreateRequestState: StateFlow<CompanyCreateRequest> = _companyCreateRequestState.asStateFlow()
+
 
     fun fetchCompanyDetailsOnScreenLoad() {
         if (_companyUIState.value.company.value is ResultState.Idle) {
@@ -55,7 +57,6 @@ class CompanyViewModel @Inject constructor(
                 fetchCompanyImage()
                 fetchEmployeeData()
             }
-
         }
     }
 
@@ -188,7 +189,6 @@ class CompanyViewModel @Inject constructor(
     fun fetchCompanyImage(skipLoading: Boolean = false) {
         performRepositoryAction(
             binding = _companyUIState.value.companyLogo,
-            failureMessage = "Could not fetch company logo. Try again later",
             skipLoading = skipLoading,
             action = { companyRepository.getCompanyProfilePicture() },
             onSuccess = {}
@@ -206,17 +206,23 @@ class CompanyViewModel @Inject constructor(
     }
 
     fun updateCompanyLogo(
-        image: MultipartBody.Part,
+        image: Uri?,
         roleInCompany: RoleInCompany?,
         skipLoading: Boolean = false
     ) {
-        if (roleInCompany == RoleInCompany.OWNER) {
-            performRepositoryAction(null, "Could not update company logo. Try again later",
-                skipLoading = skipLoading,
-                action = { companyRepository.uploadCompanyProfilePicture(image) },
-                onSuccess = { fetchCompanyImage() }
-            )
-        } else { Log.e(tag, ownerExceptionMessage) }
+        if (roleInCompany == RoleInCompany.OWNER ) {
+            if (image != null) {
+                performRepositoryAction(null, "Could not update company logo. Try again later",
+                    skipLoading = skipLoading,
+                    action = {
+                        val imageMultiPartBodyPart = image.toMultipartBodyPart(context)
+                        companyRepository.uploadCompanyProfilePicture(imageMultiPartBodyPart)
+                    },
+                    onSuccess = { fetchCompanyImage() }
+                )
+            }
+            else { throw IllegalArgumentException(companyNullImageExceptionMessage) }
+        } else { throw IllegalArgumentException(ownerExceptionMessage) }
     }
 
     // -------------------- EMPLOYEES --------------------
@@ -224,7 +230,9 @@ class CompanyViewModel @Inject constructor(
         performRepositoryAction(
             null,
             action = { employeeRepository.fetchEmployee() },
-            onSuccess = { employee -> _companyUIState.update { it.copy(currentEmployee = employee) } }
+            onSuccess = { employee ->
+                _companyUIState.update { it.copy(currentEmployee = employee) }
+            }
         )
     }
 

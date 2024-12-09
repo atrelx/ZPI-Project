@@ -10,10 +10,10 @@ hibernateValidator = "6.2.0.Final"
 jakartaValidationApi = "2.0.1.Final"
 javaxEl = "3.0.1-b08"
 
+junitJupiter = "5.8.1"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
-junit = "4.13.2"
-junitVersion = "1.1.5"
+junitInstrumentalVersion = "1.2.1"
 espressoCore = "3.5.1"
 kotlinReflect = "1.8.0"
 kotlinxSerializationJsonJvm = "1.6.0"
@@ -29,6 +29,7 @@ materialIconsExtended = "1.7.1"
 mockitoCore = "5.3.1"
 mockitoAndroid = "5.3.1"
 mockitoKotlin = "5.3.1"
+monitor = "1.7.2"
 navigationCompose = "2.7.7"
 navigationTesting = "2.7.7"
 playServicesAuth = "21.2.0"
@@ -38,8 +39,8 @@ uiTestJunit4Android = "1.6.8"
 espressoIdlingResource = "3.5.1"
 uiTextGoogleFonts = "1.7.4"
 foundationLayoutAndroid = "1.7.0"
+runner = "1.6.2"
 
-hiltTesting = "2.51.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +53,7 @@ androidx-datastore-rxjava3 = { module = "androidx.datastore:datastore-rxjava3", 
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-monitor = { module = "androidx.test:monitor", version.ref = "monitor" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-kotlinx-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "converterKotlinxSerialization" }
@@ -62,8 +64,8 @@ hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref 
 hilt-kotlin-testing = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltVersion" }
 jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakartaValidationApi" }
 javax-el = { module = "org.glassfish:javax.el", version.ref = "javaxEl" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junitJupiter" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitInstrumentalVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -92,6 +94,7 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
+androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 
 
 [plugins]

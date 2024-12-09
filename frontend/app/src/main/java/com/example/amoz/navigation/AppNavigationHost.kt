@@ -70,7 +70,8 @@ fun AppNavigationHost(
             CompanyScreen(
                 navController = navController,
                 companyViewModel = companyViewModel,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                callSnackBar = callSnackBar,
             ) }
 
         // -------------------- Products screens --------------------
@@ -109,7 +110,7 @@ fun AppNavigationHost(
                 navController = navController,
                 companyViewModel = companyViewModel,
                 paddingValues = paddingValues,
-                callSnackBar = { text, icon -> callSnackBar(text, icon) },
+                callSnackBar = callSnackBar,
             )
         }
         composable(Screens.Customers.route) {
@@ -117,7 +118,7 @@ fun AppNavigationHost(
                 navController = navController,
                 companyViewModel = companyViewModel,
                 paddingValues = paddingValues,
-                callSnackBar = { text, icon -> callSnackBar(text, icon) },
+                callSnackBar = callSnackBar,
             ) }
 
         composable(Screens.NoCompany.route) {

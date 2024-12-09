@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.amoz"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.testing)
     implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.runner)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -103,19 +104,19 @@ dependencies {
 
     testImplementation (libs.mockito.core)
     testImplementation (libs.mockito.kotlin)
-    testImplementation (libs.junit)
     testImplementation (libs.robolectric)
-    testImplementation(libs.junit)
+    testImplementation (libs.junit)
+
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+//    androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.mockito.android)
 
     kaptAndroidTest(libs.hilt.kotlin.testing)
     androidTestAnnotationProcessor(libs.hilt.kotlin.testing)
 
-    debugImplementation("androidx.test:monitor:1.6.1")
+    debugImplementation(libs.androidx.monitor)
 }

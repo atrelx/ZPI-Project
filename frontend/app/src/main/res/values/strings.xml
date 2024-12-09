@@ -166,6 +166,7 @@
     <string name="company_logo">Company logo</string>
     <string name="company_logo_change">Update company logo</string>
     <string name="company_name">Company name</string>
+    <string name="company_change_image_successful">Company image changed</string>
     <string name="company_screen_description">This is your company. Manage your employees, add customers and change all company data if you need.</string>
     <string name="company_screen_description_owner">This is your company. Manage your employees, add customers and change all company data if you need.</string>
     <string name="company_screen_description_regular">This is the company you work for. You can add clients, see all the necessary information about the company and its employees, if necessary.</string>

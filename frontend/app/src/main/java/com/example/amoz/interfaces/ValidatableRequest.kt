@@ -14,7 +14,8 @@ abstract class ValidatableRequest<T : ValidatableRequest<T>>  {
             return validationErrorMessage
         }
 
-        val violations: List<String> = listOfNotNull(Validator.validateDigits(this),
+        val violations: List<String> = listOfNotNull(
+            Validator.validateDigits(this),
             Validator.validatePositive(this),
             Validator.validateEmail(this),
             Validator.validateSize(this),
@@ -24,7 +25,9 @@ abstract class ValidatableRequest<T : ValidatableRequest<T>>  {
             Validator.validatePastOrPresent(this),
             Validator.validateNotNullable(this),
             Validator.validateDecimalMin(this),
-            Validator.validateListSize(this)
+            Validator.validateListSize(this),
+            Validator.validateNoDublicateAttributes(this),
+            Validator.validatePhoneNumber(this)
         )
 
         Log.i("ValidationLogger", "Validating class: ${this::class.simpleName}")

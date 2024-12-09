@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
+import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.view_models.OrdersViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,40 +23,30 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun LastOrdersList(
     ordersViewModel: OrdersViewModel,
-    maxListItemsVisible: Int
+    ordersList: List<ProductOrderSummary>,
+    maxListItemsVisible: Int,
+    currency: String,
 ) {
-    val orderListUiState by ordersViewModel.ordersUiState.collectAsState()
-    val stateView: MutableStateFlow<ResultState<List<Any>>> = orderListUiState.ordersListFetched as MutableStateFlow<ResultState<List<Any>>>
-    val currContext = LocalContext.current
-    val appPreferences = remember { AppPreferences(currContext) }
-    val currency by appPreferences.currency.collectAsState(initial = "USD")
+    val sortedOrdersList = ordersList
+        .sortedByDescending { it.timeOfCreation }
+        .take(maxListItemsVisible)
 
-    ResultStateView(
-        state = stateView,
-        onPullToRefresh = {
-            ordersViewModel.fetchOrdersList(skipLoading = true)
-        }
-    ) {
-        val sortedOrdersList = orderListUiState.ordersList
-            .sortedByDescending { it.timeOfCreation }
-            .take(maxListItemsVisible)
-
-        LazyColumn (
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(15.dp)) {
-            items(
-                sortedOrdersList,
-                key = {it.productOrderId}
-            ) { order ->
-                OrderListItem(
-                    order = order,
-                    onOrderEdit = {},
-                    currency = currency!!,
-                    ordersViewModel = ordersViewModel
-                )
-            }
+    LazyColumn (
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(15.dp)) {
+        items(
+            sortedOrdersList,
+            key = {it.productOrderId}
+        ) { order ->
+            OrderListItem(
+                order = order,
+                onOrderEdit = {},
+                currency = currency,
+                ordersViewModel = ordersViewModel
+            )
         }
     }
+
 }

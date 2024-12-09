@@ -14,12 +14,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.data.NavItem
+import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.ui.components.MoreOrdersTextButton
+import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.theme.AmozApplicationTheme
 import com.example.amoz.view_models.OrdersViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @Composable
@@ -31,30 +35,47 @@ fun HomeScreen(
 ) {
     val ordersUiState by ordersViewModel.ordersUiState.collectAsState()
 
-    LaunchedEffect(true) {
+    val stateView = ordersUiState.ordersListFetched
+    val currency by ordersViewModel.getCurrency().collectAsState(initial = "USD")
+
+    LaunchedEffect(Unit) {
         ordersViewModel.fetchOrdersListOnScreenLoad()
     }
+    ResultStateView(
+        state = stateView,
+        onPullToRefresh = { ordersViewModel.fetchOrdersList(skipLoading = true) }
+    ) { ordersList ->
 
-    AmozApplicationTheme {
-        Surface(
+        AmozApplicationTheme {
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
                 color = MaterialTheme.colorScheme.background
-        ) {
-            Column {
-                CardsLazyRow(cardsList = ordersViewModel.createHomeCardList(ordersUiState))
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
-                MoreOrdersTextButton(
-                    onClick = {
-                        val ordersNavItem = bottomNavigationBarNavItemsMap[NavItemType.Orders]
-                        navigateToScreen(ordersNavItem!!)
-                    } )
-                LastOrdersList(
-                    ordersViewModel = ordersViewModel,
-                    maxListItemsVisible = 10 )
+            ) {
+                Column {
+                    CardsLazyRow(cardsList = ordersViewModel.createHomeCardList(ordersUiState))
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp,
+                            vertical = 10.dp
+                        )
+                    )
+                    MoreOrdersTextButton(
+                        onClick = {
+                            val ordersNavItem = bottomNavigationBarNavItemsMap[NavItemType.Orders]
+                            navigateToScreen(ordersNavItem!!)
+                        })
+                    LastOrdersList(
+                        ordersList = ordersList,
+                        ordersViewModel = ordersViewModel,
+                        maxListItemsVisible = 10,
+                        currency = currency!!
+                    )
+                }
             }
         }
+
     }
 }
 

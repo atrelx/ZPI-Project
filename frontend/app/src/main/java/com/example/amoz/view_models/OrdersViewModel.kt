@@ -20,6 +20,7 @@ import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.api.requests.ProductOrderCreateRequest
 import com.example.amoz.api.requests.ProductOrderItemCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.app.AppPreferences
 import com.example.amoz.models.CustomerAnyRepresentation
 import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductVariantDetails
@@ -27,6 +28,7 @@ import com.example.amoz.ui.screens.bottom_screens.orders.orders_list.OrderListFi
 import com.example.amoz.ui.states.OrderUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,7 +46,8 @@ class OrdersViewModel @Inject constructor (
     @ApplicationContext val context: Context,
     private val orderRepository: ProductOrderRepository,
     private val productRepository: ProductVariantRepository,
-    private val customerRepository: CustomerRepository
+    private val customerRepository: CustomerRepository,
+    private val appPreferences: AppPreferences
 ): BaseViewModel() {
 
     private val _ordersUiState = MutableStateFlow(OrderUIState())
@@ -55,6 +58,12 @@ class OrdersViewModel @Inject constructor (
     )
 
     private val orderFilter = OrderListFilter()
+
+    // --------------------------------
+
+    fun getCurrency(): Flow<String?> {
+        return appPreferences.currency
+    }
 
     // --------------------------------
 

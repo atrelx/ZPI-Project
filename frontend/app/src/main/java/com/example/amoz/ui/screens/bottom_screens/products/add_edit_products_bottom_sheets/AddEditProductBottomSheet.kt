@@ -51,28 +51,37 @@ import java.util.UUID
 @Composable
 fun AddEditProductBottomSheet(
     productDetailsState: MutableStateFlow<ResultState<ProductDetails?>>,
+    savedProductState: ProductCreateRequest?,
     onSaveProduct: (ProductCreateRequest) -> Unit,
-    onComplete: (UUID?, ProductCreateRequest) -> Unit,
-    navController: NavController,
+    onComplete: (UUID?, ProductCreateRequest, (String?) -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
+    navController: NavController,
 ) {
-    val scope = rememberCoroutineScope()
-
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
-
+    val scope = rememberCoroutineScope()
     val sheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = true,
             confirmValueChange = { newState ->
                 newState != SheetValue.Hidden
             }
         )
+    fun hideBottomSheet() {
+        scope.launch {
+            sheetState.hide()
+            onDismissRequest()
+        }
+    }
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
         ResultStateView(productDetailsState) { productDetails ->
-            var productState by remember { mutableStateOf(ProductCreateRequest(productDetails)) }
+            var productState by remember(savedProductState) {
+                mutableStateOf(
+                    savedProductState ?: ProductCreateRequest(productDetails)
+                )
+            }
 
             var categoryTreeState by remember { mutableStateOf(
                 productDetails?.category?.let {CategoryTree(it) }
@@ -167,17 +176,12 @@ fun AddEditProductBottomSheet(
 
                 PrimaryFilledButton(
                     onClick = {
-                        val violation = productState.validate()
-                        if (violation != null) {
-                            validationMessage = violation
-                        }
-                        else {
-                            onComplete(productDetails?.productId, productState)
-                            onDismissRequest()
+                        onComplete(productDetails?.productId, productState) {
+                            if (it == null) { onDismissRequest() }
+                            else { validationMessage = it }
                         }
                     },
                     text = stringResource(id = R.string.done),
-//                enabled = isFormValid
                 )
                 // -------------------- Close bottom sheet --------------------
                 CloseOutlinedButton(

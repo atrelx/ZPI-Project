@@ -1,4 +1,4 @@
-package com.example.amoz
+package com.example.amoz.functionality_tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class CategoryFunctionalityTests {
+class Category {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
@@ -144,11 +144,11 @@ class CategoryFunctionalityTests {
         }
     }
 
-    private fun assertCategoryInList(categoryId: UUID, callback: (Boolean) -> Unit) {
+    private fun assertCategoryInList(categoryId: UUID, isFound: (Boolean) -> Unit) {
         categoriesViewModel.fetchCategories(
             onSuccessCallback = { categoriesList ->
-                val isFound = findCategory(categoriesList, categoryId)
-                callback(isFound)
+                val foundCategory = findCategory(categoriesList, categoryId)
+                isFound(foundCategory)
             }
         )
     }

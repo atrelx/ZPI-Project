@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,7 @@ fun ProductScreen(
     productsViewModel: ProductsViewModel = hiltViewModel()
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
+
     val currency by productsViewModel.getCurrency().collectAsState(initial = "USD")
 
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
@@ -158,17 +160,23 @@ fun ProductScreen(
         }
 
         // -------------------- Add/Edit Product --------------------
+        LaunchedEffect(productsUiState.productCreateRequest) {
+            Log.d("SAVED PRODUCT", productsUiState.productCreateRequest.toString())
+        }
         if (productsUiState.addEditProductBottomSheetExpanded) {
             AddEditProductBottomSheet(
                 productDetailsState = productsUiState.productDetailsState,
-                navController = navController,
+                savedProductState = productsUiState.productCreateRequest,
                 onSaveProduct = productsViewModel::saveCurrentProductCreateRequest,
-                onComplete = { productId, productState ->
+                onComplete = { productId, productState, onErrorCallback ->
                     productId?.let {
-                        productsViewModel.updateProduct(it, productState)
+                        try { productsViewModel.updateProduct(it, productState) }
+                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
+
                     }
                     ?: run {
-                        productsViewModel.createProduct(productState)
+                        try{ productsViewModel.createProduct(productState) }
+                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
                     }
                 },
                 onDismissRequest = {
@@ -178,6 +186,7 @@ fun ProductScreen(
                         false
                     )
                 },
+                navController = navController,
             )
         }
 
