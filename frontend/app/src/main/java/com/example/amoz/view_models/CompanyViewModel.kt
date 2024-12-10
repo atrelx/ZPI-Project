@@ -15,6 +15,7 @@ import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.requests.CustomerB2BCreateRequest
 import com.example.amoz.api.requests.CustomerB2CCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.models.CustomerB2B
@@ -37,7 +38,8 @@ class CompanyViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val employeeRepository: EmployeeRepository,
     private val companyRepository: CompanyRepository,
-    private val customerRepository: CustomerRepository
+    private val customerRepository: CustomerRepository,
+    private val signOutManager: SignOutManager,
 ): BaseViewModel() {
     private val _companyUIState = MutableStateFlow(CompanyUIState())
     val companyUIState: StateFlow<CompanyUIState> = _companyUIState.asStateFlow()
@@ -50,6 +52,23 @@ class CompanyViewModel @Inject constructor(
     private val _companyCreateRequestState = MutableStateFlow(CompanyCreateRequest())
     val companyCreateRequestState: StateFlow<CompanyCreateRequest> = _companyCreateRequestState.asStateFlow()
 
+    init {
+        observeSignOutEvent()
+    }
+
+    private fun observeSignOutEvent() {
+        viewModelScope.launch {
+            signOutManager.signOutEvent.collect {
+                clearState()
+            }
+        }
+    }
+
+    private fun clearState() {
+        _companyUIState.update { CompanyUIState() }
+        _companyCreateRequestState.value = CompanyCreateRequest()
+        newCompanyImageUri.value = null
+    }
 
     fun fetchCompanyDetailsOnScreenLoad() {
         if (_companyUIState.value.company.value is ResultState.Idle) {

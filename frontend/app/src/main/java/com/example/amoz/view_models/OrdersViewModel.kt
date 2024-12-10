@@ -17,16 +17,19 @@ import com.example.amoz.api.repositories.CustomerRepository
 import com.example.amoz.api.repositories.ProductOrderRepository
 import com.example.amoz.api.repositories.ProductVariantRepository
 import com.example.amoz.api.requests.AddressCreateRequest
+import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.requests.ProductOrderCreateRequest
 import com.example.amoz.api.requests.ProductOrderItemCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.models.CustomerAnyRepresentation
 import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductOrderItemSummary
 import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.ui.screens.bottom_screens.orders.orders_list.OrderListFilter
+import com.example.amoz.ui.states.CompanyUIState
 import com.example.amoz.ui.states.OrderUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -49,17 +52,33 @@ class OrdersViewModel @Inject constructor (
     private val orderRepository: ProductOrderRepository,
     private val productRepository: ProductVariantRepository,
     private val customerRepository: CustomerRepository,
-    private val appPreferences: AppPreferences
+    private val appPreferences: AppPreferences,
+    private val signOutManager: SignOutManager,
 ): BaseViewModel() {
 
     private val _ordersUiState = MutableStateFlow(OrderUIState())
     val ordersUiState: StateFlow<OrderUIState> = _ordersUiState.asStateFlow()
-
     private val _addressCreateRequestState = MutableStateFlow(
         AddressCreateRequest()
     )
-
     private val orderFilter = OrderListFilter()
+
+    init {
+        observeSignOutEvent()
+    }
+
+    private fun observeSignOutEvent() {
+        viewModelScope.launch {
+            signOutManager.signOutEvent.collect {
+                clearState()
+            }
+        }
+    }
+
+    private fun clearState() {
+        _ordersUiState.update { OrderUIState() }
+        _addressCreateRequestState.value = AddressCreateRequest()
+    }
 
     // --------------------------------
 

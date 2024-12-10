@@ -8,17 +8,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.amoz.api.repositories.EmployeeRepository
 import com.example.amoz.api.repositories.UserRepository
+import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.api.requests.UserRegisterRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.ui.states.EmployeeUiState
+import com.example.amoz.ui.states.OrderUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -26,7 +32,8 @@ import javax.inject.Inject
 class EmployeeViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val employeeRepository: EmployeeRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val signOutManager: SignOutManager,
 ) : BaseViewModel() {
 
     private val _employeeUiState = MutableStateFlow(EmployeeUiState())
@@ -34,6 +41,24 @@ class EmployeeViewModel @Inject constructor(
 
     var selectedNewImageUri: Uri? by mutableStateOf(null)
     var userImageBitmap: ImageBitmap? by mutableStateOf(null)
+
+    init {
+        observeSignOutEvent()
+    }
+
+    private fun observeSignOutEvent() {
+        viewModelScope.launch {
+            signOutManager.signOutEvent.collect {
+                clearState()
+            }
+        }
+    }
+
+    private fun clearState() {
+        _employeeUiState.update { EmployeeUiState() }
+        selectedNewImageUri = null
+        userImageBitmap = null
+    }
 
     private fun fetchEmployee() {
         performRepositoryAction(

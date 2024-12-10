@@ -74,6 +74,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSignOutManager(): SignOutManager {
+        return SignOutManager()
+    }
+
+    @Provides
+    @Singleton
     fun provideAppPreferences(@ApplicationContext context: Context): AppPreferences {
         return AppPreferences(context)
     }

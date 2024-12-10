@@ -68,7 +68,6 @@ class GoogleAuthManager @Inject constructor(
         val googleSignInClient = createSignInClient()
         googleSignInClient.signOut()
             .addOnCompleteListener(activity) {
-                Log.d("GoogleAuthManager", "signOut: success")
                 tokenManager.clearTokens()
                 completion?.invoke()
             }

@@ -10,6 +10,7 @@ import com.example.amoz.interfaces.SignInDelegate
 import com.example.amoz.api.managers.GoogleAuthManager
 import com.example.amoz.api.managers.TokenManager
 import com.example.amoz.api.repositories.AuthenticationRepository
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.ui.screens.Screens
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -23,8 +24,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val googleAuthManager: GoogleAuthManager,
+    private val signOutManager: SignOutManager,
     private val tokenManager: TokenManager,
-    private val authenticationRepository: AuthenticationRepository
+    private val authenticationRepository: AuthenticationRepository,
 ) : BaseViewModel() {
 
     fun setSignInDelegate(delegate: SignInDelegate) {
@@ -53,6 +55,9 @@ class AuthenticationViewModel @Inject constructor(
 
     fun signOut(activity: Activity, completion: (() -> Unit)?) {
         googleAuthManager.signOut(activity) {
+            viewModelScope.launch {
+                signOutManager.notifySignOut()
+            }
             completion?.invoke()
         }
     }

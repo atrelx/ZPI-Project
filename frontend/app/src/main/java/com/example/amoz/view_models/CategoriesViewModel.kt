@@ -1,24 +1,30 @@
 package com.example.amoz.view_models
 
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.repositories.CategoryRepository
+import com.example.amoz.api.requests.AddressCreateRequest
 import com.example.amoz.api.requests.CategoryCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.models.CategoryDetails
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.states.CategoriesUiState
 import com.example.amoz.ui.screens.categories.filtered_list.CategoryListFilter
+import com.example.amoz.ui.states.OrderUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val signOutManager: SignOutManager,
 ): BaseViewModel() {
     private val _categoriesUiState = MutableStateFlow(CategoriesUiState())
     val categoriesUiState: StateFlow<CategoriesUiState> = _categoriesUiState.asStateFlow()
@@ -26,6 +32,19 @@ class CategoriesViewModel @Inject constructor(
 
     init {
         fetchCategories()
+        observeSignOutEvent()
+    }
+
+    private fun observeSignOutEvent() {
+        viewModelScope.launch {
+            signOutManager.signOutEvent.collect {
+                clearState()
+            }
+        }
+    }
+
+    private fun clearState() {
+        _categoriesUiState.update { CategoriesUiState() }
     }
 
     fun fetchCategories(

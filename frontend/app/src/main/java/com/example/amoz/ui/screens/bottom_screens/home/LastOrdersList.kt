@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
+import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.view_models.OrdersViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,25 +36,28 @@ fun LastOrdersList(
             ordersViewModel.fetchOrdersList(skipLoading = true) {}
         }
     ) {
-        val sortedOrdersList = orderListUiState.ordersList
-            .sortedByDescending { it.timeOfCreation }
-            .take(maxListItemsVisible)
+        if (orderListUiState.ordersList.isEmpty()) {
+            EmptyLayout()
+        } else {
+            val sortedOrdersList = orderListUiState.ordersList
+                .sortedByDescending { it.timeOfCreation }
+                .take(maxListItemsVisible)
 
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 10.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-            sortedOrdersList.forEach { order ->
-                OrderListItem(
-                    order = order,
-                    currency = currency!!,
-                    ordersViewModel = ordersViewModel
-                )
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 10.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                sortedOrdersList.forEach { order ->
+                    OrderListItem(
+                        order = order,
+                        currency = currency!!,
+                        ordersViewModel = ordersViewModel
+                    )
+                }
             }
         }
-
     }
 }

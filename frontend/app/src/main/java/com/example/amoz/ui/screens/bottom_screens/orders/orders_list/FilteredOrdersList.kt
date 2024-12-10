@@ -22,9 +22,7 @@ import com.example.amoz.view_models.OrdersViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.list_items.OrderGroupHeader
 import com.example.amoz.ui.components.list_items.SwipeOrderListItem
 import java.time.format.DateTimeFormatter
@@ -52,65 +50,69 @@ fun FilteredOrdersList(
         onPullToRefresh = {
             ordersViewModel.fetchOrdersList(skipLoading = true){}
         }
-    ) {
-        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
+    ) { fetchedList ->
+        if (fetchedList.isEmpty()){
+           EmptyLayout()
+        } else {
+            val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
 
-        val groupedOrders = orderListUiState.filteredSortedOrdersList
-            .groupBy {
-                it.timeOfCreation.format(dateFormatter)
-            }
-            .toSortedMap(compareByDescending { it })
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-            item {
-                SearchTextField(
-                    searchQuery = orderListUiState.searchQuery,
-                    placeholder = stringResource(id = R.string.search_products_placeholder),
-                    onSearchQueryChange = {
-                        Log.d("SearchQuery",orderListUiState.searchQuery)
-                        ordersViewModel.updateSearchQuery(it)
-                                          },
-                    onMoreFiltersClick = onMoreFiltersClick
-                )
-                FilterChipsOrders(
-                    priceFrom = orderListUiState.filterParams.priceFrom,
-                    onPriceFromClick = { ordersViewModel.clearPriceFilter(true) },
-                    priceTo = orderListUiState.filterParams.priceTo,
-                    onPriceToClick = { ordersViewModel.clearPriceFilter(false) },
-                    status = orderListUiState.filterParams.status,
-                    onStatusClick = { ordersViewModel.clearStatusFilter() },
-                    timeOfSendingFrom = orderListUiState.filterParams.timeOfSendingFrom,
-                    onTimeOfSendingFromClick = { ordersViewModel.clearTimeOfSendingFilter(true) },
-                    timeOfSendingTo = orderListUiState.filterParams.timeOfSendingTo,
-                    onTimeOfSendingToClick = { ordersViewModel.clearTimeOfSendingFilter(false) },
-                    timeOfCreationFrom = orderListUiState.filterParams.timeOfCreationFrom,
-                    onTimeOfCreationFromClick = { ordersViewModel.clearTimeOfCreationFilter(true) },
-                    timeOfCreationTo = orderListUiState.filterParams.timeOfCreationTo,
-                    onTimeOfCreationToClick = { ordersViewModel.clearTimeOfCreationFilter(false) },
-                )
-            }
-
-            groupedOrders.forEach { (date, orders) ->
-                item {
-                    OrderGroupHeader(date = date)
+            val groupedOrders = orderListUiState.filteredSortedOrdersList
+                .groupBy {
+                    it.timeOfCreation.format(dateFormatter)
                 }
-                items(orders) { orderTemplate ->
-                    Box(
-                        modifier = Modifier.animateItem()
-                    ) {
-                        SwipeOrderListItem(
-                            order = orderTemplate,
-                            onOrderEdit = onOrderEdit,
-                            onOrderRemove = onOrderRemove,
-                            onGenerateInvoice = onGenerateInvoice,
-                            currency = currency!!,
-                            ordersViewModel = ordersViewModel,
-                        )
+                .toSortedMap(compareByDescending { it })
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                item {
+                    SearchTextField(
+                        searchQuery = orderListUiState.searchQuery,
+                        placeholder = stringResource(id = R.string.search_products_placeholder),
+                        onSearchQueryChange = {
+                            Log.d("SearchQuery",orderListUiState.searchQuery)
+                            ordersViewModel.updateSearchQuery(it)
+                        },
+                        onMoreFiltersClick = onMoreFiltersClick
+                    )
+                    FilterChipsOrders(
+                        priceFrom = orderListUiState.filterParams.priceFrom,
+                        onPriceFromClick = { ordersViewModel.clearPriceFilter(true) },
+                        priceTo = orderListUiState.filterParams.priceTo,
+                        onPriceToClick = { ordersViewModel.clearPriceFilter(false) },
+                        status = orderListUiState.filterParams.status,
+                        onStatusClick = { ordersViewModel.clearStatusFilter() },
+                        timeOfSendingFrom = orderListUiState.filterParams.timeOfSendingFrom,
+                        onTimeOfSendingFromClick = { ordersViewModel.clearTimeOfSendingFilter(true) },
+                        timeOfSendingTo = orderListUiState.filterParams.timeOfSendingTo,
+                        onTimeOfSendingToClick = { ordersViewModel.clearTimeOfSendingFilter(false) },
+                        timeOfCreationFrom = orderListUiState.filterParams.timeOfCreationFrom,
+                        onTimeOfCreationFromClick = { ordersViewModel.clearTimeOfCreationFilter(true) },
+                        timeOfCreationTo = orderListUiState.filterParams.timeOfCreationTo,
+                        onTimeOfCreationToClick = { ordersViewModel.clearTimeOfCreationFilter(false) },
+                    )
+                }
+
+                groupedOrders.forEach { (date, orders) ->
+                    item {
+                        OrderGroupHeader(date = date)
+                    }
+                    items(orders) { orderTemplate ->
+                        Box(
+                            modifier = Modifier.animateItem()
+                        ) {
+                            SwipeOrderListItem(
+                                order = orderTemplate,
+                                onOrderEdit = onOrderEdit,
+                                onOrderRemove = onOrderRemove,
+                                onGenerateInvoice = onGenerateInvoice,
+                                currency = currency,
+                                ordersViewModel = ordersViewModel,
+                            )
+                        }
                     }
                 }
             }

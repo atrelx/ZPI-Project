@@ -6,10 +6,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.repositories.ProductRepository
 import com.example.amoz.api.repositories.ProductVariantRepository
+import com.example.amoz.api.requests.CompanyCreateRequest
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.app.AppPreferences
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.models.ProductDetails
@@ -18,6 +20,7 @@ import com.example.amoz.models.ProductVariantDetails
 import com.example.amoz.models.ProductVariantSummary
 import com.example.amoz.ui.states.ProductsUiState
 import com.example.amoz.ui.screens.bottom_screens.products.products_list.ProductListFilter
+import com.example.amoz.ui.states.CompanyUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -37,13 +40,15 @@ class ProductsViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val productRepository: ProductRepository,
     private val productVariantRepository: ProductVariantRepository,
-    private val appPreferences: AppPreferences
+    private val appPreferences: AppPreferences,
+    private val signOutManager: SignOutManager,
 ) : BaseViewModel() {
     private val _productUiState = MutableStateFlow(ProductsUiState())
     val productUiState: StateFlow<ProductsUiState> = _productUiState.asStateFlow()
     private val productFilter = ProductListFilter()
 
     init {
+        observeSignOutEvent()
         fetchProductsList()
         viewModelScope.launch {
             _productUiState
@@ -53,6 +58,18 @@ class ProductsViewModel @Inject constructor(
                     filteredProduct?.let { fetchProductVariantsList(it.productId) }
                 }
         }
+    }
+
+    private fun observeSignOutEvent() {
+        viewModelScope.launch {
+            signOutManager.signOutEvent.collect {
+                clearState()
+            }
+        }
+    }
+
+    private fun clearState() {
+        _productUiState.update { ProductsUiState() }
     }
 
     // -------------------- PRODUCT --------------------

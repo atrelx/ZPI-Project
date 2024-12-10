@@ -14,6 +14,7 @@ import com.example.amoz.api.requests.PersonCreateRequest
 import com.example.amoz.api.requests.UserRegisterRequest
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.api.sealed.SyncResultState
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.states.UserUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val userRepository: UserRepository,
+    private val signOutManager: SignOutManager,
 ) : BaseViewModel() {
 
     private val _createUserRegisterRequestState = MutableStateFlow<SyncResultState<UserRegisterRequest>>(SyncResultState.Idle)
@@ -61,6 +64,30 @@ class UserViewModel @Inject constructor(
 
     private val imagePickerUri = MutableStateFlow<Uri?>(null)
     private val currentUserRegisterRequest = MutableStateFlow<UserRegisterRequest?>(null)
+
+    init {
+        observeSignOutEvent()
+    }
+
+    private fun observeSignOutEvent() {
+        viewModelScope.launch {
+            signOutManager.signOutEvent.collect {
+                clearState()
+            }
+        }
+    }
+
+    private fun clearState() {
+        _createUserRegisterRequestState.value = SyncResultState.Idle
+        _createPersonRequestState.value = ResultState.Idle
+        _createContactPersonRequestState.value = ResultState.Idle
+        _registerUserState.value = ResultState.Idle
+        _updateUserState.value = ResultState.Idle
+        _getProfilePictureState.value = ResultState.Idle
+        _uploadProfilePictureState.value = ResultState.Idle
+        _isRegisteredState.value = ResultState.Idle
+        _userUiState.update { UserUiState() }
+    }
 
     fun registerUser(navController: NavHostController) {
        val validationMessage = currentUserRegisterRequest.value?.validate()
