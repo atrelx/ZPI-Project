@@ -201,30 +201,44 @@ fun ProductScreen(
             productVariantImageState = productsUiState.productVariantImageState,
             productMainVariantId = productMainVariantId,
 
-            onComplete = { productVariantId, productVariantCreateRequest, imageUri, isMainVariant ->
+            onComplete = { productVariantId, productVariantCreateRequest, imageUri, isMainVariant, onErrorCallback ->
                 productVariantId?.let {
-                    productsViewModel.updateProductVariant(productVariantId, productVariantCreateRequest) {
-                        imageUri?.let {
-                            productsViewModel.uploadProductVariantImage(productVariantId, imageUri)
-                        }
-                        productsViewModel.setProductMainVariant(
-                            productVariantCreateRequest.productID!!,
-                            productVariantId
-                        )
-                    }
-                }
-                ?: run {
-                    productsViewModel.createProductVariant(productVariantCreateRequest) { productVariantDetails ->
-                        imageUri?.let {
-                            productsViewModel.uploadProductVariantImage(
-                                productVariantDetails.productVariantId, imageUri
+                    try {
+                        productsViewModel.updateProductVariant(
+                            productVariantId,
+                            productVariantCreateRequest
+                        ) {
+                            imageUri?.let {
+                                productsViewModel.uploadProductVariantImage(
+                                    productVariantId,
+                                    imageUri
+                                )
+                            }
+                            productsViewModel.setProductMainVariant(
+                                productVariantCreateRequest.productID!!,
+                                productVariantId
                             )
                         }
-                        productsViewModel.setProductMainVariant(
-                            productVariantCreateRequest.productID!!,
-                            productVariantDetails.productVariantId)
-
+                        onErrorCallback(null)
                     }
+                    catch (e: IllegalArgumentException) { onErrorCallback(e.message) }
+                }
+                ?: run {
+                    try {
+                        productsViewModel.createProductVariant(productVariantCreateRequest) { productVariantDetails ->
+                            imageUri?.let {
+                                productsViewModel.uploadProductVariantImage(
+                                    productVariantDetails.productVariantId, imageUri
+                                )
+                            }
+                            productsViewModel.setProductMainVariant(
+                                productVariantCreateRequest.productID!!,
+                                productVariantDetails.productVariantId
+                            )
+                        }
+                        onErrorCallback(null)
+                    }
+                    catch (e: IllegalArgumentException) { onErrorCallback(e.message) }
                 }
 
             },

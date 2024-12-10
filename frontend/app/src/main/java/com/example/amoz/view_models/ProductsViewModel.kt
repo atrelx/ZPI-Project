@@ -2,6 +2,7 @@ package com.example.amoz.view_models
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
 import com.example.amoz.api.repositories.ProductRepository
@@ -121,6 +122,7 @@ class ProductsViewModel @Inject constructor(
                     productRepository.createProduct(productCreateRequest)
                 },
                 onSuccess = { productDetails ->
+                    Log.i(tag, "Successfully created product: $productDetails")
                     fetchProductsList(skipLoading = true)
                     onSuccessCallback?.invoke(productDetails)
                 }
@@ -145,6 +147,7 @@ class ProductsViewModel @Inject constructor(
                     )
                 },
                 onSuccess = { productDetails ->
+                    Log.i(tag, "Successfully updated product: $productDetails")
                     fetchProductsList(skipLoading = true)
                     onSuccessCallback?.invoke(productDetails)
                 }
@@ -152,7 +155,10 @@ class ProductsViewModel @Inject constructor(
         } else { throw IllegalArgumentException(validationMessage) }
     }
 
-    fun deleteProduct(productId: UUID) {
+    fun deleteProduct(
+        productId: UUID,
+        onSuccessCallback: (() -> Unit)? = null,
+    ) {
         performRepositoryAction(
             binding = null,
             failureMessage = "Failed to delete product",
@@ -160,7 +166,9 @@ class ProductsViewModel @Inject constructor(
                 productRepository.deactivateProduct(productId)
             },
             onSuccess = {
+                Log.i(tag, "Successfully deleted product with id: $productId")
                 fetchProductsList(skipLoading = true)
+                onSuccessCallback?.invoke()
             }
         )
     }
@@ -213,7 +221,11 @@ class ProductsViewModel @Inject constructor(
 
     // -------------------- PRODUCT VARIANT--------------------
 
-    fun fetchProductVariantsList(productId: UUID, skipLoading: Boolean = false) {
+    fun fetchProductVariantsList(
+        productId: UUID,
+        skipLoading: Boolean = false,
+        onSuccessCallback: ((List<ProductVariantSummary>) -> Unit)? = null,
+    ) {
         performRepositoryAction(
             binding = _productUiState.value.productVariantsListFetched,
             failureMessage = "Could not fetch product variants, try again",
@@ -221,6 +233,7 @@ class ProductsViewModel @Inject constructor(
             action = { productVariantRepository.getAllProductVariantsByProductId(productId) },
             onSuccess = { productVariantsList ->
                 updateProductVariantsList(productVariantsList)
+                onSuccessCallback?.invoke(productVariantsList)
             }
         )
     }
@@ -255,19 +268,23 @@ class ProductsViewModel @Inject constructor(
         productVariantCreateRequest: ProductVariantCreateRequest,
         onSuccessCallback: ((ProductVariantDetails) -> Unit)? = null,
     ) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Failed to create product variant",
-            action = {
-                productVariantRepository.createProductVariant(productVariantCreateRequest)
-            },
-            onSuccess = { productVariantDetails ->
-                _productUiState.value.filteredByProduct?.let {
-                    fetchProductVariantsList(it.productId, true)
+        val validationMessage = productVariantCreateRequest.validate()
+        if (validationMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Failed to create product variant",
+                action = {
+                    productVariantRepository.createProductVariant(productVariantCreateRequest)
+                },
+                onSuccess = { productVariantDetails ->
+                    _productUiState.value.filteredByProduct?.let {
+                        fetchProductVariantsList(it.productId, true)
+                    }
+                    onSuccessCallback?.invoke(productVariantDetails)
                 }
-                onSuccessCallback?.invoke(productVariantDetails)
-            }
-        )
+            )
+        }
+        else { throw IllegalArgumentException(validationMessage) }
     }
 
     fun updateProductVariant(
@@ -275,19 +292,23 @@ class ProductsViewModel @Inject constructor(
         productVariantCreateRequest: ProductVariantCreateRequest,
         onSuccessCallback: ((ProductVariantDetails) -> Unit)? = null,
     ) {
-        performRepositoryAction(
-            binding = null,
-            failureMessage = "Failed to update product variant",
-            action = {
-                productVariantRepository.updateProductVariant(productVariantId, productVariantCreateRequest)
-            },
-            onSuccess = { productVariantDetails ->
-                productVariantCreateRequest.productID?.let {
-                    fetchProductVariantsList(it, true)
+        val validationMessage = productVariantCreateRequest.validate()
+        if (validationMessage == null) {
+            performRepositoryAction(
+                binding = null,
+                failureMessage = "Failed to update product variant",
+                action = {
+                    productVariantRepository.updateProductVariant(productVariantId, productVariantCreateRequest)
+                },
+                onSuccess = { productVariantDetails ->
+                    productVariantCreateRequest.productID?.let {
+                        fetchProductVariantsList(it, true)
+                    }
+                    onSuccessCallback?.invoke(productVariantDetails)
                 }
-                onSuccessCallback?.invoke(productVariantDetails)
-            }
-        )
+            )
+        }
+        else { throw IllegalArgumentException(validationMessage) }
     }
 
     fun fetchProductVariantPicture(
@@ -332,7 +353,10 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
-    fun deleteProductVariant(productVariantId: UUID) {
+    fun deleteProductVariant(
+        productVariantId: UUID,
+        onSuccessCallback: (() -> Unit)? = null,
+    ) {
         performRepositoryAction(
             binding = null,
             action = {
@@ -342,6 +366,7 @@ class ProductsViewModel @Inject constructor(
                 _productUiState.value.filteredByProduct?.let {
                     fetchProductVariantsList(it.productId, true)
                 }
+                onSuccessCallback?.invoke()
             }
         )
     }

@@ -15,33 +15,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.amoz.R
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
 @Composable
 fun AboutScreen(navController: NavController, paddingValues: PaddingValues) {
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(paddingValues),
         color = MaterialTheme.colorScheme.background
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(15.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize().padding(16.dp),
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .height(250.dp)
-                    .padding(horizontal = 15.dp, vertical = 10.dp)
-                    .clip(MaterialTheme.shapes.large)
-            ) {
+            Column {
+                Text(
+                    stringResource(R.string.about_app),
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
-            Text(
-                "About Screen",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(vertical = 20.dp)
-            )
         }
     }
 }

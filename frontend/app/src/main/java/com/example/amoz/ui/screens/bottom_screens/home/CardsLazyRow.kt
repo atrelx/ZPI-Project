@@ -36,7 +36,7 @@ fun CardsLazyRow(cardsList: List<OrdersViewModel.HomeCardItem>) {
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(cardsList) {  cardItem ->
+        items(cardsList) { cardItem ->
             Card(
                 modifier = Modifier
                     .widthIn(min = 225.dp)

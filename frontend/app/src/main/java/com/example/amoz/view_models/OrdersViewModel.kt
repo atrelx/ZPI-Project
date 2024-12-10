@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
+import com.example.amoz.R
 import com.example.amoz.api.enums.Status
 import com.example.amoz.api.repositories.CustomerRepository
 import com.example.amoz.api.repositories.ProductOrderRepository
@@ -523,26 +524,30 @@ class OrdersViewModel @Inject constructor (
         return listOf(
             HomeCardItem(
                 backgroundImageResource = 0,
-                cardTitle = "Revenues",
+                cardTitle = getStringResource(R.string.home_card_revenues),
                 cardTitleIcon = Icons.Filled.Addchart,
-                valueDescription = "Total revenues:",
+                valueDescription = getStringResource(R.string.home_card_revenues_total),
                 value = orderUIState.itemsSumPrice.toString()
             ),
             HomeCardItem(
                 backgroundImageResource = 0,
-                cardTitle = "Sells",
+                cardTitle = getStringResource(R.string.home_card_sells),
                 cardTitleIcon = Icons.Filled.BarChart,
-                valueDescription = "Total sells:",
+                valueDescription = getStringResource(R.string.home_card_sells_total),
                 value = orderUIState.amountOfItems.toString()
             ),
             HomeCardItem(
                 backgroundImageResource = 0,
-                cardTitle = "New orders",
+                cardTitle = getStringResource(R.string.home_card_new_orders),
                 cardTitleIcon = Icons.Filled.StackedLineChart,
-                valueDescription = "Total new orders:",
+                valueDescription = getStringResource(R.string.home_card_new_orders_total),
                 value = orderUIState.amountOfItemsNewStatus.toString()
             )
         )
+    }
+
+    fun getStringResource(resource: Int): String {
+        return context.getString(resource)
     }
 
     enum class SortingType {

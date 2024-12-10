@@ -5,6 +5,7 @@ import androidx.test.filters.LargeTest
 import com.example.amoz.api.repositories.CategoryRepository
 import com.example.amoz.api.requests.CategoryCreateRequest
 import com.example.amoz.api.requests.field_names.CategoryFieldNames
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.view_models.CategoriesViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -27,13 +28,15 @@ class Category {
 
     @Inject
     lateinit var categoryRepository: CategoryRepository
+    @Inject
+    lateinit var signOutManager: SignOutManager
     private lateinit var categoriesViewModel: CategoriesViewModel
     private lateinit var testCategoriesIdList: MutableList<UUID>
 
     @Before
     fun setup() {
         hiltRule.inject()
-        categoriesViewModel = CategoriesViewModel(categoryRepository)
+        categoriesViewModel = CategoriesViewModel(categoryRepository, signOutManager)
         testCategoriesIdList = mutableListOf()
     }
 

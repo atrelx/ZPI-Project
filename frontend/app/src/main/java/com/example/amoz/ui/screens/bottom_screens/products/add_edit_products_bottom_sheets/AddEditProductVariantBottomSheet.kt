@@ -65,7 +65,7 @@ fun AddEditProductVariantBottomSheet(
     productVariantImageState: MutableStateFlow<ResultState<ImageBitmap?>>,
     productMainVariantId: UUID?,
     onSaveProductVariant: (ProductVariantCreateRequest) -> Unit,
-    onComplete: (UUID?, ProductVariantCreateRequest, Uri?, Boolean) -> Unit,
+    onComplete: (UUID?, ProductVariantCreateRequest, Uri?, Boolean, (String?) -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
     navController: NavController
 ) {
@@ -236,18 +236,14 @@ fun AddEditProductVariantBottomSheet(
 
                 PrimaryFilledButton(
                     onClick = {
-                        val violation = productVariantState.validate()
-                        if (violation != null) {
-                            validationMessage = violation
-                        }
-                        else {
-                            onComplete(
-                                productVariantDetails?.productVariantId,
-                                productVariantState,
-                                productVariantImageUri,
-                                isMainVariant
-                            )
-                            onDismissRequest()
+                        onComplete(
+                            productVariantDetails?.productVariantId,
+                            productVariantState,
+                            productVariantImageUri,
+                            isMainVariant
+                        ) {
+                            if(it == null) { onDismissRequest() }
+                            else { validationMessage = it }
                         }
                     },
                     text = stringResource(id = R.string.done),

@@ -172,7 +172,10 @@ fun AppMainScaffold(
                             NavigationBarItem(
                                 selected = appUiState.currentNavigationItem == item,
                                 onClick = { navigateToScreen(item) },
-                                label = { Text(text = stringResource(item.title)) },
+                                label = { Text(
+                                    text = stringResource(item.title),
+                                    maxLines = 1,
+                                ) },
                                 alwaysShowLabel = true,
                                 icon = {
                                     Icon(

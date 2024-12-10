@@ -1,5 +1,6 @@
 package com.example.amoz.ui.screens.categories.filtered_list
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ fun CategoryWithChildren(
     var childrenListExpanded by remember { mutableStateOf(false) }
 
     Column(
+        modifier = Modifier.animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         CategoryListItem(

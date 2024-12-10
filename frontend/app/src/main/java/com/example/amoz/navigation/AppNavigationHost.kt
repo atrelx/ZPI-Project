@@ -12,7 +12,6 @@ import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.AboutScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.FAQScreen
 import com.example.amoz.ui.screens.bottom_screens.additional_screens.settings.SettingsScreen
-import com.example.amoz.ui.screens.bottom_screens.additional_screens.SupportScreen
 import com.example.amoz.ui.screens.bottom_screens.company.CompanyScreen
 import com.example.amoz.ui.screens.bottom_screens.company.CreateCompanyScreen
 import com.example.amoz.ui.screens.bottom_screens.company.NoCompanyScreen
@@ -94,11 +93,6 @@ fun AppNavigationHost(
             ) }
         composable(Screens.About.route) {
             AboutScreen(
-                navController = navController,
-                paddingValues = paddingValues
-            ) }
-        composable(Screens.Support.route) {
-            SupportScreen(
                 navController = navController,
                 paddingValues = paddingValues
             ) }

@@ -6,6 +6,8 @@ import com.example.amoz.interfaces.ValidatableRequest
 import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductVariantDetails
 import com.example.validation.annotations.DecimalMin
+import com.example.validation.annotations.Digits
+import com.example.validation.annotations.NoDublicateAttributes
 import com.example.validation.annotations.NotBlank
 import com.example.validation.annotations.NotNullable
 import com.example.validation.annotations.Positive
@@ -25,13 +27,14 @@ data class ProductVariantCreateRequest(
     @field:NotNullable(nameOfField = "Product variant name")
     val variantName: String? = null,
 
-    @Serializable(with = BigDecimalSerializer::class)
     @field:DecimalMin(value = "0.0", inclusive = false, nameOfField = "Price")
+    @field:Digits(integer = 10, fraction = 2, nameOfField = "Price")
     @field:NotNullable(nameOfField = "Price")
+    @Serializable(with = BigDecimalSerializer::class)
     val variantPrice: BigDecimal? = null,
 
-    @field:NotNullable(nameOfField = "Product variant barcode")
-    @field:Positive(nameOfField = "Product variant barcode")
+    @field:NotNullable(nameOfField = "Barcode")
+    @field:Positive(nameOfField = "Barcode")
     val productVariantCode: Int? = null,
 
     @field:NotNullable(nameOfField = "Amount available in stock")
@@ -41,6 +44,7 @@ data class ProductVariantCreateRequest(
 
     val dimensions: DimensionsCreateRequest? = null,
 
+    @field:NoDublicateAttributes(nameOfField = "Product attributes")
     val variantAttributes: List<AttributeCreateRequest> = listOf()
 
 ) : ValidatableRequest<ProductVariantCreateRequest>() {

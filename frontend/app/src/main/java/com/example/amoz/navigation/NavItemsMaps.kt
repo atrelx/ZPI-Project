@@ -87,12 +87,6 @@ val moreBottomSheetItemsMap = mapOf(
         title = R.string.about_screen,
         screenRoute = Screens.About.route,
         icon = Icons.Outlined.PermDeviceInformation
-    ),
-
-    NavItemType.Support to NavItem(
-        title = R.string.support_contact_screen,
-        screenRoute = Screens.Support.route,
-        icon = Icons.Filled.Mail
     )
 )
 

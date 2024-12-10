@@ -186,8 +186,8 @@ fun MoreOrdersTextButton(onClick: () -> Unit) {
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("Last orders: ")
-        Text("More",
+        Text(stringResource(R.string.home_last_orders))
+        Text(stringResource(R.string.more),
             modifier = Modifier.clickable {
                 onClick()
             },

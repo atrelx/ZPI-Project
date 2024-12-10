@@ -2,7 +2,7 @@
     <string name="app_name">Amoz</string>
     <string name="email_pattern">[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}</string>
     <string name="phone_pattern">^[+0-9]{9,15}$</string>
-
+    <string name="more">More</string>
 
     // --------------------- Screens names ---------------------
     <string name="home_screen">Home</string>
@@ -31,6 +31,16 @@
     <string name="company_address_screen">Address</string>
     <string name="company_workers_screen">Employees</string>
     <string name="company_customers_screen">Customers</string>
+
+    // --------------------- Home ---------------------
+    <string name="home_card_revenues">Revenues</string>
+    <string name="home_card_revenues_total">Total revenues:</string>
+    <string name="home_card_sells">Sells</string>
+    <string name="home_card_sells_total">Total sells</string>
+    <string name="home_card_new_orders">New orders</string>
+    <string name="home_card_new_orders_total">Total new orders:</string>
+
+    <string name="home_last_orders">Last orders:</string>
 
     // --------------------- Entry ---------------------
     <string name="entry_app_description">Easy product management in your warehouse</string>
@@ -182,7 +192,7 @@
     <string name="company_employees_description">People that work with you</string>
     <string name="company_customers_description">Your customer base</string>
     <string name="company_number_description">0123456789</string>
-    <string name="company_number_additional_description">0123456789101</string>
+    <string name="company_number_additional_description" translatable="false">0123456789101</string>
 
     <string name="company_employee_role">Role in company</string>
     <string name="company_add_worker_button">Add employee</string>
@@ -270,6 +280,40 @@
 
     <string name="app_theme_mode_edit">Edit app theme</string>
     <string name="select_app_theme">Select app theme</string>
+    // --------------------- FAQ ---------------------
+    <string name="faq_title">Frequently Asked Questions (FAQ)</string>
+
+    <string name="faq_question_1">What is the AMOZ app?</string>
+    <string name="faq_answer_1">AMOZ is a mobile application for managing orders, products, and employees in warehouses and wholesale companies. It simplifies management processes and increases work efficiency.</string>
+
+    <string name="faq_question_2">How do I add my company to the system?</string>
+    <string name="faq_answer_2">After registering, you can create a company profile by filling in the basic information. Then you can invite employees to collaborate in the system.</string>
+
+    <string name="faq_question_3">How do I add or edit employee information?</string>
+    <string name="faq_answer_3">You can edit employee information in the personnel management section. This is available for the company owner or users with the appropriate permissions.</string>
+
+    <string name="faq_question_4">How do I manage the product catalog?</string>
+    <string name="faq_answer_4">You can add, edit, and delete products and their variants. You can also configure product categories to make navigation through the catalog easier.</string>
+
+    <string name="faq_question_5">How are stock levels updated?</string>
+    <string name="faq_answer_5">Stock levels are automatically updated when orders are processed. You will also receive notifications if any product stock reaches a low level.</string>
+
+    <string name="faq_question_6">Which devices support the app?</string>
+    <string name="faq_answer_6">The app works on devices running Android, including smartphones and tablets. It supports both light and dark modes based on the device settings.</string>
+
+    <string name="faq_question_7">What should I do if I cannot log in?</string>
+    <string name="faq_answer_7">Make sure you are using the correct Google login credentials. If the issue persists, try resetting your password or contact technical support.</string>
+
+    <string name="faq_question_8">What information is required to place an order?</string>
+    <string name="faq_answer_8">To place an order, you need to provide the customer (B2B or B2C), the delivery address (if required), and generate an invoice that will be sent to the customer\'s email address.</string>
+
+    <string name="faq_question_9">Can I customize the app for my business?</string>
+    <string name="faq_answer_9">Yes, the app allows flexible customization of product catalogs, variants, and attributes, enabling you to tailor the system to your business needs.</string>
+
+    <string name="faq_question_10">How do I set up notifications for low stock levels?</string>
+    <string name="faq_answer_10">Low stock notifications are enabled by default and will be sent when the quantity of a product in stock reaches a minimum level.</string>
+    --------------------- About app ---------------------
+    <string name="about_app">Application version: 1.0 \nAutors: Andrii Drobitko, Łukasz Bielawski, Oleksii Adamenko, Mikołaj kwinta</string>
 
     // --------------------- Error messages ---------------------
     <string name="not_blank"> should not be blank</string>

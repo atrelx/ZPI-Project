@@ -9,13 +9,11 @@ sealed class Screens(val route : String) {
 
     // --------------------- Products Screen ---------------------
     data object Categories : Screens("products_categories_route")
-    data object StockDelivery : Screens("products_stock_delivery_route")
 
     // --------------------- 'More' Button Screens ---------------------
     data object Settings : Screens("settings_route")
     data object FAQ : Screens("faq_route")
     data object About : Screens("about_route")
-    data object Support : Screens("support_route")
 
     // --------------------- Entry Screens ---------------------
     data object Entry : Screens("entry_route")
