@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
@@ -20,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.models.CustomerAnyRepresentation
@@ -49,6 +51,7 @@ fun CustomerPickerListItem(
                 onSaveState()
                 customerPicker.navigateToCustomerScreen()
             })
+            .padding(start = 10.dp)
     ){
         Text(
             modifier = Modifier.weight(1f),
@@ -58,7 +61,6 @@ fun CustomerPickerListItem(
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = stringResource(R.string.choose_a_customer),
-            tint = MaterialTheme.colorScheme.primary
         )
     }
 }

@@ -45,10 +45,12 @@ fun ProductScreen(
     productsViewModel: ProductsViewModel = hiltViewModel()
 ) {
     val productsUiState by productsViewModel.productUiState.collectAsState()
-
     val currency by productsViewModel.getCurrency().collectAsState(initial = "USD")
-
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
+
+    LaunchedEffect(true) {
+        productsViewModel.fetchProductsListOnScreenLoad()
+    }
 
     fun onMenuItemClick(
         navItemType: NavItemType

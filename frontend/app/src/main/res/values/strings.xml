@@ -157,6 +157,9 @@
     <string name="add_new_product">Add new product</string>
     <string name="choose_a_customer">Choose a customer (optional)</string>
     <string name="delete_a_customer">Delete a customer</string>
+    <string name="send_an_invoice">Send an invoice</string>
+    <string name="cant_send_invoice">Can\'t send an invoice, no email found</string>
+    <string name="send_an_invoice_sure">Are you sure you want to send an invoice?</string>
     <string name="enter_quantity">Enter the amount</string>
     <string name="quantity">Quantity</string>
     <string name ="increase_quantity">Increase quantity</string>

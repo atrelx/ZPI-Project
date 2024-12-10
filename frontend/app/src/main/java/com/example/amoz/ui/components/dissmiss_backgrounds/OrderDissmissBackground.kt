@@ -27,10 +27,9 @@ import com.example.amoz.ui.theme.onCustomColor2Dark
 import com.example.amoz.ui.theme.onCustomColor3Dark
 
 @Composable
-fun OrderDismissBackground(dismissState: SwipeToDismissBoxState, endToStart: Boolean = false) {
+fun OrderDismissBackground(dismissState: SwipeToDismissBoxState) {
     val color = when {
         dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd -> Color(customColor2Dark.value)
-        dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart && endToStart -> Color(customColor3Dark.value)
         else -> Color.Transparent
     }
 
@@ -48,13 +47,5 @@ fun OrderDismissBackground(dismissState: SwipeToDismissBoxState, endToStart: Boo
             tint = Color(onCustomColor2Dark.value),
             contentDescription = "Remove order"
         )
-        Spacer(modifier = Modifier)
-        if (endToStart) {
-            Icon(
-                imageVector = Icons.Default.Mail,
-                tint = Color(onCustomColor3Dark.value),
-                contentDescription = "Get order invoice"
-            )
-        }
     }
 }

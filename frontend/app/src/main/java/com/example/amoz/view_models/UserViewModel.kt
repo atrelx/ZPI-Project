@@ -33,37 +33,10 @@ class UserViewModel @Inject constructor(
     private val signOutManager: SignOutManager,
 ) : BaseViewModel() {
 
-    private val _createUserRegisterRequestState = MutableStateFlow<SyncResultState<UserRegisterRequest>>(SyncResultState.Idle)
-    val createUserRegisterRequestState: StateFlow<SyncResultState<UserRegisterRequest>> = _createUserRegisterRequestState
-
-    private val _createPersonRequestState = MutableStateFlow<ResultState<PersonCreateRequest>>(ResultState.Idle)
-    val createPersonRequestState: StateFlow<ResultState<PersonCreateRequest>> = _createPersonRequestState
-
-    private val _createContactPersonRequestState = MutableStateFlow<ResultState<ContactPersonCreateRequest>>(ResultState.Idle)
-    val createContactPersonRequestState: StateFlow<ResultState<ContactPersonCreateRequest>> = _createContactPersonRequestState
-
-    private val _registerUserState = MutableStateFlow<ResultState<User>>(ResultState.Idle)
-    val registerUserState: StateFlow<ResultState<User>> = _registerUserState
-
-    private val _updateUserState = MutableStateFlow<ResultState<User>>(ResultState.Idle)
-    val updateUserState: StateFlow<ResultState<User>> = _updateUserState
-
-    private val _getProfilePictureState = MutableStateFlow<ResultState<ImageBitmap>>(ResultState.Idle)
-    val getProfilePictureState: StateFlow<ResultState<ImageBitmap>> = _getProfilePictureState
-
-    private val _uploadProfilePictureState = MutableStateFlow<ResultState<Unit>>(ResultState.Idle)
-    val uploadProfilePictureState: StateFlow<ResultState<Unit>> = _uploadProfilePictureState
-
-    private val _isRegisteredState = MutableStateFlow<ResultState<Boolean>>(ResultState.Idle)
-    val isRegisteredState: StateFlow<ResultState<Boolean>> = _isRegisteredState
-
     private val _userUiState = MutableStateFlow(UserUiState())
     val userUiState: StateFlow<UserUiState> = _userUiState
 
     // ----------------------------------------------------
-
-    private val imagePickerUri = MutableStateFlow<Uri?>(null)
-    private val currentUserRegisterRequest = MutableStateFlow<UserRegisterRequest?>(null)
 
     init {
         observeSignOutEvent()
@@ -78,25 +51,19 @@ class UserViewModel @Inject constructor(
     }
 
     private fun clearState() {
-        _createUserRegisterRequestState.value = SyncResultState.Idle
-        _createPersonRequestState.value = ResultState.Idle
-        _createContactPersonRequestState.value = ResultState.Idle
-        _registerUserState.value = ResultState.Idle
-        _updateUserState.value = ResultState.Idle
-        _getProfilePictureState.value = ResultState.Idle
-        _uploadProfilePictureState.value = ResultState.Idle
-        _isRegisteredState.value = ResultState.Idle
         _userUiState.update { UserUiState() }
     }
 
+    // ----------------------------------------------------
+
     fun registerUser(navController: NavHostController) {
-       val validationMessage = currentUserRegisterRequest.value?.validate()
+       val validationMessage = _userUiState.value.currentUserRegisterRequest?.validate()
         if (validationMessage == null){
             performRepositoryAction(
-                _registerUserState,
+                null,
                 "Could not sign up. Try again later.",
                 action = {
-                    currentUserRegisterRequest.value?.let {
+                    _userUiState.value.currentUserRegisterRequest?.let {
                         userRepository.registerUser(it)
                     }
                 }, onSuccess = {
@@ -120,12 +87,12 @@ class UserViewModel @Inject constructor(
             })
     }
 
-    fun uploadProfilePicture() {
+    private fun uploadProfilePicture() {
         performRepositoryAction(
-            _uploadProfilePictureState,
+            null,
             "Could not upload profile picture. Try again later.",
             action = {
-                imagePickerUri.value?.let {
+                _userUiState.value.currentImageUri?.let {
                     userRepository.uploadProfilePicture(file = it.toMultipartBodyPart(context))
                 }
             }
@@ -134,7 +101,7 @@ class UserViewModel @Inject constructor(
 
     fun isUserRegisteredRedirect(navController: NavHostController, onSuccess: (Boolean) -> Unit) {
         performRepositoryAction(
-            binding = _isRegisteredState,
+            binding = _userUiState.value.isRegisteredState,
             action = {
                 userRepository.isUserRegistered()
             }, onSuccess = {
@@ -155,7 +122,7 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             isUserRegisteredRedirect(navController) {}
 
-            val state = _isRegisteredState.first {
+            val state = _userUiState.value.isRegisteredState.first {
                 it !is ResultState.Loading
             }
 
@@ -187,8 +154,9 @@ class UserViewModel @Inject constructor(
 
         val validationErrorMessage = user.validate()
         if (validationErrorMessage == null) {
-            _createUserRegisterRequestState.value = SyncResultState.Success(user)
-            currentUserRegisterRequest.value = user
+            _userUiState.update {
+                it.copy(currentUserRegisterRequest = user)
+            }
         } else {
             Log.e("UserViewModel", "Validation error: $validationErrorMessage")
             throw IllegalArgumentException(validationErrorMessage)
@@ -196,6 +164,8 @@ class UserViewModel @Inject constructor(
     }
 
     fun updateCurrentUserImageUri(uri: Uri) {
-        imagePickerUri.value = uri
+        _userUiState.update {
+            it.copy(currentImageUri = uri)
+        }
     }
 }

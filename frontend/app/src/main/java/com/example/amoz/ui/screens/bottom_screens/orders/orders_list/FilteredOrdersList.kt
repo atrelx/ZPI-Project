@@ -108,7 +108,6 @@ fun FilteredOrdersList(
                                 order = orderTemplate,
                                 onOrderEdit = onOrderEdit,
                                 onOrderRemove = onOrderRemove,
-                                onGenerateInvoice = onGenerateInvoice,
                                 currency = currency,
                                 ordersViewModel = ordersViewModel,
                             )

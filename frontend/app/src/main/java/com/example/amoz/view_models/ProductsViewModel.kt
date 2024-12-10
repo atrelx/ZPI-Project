@@ -50,7 +50,6 @@ class ProductsViewModel @Inject constructor(
 
     init {
         observeSignOutEvent()
-        fetchProductsList()
         viewModelScope.launch {
             _productUiState
                 .map { it.filteredByProduct }
@@ -71,6 +70,12 @@ class ProductsViewModel @Inject constructor(
 
     private fun clearState() {
         _productUiState.update { ProductsUiState() }
+    }
+
+    fun fetchProductsListOnScreenLoad() {
+        if (_productUiState.value.productsListFetched.value is ResultState.Idle) {
+            fetchProductsList()
+        }
     }
 
     // -------------------- PRODUCT --------------------

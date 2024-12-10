@@ -5,6 +5,7 @@ import com.example.amoz.R
 import com.example.amoz.models.ProductOrderDetails
 import com.example.amoz.models.ProductOrderSummary
 import com.example.amoz.api.requests.ProductOrderCreateRequest
+import com.example.amoz.api.responses.MessageResponse
 import com.example.amoz.api.services.ProductOrderService
 import com.example.amoz.extensions.toByteArray
 import com.example.amoz.models.InvoiceSummary
@@ -33,6 +34,12 @@ class ProductOrderRepository @Inject constructor(
     suspend fun generateInvoice(productOrderId: UUID): InvoiceSummary? {
         return performRequest {
             productOrderService.generateInvoice(productOrderId)
+        }
+    }
+
+    suspend fun sendInvoiceEmail(invoiceId: UUID): MessageResponse? {
+        return performRequest {
+            productOrderService.sendInvoiceEmail(invoiceId)
         }
     }
 

@@ -210,6 +210,18 @@ class OrdersViewModel @Inject constructor (
             action = { orderRepository.generateInvoice(orderId)  },
             onSuccess = {
                 downloadProductOrderInvoicePDF(it.invoiceId)
+                sendProductOrderInvoice(it.invoiceId)
+            }
+        )
+    }
+
+    private fun sendProductOrderInvoice(invoiceId: UUID) {
+        performRepositoryAction(
+            binding = null,
+            failureMessage = "Could not send invoice, try again",
+            action = { orderRepository.sendInvoiceEmail(invoiceId) },
+            onSuccess = {
+                Toast.makeText(context, "Invoice sent", Toast.LENGTH_SHORT).show()
             }
         )
     }

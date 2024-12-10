@@ -9,6 +9,7 @@ import com.example.amoz.api.repositories.ProductOrderRepository
 import com.example.amoz.api.repositories.ProductVariantRepository
 import com.example.amoz.api.requests.ProductOrderCreateRequest
 import com.example.amoz.app.AppPreferences
+import com.example.amoz.app.SignOutManager
 import com.example.amoz.view_models.OrdersViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule

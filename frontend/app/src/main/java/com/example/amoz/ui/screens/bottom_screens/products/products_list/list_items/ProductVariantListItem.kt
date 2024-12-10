@@ -19,6 +19,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,8 +30,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.amoz.api.enums.ImagePlaceholder
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.ProductVariantSummary
+import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.dissmiss_backgrounds.DismissBackground
 import com.example.amoz.ui.components.ResultStateView
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +47,8 @@ fun ProductVariantListItem(
     currency: String,
     positionalThreshold: Float = .45f
 ) {
+    val imageBitmapFromState = (productVariantBitmapImageState?.collectAsState()?.value as? ResultState.Success)?.data
+
     var currentFraction by remember { mutableStateOf(0f) }
     val swipeState = rememberSwipeToDismissBoxState(
         confirmValueChange = { newValue ->
@@ -60,7 +65,6 @@ fun ProductVariantListItem(
         },
         positionalThreshold = { it * positionalThreshold }
     )
-    var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
 
     SwipeToDismissBox(
         state = swipeState,
@@ -77,29 +81,15 @@ fun ProductVariantListItem(
                     onClick = onClick,
                 ),
             leadingContent =
-                productVariantBitmapImageState?.let {
-                    {
-                        ResultStateView(
-                            modifier = Modifier.sizeIn(maxWidth = 56.dp, maxHeight = 56.dp),
-                            state = productVariantBitmapImageState,
-                            failureView = {
-                                Icon(imageVector = Icons.Default.AllInbox, null)
-                            }
-                        ) { imageBitmap ->
-                            imageBitmap?.let {
-                                Image(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp)),
-                                    bitmap = imageBitmap,
-                                    contentDescription = null
-                                )
-                            }
-
-                        }
-                    }
-                }
-
-
+            {
+                ImageWithIcon(
+                    image = imageBitmapFromState,
+                    placeholder = ImagePlaceholder.PRODUCT,
+                    contentDescription = "Product Image",
+                    size = 40.dp,
+                    isEditing = false
+                )
+            }
             ,
             headlineContent = {
                 Text(

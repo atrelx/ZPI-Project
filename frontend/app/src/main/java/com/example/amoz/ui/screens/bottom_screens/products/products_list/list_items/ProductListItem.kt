@@ -18,6 +18,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,13 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.amoz.api.enums.ImagePlaceholder
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.ProductSummary
+import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.dissmiss_backgrounds.DismissBackground
-import com.example.amoz.ui.components.ResultStateView
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 
@@ -46,6 +47,8 @@ fun ProductListItem(
     currency: String,
     positionalThreshold: Float = .45f
 ) {
+    val imageBitmapFromState = (productMainVariantImageState?.collectAsState()?.value as? ResultState.Success)?.data
+
     var currentFraction by remember { mutableStateOf(0f) }
     val swipeState = rememberSwipeToDismissBoxState(
         confirmValueChange = { newValue ->
@@ -84,28 +87,14 @@ fun ProductListItem(
                     onClick = onClick,
                 ),
             leadingContent =
-            productMainVariantImageState?.let {
-                {
-                    ResultStateView(
-                        modifier = Modifier.sizeIn(maxWidth = 56.dp, maxHeight = 56.dp),
-                        state = it,
-                        failureView = {
-//                            Icon(imageVector = Icons.Default.AllInbox, null)
-                        }
-                    ) { imageBitmap ->
-                        imageBitmap?.let {
-                            Image(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .size(56.dp),
-                                bitmap = it,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-
-                    }
-                }
+            {
+                ImageWithIcon(
+                    image = imageBitmapFromState,
+                    placeholder = ImagePlaceholder.PRODUCT,
+                    contentDescription = "Product Image",
+                    size = 40.dp,
+                    isEditing = false
+                )
             },
             headlineContent = {
                 Text(

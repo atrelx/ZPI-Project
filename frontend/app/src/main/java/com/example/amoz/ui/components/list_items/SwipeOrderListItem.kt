@@ -1,12 +1,10 @@
 package com.example.amoz.ui.components.list_items
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
@@ -43,7 +41,6 @@ import java.util.UUID
 @Composable
 fun SwipeOrderListItem(
     order: ProductOrderSummary,
-    onGenerateInvoice: (UUID) -> Unit,
     onOrderRemove: (UUID) -> Unit,
     onOrderEdit: (UUID) -> Unit,
     currency: String,
@@ -71,13 +68,6 @@ fun SwipeOrderListItem(
                     }
                     return@rememberSwipeToDismissBoxState false
                 }
-                SwipeToDismissBoxValue.EndToStart -> {
-                    if (currentFraction >= 0.45f && currentFraction < 1.0f) {
-                        onGenerateInvoice(order.productOrderId)
-                        return@rememberSwipeToDismissBoxState false
-                    }
-                    return@rememberSwipeToDismissBoxState false
-                }
                 else -> false
             }
         }
@@ -87,7 +77,7 @@ fun SwipeOrderListItem(
         state = swipeState,
         backgroundContent = {
             currentFraction = swipeState.progress
-            OrderDismissBackground(swipeState, true)
+            OrderDismissBackground(swipeState)
         }
     ) {
         ListItem(
@@ -105,7 +95,7 @@ fun SwipeOrderListItem(
             },
             headlineContent = {
                 Text(
-                    text = order.sampleProductOrderItem.productVariant?.variantName ?: "Empty order",
+                    text = order.sampleProductOrderItem.productVariant.variantName ?: "Empty order",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

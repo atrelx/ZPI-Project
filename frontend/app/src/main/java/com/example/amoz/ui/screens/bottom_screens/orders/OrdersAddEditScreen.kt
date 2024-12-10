@@ -123,7 +123,7 @@ fun OrdersAddEditScreen (
                             )
                         },
                         ordersViewModel = ordersViewModel,
-                        currency = currency!!,
+                        currency = currency,
                         isNewOrder = isNewOrder
                     )
                 }
@@ -178,6 +178,10 @@ fun OrdersAddEditScreen (
                                     totalPrice,
                                 )
                             },
+                            onSendInvoice = {
+                                ordersViewModel.generateProductOrderInvoice(ordersUiState.currentAddEditOrderDetails!!.productOrderId)
+                            },
+                            isNewOrder = isNewOrder,
                         )
                     } else {
                         CustomerPickerListItem(
@@ -253,7 +257,7 @@ fun OrdersAddEditScreen (
                         Text(
                             text = "${stringResource(R.string.orders_total_price)}:",
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(end = 10.dp)
+                            modifier = Modifier.padding(horizontal = 10.dp)
                         )
                         Text(
                             text = "$totalPrice $currency",

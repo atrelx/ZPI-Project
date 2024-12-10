@@ -29,6 +29,11 @@ interface ProductOrderService {
         @Path("productOrderId") productOrderId: UUID
     ): Response<InvoiceSummary>
 
+    @POST("api/productOrders/invoice/{invoiceId}")
+    suspend fun sendInvoiceEmail(
+        @Path("invoiceId") invoiceId: UUID
+    ): Response<MessageResponse>
+
     @DELETE("api/productOrders/{productOrderId}")
     suspend fun removeProductOrder(
         @Path("productOrderId") productOrderId: UUID

@@ -37,6 +37,7 @@ fun OrdersScreen(
 
     LaunchedEffect(true) {
         ordersViewModel.clearCurrentAddEditOrderState()
+        ordersViewModel.fetchOrdersListOnScreenLoad()
     }
 
     val ordersUiState by ordersViewModel.ordersUiState.collectAsState()
