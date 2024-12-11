@@ -158,6 +158,9 @@
     <string name="add_new_product">Dodaj nowy produkt</string>
     <string name="choose_a_customer">Wybierz klienta (opcjonalne)</string>
     <string name="delete_a_customer">Usuń klienta</string>
+    <string name="send_an_invoice">Wyślij fakturę</string>
+    <string name="cant_send_invoice">Nie można wysłać faktury, nie znaleziono adresu e-mail</string>
+    <string name="send_an_invoice_sure">Czy na pewno chcesz wysłać fakturę??</string>
     <string name="enter_quantity">Wprowadź ilość</string>
     <string name="quantity">Ilość</string>
     <string name="increase_quantity">Zwiększ ilość</string>

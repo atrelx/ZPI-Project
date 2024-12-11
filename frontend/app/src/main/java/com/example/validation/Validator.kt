@@ -2,9 +2,7 @@ package com.example.validation
 
 import android.util.Log
 import android.util.Patterns
-import com.example.amoz.R
 import com.example.amoz.api.requests.AttributeCreateRequest
-import com.example.amoz.app.AmozApplication
 import com.example.validation.annotations.DecimalMin
 import com.example.validation.annotations.Digits
 import com.example.validation.annotations.Email
@@ -31,8 +29,8 @@ object Validator {
                 val fieldName = annotation.nameOfField.ifBlank { field.name }
 
                 if (value < annotation.value) {
-                    return@validateTemplate "Wartość pola '${fieldName}' musi być większa " +
-                            "lub równa ${annotation.value}."
+                    return@validateTemplate "'${fieldName}' value has to be more " +
+                            "or equal to ${annotation.value}."
                 }
             }
 
@@ -52,8 +50,8 @@ object Validator {
                 }
 
                 if (value.size < annotation.min) {
-                    return@validateTemplate "Lista '${fieldName}' musi zawierać przynajmniej " +
-                            "${annotation.min} elementów."
+                    return@validateTemplate "'${fieldName}' list has to contain at least " +
+                            "${annotation.min} elements."
                 }
             }
 
@@ -76,8 +74,8 @@ object Validator {
                         annotation.nameOfField
                     }
 
-                    return@validateTemplate "Pole '${fieldName}' musi mieć wartość z maksymalnie ${annotation.integer} cyframi całkowitymi i " +
-                            "${annotation.fraction} miejscami po przecinku."
+                    return@validateTemplate "Field '${fieldName}' must have a value with a maximum of  ${annotation.integer} integer digits i " +
+                            "${annotation.fraction} decimal places."
                 }
             }
 
@@ -99,7 +97,7 @@ object Validator {
                         annotation.nameOfField
                     }
 
-                    return@validateTemplate "Pole '${fieldName}' musi mieć wartość większą niż ${annotation.value}."
+                    return@validateTemplate "Field '${fieldName}' has to be lover than ${annotation.value}."
                 }
             }
             return@validateTemplate null
@@ -119,7 +117,7 @@ object Validator {
                         annotation.nameOfField
                     }
 
-                    return@validateTemplate "Pole '${fieldName}' musi być datą z przeszłości"
+                    return@validateTemplate "Field '${fieldName}' has to be a date in the past"
                 }
             }
             return@validateTemplate null
@@ -138,7 +136,7 @@ object Validator {
                         annotation.nameOfField
                     }
 
-                    return@validateTemplate "Pole '${fieldName}' musi być datą z przeszłości"
+                    return@validateTemplate "Field '${fieldName}' has to be a date in the past"
                 }
             }
             return@validateTemplate null
@@ -155,7 +153,7 @@ object Validator {
                     annotation.nameOfField
                 }
 
-                return@validateTemplate "Pole '${fieldName}' musi być nieujemne"
+                return@validateTemplate "Field '${fieldName}' has to be positive"
             }
             return@validateTemplate null
         }
@@ -171,7 +169,7 @@ object Validator {
                     annotation.nameOfField
                 }
 
-                return@validateTemplate "Pole '${fieldName}' nie może być puste"
+                return@validateTemplate "Field '${fieldName}' can't  be empty"
             }
             return@validateTemplate null
         }
@@ -189,7 +187,7 @@ object Validator {
                 }
 
                 if (!Patterns.EMAIL_ADDRESS.matcher(value).matches()) {
-                    return@validateTemplate "Pole '${fieldName}' nie jest adresem email"
+                    return@validateTemplate "Field '${fieldName}' is not a valid email address"
                 }
             }
             return@validateTemplate null
@@ -204,7 +202,7 @@ object Validator {
                 else { annotation.nameOfField }
 
                 if (!Patterns.PHONE.matcher(value).matches()) {
-                    return@validateTemplate "${fieldName} does not match phone pattern"
+                    return@validateTemplate "Field '${fieldName}' does not match phone pattern"
                 }
             }
             return@validateTemplate null
@@ -218,9 +216,9 @@ object Validator {
                 val fieldName = annotation.nameOfField.ifBlank { field.name }
 
                 if (value.length > annotation.max) {
-                    return@validateTemplate "Pole '${fieldName}' przekracza maksymalną długość: ${annotation.max}"
+                    return@validateTemplate "Field '${fieldName}' exceeds the maximum length: ${annotation.max}"
                 } else if (value.length < annotation.min) {
-                    return@validateTemplate "Pole '${fieldName}' nie ma minimalnej długości: ${annotation.min}"
+                    return@validateTemplate "Field '${fieldName}' has no minimum length: ${annotation.min}"
                 }
             }
             return@validateTemplate null
@@ -246,7 +244,7 @@ object Validator {
                     .keys
 
                 if (duplicateAttributeNames.isNotEmpty()) {
-                    return@validateTemplate "Lista '${fieldName}' zawiera powtarzające się atrybuty: ${duplicateAttributeNames.joinToString(", ")}."
+                    return@validateTemplate "'${fieldName}' list contains repeating attributes: ${duplicateAttributeNames.joinToString(", ")}."
                 }
             }
 
