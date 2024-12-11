@@ -20,6 +20,7 @@ import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.models.CustomerB2B
 import com.example.amoz.models.CustomerB2C
+import com.example.amoz.models.Employee
 import com.example.amoz.test_data.invitations.createMockInvitations
 import com.example.amoz.ui.states.CompanyUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -131,6 +132,7 @@ class CompanyViewModel @Inject constructor(
                 },
                 onSuccess = {
                     fetchCompanyDetails()
+                    fetchEmployeeData()
                     if (newCompanyImageUri.value != null) {
                         uploadCompanyProfilePicture()
                         navController.navigate(Screens.Company.route)
@@ -255,10 +257,11 @@ class CompanyViewModel @Inject constructor(
         )
     }
 
-    fun fetchEmployees() {
+    fun fetchEmployees(skipLoading: Boolean = false) {
         performRepositoryAction(
             _companyUIState.value.employees,
             "Could not fetch employees. Try again later.",
+            skipLoading = skipLoading,
             action = { employeeRepository.fetchEmployees() }
         )
     }
@@ -298,9 +301,19 @@ class CompanyViewModel @Inject constructor(
             performRepositoryAction(
                 binding = null,
                 failureMessage = "Could not kick employee. Try again later.",
-                action = { employeeRepository.kickEmployeeFromCompany(employeeId) }
+                action = { employeeRepository.kickEmployeeFromCompany(employeeId) },
+                onSuccess = {
+                    fetchEmployees(true)
+                }
+
             )
         } else { Log.e(tag, ownerExceptionMessage) }
+    }
+
+    fun updateCurrentDeleteEmployee(employee: Employee?) {
+        _companyUIState.update { it.copy(
+            employeeToDelete = employee
+        ) }
     }
 
     // -------------------- CUSTOMERS --------------------
@@ -415,6 +428,12 @@ class CompanyViewModel @Inject constructor(
 
 
     // -------------------- UI STATE --------------------
+
+    fun expandDeleteEmployeeBottomSheetExpanded(expand: Boolean) {
+        _companyUIState.update { currState ->
+            currState.copy(deleteEmployeeBottomSheetExpanded = expand)
+        }
+    }
 
     fun expandEmployeeProfileBottomSheet(expand: Boolean) {
         _companyUIState.update { currState ->

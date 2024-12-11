@@ -25,6 +25,7 @@ import com.example.amoz.R
 import com.example.amoz.api.enums.RoleInCompany
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.components.bottom_sheets.ConfirmDeleteItemBottomSheet
 import com.example.amoz.view_models.CompanyViewModel
 import com.example.amoz.ui.theme.AmozApplicationTheme
 
@@ -45,7 +46,12 @@ fun CompanyEmployeesScreen(
         companyViewModel.fetchEmployees()
     }
 
-    ResultStateView(companyUIState.employees) { employees ->
+    ResultStateView(
+        companyUIState.employees,
+        onPullToRefresh = {
+            companyViewModel.fetchEmployees(true)
+        }
+    ) { employees ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -61,26 +67,21 @@ fun CompanyEmployeesScreen(
                 EmployeesLazyColumn(
                     employees = employees,
                     employeeImages = employeeImages,
-                    currentEmployeeRoleInCompany = currentEmployeeRoleInCompany,
+                    currentEmployee = companyUIState.currentEmployee,
                     employeeProfileBottomSheetExpanded = companyUIState.employeeProfileBottomSheetExpanded,
                     getProfilePicture = companyViewModel::getProfilePicture,
                     expandEmployeeProfileBottomSheet = {
                         companyViewModel.expandEmployeeProfileBottomSheet(it)
                     },
-                    onEmployeeDelete = {
-                        companyViewModel.kickEmployeeFromCompany(it, currentEmployeeRoleInCompany)
+                    onAddEmployee = {
+                        companyViewModel.expandAddEmployeeBottomSheet(true)
                     },
-                    callSnackBar = callSnackBar,
+                    onEmployeeDelete = {
+                        companyViewModel.updateCurrentDeleteEmployee(it)
+                        companyViewModel.expandDeleteEmployeeBottomSheetExpanded(true)
+                    },
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-                // -------------------- Add worker button --------------------
-                if(isCurrentEmployeeOwner) {
-                    PrimaryFilledButton(
-                        onClick = { companyViewModel.expandAddEmployeeBottomSheet(true) },
-                        text = stringResource(id = R.string.company_add_worker_button),
-                        leadingIcon = Icons.Outlined.Add
-                    )
-                }
+
             }
         }
 
@@ -93,6 +94,22 @@ fun CompanyEmployeesScreen(
                 },
                 callSnackBar = callSnackBar,
             )
+        }
+
+        if(companyUIState.deleteEmployeeBottomSheetExpanded) {
+            companyUIState.employeeToDelete?.let {
+                ConfirmDeleteItemBottomSheet(
+                    itemNameToDelete = "${it.person.name} ${it.person.surname}",
+                    onDismissRequest = {
+                        companyViewModel.expandDeleteEmployeeBottomSheetExpanded(false)
+                    },
+                    onDeleteConfirm = {
+                        companyViewModel.kickEmployeeFromCompany(
+                            it.employeeId, currentEmployeeRoleInCompany
+                        )
+                    }
+                )
+            }
         }
     }
 }

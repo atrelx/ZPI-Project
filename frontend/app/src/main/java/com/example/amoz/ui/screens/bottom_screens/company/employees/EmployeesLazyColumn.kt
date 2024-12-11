@@ -1,20 +1,22 @@
 package com.example.amoz.ui.screens.bottom_screens.company.employees
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,45 +25,40 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.amoz.R
 import com.example.amoz.api.enums.RoleInCompany
 import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.Employee
+import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.person.PersonImage
 import com.example.amoz.ui.components.SwipeableItemWithActions
-import com.example.amoz.view_models.CompanyViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.time.LocalDate
 import java.util.UUID
 
 @Composable
 fun EmployeesLazyColumn(
     employees: List<Employee>,
     employeeImages: MutableMap<UUID, MutableStateFlow<ResultState<ImageBitmap?>>>,
-    currentEmployeeRoleInCompany: RoleInCompany,
+    currentEmployee: Employee?,
     employeeProfileBottomSheetExpanded: Boolean,
     getProfilePicture: (UUID) -> Unit,
     expandEmployeeProfileBottomSheet: (Boolean) -> Unit,
-    onEmployeeDelete: (UUID) -> Unit,
-    callSnackBar: (String, ImageVector?) -> Unit,
+    onAddEmployee: () -> Unit,
+    onEmployeeDelete: (Employee) -> Unit,
 ) {
-    val isCurrentEmployeeOwner = currentEmployeeRoleInCompany == RoleInCompany.OWNER
+    val isCurrentEmployeeOwner = currentEmployee?.roleInCompany == RoleInCompany.OWNER
 
-    var currentEmployee by remember {
+    var currentEmployeeToDisplay by remember {
         mutableStateOf<Employee?>(null)
     }
-
-    val changeEmploymentDateText = stringResource(id = R.string.company_change_employment_date_successful)
 
     val listState = rememberLazyListState()
 
     LazyColumn(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(15.dp),
         state = listState
     ) {
@@ -83,12 +80,13 @@ fun EmployeesLazyColumn(
                 actions = {
                     EmployeeActionsRaw(
                         employee = employee,
+                        isDeleteAvalible = currentEmployee?.employeeId != employee.employeeId,
                         onEmployeeProfileClick = {
-                            currentEmployee = employee
+                            currentEmployeeToDisplay = employee
                             expandEmployeeProfileBottomSheet(true)
                         },
                         onEmployeeDelete = if (isCurrentEmployeeOwner) {{
-                            onEmployeeDelete(employee.employeeId)
+                            onEmployeeDelete(employee)
                         }} else null
                     )
                 }
@@ -106,17 +104,30 @@ fun EmployeesLazyColumn(
                 )
             }
         }
-    }
-    if (employeeProfileBottomSheetExpanded && currentEmployee != null) {
-        EmployeeProfileBottomSheet(
-            employee = currentEmployee!!,
-            employeeProfileImage = employeeImages[currentEmployee!!.employeeId],
-            currentEmployeeRoleInCompany = currentEmployeeRoleInCompany,
-            onDismissRequest = {
-                currentEmployee = null
-                expandEmployeeProfileBottomSheet(false)
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
+            // -------------------- Add worker button --------------------
+            if(isCurrentEmployeeOwner) {
+                PrimaryFilledButton(
+                    onClick = onAddEmployee,
+                    text = stringResource(id = R.string.company_add_worker_button),
+                    leadingIcon = Icons.Outlined.Add
+                )
             }
-        )
+        }
+    }
+    if (employeeProfileBottomSheetExpanded) {
+        currentEmployeeToDisplay?.let{
+            EmployeeProfileBottomSheet(
+                employee = it,
+                employeeProfileImage = employeeImages[it.employeeId],
+                currentEmployeeRoleInCompany = it.roleInCompany,
+                onDismissRequest = {
+                    currentEmployeeToDisplay = null
+                    expandEmployeeProfileBottomSheet(false)
+                }
+            )
+        }
     }
 }
 

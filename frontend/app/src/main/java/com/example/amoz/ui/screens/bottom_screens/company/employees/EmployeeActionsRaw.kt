@@ -16,13 +16,14 @@ import com.example.amoz.models.Employee
 @Composable
 fun EmployeeActionsRaw(
     employee: Employee,
+    isDeleteAvalible: Boolean,
     onEmployeeProfileClick: () -> Unit,
     onEmployeeDelete: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
     // -------------------- Delete worker from database --------------------
-    if (onEmployeeDelete != null) {
+    if (onEmployeeDelete != null && isDeleteAvalible) {
         IconButton(onClick = onEmployeeDelete) {
             Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Kick employee from company")
         }

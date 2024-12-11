@@ -21,6 +21,7 @@ data class CompanyUIState (
     val companyCreateRequestState: CompanyCreateRequest = CompanyCreateRequest(),
     val employees: MutableStateFlow<ResultState<List<Employee>>> = MutableStateFlow(ResultState.Idle),
     val currentEmployee: Employee? = null,
+    val employeeToDelete: Employee? = null,
     val employeeImages: MutableStateFlow<MutableMap<UUID, MutableStateFlow<ResultState<ImageBitmap?>>>> = MutableStateFlow(
         HashMap()
     ),
@@ -43,6 +44,7 @@ data class CompanyUIState (
 
     val changeCompanyNameBottomSheetExpanded: Boolean = false,
 
+    val deleteEmployeeBottomSheetExpanded: Boolean = false,
     val changeCompanyAddressBottomSheetExpanded: Boolean = false,
     val changeCompanyLogoBottomSheetExpanded: Boolean = false,
     val addEmployeeBottomSheetExpanded: Boolean = false,
