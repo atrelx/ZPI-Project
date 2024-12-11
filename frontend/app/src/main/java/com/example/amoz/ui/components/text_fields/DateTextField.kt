@@ -119,7 +119,7 @@ fun DateTextField(
                             isTimePickerVisible = true
                         } else {
                             dateText = selectedDate?.format(formatter) ?: ""
-                            onDateChange(selectedDate)
+                            onDateChange(selectedDate ?: date)
                             isDatePickerVisible = false
                         }
                     }
@@ -139,7 +139,7 @@ fun DateTextField(
                 selectedDate?.let {
                     val selectedDateTime = LocalDateTime.of(it, LocalTime.of(hour, minute))
                     dateText = selectedDateTime.format(formatter)
-                    onDateChange(selectedDateTime)
+                    onDateChange(selectedDateTime ?: date)
                 }
                 isTimePickerVisible = false
                 isDatePickerVisible = false

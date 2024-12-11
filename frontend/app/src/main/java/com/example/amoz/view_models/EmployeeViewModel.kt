@@ -121,13 +121,13 @@ class EmployeeViewModel @Inject constructor(
 
     fun manageInvitation(token: String, isAccepted: Boolean) {
         if (isAccepted) {
-            acceptInvitation(token)
+            acceptInvitation(token){}
         } else {
             declineInvitation(token)
         }
     }
 
-    fun acceptInvitation(token: String) {
+    fun acceptInvitation(token: String, onSuccess: () -> Unit) {
         performRepositoryAction(
             null,
             "Could not accept invitation.",

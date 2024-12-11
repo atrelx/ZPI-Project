@@ -184,10 +184,12 @@ fun NoCompanyScreen (
             text = stringResource(id = R.string.accept_invitation_window_text),
             onDismiss = { showAcceptDialogWindow = false },
             onAccept = {
-                employeeViewModel.acceptInvitation(selectedInvitation?.token.toString())
-                companyViewModel.fetchCompanyDetails()
-                navController.navigate(Screens.Company.route) {
-                    popUpTo(0) { inclusive = true }
+                employeeViewModel.acceptInvitation(selectedInvitation?.token.toString()) {
+                    companyViewModel.fetchCompanyDetails()
+                    companyViewModel.fetchEmployees()
+                    navController.navigate(Screens.Company.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
                 showAcceptDialogWindow = false
                 selectedInvitation = null

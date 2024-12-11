@@ -114,7 +114,9 @@ class OrdersViewModel @Inject constructor (
     }
 
 
-     fun createProductOrder(orderCreateRequest: ProductOrderCreateRequest, listVariantOrderItem: List<ProductVariantOrderItem>) {
+     fun createProductOrder(orderCreateRequest: ProductOrderCreateRequest,
+                            listVariantOrderItem: List<ProductVariantOrderItem>,
+                            onSuccessCallback: (ProductOrderDetails) -> Unit) {
         val finalOrderRequest = createOrderRequestFromVariantItems(
             listVariantOrderItem = listVariantOrderItem,
             orderCreateRequest = orderCreateRequest,
@@ -127,6 +129,7 @@ class OrdersViewModel @Inject constructor (
                 failureMessage = "Could not create product order, try again",
                 action = { orderRepository.createProductOrder(finalOrderRequest) },
                 onSuccess = {
+                    onSuccessCallback(it)
                     fetchOrdersList(skipLoading = false) {}
                 }
             )
@@ -264,16 +267,12 @@ class OrdersViewModel @Inject constructor (
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
 
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(context, "No app found to open PDF", Toast.LENGTH_SHORT).show()
-        }
+        context.startActivity(intent)
     }
 
     fun chooseProductOrderOperation(orderCreateRequest: ProductOrderCreateRequest, currentProductVariantDetailsList: List<ProductVariantOrderItem>) {
         if (_ordersUiState.value.isCurrentOrderNew) {
-            createProductOrder(orderCreateRequest, currentProductVariantDetailsList)
+            createProductOrder(orderCreateRequest, currentProductVariantDetailsList){}
         }
         else {
             val uuid = _ordersUiState.value.currentAddEditOrderDetails?.productOrderId
