@@ -107,16 +107,6 @@ public class ProductOrderItemService {
         productOrderItemRepository.deleteAll(productOrderItems);
     }
 
-    @Transactional
-    public void removeAllProductOrderItemsTransactional(List<ProductOrderItem> productOrderItems) {
-        productOrderItems.forEach(item -> {
-            ProductVariant productVariant = productVariantRepository.findByProductVariantId(item.getProductVariant().getProductVariantId())
-                    .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID: " + item.getProductVariant().getProductVariantId()));
-            Stock stock = productVariant.getStock();
-            stock.increaseStock(item.getAmount());
-        });
 
-        productOrderItemRepository.deleteAllInBatch(productOrderItems);
-    }
 }
 

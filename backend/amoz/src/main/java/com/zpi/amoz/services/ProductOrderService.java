@@ -1,10 +1,7 @@
 package com.zpi.amoz.services;
 
 import com.zpi.amoz.models.*;
-import com.zpi.amoz.repository.AddressRepository;
-import com.zpi.amoz.repository.CustomerRepository;
-import com.zpi.amoz.repository.EmployeeRepository;
-import com.zpi.amoz.repository.ProductOrderRepository;
+import com.zpi.amoz.repository.*;
 import com.zpi.amoz.requests.ProductOrderCreateRequest;
 import com.zpi.amoz.requests.ProductVariantCreateRequest;
 import com.zpi.amoz.requests.PushRequest;
@@ -40,13 +37,16 @@ public class ProductOrderService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
     private ProductOrderItemService productOrderItemService;
 
     @Autowired
     private PushService pushService;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private ProductOrderItemRepository productOrderItemRepository;
 
 
     public List<ProductOrder> findAll() {
@@ -157,7 +157,7 @@ public class ProductOrderService {
             existingProductOrder.setCustomer(null);
         }
 
-        productOrderItemService.removeAllProductOrderItemsTransactional(existingProductOrder.getOrderItems());
+        this.removeAllProductOrderItemsTransactional(existingProductOrder);
 
         List<ProductOrderItem> updatedOrderItems = request.productOrderItems().stream()
                 .map(item -> productOrderItemService.createProductOrderItem(existingProductOrder, comapnyId, item))
@@ -166,6 +166,18 @@ public class ProductOrderService {
         existingProductOrder.setOrderItems(updatedOrderItems);
 
         return productOrderRepository.save(existingProductOrder);
+    }
+
+    @Transactional
+    public void removeAllProductOrderItemsTransactional(ProductOrder productOrder) {
+        List<ProductOrderItem> productOrderItems = productOrder.getOrderItems();
+        productOrderItems.forEach(item -> {
+            ProductVariant productVariant = productVariantRepository.findByProductVariantId(item.getProductVariant().getProductVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("ProductVariant not found for the given ID: " + item.getProductVariant().getProductVariantId()));
+            Stock stock = productVariant.getStock();
+            stock.increaseStock(item.getAmount());
+        });
+        productOrderItemRepository.deleteAllInBatch(productOrderItems);
     }
 
     public List<ProductOrder> findByCompanyId(UUID companyId) {
