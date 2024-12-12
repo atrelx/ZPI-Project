@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.sealed.ResultState
+import com.example.amoz.models.Attribute
 import com.example.amoz.models.ProductDetails
 import com.example.amoz.models.ProductSummary
 import com.example.amoz.models.ProductVariantDetails
@@ -37,6 +38,8 @@ data class ProductsUiState(
     val productVariantCreateRequest: ProductVariantCreateRequest = ProductVariantCreateRequest(),
     val productVariantDetailsState: MutableStateFlow<ResultState<ProductVariantDetails?>> = MutableStateFlow(ResultState.Idle),
     val productVariantImageState: MutableStateFlow<ResultState<ImageBitmap?>> = MutableStateFlow(ResultState.Idle),
+
+    val allAttributesList: MutableStateFlow<ResultState<List<Attribute>>> = MutableStateFlow(ResultState.Idle),
 
     val currentAddEditSimpleProduct: Pair<ProductCreateRequest, ProductVariantCreateRequest> = Pair(ProductCreateRequest(), ProductVariantCreateRequest()),
 

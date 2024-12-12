@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
+import com.example.amoz.api.repositories.AttributeRepository
 import com.example.amoz.api.repositories.ProductRepository
 import com.example.amoz.api.repositories.ProductVariantRepository
 import com.example.amoz.api.requests.CompanyCreateRequest
@@ -41,6 +42,7 @@ class ProductsViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val productRepository: ProductRepository,
     private val productVariantRepository: ProductVariantRepository,
+    private val attributeRepository: AttributeRepository,
     private val appPreferences: AppPreferences,
     private val signOutManager: SignOutManager,
 ) : BaseViewModel() {
@@ -190,6 +192,15 @@ class ProductsViewModel @Inject constructor(
             onSuccess = {
                 fetchProductsList(skipLoading = true)
                 onSuccessCallback?.invoke(it)
+            }
+        )
+    }
+
+    fun fetchAllAttributes() {
+        performRepositoryAction(
+            binding = _productUiState.value.allAttributesList,
+            action = {
+                attributeRepository.getAllAttributes()
             }
         )
     }

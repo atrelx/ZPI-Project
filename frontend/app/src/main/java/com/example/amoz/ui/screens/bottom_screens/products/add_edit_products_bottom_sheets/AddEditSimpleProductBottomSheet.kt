@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.enums.ImagePlaceholder
@@ -49,12 +50,14 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.pickers.CategoryPickerListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
+import com.example.amoz.view_models.ProductsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditSimpleProductBottomSheet(
+    viewModel: ProductsViewModel,
     productCreateRequest: ProductCreateRequest,
     productVariantCreateRequest: ProductVariantCreateRequest,
     onComplete: (ProductCreateRequest, ProductVariantCreateRequest, Uri?) -> Unit,
@@ -207,6 +210,7 @@ fun AddEditSimpleProductBottomSheet(
 
             // -------------------- Attributes --------------------
             ProductAttributes(
+                viewModel = viewModel,
                 productAttributes = productState.productAttributes,
                 onAttributesChange = {
                     productState = productState.copy(productAttributes = it)

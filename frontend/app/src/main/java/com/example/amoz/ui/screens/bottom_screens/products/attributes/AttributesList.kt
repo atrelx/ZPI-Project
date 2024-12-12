@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,19 +43,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.amoz.R
 import com.example.amoz.api.requests.AttributeCreateRequest
 import com.example.amoz.ui.components.EmptyLayout
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.PrimaryOutlinedButton
+import com.example.amoz.view_models.ProductsViewModel
 
 
 @Composable
 fun ProductAttributes(
+    viewModel: ProductsViewModel,
     productAttributes: List<AttributeCreateRequest>,
     onAttributesChange: (List<AttributeCreateRequest>) -> Unit,
 ) {
     var showDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchAllAttributes()
+    }
 
     ListItem(
         modifier = Modifier
@@ -81,6 +89,7 @@ fun ProductAttributes(
 
     if (showDialog) {
         AttributesDialog(
+            viewModel = viewModel,
             productAttributes = productAttributes,
             onAttributesChange = onAttributesChange,
             onDismissRequest = {showDialog = false}
@@ -90,6 +99,7 @@ fun ProductAttributes(
 
 @Composable
 fun AttributesDialog(
+    viewModel: ProductsViewModel,
     productAttributes: List<AttributeCreateRequest>,
     onAttributesChange: (List<AttributeCreateRequest>) -> Unit,
     onDismissRequest: () -> Unit
@@ -128,6 +138,7 @@ fun AttributesDialog(
                 }
 
                 AttributesList(
+                    viewModel = viewModel,
                     productAttributes = productAttributes,
                     onAttributesChange = onAttributesChange,
                     onDismissRequest = onDismissRequest
@@ -140,6 +151,7 @@ fun AttributesDialog(
 
 @Composable
 fun AttributesList(
+    viewModel: ProductsViewModel,
     productAttributes: List<AttributeCreateRequest>,
     onAttributesChange: (List<AttributeCreateRequest>) -> Unit,
     onDismissRequest: () -> Unit
@@ -149,6 +161,7 @@ fun AttributesList(
     // -------------------- Product attributes --------------------
     productAttributesState.forEachIndexed { index, productAttribute ->
         AttributeNameValueItem(
+            viewModel = viewModel,
             indexInList = index,
             attributeName = productAttribute.attributeName,
             attributeValue = productAttribute.value,

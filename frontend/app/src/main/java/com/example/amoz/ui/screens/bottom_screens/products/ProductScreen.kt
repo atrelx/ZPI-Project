@@ -24,6 +24,7 @@ import com.example.amoz.ui.theme.AmozApplicationTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.amoz.extensions.toMultipartBodyPart
 import com.example.amoz.pickers.SavedStateHandleKeys
 import com.example.amoz.navigation.NavItemType
@@ -163,6 +164,7 @@ fun ProductScreen(
     // -------------------- Add/Edit Product --------------------
     if (productsUiState.addEditProductBottomSheetExpanded) {
         AddEditProductBottomSheet(
+            viewModel = productsViewModel,
             productDetailsState = productsUiState.productDetailsState,
             savedProductState = productsUiState.productCreateRequest,
             onSaveProduct = productsViewModel::saveCurrentProductCreateRequest,
@@ -198,6 +200,7 @@ fun ProductScreen(
         val productMainVariantId =  productsUiState.filteredByProduct?.mainProductVariant?.productVariantId
 
         AddEditProductVariantBottomSheet(
+            viewModel = productsViewModel,
             productVariantCreateRequest = productsUiState.productVariantCreateRequest,
             productVariantDetailsState = productsUiState.productVariantDetailsState,
             productVariantImageState = productsUiState.productVariantImageState,
@@ -257,6 +260,7 @@ fun ProductScreen(
         val productState = productsUiState.currentAddEditSimpleProduct.first
         val productVariantState = productsUiState.currentAddEditSimpleProduct.second
         AddEditSimpleProductBottomSheet(
+            viewModel = productsViewModel,
             navController = navController,
             productCreateRequest = productState,
             productVariantCreateRequest = productVariantState,

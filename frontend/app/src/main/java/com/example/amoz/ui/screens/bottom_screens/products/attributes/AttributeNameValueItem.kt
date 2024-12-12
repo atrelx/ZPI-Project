@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,11 +28,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.amoz.R
+import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.dissmiss_backgrounds.DismissBackground
+import com.example.amoz.ui.components.text_fields.AutoCompleteTextField
+import com.example.amoz.view_models.ProductsViewModel
 
 @Composable
 fun AttributeNameValueItem(
+    viewModel: ProductsViewModel,
     indexInList: Int,
     attributeName: String,
     attributeValue: String?,
@@ -67,73 +73,75 @@ fun AttributeNameValueItem(
         positionalThreshold = { it * positionalThreshold }
     )
 
-    SwipeToDismissBox(
-        state = swipeState,
-        enableDismissFromEndToStart = false,
-        backgroundContent = {
-            currentFraction = swipeState.progress
-            DismissBackground(swipeState)
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(
-                    width = 1.dp,
-                    brush = SolidColor(MaterialTheme.colorScheme.outline),
-                    shape = RoundedCornerShape(10.dp)
-                ),
+    ResultStateView(viewModel.productUiState.collectAsState().value.allAttributesList) { attributes ->
+        SwipeToDismissBox(
+            state = swipeState,
+            enableDismissFromEndToStart = false,
+            backgroundContent = {
+                currentFraction = swipeState.progress
+                DismissBackground(swipeState)
+            }
         ) {
-            // -------------------- Product attribute name --------------------
-            OutlinedTextField(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                placeholder = { Text(defaultAttributeNameText) },
-                value = attributeName,
-                onValueChange = { onNameChange(it) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.CheckBoxOutlineBlank,
-                        contentDescription = null
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = null
-                    )
-                },
-                maxLines = 1,
-                singleLine = true,
-                colors = textFieldColors
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-
-            // -------------------- Product attribute value --------------------
-            attributeValue?.let {
-                OutlinedTextField(
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .border(
+                        width = 1.dp,
+                        brush = SolidColor(MaterialTheme.colorScheme.outline),
+                        shape = RoundedCornerShape(10.dp)
+                    ),
+            ) {
+                // -------------------- Product attribute name --------------------
+                AutoCompleteTextField(
+                    completionList = attributes.map { it.attributeName },
                     modifier = Modifier
                         .fillMaxWidth(),
-                    placeholder = { Text(defaultAttributeValueText) },
-                    value = attributeValue,
-                    onValueChange = { onValueChange(it) },
+                    value = attributeName,
+                    onValueChange = { onNameChange(it) },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Outlined.CheckBox,
+                            imageVector = Icons.Outlined.CheckBoxOutlineBlank,
                             contentDescription = null
                         )
                     },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Edit,
-                            contentDescription = null
-                        )
-                    },
+//                trailingIcon = {
+//                    Icon(
+//                        imageVector = Icons.Outlined.Edit,
+//                        contentDescription = null
+//                    )
+//                },
                     maxLines = 1,
                     singleLine = true,
                     colors = textFieldColors
                 )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+
+                // -------------------- Product attribute value --------------------
+                attributeValue?.let {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        placeholder = { Text(defaultAttributeValueText) },
+                        value = attributeValue,
+                        onValueChange = { onValueChange(it) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.CheckBox,
+                                contentDescription = null
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = null
+                            )
+                        },
+                        maxLines = 1,
+                        singleLine = true,
+                        colors = textFieldColors
+                    )
+                }
             }
         }
     }

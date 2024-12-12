@@ -12,7 +12,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Verified
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -22,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +47,9 @@ import com.example.amoz.ui.components.pickers.CategoryPickerListItem
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
+import com.example.amoz.ui.components.text_fields.AutoCompleteTextField
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
+import com.example.amoz.view_models.ProductsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -51,12 +57,13 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductBottomSheet(
+    viewModel: ProductsViewModel,
     productDetailsState: MutableStateFlow<ResultState<ProductDetails?>>,
     savedProductState: ProductCreateRequest?,
     onSaveProduct: (ProductCreateRequest) -> Unit,
     onComplete: (UUID?, ProductCreateRequest, (String?) -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
-    navController: NavController,
+    navController: NavController
 ) {
     var validationMessage by remember { mutableStateOf<String?>(null) }
 
@@ -119,14 +126,14 @@ fun AddEditProductBottomSheet(
                 )
 
                 // -------------------- Product brand --------------------
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    label = { Text(stringResource(R.string.product_brand)) },
+                AutoCompleteTextField(
+                    completionList = viewModel.productUiState.collectAsState().value.productsList.map { it.brand }.filterNotNull(),
                     value = productState.brand ?: "",
                     onValueChange = {
                         productState = productState.copy(brand = it.takeIf { it.isNotBlank() })
                     },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(stringResource(R.string.product_brand)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.Verified,
@@ -137,10 +144,9 @@ fun AddEditProductBottomSheet(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done
                     ),
-                    maxLines = 1,
-                    singleLine = true
+                    singleLine = true,
+                    maxLines = 1
                 )
-
 //             -------------------- Product's category --------------------
                 CategoryPickerListItem(
                     category = categoryTreeState,
@@ -158,6 +164,7 @@ fun AddEditProductBottomSheet(
 
                 // -------------------- Product attributes --------------------
                 ProductAttributes(
+                    viewModel = viewModel,
                     productAttributes = productState.productAttributes,
                     onAttributesChange = {
                         productState = productState.copy(productAttributes = it)
@@ -199,4 +206,8 @@ fun AddEditProductBottomSheet(
         }
     }
 }
+
+
+
+
 

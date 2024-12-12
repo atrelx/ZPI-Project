@@ -53,6 +53,7 @@ import com.example.amoz.ui.components.PrimaryFilledButton
 import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.pickers.ProductPickerWithListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
+import com.example.amoz.view_models.ProductsViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -60,6 +61,7 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProductVariantBottomSheet(
+    viewModel: ProductsViewModel,
     productVariantCreateRequest: ProductVariantCreateRequest,
     productVariantDetailsState: MutableStateFlow<ResultState<ProductVariantDetails?>>,
     productVariantImageState: MutableStateFlow<ResultState<ImageBitmap?>>,
@@ -217,6 +219,7 @@ fun AddEditProductVariantBottomSheet(
 
                 // -------------------- Attributes --------------------
                 ProductAttributes(
+                    viewModel = viewModel,
                     productAttributes = productVariantState.variantAttributes,
                     onAttributesChange = {
                         productVariantState = productVariantState.copy(variantAttributes = it)
