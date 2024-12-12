@@ -87,7 +87,7 @@ fun ChangeAppThemeBottomSheet(
 
             // -------------------- Done Button --------------------
             PrimaryFilledButton(
-                text = stringResource(R.string.done),
+                text = stringResource(R.string.save),
                 onClick = {
                     onComplete(appThemeModeState)
                     onDismissRequest()

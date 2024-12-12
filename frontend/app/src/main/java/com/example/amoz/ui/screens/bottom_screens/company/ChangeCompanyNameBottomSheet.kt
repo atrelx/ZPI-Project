@@ -104,7 +104,7 @@ fun ChangeCompanyNameBottomSheet(
                             onDismissRequest()
                         }
                     },
-                    text = stringResource(id = R.string.done),
+                    text = stringResource(id = R.string.save),
                     leadingIcon = Icons.Outlined.Done
                 )
             }

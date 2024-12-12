@@ -21,27 +21,40 @@ class CategoryPicker(navController: NavController)
 
     fun pickCategory(categoryTree: CategoryTree) {
         pickItem(SavedStateHandleKeys.PICKED_CATEGORY_TREE, categoryTree)
+        unsetModes()
         navController.popBackStack()
-        setCategoryPickerMode(false)
-        setCategoryLeavesOnlyPickerMode(false)
     }
 
     fun navigateToCategoryScreen(pickLeavesOnly: Boolean) {
-        setCategoryPickerMode(true)
-        if (pickLeavesOnly) { setCategoryLeavesOnlyPickerMode(true) }
+        setCategoryPickerMode()
+        if (pickLeavesOnly) { setCategoryLeavesOnlyPickerMode() }
         navController.navigate(Screens.Categories.route)
+    }
+
+    fun unsetModes() {
+        unsetCategoryPickerMode()
+        unsetCategoryLeavesOnlyPickerMode()
     }
 
     fun removePickedCategory() {
         removePickedItem(SavedStateHandleKeys.PICKED_CATEGORY_TREE)
     }
 
-    private fun setCategoryPickerMode(mode: Boolean) {
-        setMode(SavedStateHandleKeys.CATEGORY_PICKER_MODE, mode)
+    private fun unsetCategoryPickerMode() {
+
+        previousSavedStateHandleSetMode(SavedStateHandleKeys.CATEGORY_PICKER_MODE, false)
     }
 
-    private fun setCategoryLeavesOnlyPickerMode(mode: Boolean) {
-        setMode(SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY, mode)
+    private fun unsetCategoryLeavesOnlyPickerMode() {
+        previousSavedStateHandleSetMode(SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY, false)
+    }
+
+    private fun setCategoryPickerMode() {
+        currentSavedStateHandleSetMode(SavedStateHandleKeys.CATEGORY_PICKER_MODE, true)
+    }
+
+    private fun setCategoryLeavesOnlyPickerMode() {
+        currentSavedStateHandleSetMode(SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY, true)
     }
 
 }

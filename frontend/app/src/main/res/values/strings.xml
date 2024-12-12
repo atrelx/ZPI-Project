@@ -68,9 +68,9 @@
 
     // --------------------- Products screen ---------------------
     <string name="products_add_simple_product">Add simple product</string>
-    <string name="products_add_product">Add product</string>
-    <string name="products_choose_product">Choose product</string>
-    <string name="products_choose_product_variant">Choose product variant</string>
+    <string name="products_add_product">Add product template</string>
+    <string name="products_choose_product">Choose product template</string>
+    <string name="products_choose_product_variant">Choose product</string>
     <string name="products_delete_product_template_confirm">Do you really want to delete:\n%1$s?</string>
     <string name="products_categories_screen">Categories</string>
     <string name="products_attributes_screen">Attributes</string>
@@ -102,10 +102,10 @@
     <string name="product_template_delete">Delete product template</string>
 
     // --------------------- Product Variants screen ---------------------
-    <string name="products_add_product_variant">Add product variant</string>
-    <string name="products_variant_of">Product variant of product:</string>
-    <string name="products_variant">Product variant:</string>
-    <string name="product_variant_set_as_main">Set as main variant</string>
+    <string name="products_add_product_variant">Add product</string>
+    <string name="products_variant_of">Product of product tamplate:</string>
+    <string name="products_variant">Product:</string>
+    <string name="product_variant_set_as_main">Set as main product</string>
 
     <string name="variant_stock">Stock</string>
     <string name="variant_stock_amount">Amount available</string>
@@ -224,8 +224,8 @@
     <string name="company_invitation_window_text"> Do you want to join this company?</string>
 
     // --------------------- Stock update ---------------------
-    <string name="empty_list_greeting">Add product variant to manage it\'s stock</string>
-    <string name="add_product_variant">Add product variant</string>
+    <string name="empty_list_greeting">Add product to manage it\'s stock</string>
+    <string name="add_product_variant">Add product</string>
 
 
     // --------------------- Address ---------------------
@@ -240,7 +240,6 @@
     <string name="additional_info">Additional information (optional)</string>
 
     // --------------------- Other ---------------------
-    <string name="done">Done</string>
     <string name="close">Close</string>
     <string name="confirm">Confirm</string>
     <string name="yes">Yes</string>

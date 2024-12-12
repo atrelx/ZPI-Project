@@ -69,9 +69,9 @@
 
      --------------------- Products screen ---------------------
     <string name="products_add_simple_product">Dodaj prosty produkt</string>
-    <string name="products_add_product">Dodaj produkt</string>
-    <string name="products_choose_product">Wybierz produkt</string>
-    <string name="products_choose_product_variant">Wybierz wariant produktu</string>
+    <string name="products_add_product">Dodaj szablon produktu</string>
+    <string name="products_choose_product">Wybierz szablon produktu</string>
+    <string name="products_choose_product_variant">Wybierz produkt</string>
     <string name="products_delete_product_template_confirm">Czy na pewno chcesz usunąć:\n%1$s?</string>
     <string name="products_categories_screen">Kategorie</string>
     <string name="products_attributes_screen">Atrybuty</string>
@@ -103,10 +103,10 @@
     <string name="product_template_delete">Usuń szablon produktu</string>
 
      --------------------- Product Variants screen ---------------------
-    <string name="products_add_product_variant">Dodaj wariant produktu</string>
-    <string name="products_variant_of">Wariant produktu dla:</string>
-    <string name="products_variant">Wariant produktu:</string>
-    <string name="product_variant_set_as_main">Ustaw jako główny wariant</string>
+    <string name="products_add_product_variant">Dodaj produkt</string>
+    <string name="products_variant_of">Produkt szablonu:</string>
+    <string name="products_variant">Produkt szablonu:</string>
+    <string name="product_variant_set_as_main">Ustaw jako główny produkt</string>
 
     <string name="variant_stock">Stan</string>
     <string name="variant_stock_amount">Dostępna ilość</string>
@@ -224,8 +224,8 @@ Zarejestruj swoją firmę lub dołącz do istniejącej!</string>
     <string name="company_invitation_window_text"> Czy chcesz dołączyć do tej firmy?</string>
 
      --------------------- Stock update ---------------------
-    <string name="empty_list_greeting">Dodaj wariant produktu, aby zarządzać jego stanem</string>
-    <string name="add_product_variant">Dodaj wariant produktu</string>
+    <string name="empty_list_greeting">Dodaj produkt, aby zarządzać jego stanem</string>
+    <string name="add_product_variant">Dodaj produkt</string>
 
 
      --------------------- Address ---------------------
@@ -240,7 +240,6 @@ Zarejestruj swoją firmę lub dołącz do istniejącej!</string>
     <string name="additional_info">Dodatkowe informacje (opcjonalnie)</string>
 
      --------------------- Other ---------------------
-    <string name="done">Gotowe</string>
     <string name="close">Zamknij</string>
     <string name="confirm">Potwierdź</string>
     <string name="yes">Tak</string>

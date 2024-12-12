@@ -44,7 +44,7 @@ class CustomerPicker(navController: NavController)
     }
 
     private fun setCustomerPickerMode(mode: Boolean) {
-        setMode(SavedStateHandleKeys.CUSTOMER_PICKER_MODE, mode)
+        currentSavedStateHandleSetMode(SavedStateHandleKeys.CUSTOMER_PICKER_MODE, mode)
     }
 }
 

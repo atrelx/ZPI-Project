@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Numbers
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -119,9 +117,12 @@ fun AddEditB2BCustomerBottomSheet(
                 label = {
                     Text(text = stringResource(id = R.string.profile_email))
                 },
-                value = customerState.customer.contactPerson.emailAddress ?: "",
+                value = contactPerson.emailAddress ?: "",
                 onValueChange = {
-                    customerState.customer.contactPerson = customerState.customer.contactPerson.copy(emailAddress = it)
+                    customerState = customerState
+                        .copy(customer = customerState.customer
+                            .copy(contactPerson = customerState.customer.contactPerson
+                                .copy(emailAddress = it)))
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Mail, contentDescription = null)
@@ -184,7 +185,7 @@ fun AddEditB2BCustomerBottomSheet(
                     }
                 },
                 enabled = true,
-                text = stringResource(id = R.string.done)
+                text = stringResource(id = R.string.save)
             )
         }
     }

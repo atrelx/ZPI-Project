@@ -369,6 +369,12 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
+    fun updateProductVariantImageStateIdle() {
+        _productUiState.update { it.copy(
+            productVariantImageState = MutableStateFlow(ResultState.Idle)
+        ) }
+    }
+
     fun deleteProductVariant(
         productVariantId: UUID,
         onSuccessCallback: (() -> Unit)? = null,

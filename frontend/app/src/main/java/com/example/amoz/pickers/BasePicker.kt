@@ -32,10 +32,14 @@ abstract class BasePicker<T> (
     }
 
     protected fun setNavElementsVisibleMode(mode: Boolean) {
-        setMode(SavedStateHandleKeys.SHOW_NAV_ELEMENTS, mode)
+        currentSavedStateHandleSetMode(SavedStateHandleKeys.SHOW_NAV_ELEMENTS, mode)
     }
 
-    protected fun setMode(key: String, mode: Boolean) {
+    protected fun previousSavedStateHandleSetMode(key: String, mode: Boolean) {
+        previousSavedStateHandle?.set(key, mode)
+    }
+
+    protected fun currentSavedStateHandleSetMode(key: String, mode: Boolean) {
         currentSavedStateHandle?.set(key, mode)
     }
 

@@ -33,6 +33,6 @@ class ProductVariantPicker(navController: NavController)
     }
 
     private fun setProductVariantPickerMode(mode: Boolean) {
-        setMode(SavedStateHandleKeys.PRODUCT_VARIANT_PICKER_MODE, mode)
+        currentSavedStateHandleSetMode(SavedStateHandleKeys.PRODUCT_VARIANT_PICKER_MODE, mode)
     }
 }

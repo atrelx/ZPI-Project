@@ -1,6 +1,7 @@
 package com.example.amoz.ui.screens.bottom_screens.products.add_edit_products_bottom_sheets
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -78,7 +79,7 @@ fun AddEditProductVariantBottomSheet(
     var hasProductId by remember { mutableStateOf(productVariantCreateRequest.productID != null) }
 
     var productVariantImageUri by remember { mutableStateOf<Uri?>(null) }
-    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var imageBitmap by remember(productVariantCreateRequest.productID) { mutableStateOf<ImageBitmap?>(null) }
 
     val sheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = true,
@@ -249,7 +250,7 @@ fun AddEditProductVariantBottomSheet(
                             else { validationMessage = it }
                         }
                     },
-                    text = stringResource(id = R.string.done),
+                    text = stringResource(id = R.string.save),
                 )
                 // -------------------- Close bottom sheet --------------------
                 CloseOutlinedButton(

@@ -1,5 +1,7 @@
 package com.example.amoz.ui.screens.categories
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,9 +41,16 @@ fun CategoriesScreen(
     val categoryPickerMode = categoryPicker.isCategoryPickerMode()
     val categoryPickerModeLeavesOnly = categoryPicker.isCategoryLeavesOnlyPickerMode()
 
+    Log.d("PICKER MODES", "categoryPickerMode: $categoryPickerMode, categoryPickerModeLeavesOnly: $categoryPickerModeLeavesOnly")
+
     fun closeAddEditCategoryBottomSheet() {
         categoryViewModel.updateCurrentCategory(null)
         categoryViewModel.expandAddEditCategoryBottomSheet(false)
+    }
+
+    BackHandler {
+        categoryPicker.unsetModes()
+        navController.popBackStack()
     }
 
     Surface(
@@ -105,12 +114,16 @@ fun CategoriesScreen(
                 onComplete = { name, subcategoriesList, onErrorCallback ->
                     if (categoryUiState.currentCategoryTree != null) {
                         val categoryId = categoryUiState.currentCategoryTree!!.categoryId
+                        var errorMessage: String? = null
                         try { categoryViewModel.updateCategory(categoryId, name, subcategoriesList) }
-                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
+                        catch(e: IllegalArgumentException) {errorMessage = e.message}
+                        onErrorCallback(errorMessage)
                     }
                     else {
-                        try {categoryViewModel.createCategory(name, subcategoriesList) }
-                        catch(e: IllegalArgumentException) {onErrorCallback(e.message)}
+                        var errorMessage: String? = null
+                        try { categoryViewModel.createCategory(name, subcategoriesList) }
+                        catch(e: IllegalArgumentException) {errorMessage = e.message}
+                        onErrorCallback(errorMessage)
                     }
                 },
                 onSubcategoryEdit = categoryViewModel::updateCurrentCategory

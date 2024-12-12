@@ -2,9 +2,7 @@ package com.example.amoz.ui.screens.bottom_screens.additional_screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -62,7 +60,7 @@ fun ChangeCurrencyBottomSheet(
                 label = { Text(stringResource(R.string.currency)) }
             )
             PrimaryFilledButton(
-                text = stringResource(R.string.done),
+                text = stringResource(R.string.save),
                 onClick = {
                     onComplete(currencyState)
                     onDismissRequest()

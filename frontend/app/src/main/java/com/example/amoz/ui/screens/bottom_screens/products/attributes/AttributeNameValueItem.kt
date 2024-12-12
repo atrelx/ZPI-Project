@@ -41,6 +41,7 @@ fun AttributeNameValueItem(
     indexInList: Int,
     attributeName: String,
     attributeValue: String?,
+    readOnly: Boolean = false,
     onDelete: (Int) -> Unit,
     onNameChange: (String) -> Unit,
     onValueChange: (String) -> Unit,
@@ -138,6 +139,7 @@ fun AttributeNameValueItem(
                             )
                         },
                         maxLines = 1,
+                        readOnly = readOnly,
                         singleLine = true,
                         colors = textFieldColors
                     )

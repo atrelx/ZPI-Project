@@ -124,7 +124,7 @@ fun DateTextField(
                         }
                     }
                 ) {
-                    Text(text = stringResource(id = R.string.done))
+                    Text(text = stringResource(id = R.string.save))
                 }
             }
         ) {

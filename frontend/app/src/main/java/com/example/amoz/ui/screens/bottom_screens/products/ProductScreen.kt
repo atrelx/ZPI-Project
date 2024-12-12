@@ -249,6 +249,7 @@ fun ProductScreen(
             },
             onSaveProductVariant = productsViewModel::saveCurrentAddEditProductVariant,
             onDismissRequest = {
+                productsViewModel.updateProductVariantImageStateIdle()
                 productsViewModel.expandBottomSheet(BottomSheetType.ADD_EDIT_VARIANT, false)
             },
             navController = navController

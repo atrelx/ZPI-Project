@@ -37,6 +37,7 @@ import com.example.amoz.navigation.NavItemType
 import com.example.amoz.navigation.allApplicationScreensMap
 import com.example.amoz.navigation.bottomNavigationBarNavItemsMap
 import com.example.amoz.navigation.otherNavigationItemsMap
+import com.example.amoz.pickers.SavedStateHandleKeys
 import com.example.amoz.ui.components.CustomSnackBar
 import com.example.amoz.ui.screens.Screens
 import com.example.amoz.ui.screens.more_button.MoreBottomSheet
@@ -64,6 +65,13 @@ fun AppMainScaffold(
 
     if (currentNavigationItem != null) {
         appViewModel.updateCurrentNavItem(currentNavigationItem, showNavElements)
+    }
+
+    LaunchedEffect(Unit) {
+        Log.d("PICKER MODES", navigationController.previousBackStackEntry?.savedStateHandle?.get<Boolean>(
+            SavedStateHandleKeys.CATEGORY_PICKER_MODE).toString())
+        Log.d("PICKER MODES", navigationController.previousBackStackEntry?.savedStateHandle?.get<Boolean>(
+            SavedStateHandleKeys.CATEGORY_PICKER_MODE_LEAVES_ONLY).toString())
     }
 
     //hardcoded state values, implement normal logic for them

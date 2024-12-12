@@ -233,7 +233,7 @@ fun AddEditB2CCustomerBottomSheet(
                     }
                 },
                 enabled = true,
-                text = stringResource(id = R.string.done)
+                text = stringResource(id = R.string.save)
             )
         }
     }
@@ -252,7 +252,7 @@ fun AddEditB2CCustomerBottomSheet(
                         isDatePickerVisible = false
                     }
                 ) {
-                    Text(text = stringResource(id = R.string.done))
+                    Text(text = stringResource(id = R.string.save))
                 }
             }
         ) {

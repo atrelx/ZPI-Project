@@ -30,28 +30,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.amoz.R
 import com.example.amoz.api.enums.ImagePlaceholder
 import com.example.amoz.api.requests.ProductCreateRequest
 import com.example.amoz.api.requests.ProductVariantCreateRequest
 import com.example.amoz.api.requests.StockCreateRequest
-import com.example.amoz.api.sealed.ResultState
 import com.example.amoz.models.CategoryTree
 import com.example.amoz.ui.components.CloseOutlinedButton
 import com.example.amoz.ui.components.ImageWithIcon
 import com.example.amoz.ui.components.PrimaryFilledButton
-import com.example.amoz.ui.components.ResultStateView
 import com.example.amoz.ui.components.pickers.CategoryPickerListItem
 import com.example.amoz.ui.screens.bottom_screens.products.attributes.ProductAttributes
 import com.example.amoz.view_models.ProductsViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -246,7 +241,7 @@ fun AddEditSimpleProductBottomSheet(
                         onDismissRequest()
                     }
                 },
-                text = stringResource(id = R.string.done),
+                text = stringResource(id = R.string.save),
             )
             // -------------------- Close bottom sheet --------------------
             CloseOutlinedButton(
